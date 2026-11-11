@@ -1,0 +1,9 @@
+[package]
+name = "land"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+join = { path = "../join" }
+snapshot = { path = "../snapshot" }

@@ -1,0 +1,17 @@
+[package]
+name = "cli"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gitio = { path = "../gitio" }
+oplog = { path = "../oplog" }
+folders = { path = "../folders" }
+snapshot = { path = "../snapshot" }
+join = { path = "../join" }
+land = { path = "../land" }
+
+[[bin]]
+name = "mortar"
+path = "src/main.rs"
