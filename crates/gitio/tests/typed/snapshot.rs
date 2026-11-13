@@ -1,8 +1,8 @@
 use crate::fixture::{blob, commit, repo, set_ref, tree};
-use crate::support::TestRepo;
+use crate::support::GitRepo;
 use gitio::{Git, Oid, RunOpts};
 use std::fs;
-use std::os::unix::fs::PermissionsExt;
+use testkit::write_git_shim;
 use std::path::PathBuf;
 
 #[test]
@@ -79,12 +79,11 @@ fn failed_snapshot_removes_its_temp_index_and_preserves_the_real_index() {
     assert_eq!(fs::read(r.path.join(".git/index")).unwrap(), before);
 }
 
-fn traced_index(r: &TestRepo) -> (Git, PathBuf) {
+fn traced_index(r: &GitRepo) -> (Git, PathBuf) {
     // Observe the real temp-index path without changing process-global TMPDIR or mocking git.
     let shim = r.path.join(".git/observe-index.sh");
     let trace = r.path.join(".git/observed-index");
-    fs::write(&shim, b"#!/bin/sh\nset -eu\nprintf '%s' \"$GIT_INDEX_FILE\" > \"$MORTAR_TEST_INDEX_TRACE\"\nexec git \"$@\"\n").unwrap();
-    fs::set_permissions(&shim, fs::Permissions::from_mode(0o700)).unwrap();
+    write_git_shim(&shim, b"#!/bin/sh\nset -eu\nprintf '%s' \"$GIT_INDEX_FILE\" > \"$MORTAR_TEST_INDEX_TRACE\"\nexec git \"$@\"\n").unwrap();
     let mut git = r.git.clone();
     git.program = shim;
     git.env.push(("MORTAR_TEST_INDEX_TRACE".into(), trace.as_os_str().to_owned()));

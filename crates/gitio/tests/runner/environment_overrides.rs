@@ -1,12 +1,12 @@
-use crate::support::TestRepo;
+use crate::support::GitRepo;
 use gitio::RunOpts;
 use std::fs;
 
 #[test]
 fn git_run_applies_git_environment_then_per_run_overrides() {
     // Joins Git::new -> Git::run with real git's GIT_DIR/GIT_WORK_TREE selection.
-    let first = TestRepo::new();
-    let second = TestRepo::new();
+    let first = GitRepo::new();
+    let second = GitRepo::new();
     let mut git = first.git.clone();
     git.env.extend([
         ("GIT_DIR".into(), second.path.join(".git").into_os_string()),
@@ -29,7 +29,7 @@ fn git_run_applies_git_environment_then_per_run_overrides() {
 #[test]
 fn git_run_explicit_index_and_object_store_do_not_touch_defaults() {
     // Joins Git::run's env and stdin paths with git add, ls-files, hash-object and cat-file.
-    let repo = TestRepo::new();
+    let repo = GitRepo::new();
     fs::write(repo.path.join("tracked"), b"hello\n").unwrap();
     let alternate_index = repo.path.join("alternate-index");
     let index_opts = RunOpts {

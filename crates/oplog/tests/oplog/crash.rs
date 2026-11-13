@@ -11,7 +11,7 @@ fn killed_between_intent_and_transaction_recovers_failed_then_retry_moves_once()
     kill_apply(&f, "before");
     assert_open_intent(&f);
     assert_eq!(refs(&f), format!("refs/mortar/a {0}\nrefs/mortar/b {0}\n", f.objects[0]));
-    let closed = recover(&f.repo.git, &f.common).unwrap();
+    let closed = recover(&f.git, &f.common).unwrap();
     assert_eq!(closed.len(), 1);
     assert_eq!(closed[0].phase, OpPhase::Failed);
     assert_eq!(
@@ -24,12 +24,12 @@ fn killed_between_intent_and_transaction_recovers_failed_then_retry_moves_once()
         })
     );
     assert_eq!(read_op_log(&f.common).unwrap().records[1], closed[0]);
-    assert!(matches!(apply(&f.repo.git, &f.common, &op).unwrap(), ApplyOutcome::Done(_)));
+    assert!(matches!(apply(&f.git, &f.common, &op).unwrap(), ApplyOutcome::Done(_)));
     assert_eq!(refs(&f), format!("refs/mortar/a {0}\nrefs/mortar/b {0}\n", f.objects[1]));
     let bytes = fs::read(oplog_path(&f.common)).unwrap();
     assert_eq!(read_op_log(&f.common).unwrap().records.len(), 4);
-    assert!(matches!(apply(&f.repo.git, &f.common, &op).unwrap(), ApplyOutcome::Repeated(_)));
-    assert!(recover(&f.repo.git, &f.common).unwrap().is_empty());
+    assert!(matches!(apply(&f.git, &f.common, &op).unwrap(), ApplyOutcome::Repeated(_)));
+    assert!(recover(&f.git, &f.common).unwrap().is_empty());
     assert_eq!(fs::read(oplog_path(&f.common)).unwrap(), bytes);
 }
 
@@ -41,14 +41,14 @@ fn killed_after_transaction_before_done_recovers_done_and_repeat_appends_nothing
     kill_apply(&f, "after");
     assert_open_intent(&f);
     assert_eq!(refs(&f), format!("refs/mortar/a {0}\nrefs/mortar/b {0}\n", f.objects[1]));
-    let closed = recover(&f.repo.git, &f.common).unwrap();
+    let closed = recover(&f.git, &f.common).unwrap();
     assert_eq!(closed.len(), 1);
     assert_eq!(closed[0].phase, OpPhase::Done);
     assert_eq!(closed[0].result, Some(OpResult::Moved));
     assert_eq!(read_op_log(&f.common).unwrap().records[1], closed[0]);
     let bytes = fs::read(oplog_path(&f.common)).unwrap();
-    assert_eq!(apply(&f.repo.git, &f.common, &op).unwrap(), ApplyOutcome::Repeated(closed[0].clone()));
-    assert!(recover(&f.repo.git, &f.common).unwrap().is_empty());
+    assert_eq!(apply(&f.git, &f.common, &op).unwrap(), ApplyOutcome::Repeated(closed[0].clone()));
+    assert!(recover(&f.git, &f.common).unwrap().is_empty());
     assert_eq!(fs::read(oplog_path(&f.common)).unwrap(), bytes);
     assert_eq!(refs(&f), format!("refs/mortar/a {0}\nrefs/mortar/b {0}\n", f.objects[1]));
 }

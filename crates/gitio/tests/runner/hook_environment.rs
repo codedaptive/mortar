@@ -1,7 +1,7 @@
-use crate::support::TestRepo;
+use crate::support::GitRepo;
 use gitio::RunOpts;
 use std::fs;
-use std::process::Command;
+use testkit::test_child;
 
 const HOOK_VARS: [&str; 6] = [
     "GIT_DIR",
@@ -16,15 +16,9 @@ const HOOK_VARS: [&str; 6] = [
 fn git_run_scrubs_inherited_hook_environment_without_mutating_parent() {
     // Joins Git::new -> Git::run -> git repository discovery and trace2 startup.
     // Put the hook environment in a separate process: no set_var race with parallel tests.
-    let hook = TestRepo::new();
+    let hook = GitRepo::new();
     let poison = hook.path.join("HOOK_ENV_MUST_NOT_LEAK");
-    let mut child = Command::new(std::env::current_exe().unwrap());
-    child.args([
-        "--exact",
-        "hook_environment::hook_environment_child",
-        "--ignored",
-        "--nocapture",
-    ]);
+    let mut child = test_child("hook_environment::hook_environment_child").unwrap();
     for key in HOOK_VARS {
         child.env(key, &poison);
     }
@@ -46,7 +40,7 @@ fn hook_environment_child() {
     for key in HOOK_VARS {
         assert!(std::env::var_os(key).unwrap().to_string_lossy().contains("HOOK_ENV_MUST_NOT_LEAK"));
     }
-    let repo = TestRepo::new();
+    let repo = GitRepo::new();
     let trace = repo.path.join("trace.json");
     let tracked = format!("{},LC_ALL,GIT_TERMINAL_PROMPT,GIT_OPTIONAL_LOCKS,MORTAR_GITIO_TRACE_CONTROL", HOOK_VARS.join(","));
     let output = repo.git.run(&["rev-parse", "--show-toplevel"], &RunOpts {
