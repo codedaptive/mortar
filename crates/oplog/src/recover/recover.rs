@@ -1,12 +1,16 @@
 //! Settles every open intent in the op log: reads its refs, decides, appends the closing record.
 //! No unit test: it reads the log, runs git and appends to the log (S-5); the decisions are covered by
 //! open_intents_tests, decide_recovery_tests, recovery_close_tests and settled_or_first_error_tests.
-//! Nagatha's integration group, in a throwaway repository, should cover: an empty or missing log returns no records; an intent whose refs
-//! all moved gets a done/moved record, one whose refs never moved a failed/not-moved record, each read
-//! back by read_op_log; an intent already closed gets nothing; a mixed intent is OplogError::Mixed naming
-//! its op_id, key and refs, appends nothing for it, and the other open intents are still settled; a
-//! second recover after the first appends nothing; a kill between apply's transaction and its done
-//! append is settled as done.
+//! Nagatha's integration group, in a throwaway repository, should cover: an empty or missing log returns
+//! no records; an intent whose changing moves are all at new (unchanged moves never decide) gets a
+//! done/moved record, one with no changing ref at new a failed/not-moved record naming each ref and its
+//! actual value, each read back by read_op_log; an intent already closed gets nothing; a true mix (a
+//! changing ref at new beside a changing ref not at new) is OplogError::Mixed naming its op_id, key and
+//! refs, appends nothing for it, and the other open intents are still settled; a second recover after the
+//! first appends nothing; a kill between apply's transaction and its done append is settled as done; a
+//! kill after a Stale answer, then recover, is failed recording the actual values for an op that changes a
+//! ref, and done for one that changes none; an intent with a ref moved by a foreign actor to a third value
+//! and no changing ref at new is failed.
 
 use std::path::Path;
 

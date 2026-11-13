@@ -58,15 +58,31 @@ fn ref_move(out: &mut String, m: &RefMove) {
 fn op_result(out: &mut String, result: &OpResult) {
     match result {
         OpResult::Moved => out.push_str("{\"outcome\":\"moved\"}"),
-        OpResult::NotMoved => out.push_str("{\"outcome\":\"not-moved\"}"),
+        OpResult::NotMoved { refs } => {
+            out.push_str("{\"outcome\":\"not-moved\",\"refs\":[");
+            for (i, (refname, actual)) in refs.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                out.push('{');
+                ref_and_actual(out, refname, actual.as_ref());
+                out.push('}');
+            }
+            out.push_str("]}");
+        }
         OpResult::Stale { refname, actual } => {
             out.push_str("{\"outcome\":\"stale\",");
-            string_member(out, "ref", refname);
-            out.push_str(",\"actual\":");
-            optional_oid(out, actual.as_ref());
+            ref_and_actual(out, refname, actual.as_ref());
             out.push('}');
         }
     }
+}
+
+/// `"ref":"...","actual":"<hex>"|null`.
+fn ref_and_actual(out: &mut String, refname: &str, actual: Option<&Oid>) {
+    string_member(out, "ref", refname);
+    out.push_str(",\"actual\":");
+    optional_oid(out, actual);
 }
 
 /// `"name":"value"`, the value escaped.

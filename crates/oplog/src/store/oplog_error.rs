@@ -19,7 +19,8 @@ pub enum OplogError {
     },
     /// A git run failed.
     Git(GitError),
-    /// An open intent whose refs are neither all at new nor all at old: each move with the ref's actual value.
+    /// An open intent where some refs whose moves change something are at new and some are not: each move with
+    /// the ref's actual value.
     Mixed {
         op_id: String,
         key: String,

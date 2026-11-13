@@ -86,10 +86,24 @@ fn failed_stale_with_actual_and_absent() {
 }
 
 #[test]
-fn failed_not_moved() {
+fn failed_not_moved_with_no_refs() {
     assert_eq!(
-        encode_op_record(&record(OpPhase::Failed, Vec::new(), Some(OpResult::NotMoved))),
-        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[],"result":{"outcome":"not-moved"}}"#
+        encode_op_record(&record(OpPhase::Failed, Vec::new(), Some(OpResult::NotMoved { refs: Vec::new() }))),
+        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[],"result":{"outcome":"not-moved","refs":[]}}"#
+    );
+}
+
+#[test]
+fn failed_not_moved_with_two_refs_one_absent() {
+    let not_moved = OpResult::NotMoved {
+        refs: vec![
+            ("refs/heads/x".to_string(), Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))),
+            ("refs/heads/\"y\"".to_string(), None),
+        ],
+    };
+    assert_eq!(
+        encode_op_record(&record(OpPhase::Failed, one_move(), Some(not_moved))),
+        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"not-moved","refs":[{"ref":"refs/heads/x","actual":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},{"ref":"refs/heads/\"y\"","actual":null}]}}"#
     );
 }
 

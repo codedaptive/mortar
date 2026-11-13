@@ -1,4 +1,5 @@
-//! decide_recovery: all at new is done, all at old is failed, anything else is mixed with the actual values.
+//! decide_recovery: unchanged moves never decide; every changing move at new (or none to check) is done; no
+//! changing move at new is failed; some is mixed. Failed and mixed carry each move with its actual value.
 
 use gitio::Oid;
 
@@ -38,7 +39,13 @@ fn every_ref_at_old_is_failed() {
         (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
         (mv("refs/heads/main", Some(C), D), Some(oid(C))),
     ];
-    assert_eq!(decide_recovery(&refs), RecoveryDecision::Failed);
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Failed(vec![
+            (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
+            (mv("refs/heads/main", Some(C), D), Some(oid(C))),
+        ])
+    );
 }
 
 #[test]
@@ -57,20 +64,32 @@ fn one_at_new_one_at_old_is_mixed_with_actual_values() {
 }
 
 #[test]
-fn a_ref_at_neither_value_is_mixed() {
-    let refs = vec![(mv("refs/heads/landing", Some(A), B), Some(oid(C)))];
+fn a_ref_at_neither_value_with_none_at_new_is_failed() {
+    let refs = vec![
+        (mv("refs/heads/landing", Some(A), B), Some(oid(C))),
+        (mv("refs/heads/main", Some(C), D), Some(oid(C))),
+    ];
     assert_eq!(
         decide_recovery(&refs),
-        RecoveryDecision::Mixed(vec![(mv("refs/heads/landing", Some(A), B), Some(oid(C)))])
+        RecoveryDecision::Failed(vec![
+            (mv("refs/heads/landing", Some(A), B), Some(oid(C))),
+            (mv("refs/heads/main", Some(C), D), Some(oid(C))),
+        ])
     );
 }
 
 #[test]
-fn a_ref_absent_with_an_old_value_is_mixed() {
-    let refs = vec![(mv("refs/heads/landing", Some(A), B), None)];
+fn refs_absent_with_old_values_are_failed() {
+    let refs = vec![
+        (mv("refs/heads/landing", Some(A), B), None),
+        (mv("refs/heads/main", Some(C), D), None),
+    ];
     assert_eq!(
         decide_recovery(&refs),
-        RecoveryDecision::Mixed(vec![(mv("refs/heads/landing", Some(A), B), None)])
+        RecoveryDecision::Failed(vec![
+            (mv("refs/heads/landing", Some(A), B), None),
+            (mv("refs/heads/main", Some(C), D), None),
+        ])
     );
 }
 
@@ -83,13 +102,19 @@ fn a_delete_whose_ref_is_absent_is_done() {
 #[test]
 fn a_delete_whose_ref_still_holds_old_is_failed() {
     let refs = vec![(mv("refs/heads/topic", Some(A), ZERO), Some(oid(A)))];
-    assert_eq!(decide_recovery(&refs), RecoveryDecision::Failed);
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Failed(vec![(mv("refs/heads/topic", Some(A), ZERO), Some(oid(A)))])
+    );
 }
 
 #[test]
 fn a_create_whose_ref_is_absent_is_failed() {
     let refs = vec![(mv("refs/heads/topic", None, B), None)];
-    assert_eq!(decide_recovery(&refs), RecoveryDecision::Failed);
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Failed(vec![(mv("refs/heads/topic", None, B), None)])
+    );
 }
 
 #[test]
@@ -104,7 +129,108 @@ fn no_moves_is_done() {
 }
 
 #[test]
-fn old_equal_to_new_is_done() {
+fn an_unchanged_move_alone_is_done() {
     let refs = vec![(mv("refs/heads/landing", Some(A), A), Some(oid(A)))];
+    assert_eq!(decide_recovery(&refs), RecoveryDecision::Done);
+}
+
+#[test]
+fn an_unchanged_move_beside_a_ref_at_a_third_value_is_failed() {
+    let refs = vec![
+        (mv("refs/heads/landing", Some(A), A), Some(oid(A))),
+        (mv("refs/heads/main", Some(C), D), Some(oid(B))),
+    ];
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Failed(vec![
+            (mv("refs/heads/landing", Some(A), A), Some(oid(A))),
+            (mv("refs/heads/main", Some(C), D), Some(oid(B))),
+        ])
+    );
+}
+
+#[test]
+fn a_delete_of_an_absent_ref_beside_a_ref_at_a_third_value_is_failed() {
+    let refs = vec![
+        (mv("refs/heads/topic", None, ZERO), None),
+        (mv("refs/heads/main", Some(C), D), Some(oid(B))),
+    ];
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Failed(vec![
+            (mv("refs/heads/topic", None, ZERO), None),
+            (mv("refs/heads/main", Some(C), D), Some(oid(B))),
+        ])
+    );
+}
+
+#[test]
+fn a_changing_ref_at_new_beside_an_unchanged_move_and_a_ref_at_old_is_mixed() {
+    let refs = vec![
+        (mv("refs/heads/landing", Some(A), A), Some(oid(A))),
+        (mv("refs/heads/main", Some(C), D), Some(oid(D))),
+        (mv("refs/heads/topic", Some(B), C), Some(oid(B))),
+    ];
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Mixed(vec![
+            (mv("refs/heads/landing", Some(A), A), Some(oid(A))),
+            (mv("refs/heads/main", Some(C), D), Some(oid(D))),
+            (mv("refs/heads/topic", Some(B), C), Some(oid(B))),
+        ])
+    );
+}
+
+#[test]
+fn case_1_changing_move_at_new_beside_unchanged_ref_moved_elsewhere_is_done() {
+    let refs = vec![
+        (mv("refs/heads/landing", Some(A), B), Some(oid(B))),
+        (mv("refs/heads/main", Some(C), C), Some(oid(D))),
+    ];
+    assert_eq!(decide_recovery(&refs), RecoveryDecision::Done);
+}
+
+#[test]
+fn case_2_only_an_unchanged_ref_moved_elsewhere_is_done() {
+    let refs = vec![(mv("refs/heads/main", Some(C), C), Some(oid(D)))];
+    assert_eq!(decide_recovery(&refs), RecoveryDecision::Done);
+}
+
+#[test]
+fn kongs_example_changing_move_at_old_beside_unchanged_ref_is_failed() {
+    let refs = vec![
+        (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
+        (mv("refs/heads/main", Some(C), C), Some(oid(C))),
+    ];
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Failed(vec![
+            (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
+            (mv("refs/heads/main", Some(C), C), Some(oid(C))),
+        ])
+    );
+}
+
+#[test]
+fn kongs_example_changing_move_still_at_old_beside_unchanged_ref_moved_elsewhere_is_failed() {
+    let refs = vec![
+        (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
+        (mv("refs/heads/main", Some(C), C), Some(oid(D))),
+    ];
+    assert_eq!(
+        decide_recovery(&refs),
+        RecoveryDecision::Failed(vec![
+            (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
+            (mv("refs/heads/main", Some(C), C), Some(oid(D))),
+        ])
+    );
+}
+
+#[test]
+fn an_unchanged_delete_whose_ref_now_holds_an_oid_beside_a_changing_move_at_new_is_done() {
+    let refs = vec![
+        (mv("refs/heads/topic", None, ZERO), Some(oid(D))),
+        (mv("refs/heads/landing", Some(A), B), Some(oid(B))),
+    ];
     assert_eq!(decide_recovery(&refs), RecoveryDecision::Done);
 }

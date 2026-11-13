@@ -7,7 +7,7 @@ fn rec(op_id: &str, phase: OpPhase) -> OpRecord {
     let result = match phase {
         OpPhase::Intent => None,
         OpPhase::Done => Some(OpResult::Moved),
-        OpPhase::Failed => Some(OpResult::NotMoved),
+        OpPhase::Failed => Some(OpResult::NotMoved { refs: Vec::new() }),
     };
     OpRecord {
         op_id: op_id.to_string(),

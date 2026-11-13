@@ -4,7 +4,7 @@
 use gitio::Oid;
 
 /// JSON `{"outcome": "moved"}`, `{"outcome": "stale", "ref": "...", "actual": "<hex>"|null}` or
-/// `{"outcome": "not-moved"}`.
+/// `{"outcome": "not-moved", "refs": [{"ref": "...", "actual": "<hex>"|null}, ...]}`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum OpResult {
     /// Every ref moved to its new value.
@@ -14,6 +14,7 @@ pub enum OpResult {
         refname: String,
         actual: Option<Oid>,
     },
-    /// Recovery found every ref at its old value: nothing moved.
-    NotMoved,
+    /// Recovery found that the op's transaction never ran: each planned ref, in move order, with what it
+    /// held (None: the ref was absent). The old values are in the record's moves.
+    NotMoved { refs: Vec<(String, Option<Oid>)> },
 }

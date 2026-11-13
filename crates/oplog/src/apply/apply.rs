@@ -7,7 +7,9 @@
 //! OplogError::BadMove before anything is written; a stale expected value moves nothing and leaves an intent
 //! then a failed record naming the ref and its actual value (absent: null); an op with no moves closes done;
 //! an all-zero new deletes the ref; a git failure in the transaction returns OplogError::Git with the intent
-//! left open; an error reading the refused ref after a stale refusal returns that error with the intent open.
+//! left open; an error reading the refused ref after a stale refusal returns that error with the intent open;
+//! a kill after Stale, then recover, closes an op that changes a ref as failed recording each ref's actual
+//! value, and an op that changes no ref as done.
 
 use std::path::Path;
 
@@ -26,10 +28,12 @@ use crate::store::{append_op_record, intent_record, read_op_log, read_ref_value,
 /// or holds a NUL returns BadMove before the intent is written, so nothing is left open.
 ///
 /// The transaction runs even with no moves: git accepts an empty one. A git error in the transaction returns
-/// with the intent open, and recover settles it from the refs: done if they all moved, failed if none did.
-/// An error reading the refused ref after Stale also returns with the intent open; recover then refuses it as
-/// Mixed, naming the op and its refs, since that ref is not at its old value; if another actor has already
-/// set it to its new value and every other ref is at new too, recover closes the op as done instead.
+/// with the intent open, and recover settles it from the refs: done if every ref the op changes is at new,
+/// failed if no ref the op changes is.
+/// An error reading the refused ref after Stale also returns with the intent open; recover then closes it as
+/// done when the op changes no ref; otherwise as failed, recording each ref's actual value, unless a ref the
+/// op changes already holds its new value: then done when every ref the op changes is at new, and refused as
+/// Mixed otherwise.
 pub fn apply(git: &Git, common: &Path, op: &Op) -> Result<ApplyOutcome, OplogError> {
     if let Some(done) = find_done_record(&read_op_log(common)?.records, &op.key) {
         return Ok(ApplyOutcome::Repeated(done.clone()));

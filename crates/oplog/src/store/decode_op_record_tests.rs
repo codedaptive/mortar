@@ -41,7 +41,13 @@ fn round_trips_many_records() {
     let results = [
         None,
         Some(OpResult::Moved),
-        Some(OpResult::NotMoved),
+        Some(OpResult::NotMoved { refs: Vec::new() }),
+        Some(OpResult::NotMoved {
+            refs: vec![
+                ("refs/heads/a".to_string(), Some(oid("cccccccccccccccccccccccccccccccccccccccc"))),
+                ("refs/heads/\"q\"".to_string(), None),
+            ],
+        }),
         Some(OpResult::Stale { refname: "refs/heads/x".to_string(), actual: Some(oid("cccccccccccccccccccccccccccccccccccccccc")) }),
         Some(OpResult::Stale { refname: "refs/heads/\"q\"".to_string(), actual: None }),
     ];
@@ -88,7 +94,7 @@ fn round_trips_many_records() {
             }
         }
     }
-    assert_eq!(count, 270);
+    assert_eq!(count, 324);
 }
 
 fn reason_of(line: &str) -> String {
