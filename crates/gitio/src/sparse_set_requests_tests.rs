@@ -68,3 +68,11 @@ fn nul_in_path_is_refused_naming_it() {
     assert_eq!(err.code, None);
     assert_eq!(err.stderr, "sparse path holds a NUL: \"a\\0b\"");
 }
+
+#[test]
+fn line_break_in_path_is_refused_naming_it() {
+    let err = sparse_set_requests(Path::new("/tmp/c/wt1"), &paths(&["a\nb"])).unwrap_err();
+    assert_eq!(err.code, None);
+    assert!(err.args.is_empty());
+    assert_eq!(err.stderr, "sparse path holds a line break: \"a\\nb\"");
+}
