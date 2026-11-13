@@ -7,6 +7,7 @@ mod decode_op_line;
 mod decode_op_log;
 mod decode_op_record;
 mod decode_op_result;
+mod decode_ref_actual;
 mod decode_ref_move;
 mod encode_op_record;
 mod intent_record;
@@ -46,6 +47,8 @@ mod decode_op_log_tests;
 mod decode_op_record_tests;
 #[cfg(test)]
 mod decode_op_result_tests;
+#[cfg(test)]
+mod decode_ref_actual_tests;
 #[cfg(test)]
 mod decode_ref_move_tests;
 #[cfg(test)]
@@ -98,6 +101,7 @@ pub use unix_now::unix_now;
 
 pub(crate) use decode_op_line::decode_op_line;
 pub(crate) use decode_op_result::decode_op_result;
+pub(crate) use decode_ref_actual::decode_ref_actual;
 pub(crate) use decode_ref_move::decode_ref_move;
 pub(crate) use json_error::JsonError;
 pub(crate) use json_value::JsonValue;

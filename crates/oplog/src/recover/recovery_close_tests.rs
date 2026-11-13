@@ -52,9 +52,32 @@ fn done_closes_as_done_moved() {
 }
 
 #[test]
-fn failed_closes_as_failed_not_moved() {
-    let r = recovery_close(&intent(), RecoveryDecision::Failed, 1763030999).unwrap();
-    assert_eq!(r, closed(OpPhase::Failed, OpResult::NotMoved));
+fn failed_closes_as_failed_not_moved_with_each_ref_and_its_actual_value() {
+    let main_move = RefMove {
+        refname: "refs/heads/main".to_string(),
+        old: Some(oid("cccccccccccccccccccccccccccccccccccccccc")),
+        new: oid("dddddddddddddddddddddddddddddddddddddddd"),
+    };
+    let refs = vec![
+        (landing_move(), Some(oid("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"))),
+        (main_move, None),
+    ];
+    let r = recovery_close(&intent(), RecoveryDecision::Failed(refs), 1763030999).unwrap();
+    assert_eq!(
+        r,
+        closed(
+            OpPhase::Failed,
+            OpResult::NotMoved {
+                refs: vec![
+                    (
+                        "refs/heads/landing".to_string(),
+                        Some(oid("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"))
+                    ),
+                    ("refs/heads/main".to_string(), None),
+                ]
+            }
+        )
+    );
 }
 
 #[test]

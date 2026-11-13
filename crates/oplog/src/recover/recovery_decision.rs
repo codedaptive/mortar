@@ -8,10 +8,13 @@ use crate::store::RefMove;
 /// The verdict on one open intent.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RecoveryDecision {
-    /// Every ref is at its new value: the transaction ran.
+    /// Every ref whose move changes something is at its new value, or no move changes anything: nothing is
+    /// left to do.
     Done,
-    /// Every ref is at its old value: nothing moved.
-    Failed,
-    /// The refs are neither all at new nor all at old: each planned move with the ref's actual value.
+    /// No ref whose move changes something is at its new value, so nothing moved: each planned move with
+    /// the ref's actual value.
+    Failed(Vec<(RefMove, Option<Oid>)>),
+    /// A ref whose move changes something is at its new value beside another such ref that is not: each
+    /// planned move with the ref's actual value.
     Mixed(Vec<(RefMove, Option<Oid>)>),
 }
