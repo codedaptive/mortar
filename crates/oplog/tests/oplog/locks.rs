@@ -5,6 +5,7 @@ use oplog::{
 };
 use std::fs;
 use std::process::Command;
+use testkit::test_child;
 use std::sync::Barrier;
 
 #[test]
@@ -44,8 +45,7 @@ fn acquire_fresh_directory_refuses_live_holder_then_release_removes_file() {
 fn dead_process_lock_is_taken_over_and_previous_holder_cannot_release_it() {
     // Joins real process exit -> KillPidProbe -> acquire_lock's stale takeover -> release_lock ownership.
     let f = Fixture::new();
-    let child = Command::new(std::env::current_exe().unwrap())
-        .args(["--exact", "locks::dead_holder_worker", "--ignored", "--nocapture"])
+    let child = test_child("locks::dead_holder_worker").unwrap()
         .env("MORTAR_TEST_LOCK_REPO", &f.repo.path)
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())

@@ -1,7 +1,7 @@
-use crate::support::TestRepo;
+use crate::support::GitRepo;
 
-pub fn repo() -> TestRepo {
-    let mut repo = TestRepo::new();
+pub fn repo() -> GitRepo {
+    let mut repo = GitRepo::new();
     // Deterministic fixture commits; explicit Person arguments still override these defaults.
     repo.git.env.extend([
         ("GIT_AUTHOR_NAME".into(), "Fixture Author".into()),

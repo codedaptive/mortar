@@ -1,11 +1,11 @@
-use crate::support::TestRepo;
+use crate::support::GitRepo;
 use gitio::RunOpts;
 use std::fs;
 
 #[test]
 fn git_run_preserves_diff_answer_and_rejects_other_codes() {
     // Joins Git::new -> Git::run -> real git diff's exit-code and output protocol.
-    let repo = TestRepo::new();
+    let repo = GitRepo::new();
     fs::write(repo.path.join("left"), b"before\n").unwrap();
     fs::write(repo.path.join("right"), b"after\n").unwrap();
     let args = ["diff", "--no-index", "--no-color", "--", "left", "right"];

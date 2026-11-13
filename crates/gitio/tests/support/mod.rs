@@ -1,5 +1,5 @@
-mod test_repo;
-mod test_repo_drop;
-mod test_repo_new;
+mod git_repo;
+mod git_repo_deref;
+mod git_repo_new;
 
-pub use test_repo::TestRepo;
+pub use git_repo::GitRepo;

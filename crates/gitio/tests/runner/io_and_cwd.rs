@@ -1,11 +1,11 @@
-use crate::support::TestRepo;
+use crate::support::GitRepo;
 use gitio::RunOpts;
 use std::fs;
 
 #[test]
 fn git_run_round_trips_stdin_and_passes_literal_arguments() {
     // Joins Git::run's argument/stdin construction with git hash-object and cat-file.
-    let repo = TestRepo::new();
+    let repo = GitRepo::new();
     let output = repo.git.run(&["hash-object", "-w", "--stdin"], &RunOpts {
         stdin: Some(b"hello\n".to_vec()),
         ..RunOpts::default()
@@ -28,8 +28,8 @@ fn git_run_round_trips_stdin_and_passes_literal_arguments() {
 #[test]
 fn git_run_cwd_override_selects_another_real_repository() {
     // Joins Git::new -> Git::run with git's -C repository selection.
-    let first = TestRepo::new();
-    let second = TestRepo::new();
+    let first = GitRepo::new();
+    let second = GitRepo::new();
     for (cwd, expected) in [(None, &first.path), (Some(second.path.clone()), &second.path)] {
         let output = first.git.run(&["rev-parse", "--show-toplevel"], &RunOpts {
             cwd,
@@ -43,9 +43,9 @@ fn git_run_cwd_override_selects_another_real_repository() {
 
 #[test]
 fn test_repo_removes_its_repository_on_drop() {
-    // Joins TestRepo::new -> Git::run (git init) -> TestRepo::drop.
+    // Joins the GitRepo adapter -> testkit::TestRepo init and automatic directory cleanup.
     let path = {
-        let repo = TestRepo::new();
+        let repo = GitRepo::new();
         assert!(repo.path.join(".git/HEAD").is_file());
         repo.path.clone()
     };

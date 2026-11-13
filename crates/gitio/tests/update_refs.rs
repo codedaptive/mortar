@@ -5,11 +5,11 @@
 mod support;
 
 use gitio::{Oid, RefUpdate, RunOpts, UpdateRefsOutcome};
-use support::TestRepo;
+use support::GitRepo;
 
 #[test]
 fn clean_multi_ref_transaction_moves_every_ref_to_its_requested_value() {
-    let repo = TestRepo::new();
+    let repo = GitRepo::new();
     let [first, second, third] = commits(&repo);
     seed_ref(&repo, "refs/heads/a", &first);
     seed_ref(&repo, "refs/heads/b", &second);
@@ -47,7 +47,7 @@ fn stale_expected_value_names_the_ref_and_moves_nothing() {
         ("already exists", Some(0), None),
         ("missing ref", None, Some(0)),
     ] {
-        let repo = TestRepo::new();
+        let repo = GitRepo::new();
         let objects = commits(&repo);
         seed_ref(&repo, "refs/heads/a-good", &objects[0]);
         if let Some(index) = actual {
@@ -88,7 +88,7 @@ fn stale_expected_value_names_the_ref_and_moves_nothing() {
     }
 }
 
-fn commits(repo: &TestRepo) -> [Oid; 3] {
+fn commits(repo: &GitRepo) -> [Oid; 3] {
     let tree = repo.git.run(&["mktree"], &RunOpts::default()).unwrap();
     let tree = String::from_utf8(tree.stdout).unwrap();
     ["first\n", "second\n", "third\n"].map(|message| {
@@ -108,11 +108,11 @@ fn commits(repo: &TestRepo) -> [Oid; 3] {
     })
 }
 
-fn seed_ref(repo: &TestRepo, name: &str, oid: &Oid) {
+fn seed_ref(repo: &GitRepo, name: &str, oid: &Oid) {
     repo.git.run(&["update-ref", name, oid.as_str()], &RunOpts::default()).unwrap();
 }
 
-fn heads(repo: &TestRepo) -> String {
+fn heads(repo: &GitRepo) -> String {
     let output = repo.git.run(
         &["for-each-ref", "--sort=refname", "--format=%(refname) %(objectname)", "refs/heads/"],
         &RunOpts { read_only: true, ..RunOpts::default() },

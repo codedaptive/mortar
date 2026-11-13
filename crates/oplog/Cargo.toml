@@ -6,3 +6,6 @@ publish.workspace = true
 
 [dependencies]
 gitio = { path = "../gitio" }
+
+[dev-dependencies]
+testkit = { path = "../testkit" }

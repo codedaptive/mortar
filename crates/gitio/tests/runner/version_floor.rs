@@ -1,10 +1,10 @@
-use crate::support::TestRepo;
+use crate::support::GitRepo;
 use gitio::{RunOpts, Version};
 
 #[test]
 fn git_version_joins_real_output_to_parser_and_floor() {
     // Joins Git::run -> Git::version -> Version::parse -> Version::require_floor.
-    let repo = TestRepo::new();
+    let repo = GitRepo::new();
     let installed = repo.git.version().unwrap();
     let raw = repo.git.run(&["version"], &RunOpts {
         read_only: true,
