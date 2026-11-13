@@ -26,7 +26,7 @@ pub enum OplogError {
         key: String,
         refs: Vec<(RefMove, Option<Oid>)>,
     },
-    /// An op with a move whose ref name is empty or holds a NUL, found before anything is written: the ref
-    /// and why.
+    /// An op with a move whose ref name is empty, holds a NUL, is not a full refs/ name, or is refused by git
+    /// check-ref-format, found before anything is written: the ref and why.
     BadMove { refname: String, reason: String },
 }

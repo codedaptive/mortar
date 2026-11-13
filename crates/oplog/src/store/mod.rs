@@ -30,7 +30,6 @@ mod parse_json_string;
 mod read_op_log;
 mod read_ref_value;
 mod ref_move;
-mod ref_value_from_output;
 mod take_oid;
 mod take_optional_oid;
 mod take_string;
@@ -70,8 +69,6 @@ mod parse_json_string_tests;
 #[cfg(test)]
 mod parse_json_tests;
 #[cfg(test)]
-mod ref_value_from_output_tests;
-#[cfg(test)]
 mod take_oid_tests;
 #[cfg(test)]
 mod take_optional_oid_tests;
@@ -96,7 +93,6 @@ pub use oplog_path::oplog_path;
 pub use read_op_log::read_op_log;
 pub use read_ref_value::read_ref_value;
 pub use ref_move::RefMove;
-pub use ref_value_from_output::ref_value_from_output;
 pub use unix_now::unix_now;
 
 pub(crate) use decode_op_line::decode_op_line;
