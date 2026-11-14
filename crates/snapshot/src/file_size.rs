@@ -5,10 +5,19 @@
 //! tests/snapshot/caps.rs::new_six_mib_file_is_reported_but_large_changed_head_file_is_kept, 8 bytes in
 //! caps.rs::caller_cap_is_inclusive_and_refused_glob_name_excludes_only_that_path, 4 bytes in
 //! caps.rs::new_against_head_file_that_grows_or_is_renamed_over_cap_drops_from_next_snapshot.
-//! A deleted path giving None is covered only as a snapshot that succeeds with one:
-//! tests/snapshot/formatter_paths.rs::formatter_gets_only_regular_saved_nonconflicted_changes_not_deleted_refused_excluded_links_or_submodules.
-//! Not yet covered by an integration test: a symlink gives its own length, not its target's; a path under a file and a
-//! directory give None.
+//! A deleted path and a path under a file are covered only as a snapshot that succeeds with one (no FileSize), not as
+//! None itself, because those paths are in HEAD: a deleted path in
+//! tests/snapshot/formatter_paths.rs::formatter_gets_only_regular_saved_nonconflicted_changes_not_deleted_refused_excluded_links_or_submodules
+//! and, at a zero cap with the path gone from the tree, in
+//! tests/snapshot/sizing_edges.rs::deleted_changed_path_is_not_a_size_refusal_even_at_zero_cap; a path under a file (a
+//! HEAD directory's old children once a file of its name replaced it) in
+//! sizing_edges.rs::over_cap_file_replacing_head_directory_is_refused_without_resurrecting_old_children.
+//! A symlink gives its own length, not its target's: sizing_edges.rs::symlink_cap_uses_its_own_eleven_byte_length_not_sixty_four_byte_target
+//! (its 11 bytes are refused at a cap of 10 and kept at 11, beside a 64-byte target).
+//! A directory gives None, shown for a new gitlink only (it is not refused at a zero cap):
+//! sizing_edges.rs::new_gitlink_directory_is_not_treated_as_a_file_or_refused_at_zero_cap.
+//! Another read error gives FileSize: sizing_edges.rs::real_metadata_symlink_loop_is_file_size_error_before_commit_ref_or_log_and_retry_preserves_work
+//! (an ELOOP).
 
 use crate::candidate_size::candidate_size;
 use crate::SnapshotError;

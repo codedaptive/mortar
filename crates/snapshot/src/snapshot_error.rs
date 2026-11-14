@@ -1,10 +1,16 @@
 //! SnapshotError: why a snapshot or a save did not happen. A declaration only; snapshot_ref_name_tests exercises
 //! BadTarget, snapshot_from_apply_tests OpRepeated and RefMoved, capped_excludes_tests PathNotUtf8, save_head_tests
 //! UnbornHead and DetachedHead, save_message_tests BadSentence, save_change_id_tests ChangeIdMissing, and
-//! save_from_apply_tests OpRepeated and BranchMoved. Nagatha's integration test
-//! tests/snapshot/race.rs::foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or_files gets
-//! RefMoved through snapshot. FileSize, CapMismatch, ChangeId and IndexNotSet come only from I/O, and Trailers from
-//! I/O or a malformed Mortar-Change-Id in HEAD's message; none is yet covered by an integration test.
+//! save_from_apply_tests OpRepeated and BranchMoved. Nagatha's integration tests get, through snapshot: RefMoved in
+//! tests/snapshot/race.rs::foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or_files;
+//! FileSize (an ELOOP) in
+//! tests/snapshot/sizing_edges.rs::real_metadata_symlink_loop_is_file_size_error_before_commit_ref_or_log_and_retry_preserves_work;
+//! CapMismatch, also through is_saved, in
+//! sizing_edges.rs::caller_noglob_environment_produces_exact_cap_mismatch_without_losing_previous_snapshot;
+//! UnbornHead, also through is_saved, in
+//! sizing_edges.rs::unborn_head_is_named_before_any_snapshot_commit_ref_or_op.
+//! ChangeId and IndexNotSet come only from I/O, and Trailers from I/O or a malformed Mortar-Change-Id in HEAD's
+//! message; none is yet covered by an integration test.
 
 use gitio::Oid;
 use std::path::PathBuf;
