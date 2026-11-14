@@ -1,5 +1,5 @@
-//! SaveOutcome: what a save call left behind. A declaration only; no unit test builds it (S-7), and Nagatha's
-//! integration tests of save are not yet written (save's header lists their cases).
+//! SaveOutcome: what a save call left behind. A declaration only; no unit test builds it (S-7). Nagatha's save
+//! integration tests read it in tests/snapshot/save_cases.rs and save_repair.rs (save's header lists their cases).
 
 use crate::RefusedFile;
 use gitio::Oid;
