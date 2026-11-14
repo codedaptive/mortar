@@ -1,4 +1,4 @@
-//! Who a verb acts as: an agent verb's request, or a harness verb's --actor.
+//! Who a verb acts as: an agent verb's request, a harness verb's --actor, or "git" for a hook verb.
 
 use folders::FolderRecord;
 
@@ -8,7 +8,8 @@ use crate::report::{ExitCode, Report};
 /// Agent verbs act as "<zone>/<request>" from the folder record and refuse --actor (usage, exit 4). A zone
 /// folder is refused (exit 1) naming its kind and zone (S-81); no record is refused (exit 1) as not a Mortar
 /// folder; both say to run the verb in a request folder. Harness verbs act as --actor, which they require (usage,
-/// exit 4). A usage report's next step is `verb`'s own usage line.
+/// exit 4). Hook verbs, run by git, act as "git" and refuse --actor (usage, exit 4). A usage report's next step is
+/// `verb`'s own usage line.
 pub fn actor_for(verb: &VerbSpec, record: Option<&FolderRecord>, flag: Option<&str>) -> Result<String, Report> {
     let usage = |reason: &str| Report {
         next: verb.usage.to_string(),
@@ -26,6 +27,8 @@ pub fn actor_for(verb: &VerbSpec, record: Option<&FolderRecord>, flag: Option<&s
         },
         (VerbKind::Harness, Some(actor)) if !actor.is_empty() => Ok(actor.to_string()),
         (VerbKind::Harness, _) => Err(usage("--actor <name> is required")),
+        (VerbKind::Hook, None) => Ok("git".to_string()),
+        (VerbKind::Hook, Some(_)) => Err(usage("hook verbs are run by git and take no --actor")),
     }
 }
 

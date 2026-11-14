@@ -1,7 +1,7 @@
 //! The op key a verb passes to the op log and the lock (spec: Operation key).
 //! save's key goes to the lock holder only (S-90).
-//! Shell API: `mortar join` (run_join) and `mortar save` (run_save) call it, and so will each later verb that
-//! moves a ref.
+//! Shell API: `mortar join` (run_join), `mortar need` (run_need) and `mortar save` (run_save) call it, and so will
+//! each later verb that moves a ref.
 
 use std::path::Path;
 

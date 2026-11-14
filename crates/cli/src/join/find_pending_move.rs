@@ -1,13 +1,12 @@
 //! The detector of the folder move of a request's last rebase, which a kill may have left undone (S-86);
-//! join and resolve finish the move; status, when built, only reports it (S-85).
+//! join and resolve finish the move; status only reports it, and only while the folder's index is not at the new tip
+//! (read_stalled_move, S-85, S-97).
 
+use ::join::FOLDER_TREE;
 use gitio::Oid;
 use oplog::{OpPhase, ValuedRecord};
 
 use super::PendingMove;
-
-/// The value name S-89(2) fixes, under which join records the folder_tree on a resolve's final join-rebase op.
-const FOLDER_TREE: &str = "folder_tree";
 
 /// The last Done record in `records` (log order) holding a move of `request_ref` that changes it decides. Intent
 /// and Failed records moved nothing and are skipped; recover has settled open intents before this is read.

@@ -7,7 +7,8 @@
 //! outside a Mortar folder is refused, exit 1 (with `mortar join`); a verb that needs the config is refused without
 //! one, exit 1, next "mortar init", and outside any git repository is refused, exit 1, outcome "not-a-folder" for an
 //! agent verb (`mortar join`) and "not-a-repository" for a harness verb that needs the config (with the first such
-//! verb); every report names its verb ("" when none was read).
+//! verb); `mortar guard-hook` runs in any repository with no folder and no --actor, and --actor with it is exit 4;
+//! every report names its verb ("" when none was read).
 
 use std::path::Path;
 
@@ -17,11 +18,14 @@ use super::{load_config, ShellContext};
 use crate::args::{parse_args, usage_report, ParsedArgs, VerbKind};
 use crate::config::protected_refs;
 use crate::context::{actor_for, context_report, read_folder_context, repository_error, repository_report};
+use crate::guard_hook::run_guard_hook;
 use crate::init::run_init;
 use crate::join::run_join;
+use crate::need::run_need;
 use crate::report::{failure_report, Report};
 use crate::resolve::run_resolve;
 use crate::save::run_save;
+use crate::status::run_status;
 
 /// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. Agent verbs
 /// read their folder first; every verb then gets its actor; verbs that need the config load it and the
@@ -41,7 +45,7 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
     let verb = args.verb.name;
     let folder = match args.verb.kind {
         VerbKind::Agent => Some(read_folder_context(cwd).map_err(|error| context_report(verb, &error))?),
-        VerbKind::Harness => None,
+        VerbKind::Harness | VerbKind::Hook => None,
     };
     let actor = actor_for(args.verb, folder.as_ref().map(|f| &f.record), args.actor.as_deref())?;
     let config = match (args.verb.needs_config, &folder) {
@@ -59,10 +63,13 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
 
 fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
     match context.args.verb.name {
+        "guard-hook" => run_guard_hook(context, cwd),
         "init" => run_init(&context.args, cwd),
         "join" => run_join(context),
+        "need" => run_need(context),
         "resolve" => run_resolve(context),
         "save" => run_save(context),
+        "status" => run_status(context),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
     }
 }
