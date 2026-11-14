@@ -1,12 +1,12 @@
 //! saved_state: whether a folder's files equal the target's last snapshot, with the files the size cap refused.
 //! No unit test: it only runs git, reads file sizes and composes decide_snapshot and folder_tree's cap decisions
 //! (cap_candidates, cap_refusals, capped_excludes, cap_mismatch), which have their own tests (S-5). is_saved's
-//! integration tests reach it through is_saved (is_saved.rs names them).
-//! Not yet covered by an integration test (Nagatha's):
-//! - saved with a refused file listed: a folder whose only change is a new over-cap file gives saved true, and
-//!   refused names that file with its size and the cap;
-//! - not saved, with refused still listed;
-//! - no snapshot yet: saved false.
+//! integration tests reach it through is_saved (is_saved.rs names them), and directly in
+//! tests/snapshot/saved_state_cases.rs::saved_state_tracks_the_snapshot_ref_and_lists_the_refused_new_file_without_moving_ref_or_log:
+//! - no snapshot yet: saved false;
+//! - saved true after a snapshot;
+//! - a new over-cap file: saved true, and refused names that file with its size and the cap;
+//! - a change: saved false, with refused still listed.
 
 use crate::decide_snapshot::decide_snapshot;
 use crate::folder_tree::folder_tree;

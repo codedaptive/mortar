@@ -19,8 +19,11 @@
 //! tests/snapshot/save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement);
 //! BranchMoved in
 //! tests/snapshot/save_race.rs::branch_moved_during_save_is_named_without_overwriting_foreign_head_index_work_or_caller_lock.
-//! ChangeId comes only from I/O and is not covered by an integration test, nor are BadTarget, PathNotUtf8 and
-//! OpRepeated.
+//! ChangeId comes only from new_change_id's I/O in save and no integration test reaches it there (its Display is in
+//! tests/snapshot_display_rit.rs::rit_change_id_variant_keeps_oplogs_quoted_bad_text_and_reason_after_snapshot_prefix);
+//! PathNotUtf8 and OpRepeated have no integration test.
+//! BadTarget (attempt 0, through snapshot and saved_state) is in
+//! tests/snapshot/saved_state_cases.rs::attempt_zero_is_bad_target_for_snapshot_and_saved_state_before_any_ref_log_or_file_write.
 
 use gitio::Oid;
 use std::path::PathBuf;
