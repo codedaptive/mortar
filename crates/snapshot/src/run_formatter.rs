@@ -2,14 +2,14 @@
 //! No unit test: it runs git and the formatter, and holds no decision of its own (S-5); formatter_paths,
 //! formatter_argv, decide_formatter_wait and decide_formatter_result are its decisions and have their tests;
 //! run_formatter_child is the formatter's process I/O.
-//! Nagatha's integration group should cover, in a throwaway repository: a formatter that rewrites a changed file:
-//! the snapshot tree holds the formatted contents and formatted lists Formatted with the paths; a formatter exiting
-//! 1: the snapshot is written and formatted lists Failed with code 1 and its stderr; a missing program: SpawnFailed,
-//! the snapshot is written; the timeout cases run_formatter_child's header lists (a formatter still running at its
-//! timeout is listed TimedOut and the snapshot is written); a deleted file, a refused 6 MB new file, a file under
-//! target/, a caller-excluded file, a conflicted path, a symlink and a submodule directory among the changes are not
-//! passed; a clean folder runs nothing (formatted None); no formatter runs no git status and gives formatted None;
-//! is_saved never runs the formatter.
+//! Nagatha's integration tests cover it, in a throwaway repository. tests/snapshot/formatter.rs: a formatter that
+//! rewrites a changed file (the snapshot tree holds the formatted contents, formatted lists Formatted with the paths),
+//! one exiting 1 (Failed with code 1 and its stderr, snapshot written), a missing program (SpawnFailed, snapshot
+//! written), a clean folder (runs nothing, formatted None), no formatter (no git status, formatted None), and
+//! is_saved never running the formatter. tests/snapshot/formatter_paths.rs: a deleted file, a refused 6 MB new file, a
+//! file under target/, a caller-excluded file, a conflicted path, a symlink and a submodule directory among the
+//! changes are not passed. tests/snapshot/formatter_timeout.rs: the cases run_formatter_child's header lists; its
+//! process-group cases (S-37) are still to be written.
 
 use crate::decide_formatter_result::decide_formatter_result;
 use crate::folder_tree::folder_tree;
