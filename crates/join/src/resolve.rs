@@ -33,6 +33,7 @@ use crate::after_replay_step::AfterReplayStep;
 use crate::continue_replay::continue_replay;
 use crate::decide_resolve::decide_resolve;
 use crate::join_state::JoinState;
+use crate::join_state_path::join_state_path;
 use crate::op_applied::op_applied;
 use crate::pause::pause;
 use crate::read_join_state::read_join_state;
@@ -58,7 +59,7 @@ use std::path::Path;
 /// the pause is StateStale, and the state is kept.
 pub fn resolve(git: &Git, folder: &Path, tree: &Oid, actor: &str) -> Result<JoinAnswer, JoinRunError> {
     let git_dir = git.git_dir(folder).map_err(JoinRunError::Git)?;
-    let path = git_dir.join("mortar-join.json");
+    let path = join_state_path(&git_dir);
     let state = read_join_state(&path)?;
     let request_now = match &state {
         Some(state) => git.read_ref(&state.request_ref).map_err(JoinRunError::Git)?,

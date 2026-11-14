@@ -25,6 +25,7 @@ mod join_read;
 mod join_run_error;
 mod join_run_error_display;
 mod join_state;
+mod join_state_path;
 mod marked_file;
 mod marked_lines;
 mod op_applied;
@@ -33,6 +34,8 @@ mod overlap;
 mod overlap_pair;
 mod pair_overlaps;
 mod pause;
+mod paused_join;
+mod paused_join_type;
 mod read_git_replay;
 mod read_join_state;
 mod read_marked_files;
@@ -62,6 +65,8 @@ pub use marked_file::MarkedFile;
 pub use open_request::OpenRequest;
 pub use overlap::overlap;
 pub use overlap_pair::OverlapPair;
+pub use paused_join::paused_join;
+pub use paused_join_type::PausedJoin;
 pub use replay::replay;
 pub use replay_result::ReplayResult;
 pub use resolve::resolve;
@@ -94,6 +99,8 @@ mod join_error_display_tests;
 mod join_error_from_git_tests;
 #[cfg(test)]
 mod join_run_error_display_tests;
+#[cfg(test)]
+mod join_state_path_tests;
 #[cfg(test)]
 mod marked_lines_tests;
 #[cfg(test)]
