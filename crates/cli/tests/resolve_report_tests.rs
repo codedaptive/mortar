@@ -95,6 +95,7 @@ fn a_rebase_reports_as_join_does_with_the_snapshot_after_a_finished_move() {
         old: oid(OLD),
         new: oid(NEW),
         op_id: "op-1".to_string(),
+        folder_tree: None,
     };
     let answer = JoinAnswer::Rebased {
         request_ref: REQUEST_REF.to_string(),
