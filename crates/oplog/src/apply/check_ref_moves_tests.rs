@@ -1,4 +1,4 @@
-//! check_ref_moves: usable names pass; the first empty or NUL-holding name is refused by name.
+//! check_ref_moves: full refs/ names pass; the first empty, NUL-holding or not-refs/ name is refused by name.
 
 use gitio::Oid;
 
@@ -80,5 +80,57 @@ fn the_refusal_reads_with_the_ref_and_the_fix() {
     assert_eq!(
         check_ref_moves(&moves).unwrap_err().to_string(),
         "op cannot be applied: ref \"\" is empty; fix the op's moves and run again"
+    );
+}
+
+#[test]
+fn a_two_level_name_outside_refs_is_refused() {
+    let moves = vec![mv("heads/main", None, "cccccccccccccccccccccccccccccccccccccccc")];
+    assert_eq!(
+        bad_move(check_ref_moves(&moves)),
+        (
+            "heads/main".to_string(),
+            "is not a full ref name (it must start with refs/)".to_string()
+        )
+    );
+}
+
+#[test]
+fn a_name_starting_with_a_dash_is_refused_as_not_full() {
+    let moves = vec![mv("-refs/heads/x", None, "cccccccccccccccccccccccccccccccccccccccc")];
+    assert_eq!(
+        bad_move(check_ref_moves(&moves)),
+        (
+            "-refs/heads/x".to_string(),
+            "is not a full ref name (it must start with refs/)".to_string()
+        )
+    );
+}
+
+#[test]
+fn a_name_that_only_contains_refs_is_refused() {
+    let moves = vec![mv("heads/refs/x", None, "cccccccccccccccccccccccccccccccccccccccc")];
+    assert_eq!(
+        bad_move(check_ref_moves(&moves)).1,
+        "is not a full ref name (it must start with refs/)"
+    );
+}
+
+#[test]
+fn a_nul_outside_refs_is_named_as_the_nul() {
+    let moves = vec![mv("a\0b", None, "cccccccccccccccccccccccccccccccccccccccc")];
+    assert_eq!(
+        bad_move(check_ref_moves(&moves)),
+        ("a\0b".to_string(), "holds a NUL".to_string())
+    );
+}
+
+#[test]
+fn the_not_full_refusal_reads_with_the_ref_and_the_fix() {
+    let moves = vec![mv("HEAD", None, "cccccccccccccccccccccccccccccccccccccccc")];
+    assert_eq!(
+        check_ref_moves(&moves).unwrap_err().to_string(),
+        "op cannot be applied: ref \"HEAD\" is not a full ref name (it must start with refs/); fix the op's \
+         moves and run again"
     );
 }

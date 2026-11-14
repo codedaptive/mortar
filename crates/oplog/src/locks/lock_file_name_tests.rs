@@ -8,6 +8,15 @@ fn land_is_land_lock() {
 }
 
 #[test]
+fn folders_is_folders_lock() {
+    assert_eq!(lock_file_name(&LockName::Folders).unwrap(), "folders.lock");
+    assert_eq!(
+        lock_file_name(&LockName::Join("folders".to_string())).unwrap(),
+        "join-folders.lock"
+    );
+}
+
+#[test]
 fn join_is_join_zone_lock() {
     assert_eq!(
         lock_file_name(&LockName::Join("zone-a".to_string())).unwrap(),

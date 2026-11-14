@@ -1,4 +1,4 @@
-//! Which lock: one per zone for joins, one for landing.
+//! Which lock: one per zone for joins, one for landing, one per store for folders work.
 //! A bare type; lock_file_name_tests and lock_path_tests exercise it.
 
 /// A typed lock name. `Join` carries the zone; its spelling is checked by `lock_file_name`.
@@ -6,4 +6,5 @@
 pub enum LockName {
     Join(String),
     Land,
+    Folders,
 }
