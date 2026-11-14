@@ -12,6 +12,7 @@ mod folder_error;
 mod folder_error_display;
 mod folder_error_source;
 mod folder_setup;
+mod guard_removal_ops;
 mod make_branch;
 mod make_request_folder;
 mod make_zone_folder;
@@ -20,6 +21,7 @@ mod refill_cone;
 mod refill_folder;
 mod repeat;
 mod repeat_decision;
+mod skip_refill;
 mod with_folders_lock;
 mod write_folder_record;
 mod zone_start;
@@ -36,9 +38,13 @@ mod folder_error_display_tests;
 #[cfg(test)]
 mod folder_error_source_tests;
 #[cfg(test)]
+mod guard_removal_ops_tests;
+#[cfg(test)]
 mod refill_cone_tests;
 #[cfg(test)]
 mod repeat_decision_tests;
+#[cfg(test)]
+mod skip_refill_tests;
 #[cfg(test)]
 mod zone_start_for_tests;
 
