@@ -13,6 +13,8 @@ mod decode_join_state;
 mod encode_join_state;
 mod fast_forward_op;
 mod file_markers;
+mod folder_tree_name;
+mod folder_tree_values;
 mod git_replay_git;
 mod join;
 mod join_answer;
@@ -95,6 +97,8 @@ mod fake_call;
 mod fast_forward_op_tests;
 #[cfg(test)]
 mod file_markers_tests;
+#[cfg(test)]
+mod folder_tree_values_tests;
 #[cfg(test)]
 mod join_answer_display_tests;
 #[cfg(test)]
