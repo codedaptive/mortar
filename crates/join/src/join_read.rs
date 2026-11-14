@@ -1,4 +1,4 @@
-//! JoinRead: what join reads under its lock before deciding. A declaration only; decide_join_tests exercises it.
+//! JoinRead: what join reads before deciding. A declaration only; decide_join_tests exercises it.
 
 use gitio::Oid;
 

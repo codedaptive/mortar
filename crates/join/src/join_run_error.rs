@@ -1,19 +1,19 @@
 //! JoinRunError: why a join was refused. A declaration only; join_run_error_display_tests exercises each
 //! variant's text.
+//! There is no Lock variant: join takes no lock; its caller holds join-<zone> (S-47, S-16). oplog's errors are
+//! carried as they are, so no Clone or Eq is asked of them.
 
 use crate::JoinError;
 use gitio::GitError;
-use oplog::{LockError, OplogError, OpRecord};
+use oplog::{OplogError, OpRecord};
 use std::path::PathBuf;
 
-/// A join refusal. Debug only: LockError, OplogError and io::Error are neither Clone nor Eq.
+/// A join refusal. Debug only: OplogError and io::Error are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum JoinRunError {
     /// Replaying the request's commits onto the zone tip failed.
     Replay(JoinError),
-    /// The zone's join lock could not be taken or released.
-    Lock(LockError),
-    /// Reading, recovering or writing the op log failed, or a protected zone ref refused a move.
+    /// Reading or writing the op log failed, or a protected zone ref refused a move.
     Oplog(OplogError),
     /// A git run failed.
     Git(GitError),

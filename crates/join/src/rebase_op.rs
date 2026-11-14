@@ -7,8 +7,8 @@ use oplog::{Op, RefMove};
 /// Kind `join-rebase`, one move of `request_ref` from `from` to `to`. The key is
 /// `join-rebase:<request_ref>:<from>:<onto>:<op_id>`: it carries the op id so each join attempt is its own
 /// op, because an earlier done op for the same move (one later undone, say) must never answer this one. A
-/// repeated join is safe because join reads the refs again under its lock after recover. The reason names
-/// the ref, both ids and `onto`.
+/// repeated join is safe because join reads the refs again, under the caller's lock and after its recover.
+/// The reason names the ref, both ids and `onto`.
 pub(crate) fn rebase_op(
     request_ref: &str,
     from: &Oid,

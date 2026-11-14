@@ -7,7 +7,6 @@ impl fmt::Display for JoinRunError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             JoinRunError::Replay(e) => write!(f, "join replay: {e}; no ref was moved"),
-            JoinRunError::Lock(e) => write!(f, "join lock: {e}"),
             JoinRunError::Oplog(e) => write!(f, "join op log: {e}"),
             JoinRunError::Git(e) => write!(f, "{e}"),
             JoinRunError::ZoneMissing(zone_ref) => write!(
