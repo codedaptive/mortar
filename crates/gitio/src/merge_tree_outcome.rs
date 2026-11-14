@@ -10,6 +10,7 @@ pub enum MergeTreeOutcome {
     /// The merge had no conflicts; this is the merged tree.
     Clean(Oid),
     /// The merge had conflicts: `tree` holds them with conflict markers, `files` names each conflicted path once,
-    /// in git's order.
+    /// in git's order. A path in `files` may be absent from `tree`: a rename/rename conflict writes it under each
+    /// new name instead.
     Conflicted { tree: Oid, files: Vec<PathBuf> },
 }

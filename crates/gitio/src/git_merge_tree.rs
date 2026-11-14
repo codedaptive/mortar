@@ -9,7 +9,8 @@ use crate::{Git, GitError, MergeTreeOutcome, Oid};
 impl Git {
     /// Merges `theirs` into `ours` (from `merge_base` when given, else git's own merge base), reading merge
     /// attributes from `attr_source`. Writes the merged tree object either way and returns it, with the conflicted
-    /// files when there are conflicts.
+    /// files when there are conflicts. A conflicted path may be absent from the written tree: a rename/rename
+    /// conflict writes it under each new name instead.
     pub fn merge_tree(
         &self,
         attr_source: &Oid,

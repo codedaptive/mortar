@@ -1,6 +1,7 @@
 //! gitio: see the Mortar mission (Layout).
 //! Past the 150-line limit because it is the crate's only bridge: one line per file of a flat crate, and nothing else.
 
+mod absent_paths;
 mod attr_check_request;
 mod blob_bytes_request;
 mod changed_files_request;
@@ -49,6 +50,7 @@ mod git_status_paths;
 mod git_toplevel;
 mod git_trailers;
 mod git_tree_entry;
+mod git_tree_with_paths;
 mod git_update_refs;
 mod git_version;
 mod git_with_trailers;
@@ -57,12 +59,14 @@ mod git_worktree_list;
 mod git_worktree_remove;
 mod git_write_blob_paths;
 mod head_requests;
+mod index_info_stdin;
 mod list_refs_request;
 mod lossy_args;
 mod maintenance_request;
 mod merge_base_request;
 mod merge_tree_outcome;
 mod merge_tree_request;
+mod next_temp_index;
 mod no_nul;
 mod oid;
 mod oid_as_str;
@@ -83,6 +87,7 @@ mod read_merge_tree;
 mod read_message;
 mod read_nul_paths;
 mod read_oid_lines;
+mod read_path_entries;
 mod read_ref_list;
 mod read_ref_request;
 mod read_replay;
@@ -96,6 +101,7 @@ mod read_trailers;
 mod read_tree_entry;
 mod read_worktree_list;
 mod ref_update;
+mod remove_on_drop;
 mod replay_outcome;
 mod replay_request;
 mod rev_list_request;
@@ -115,6 +121,8 @@ mod text_refusal;
 mod trailers_add_request;
 mod trailers_parse_request;
 mod tree_entry_request;
+mod tree_with_paths_list_request;
+mod tree_with_paths_requests;
 mod unquote_c_style;
 mod update_refs_outcome;
 mod update_refs_stdin;
@@ -145,6 +153,8 @@ pub use update_refs_outcome::UpdateRefsOutcome;
 pub use version::Version;
 pub use worktree::Worktree;
 
+#[cfg(test)]
+mod absent_paths_tests;
 #[cfg(test)]
 mod attr_check_request_tests;
 #[cfg(test)]
@@ -184,6 +194,8 @@ mod git_version_tests;
 #[cfg(test)]
 mod head_requests_tests;
 #[cfg(test)]
+mod index_info_stdin_tests;
+#[cfg(test)]
 mod list_refs_request_tests;
 #[cfg(test)]
 mod lossy_args_tests;
@@ -193,6 +205,8 @@ mod maintenance_request_tests;
 mod merge_base_request_tests;
 #[cfg(test)]
 mod merge_tree_request_tests;
+#[cfg(test)]
+mod next_temp_index_tests;
 #[cfg(test)]
 mod no_nul_tests;
 #[cfg(test)]
@@ -231,6 +245,8 @@ mod read_message_tests;
 mod read_nul_paths_tests;
 #[cfg(test)]
 mod read_oid_lines_tests;
+#[cfg(test)]
+mod read_path_entries_tests;
 #[cfg(test)]
 mod read_ref_list_tests;
 #[cfg(test)]
@@ -289,6 +305,10 @@ mod trailers_add_request_tests;
 mod trailers_parse_request_tests;
 #[cfg(test)]
 mod tree_entry_request_tests;
+#[cfg(test)]
+mod tree_with_paths_list_request_tests;
+#[cfg(test)]
+mod tree_with_paths_requests_tests;
 #[cfg(test)]
 mod unquote_c_style_tests;
 #[cfg(test)]
