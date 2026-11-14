@@ -1,4 +1,4 @@
-//! kept_bytes: a copy of the formatter stderr kept so far, read through a lock that may be poisoned.
+//! kept_bytes: a copy of the child's stderr kept so far, read through a lock that may be poisoned.
 
 use std::sync::{Mutex, PoisonError};
 

@@ -1,9 +1,9 @@
-//! ChildExit: how a formatter child ended, as run_formatter_child saw it. A declaration only;
-//! decide_formatter_result_tests exercises it.
+//! ChildExit: how a run_in_group child ended, as run_formatter_child saw it. A declaration only;
+//! decide_group_run_end_tests exercises it.
 
 use std::time::Duration;
 
-/// The raw end of one formatter child, before decide_formatter_result reads it.
+/// The raw end of one child, made by run_formatter_child and read by decide_group_run_end.
 #[derive(Debug)]
 pub(crate) enum ChildExit {
     /// The child exited by itself: `code` is its exit code, None when killed by a signal; `stderr` is what was read

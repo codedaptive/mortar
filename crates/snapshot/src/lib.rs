@@ -11,6 +11,7 @@ mod decide_formatter_end;
 mod decide_formatter_result;
 mod decide_formatter_wait;
 mod decide_group_kill;
+mod decide_group_run_end;
 mod decide_snapshot;
 mod default_size_cap;
 mod empty_tree;
@@ -25,6 +26,7 @@ mod formatter_run;
 mod formatter_stderr_cap;
 mod formatter_wait;
 mod group_kill_target;
+mod group_run_end;
 mod is_saved;
 mod kept_bytes;
 mod kill_process_group;
@@ -38,6 +40,7 @@ mod real_index_git;
 mod refused_file;
 mod run_formatter;
 mod run_formatter_child;
+mod run_in_group;
 mod save;
 mod save_change_id;
 mod save_from_apply;
@@ -65,8 +68,10 @@ pub use default_size_cap::DEFAULT_SIZE_CAP;
 pub use formatter::Formatter;
 pub use formatter_result::FormatterResult;
 pub use formatter_run::FormatterRun;
+pub use group_run_end::GroupRunEnd;
 pub use is_saved::is_saved;
 pub use refused_file::RefusedFile;
+pub use run_in_group::run_in_group;
 pub use save::save;
 pub use save_outcome::SaveOutcome;
 pub use snapshot::snapshot;
@@ -93,6 +98,8 @@ mod decide_formatter_result_tests;
 mod decide_formatter_wait_tests;
 #[cfg(test)]
 mod decide_group_kill_tests;
+#[cfg(test)]
+mod decide_group_run_end_tests;
 #[cfg(test)]
 mod decide_snapshot_tests;
 #[cfg(test)]

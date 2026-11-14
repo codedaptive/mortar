@@ -2,8 +2,8 @@
 //! commit on the request's snapshot ref.
 //! No unit test: it runs git and the formatter and appends to the op log, and holds no decision of its own (S-5);
 //! decide_snapshot, snapshot_ref_name, snapshot_parents, snapshot_trailers, snapshot_op, snapshot_from_apply,
-//! formatter_paths, formatter_argv, decide_formatter_wait and decide_formatter_result are its decisions and have their
-//! tests.
+//! formatter_paths, formatter_argv, decide_formatter_wait, decide_group_run_end and decide_formatter_result are its
+//! decisions and have their tests.
 //! Nagatha's integration tests cover it through snapshot, in a throwaway repository:
 //! - a first snapshot writes a commit with parents [HEAD], message "snapshot" with Mortar-Request and Mortar-Zone
 //!   trailers, moves refs/mortar/snap/<zone>/<request> to it and leaves a done op record:
