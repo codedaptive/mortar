@@ -11,9 +11,9 @@ pub mod trailers;
 pub mod undo;
 
 pub use apply::{
-    apply, check_ref_moves, check_ref_names, close_after_update, find_done_record, guard_removal_op,
-    new_op_id, op_git, op_id_from_parts, ref_format_verdict, ref_updates, takeover_op, with_lock,
-    ApplyOutcome, HeldLockError, MORTAR_OP_ENV,
+    apply, apply_with_values, check_ref_moves, check_ref_names, close_after_update, find_done_record,
+    guard_removal_op, new_op_id, op_git, op_id_from_parts, ref_format_verdict, ref_updates, takeover_op,
+    with_lock, ApplyOutcome, HeldLockError, ValuedOutcome, MORTAR_OP_ENV,
 };
 pub use change_id::{new_change_id, ChangeId, ChangeIdError};
 pub use history::{filter_history, history, HistoryFilter};
@@ -23,12 +23,14 @@ pub use locks::{
     KillPidProbe, LockError, LockName, LockRecord, LockStaleness, PidProbe,
 };
 pub use recover::{
-    decide_recovery, open_intent, open_intent_moves, open_intents, recover, recovery_close, RecoveryDecision,
+    decide_recovery, open_intent, open_intent_moves, open_intents, recover, recovery_close,
+    recovery_close_valued, RecoveryDecision,
 };
 pub use store::{
-    append_op_record, close_record, decode_op_log, decode_op_record, encode_op_record, intent_record,
-    oplog_path, parse_json_string, read_op_log, read_ref_value, unix_now, write_json_string, JsonError,
-    Op, OpLog, OpPhase, OpRecord, OpResult, OplogError, RefMove,
+    append_op_record, append_valued_record, close_record, decode_op_log, decode_op_record,
+    decode_valued_log, encode_op_record, encode_valued_record, intent_record, oplog_path,
+    parse_json_string, read_op_log, read_ref_value, read_valued_log, unix_now, write_json_string,
+    JsonError, Op, OpLog, OpPhase, OpRecord, OpResult, OplogError, RefMove, ValuedLog, ValuedRecord,
 };
 pub use trailers::{
     carry_mortar_trailers, mortar_trailer_pairs, pick_mortar_trailers, read_mortar_trailers,
