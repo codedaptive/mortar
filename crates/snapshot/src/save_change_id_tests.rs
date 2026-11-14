@@ -11,7 +11,7 @@ fn head() -> Oid {
 }
 
 fn target() -> SnapshotTarget {
-    SnapshotTarget { zone: "snapshot".to_string(), request: "WO-snapshot-3".to_string(), actor: "bilby".to_string() }
+    SnapshotTarget { zone: "snapshot".to_string(), request: "WO-snapshot-3".to_string(), attempt: None, actor: "bilby".to_string() }
 }
 
 fn trailers(change_id: Option<&str>, request: Option<&str>, zone: Option<&str>) -> MortarTrailers {

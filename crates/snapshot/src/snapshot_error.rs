@@ -40,7 +40,7 @@ pub enum SnapshotError {
     BadSentence { reason: String },
     /// HEAD's Mortar-Request and Mortar-Zone are the target's but it carries no Mortar-Change-Id (S-34); save writes
     /// no commit and moves no branch rather than make a second ID for the request. Its snapshot step has already
-    /// run, so the request's snapshot ref may have moved.
+    /// run, so the target's snapshot ref may have moved.
     ChangeIdMissing { head: Oid },
     /// HEAD's message trailers could not be read.
     Trailers(oplog::MortarTrailerError),

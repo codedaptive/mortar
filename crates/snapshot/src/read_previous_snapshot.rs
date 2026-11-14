@@ -1,4 +1,4 @@
-//! read_previous_snapshot: the commit a request's snapshot ref names, and its tree.
+//! read_previous_snapshot: the commit a snapshot ref names, and its tree.
 //! No unit test: it only runs git and holds no decision (S-5). Nagatha's integration tests cover it through snapshot
 //! and is_saved, in a throwaway repository:
 //! - an absent ref reads as None: is_saved is false before any snapshot, and the first snapshot's parents are [HEAD]

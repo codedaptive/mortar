@@ -1,11 +1,14 @@
-//! SnapshotTarget: which zone and request a snapshot belongs to, and who takes it. A declaration only;
-//! snapshot_ref_name_tests and snapshot_trailers_tests exercise it.
+//! SnapshotTarget: which zone, request and attempt a snapshot belongs to, and who takes it. A declaration only;
+//! snapshot_ref_name_tests exercises its zone, request and attempt; snapshot_trailers_tests, save_trailers_tests
+//! and save_change_id_tests its zone and request.
 
-/// The caller supplies it: Mortar's folder record (S-18) is read above this crate. `zone` and `request` name the
-/// snapshot ref and its trailers; `actor` is the op log's actor for the ref move.
+/// The caller supplies it: Mortar's folder record (S-18) is read above this crate. `zone`, `request` and `attempt`
+/// name the snapshot ref; `zone` and `request` name its trailers; `actor` is the op log's actor for the ref move.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SnapshotTarget {
     pub zone: String,
     pub request: String,
+    /// None for the request's own folder, Some(k) for its attempt folder k (S-69); it chooses the snapshot ref.
+    pub attempt: Option<u32>,
     pub actor: String,
 }

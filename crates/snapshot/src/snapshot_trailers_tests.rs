@@ -6,6 +6,7 @@ fn request_then_zone() {
     let target = SnapshotTarget {
         zone: "snapshot".to_string(),
         request: "WO-snapshot-1".to_string(),
+        attempt: None,
         actor: "bilby".to_string(),
     };
     assert_eq!(

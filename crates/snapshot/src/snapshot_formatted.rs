@@ -1,12 +1,13 @@
 //! snapshot_formatted: run the caller's formatter over a folder's changed files, then save the folder's files as a
-//! commit on the request's snapshot ref.
+//! commit on the target's snapshot ref.
 //! No unit test: it runs git and the formatter and appends to the op log, and holds no decision of its own (S-5);
 //! decide_snapshot, snapshot_ref_name, snapshot_parents, snapshot_trailers, snapshot_op, snapshot_from_apply,
 //! formatter_paths, formatter_argv, decide_formatter_wait, decide_group_run_end and decide_formatter_result are its
 //! decisions and have their tests.
 //! Nagatha's integration tests cover it through snapshot, in a throwaway repository:
-//! - a first snapshot writes a commit with parents [HEAD], message "snapshot" with Mortar-Request and Mortar-Zone
-//!   trailers, moves refs/mortar/snap/<zone>/<request> to it and leaves a done op record:
+//! - a first snapshot of a target with no attempt writes a commit with parents [HEAD], message "snapshot" with
+//!   Mortar-Request and Mortar-Zone trailers, moves refs/mortar/snap/<zone>/<request> (the no-attempt ref) to it
+//!   and leaves a done op record:
 //!   tests/snapshot/lifecycle.rs::first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op;
 //! - a second snapshot of an unchanged folder writes nothing and returns the same commit with written false; a
 //!   snapshot after a change chains parents [HEAD, previous snapshot]:
@@ -18,6 +19,7 @@
 //!   unchanged one (caps.rs::refused_only_change_is_saved_and_unchanged_outcome_still_reports_the_refusal).
 //! The formatter cases are run_formatter's header's: tests/snapshot/formatter.rs, formatter_paths.rs,
 //! formatter_timeout.rs and formatter_group.rs (the S-37 process-group cases) cover them.
+//! Not yet covered by an integration test: an attempt target's trysnap ref (Nagatha's).
 
 use crate::decide_snapshot::decide_snapshot;
 use crate::folder_tree::folder_tree;
@@ -36,9 +38,10 @@ use std::path::Path;
 
 /// Runs `formatter` over `folder`'s changed files, then saves `folder`'s files, minus the built-in excludes,
 /// `extra_excludes` and each new file (not in HEAD) over `size_cap` bytes, listed in refused, as a commit on
-/// `refs/mortar/snap/<zone>/<request>` (S-19), with parents [HEAD] for the request's first snapshot and
-/// [HEAD, previous snapshot] after that. `git` gives the binary and environment; every run is in `folder`, which
-/// must be the folder's top.
+/// the target's snapshot ref (snapshot_ref_name: `refs/mortar/snap/<zone>/<request>` (S-19), or
+/// `refs/mortar/trysnap/<zone>/<request>/<k>` (S-69) with an attempt), with parents [HEAD] for the ref's first
+/// snapshot and [HEAD, previous snapshot] after that. `git` gives the binary and environment; every run is in
+/// `folder`, which must be the folder's top.
 ///
 /// The formatter runs over run_formatter's files (the changed then untracked regular files the snapshot would save
 /// differently from HEAD, not conflicted), so the snapshot saves the formatted files; the run is in `formatted`.
