@@ -1,5 +1,5 @@
-//! decode_folder_record: the round trip over many records, free key order and whitespace, and each refusal
-//! with the key or value it names.
+//! decode_folder_record: the round trip over many records, attempt numbers across their range, free key order
+//! and whitespace, and each refusal with the key or value it names.
 
 use gitio::Oid;
 
@@ -147,7 +147,10 @@ fn value_of_the_wrong_type_is_refused_naming_the_key() {
 
 #[test]
 fn unknown_kind_is_refused_naming_it() {
-    assert_eq!(refused(&zone_with("kind", "\"Zone\"")), "kind \"Zone\" is neither \"zone\" nor \"request\"");
+    assert_eq!(
+        refused(&zone_with("kind", "\"Zone\"")),
+        "kind \"Zone\" is none of \"zone\", \"request\" or \"attempt\""
+    );
 }
 
 #[test]
@@ -191,4 +194,59 @@ fn every_truncation_of_a_record_says_the_text_ends_early() {
             );
         }
     }
+}
+
+/// The worked zone record's text as kind `kind`, with `request` as its request's JSON and, when `attempt` is
+/// Some, the member "attempt" with that JSON value right after kind.
+fn kind_with(kind: &str, attempt: Option<&str>, request: &str) -> String {
+    let member = attempt.map_or(String::new(), |v| format!(",\"attempt\":{v}"));
+    zone_with("request", request).replace("\"kind\":\"zone\"", &format!("\"kind\":\"{kind}\"{member}"))
+}
+
+#[test]
+fn attempt_numbers_decode_across_the_range() {
+    for (text, k) in [("\"1\"", 1), ("\"2\"", 2), ("\"9\"", 9), ("\"10\"", 10), ("\"4294967295\"", 4294967295)] {
+        let r = decode_folder_record(&kind_with("attempt", Some(text), "\"WO-folders-6\""));
+        assert_eq!(r.map(|r| r.kind), Ok(FolderKind::Attempt(k)));
+    }
+}
+
+#[test]
+fn attempt_text_decodes_to_its_number() {
+    let r = decode_folder_record(&kind_with("attempt", Some("\"12\""), "\"WO-1\""));
+    assert_eq!(r.map(|r| (r.kind, r.request)), Ok((FolderKind::Attempt(12), Some("WO-1".to_string()))));
+}
+
+#[test]
+fn attempt_record_without_its_number_is_refused() {
+    assert_eq!(refused(&kind_with("attempt", None, "\"WO-1\"")), "missing key \"attempt\"");
+}
+
+#[test]
+fn attempt_key_on_a_zone_or_request_record_is_refused() {
+    assert_eq!(refused(&kind_with("zone", Some("\"1\""), "null")), "\"attempt\" key on a zone record");
+    assert_eq!(refused(&kind_with("request", Some("\"1\""), "\"WO-1\"")), "\"attempt\" key on a request record");
+}
+
+#[test]
+fn attempt_number_that_is_not_one_spelling_of_1_to_u32_max_is_refused_naming_it() {
+    for value in ["0", "01", "", "x", "4294967296", "+3", " 3", "-1"] {
+        assert_eq!(
+            refused(&kind_with("attempt", Some(&format!("\"{value}\"")), "\"WO-1\"")),
+            format!("attempt \"{value}\" is not a decimal number from 1 to 4294967295 with no leading zero")
+        );
+    }
+}
+
+#[test]
+fn attempt_number_that_is_not_a_string_is_refused() {
+    assert_eq!(refused(&kind_with("attempt", Some("null"), "\"WO-1\"")), "attempt is not a string");
+}
+
+#[test]
+fn attempt_record_without_a_request_is_refused() {
+    assert_eq!(
+        refused(&kind_with("attempt", Some("\"1\""), "null")),
+        "an attempt record has request null; it must name the request"
+    );
 }

@@ -1,5 +1,6 @@
-//! closed_snap_refs: a closed request's snapshot ref is picked; a request branch or an attempt branch keeps it
-//! open, by exact name; odd-shaped snapshot refs and other refs are ignored; input order is kept.
+//! closed_snap_refs: a closed request's snapshot and attempt snapshot refs are picked; a request branch or an
+//! attempt branch keeps them open, by exact name; odd-shaped snapshot refs and other refs are ignored; input order
+//! is kept.
 
 use gitio::Oid;
 
@@ -30,7 +31,65 @@ fn a_closed_request_is_picked() {
 
 #[test]
 fn an_attempt_branch_keeps_it_open() {
-    let input = refs(&[(B, "refs/mortar/snap/z/r"), (A, "refs/heads/req/z/r/try-1")]);
+    let input = refs(&[(B, "refs/mortar/snap/z/r"), (A, "refs/heads/try/z/r/1")]);
+    assert_eq!(closed_snap_refs(&input), Vec::<(String, Oid)>::new());
+}
+
+#[test]
+fn a_closed_requests_trysnap_ref_is_picked() {
+    let input = refs(&[
+        (A, "refs/heads/zone/z"),
+        (B, "refs/mortar/trysnap/z/r/1"),
+        (A, "refs/mortar/snap/z/r"),
+        (A, "refs/mortar/trysnap/z/r/2"),
+    ]);
+    assert_eq!(
+        closed_snap_refs(&input),
+        vec![
+            ("refs/mortar/trysnap/z/r/1".to_string(), oid(B)),
+            ("refs/mortar/snap/z/r".to_string(), oid(A)),
+            ("refs/mortar/trysnap/z/r/2".to_string(), oid(A)),
+        ]
+    );
+}
+
+#[test]
+fn a_request_branch_keeps_snap_and_trysnap_refs() {
+    let input = refs(&[(A, "refs/heads/req/z/r"), (B, "refs/mortar/snap/z/r"), (B, "refs/mortar/trysnap/z/r/1")]);
+    assert_eq!(closed_snap_refs(&input), Vec::<(String, Oid)>::new());
+}
+
+#[test]
+fn a_try_branch_keeps_snap_and_trysnap_refs() {
+    let input = refs(&[(B, "refs/mortar/snap/z/r"), (B, "refs/mortar/trysnap/z/r/1"), (A, "refs/heads/try/z/r/2")]);
+    assert_eq!(closed_snap_refs(&input), Vec::<(String, Oid)>::new());
+}
+
+#[test]
+fn a_try_branch_of_a_request_sharing_a_prefix_does_not_keep_it_open() {
+    let input = refs(&[(A, "refs/heads/try/z/rx/1"), (B, "refs/mortar/trysnap/z/r/1"), (A, "refs/mortar/snap/z/r")]);
+    assert_eq!(
+        closed_snap_refs(&input),
+        vec![("refs/mortar/trysnap/z/r/1".to_string(), oid(B)), ("refs/mortar/snap/z/r".to_string(), oid(A))]
+    );
+}
+
+#[test]
+fn a_ref_nested_under_the_request_branch_name_does_not_keep_it_open() {
+    let input = refs(&[(A, "refs/heads/req/z/r/try-1"), (B, "refs/mortar/snap/z/r")]);
+    assert_eq!(closed_snap_refs(&input), vec![("refs/mortar/snap/z/r".to_string(), oid(B))]);
+}
+
+#[test]
+fn an_odd_shaped_trysnap_ref_is_ignored() {
+    let input = refs(&[
+        (A, "refs/mortar/trysnap/z/r"),
+        (A, "refs/mortar/trysnap/z/r/"),
+        (A, "refs/mortar/trysnap/z//1"),
+        (A, "refs/mortar/trysnap//r/1"),
+        (A, "refs/mortar/trysnap/z/r/1/extra"),
+        (A, "refs/mortar/trysnap/z"),
+    ]);
     assert_eq!(closed_snap_refs(&input), Vec::<(String, Oid)>::new());
 }
 

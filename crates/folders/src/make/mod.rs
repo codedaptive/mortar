@@ -12,7 +12,9 @@ mod folder_error;
 mod folder_error_display;
 mod folder_error_source;
 mod folder_setup;
+mod folder_text;
 mod make_branch;
+mod make_or_refill;
 mod make_request_folder;
 mod make_zone_folder;
 mod read_folder_record;
@@ -38,6 +40,8 @@ mod folder_error_display_tests;
 #[cfg(test)]
 mod folder_error_source_tests;
 #[cfg(test)]
+mod folder_text_tests;
+#[cfg(test)]
 mod ref_moved_from_tests;
 #[cfg(test)]
 mod refill_cone_tests;
@@ -53,6 +57,7 @@ pub(crate) use branch_step::BranchStep;
 pub use existing_folder::existing_folder;
 pub use folder_error::FolderError;
 pub use folder_setup::FolderSetup;
+pub(crate) use make_or_refill::make_or_refill;
 pub use make_request_folder::make_request_folder;
 pub use make_zone_folder::make_zone_folder;
 pub use read_folder_record::read_folder_record;

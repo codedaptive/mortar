@@ -63,3 +63,20 @@ fn strings_are_escaped_and_the_line_has_no_newline() {
     );
     assert!(!line.contains('\n'));
 }
+
+#[test]
+fn attempt_record_writes_its_number_right_after_kind() {
+    let r = FolderRecord {
+        kind: FolderKind::Attempt(3),
+        zone: "folders".to_string(),
+        request: Some("WO-folders-6".to_string()),
+        base: oid("0123456789abcdef0123456789abcdef01234567"),
+        work_order_paths: vec!["crates/folders/src/record".to_string()],
+        needed_paths: Vec::new(),
+        parent: Some("req/folders/WO-folders-6".to_string()),
+    };
+    assert_eq!(
+        encode_folder_record(&r),
+        r#"{"kind":"attempt","attempt":"3","zone":"folders","request":"WO-folders-6","base":"0123456789abcdef0123456789abcdef01234567","work_order_paths":["crates/folders/src/record"],"needed_paths":[],"parent":"req/folders/WO-folders-6"}"#
+    );
+}

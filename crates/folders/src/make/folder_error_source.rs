@@ -18,6 +18,11 @@ impl std::error::Error for FolderError {
             | FolderError::BranchCheckedOut { .. }
             | FolderError::BranchExists { .. }
             | FolderError::ZoneBranchMissing { .. }
+            | FolderError::RequestBranchMissing { .. }
+            | FolderError::AttemptMissing { .. }
+            | FolderError::AttemptsUnsaved { .. }
+            | FolderError::RequestMovedOn { .. }
+            | FolderError::AttemptFolder { .. }
             | FolderError::NotSaved { .. }
             | FolderError::MoveRefused { .. }
             | FolderError::BranchElsewhere { .. }

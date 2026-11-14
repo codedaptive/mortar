@@ -1,5 +1,9 @@
-//! A folder's plan as data: branch and snapshot ref names, sparse paths, the free-disk floor, the branch op.
+//! A folder's plan as data: branch, attempt and snapshot ref names, attempt numbers, attempt folder paths, sparse
+//! paths, the free-disk floor, the branch op.
 
+mod attempt_branch;
+mod attempt_number;
+mod attempt_path;
 mod below_floor;
 mod below_floor_display;
 mod branch_op;
@@ -16,8 +20,15 @@ mod snap_ref;
 mod snap_ref_prefix;
 mod sparse_paths;
 mod sweep_estimate;
+mod trysnap_ref_prefix;
 mod zone_branch;
 
+#[cfg(test)]
+mod attempt_branch_tests;
+#[cfg(test)]
+mod attempt_number_tests;
+#[cfg(test)]
+mod attempt_path_tests;
 #[cfg(test)]
 mod below_floor_display_tests;
 #[cfg(test)]
@@ -39,6 +50,9 @@ mod sparse_paths_tests;
 #[cfg(test)]
 mod zone_branch_tests;
 
+pub use attempt_branch::attempt_branch;
+pub(crate) use attempt_number::attempt_number;
+pub use attempt_path::attempt_path;
 pub use below_floor::BelowFloor;
 pub use branch_op::branch_op;
 pub(crate) use check_name::check_name;
@@ -53,4 +67,5 @@ pub use snap_ref::snap_ref;
 pub use snap_ref_prefix::SNAP_REF_PREFIX;
 pub use sparse_paths::sparse_paths;
 pub use sweep_estimate::SweepEstimate;
+pub use trysnap_ref_prefix::TRYSNAP_REF_PREFIX;
 pub use zone_branch::zone_branch;

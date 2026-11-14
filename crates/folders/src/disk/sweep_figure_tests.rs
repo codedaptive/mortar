@@ -1,5 +1,5 @@
-//! sweep_figure: the build bytes of the idle folders alone, and the reason naming the folder count, the days and
-//! the closed snapshot refs.
+//! sweep_figure: the build bytes of the idle folders plus the ref sweep's bytes, an upper bound, and the reason
+//! naming both parts with their counts.
 
 use std::path::PathBuf;
 
@@ -33,15 +33,15 @@ fn paths(names: &[&str]) -> Vec<PathBuf> {
 }
 
 #[test]
-fn sums_the_build_bytes_of_idle_folders_only() {
+fn sums_the_idle_folders_build_bytes_and_the_refs_bytes() {
     let folders = [folder("/w/a", 1_000, 300), folder("/w/b", 5, 4_000), folder("/w/c", 9, 20)];
     assert_eq!(
-        sweep_figure(&folders, &paths(&["/w/a", "/w/c"]), 3, 14),
+        sweep_figure(&folders, &paths(&["/w/a", "/w/c"]), 14, 3, 1_000),
         SweepEstimate {
-            bytes: 320,
+            bytes: 1_320,
             reason: Some(
-                "build dirs of 2 folders idle 14 days or more; 3 snapshot refs of closed requests, their objects \
-                 not measured"
+                "frees up to 1320 bytes: 320 bytes in the build dirs of 2 folders idle 14 days or more, and up to \
+                 1000 bytes of objects reachable only from the 3 refs a ref sweep deletes"
                     .to_string()
             ),
         }
@@ -52,12 +52,12 @@ fn sums_the_build_bytes_of_idle_folders_only() {
 fn an_idle_path_with_no_folder_counts_nothing() {
     let folders = [folder("/w/a", 1, 50)];
     assert_eq!(
-        sweep_figure(&folders, &paths(&["/w/gone"]), 0, 7),
+        sweep_figure(&folders, &paths(&["/w/gone"]), 7, 2, 64),
         SweepEstimate {
-            bytes: 0,
+            bytes: 64,
             reason: Some(
-                "build dirs of 0 folders idle 7 days or more; 0 snapshot refs of closed requests, their objects not \
-                 measured"
+                "frees up to 64 bytes: 0 bytes in the build dirs of 0 folders idle 7 days or more, and up to 64 \
+                 bytes of objects reachable only from the 2 refs a ref sweep deletes"
                     .to_string()
             ),
         }
@@ -65,12 +65,28 @@ fn an_idle_path_with_no_folder_counts_nothing() {
 }
 
 #[test]
-fn no_folders_free_nothing() {
-    assert_eq!(sweep_figure(&[], &[], 1, 30).bytes, 0);
+fn no_folders_and_no_refs_free_nothing() {
+    assert_eq!(
+        sweep_figure(&[], &[], 30, 0, 0),
+        SweepEstimate {
+            bytes: 0,
+            reason: Some(
+                "frees up to 0 bytes: 0 bytes in the build dirs of 0 folders idle 30 days or more, and up to 0 \
+                 bytes of objects reachable only from the 0 refs a ref sweep deletes"
+                    .to_string()
+            ),
+        }
+    );
 }
 
 #[test]
-fn the_sum_saturates() {
+fn the_build_sum_saturates() {
     let folders = [folder("/w/a", 0, u64::MAX), folder("/w/b", 0, 2)];
-    assert_eq!(sweep_figure(&folders, &paths(&["/w/a", "/w/b"]), 0, 1).bytes, u64::MAX);
+    assert_eq!(sweep_figure(&folders, &paths(&["/w/a", "/w/b"]), 1, 0, 0).bytes, 18_446_744_073_709_551_615);
+}
+
+#[test]
+fn build_plus_refs_bytes_saturates() {
+    let folders = [folder("/w/a", 0, 10)];
+    assert_eq!(sweep_figure(&folders, &paths(&["/w/a"]), 1, 1, u64::MAX - 5).bytes, 18_446_744_073_709_551_615);
 }

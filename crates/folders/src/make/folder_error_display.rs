@@ -5,8 +5,8 @@ use std::path::{Path, PathBuf};
 
 use gitio::Oid;
 
+use super::folder_text::folder_text;
 use super::FolderError;
-use crate::record::{FolderKind, FolderRecord};
 
 impl fmt::Display for FolderError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -38,6 +38,31 @@ impl fmt::Display for FolderError {
                  the folder was not made"
             ),
             FolderError::ZoneBranchMissing { branch } => write!(f, "zone branch {branch} does not exist"),
+            FolderError::RequestBranchMissing { branch } => {
+                write!(f, "request branch {branch} does not exist; make the request folder first")
+            }
+            FolderError::AttemptMissing { branch } => write!(
+                f,
+                "no attempt branch {branch}; nothing changed; if keep already ran, the request branch holds the kept \
+                 attempt"
+            ),
+            FolderError::AttemptsUnsaved { paths } => write!(
+                f,
+                "dropped attempts {} hold work that is not saved; nothing changed; next step: mortar save in each, \
+                 then keep again",
+                paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")
+            ),
+            FolderError::RequestMovedOn { branch, attempt } => write!(
+                f,
+                "request branch {branch} has commits attempt branch {attempt} does not hold; keeping {attempt} would \
+                 drop them; nothing changed; next step: bring them into {attempt} or make the attempts again"
+            ),
+            FolderError::AttemptFolder { path, k } => write!(
+                f,
+                "{} is attempt {k}'s folder; remove takes request folders only; keep removes attempt folders; \
+                 nothing changed",
+                path.display()
+            ),
             FolderError::NotSaved { path } => write!(
                 f,
                 "{} holds work that is not saved; the folder was not moved; next step: mortar save",
@@ -110,16 +135,4 @@ fn not_removed_unsaved(f: &mut fmt::Formatter<'_>, path: &Path, refused: &[PathB
         cap.map_or(String::new(), |n| format!(" ({n} bytes)")),
         refused.iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")
     )
-}
-
-/// "the zone folder for zone Z", "the request folder for zone Z, request R", or, for a request record with no
-/// request, "a request folder for zone Z".
-fn folder_text(record: &FolderRecord) -> String {
-    match (record.kind, &record.request) {
-        (FolderKind::Request, Some(request)) => {
-            format!("the request folder for zone {}, request {request}", record.zone)
-        }
-        (FolderKind::Request, None) => format!("a request folder for zone {}", record.zone),
-        (FolderKind::Zone, _) => format!("the zone folder for zone {}", record.zone),
-    }
 }
