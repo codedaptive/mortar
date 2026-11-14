@@ -42,6 +42,47 @@ fn acquire_fresh_directory_refuses_live_holder_then_release_removes_file() {
 }
 
 #[test]
+fn folders_lock_is_exclusive_per_store_and_distinct_from_join_and_land() {
+    // Joins LockName::Folders -> lock_file_name -> acquire_lock's real publication -> release_lock.
+    let f = Fixture::new();
+    let me = holder("folders-holder");
+    let contender = holder("folders-contender");
+    let folders = acquire_lock(&f.common, &LockName::Folders, &me, &KillPidProbe).unwrap();
+    assert_eq!(folders.path, f.common.join("mortar/locks/folders.lock"));
+    assert_eq!(folders.record, me);
+    assert_eq!(folders.took_over, None);
+    let bytes = fs::read(&folders.path).unwrap();
+    assert_eq!(decode_lock_record(std::str::from_utf8(&bytes).unwrap()).unwrap(), me);
+    match acquire_lock(&f.common, &LockName::Folders, &contender, &KillPidProbe).unwrap_err() {
+        LockError::Held { path, holder } => {
+            assert_eq!(path, folders.path);
+            assert_eq!(holder, me);
+        }
+        other => panic!("expected store-wide folders Held: {other:?}"),
+    }
+    assert_eq!(fs::read(&folders.path).unwrap(), bytes);
+    let join = acquire_lock(&f.common, &LockName::Join("folders".into()), &me, &KillPidProbe).unwrap();
+    let land = acquire_lock(&f.common, &LockName::Land, &me, &KillPidProbe).unwrap();
+    assert_eq!(join.path, f.common.join("mortar/locks/join-folders.lock"));
+    assert_eq!(land.path, f.common.join("mortar/locks/land.lock"));
+    let other_store = Fixture::new();
+    let independent = acquire_lock(&other_store.common, &LockName::Folders, &contender, &KillPidProbe).unwrap();
+    assert_eq!(independent.path, other_store.common.join("mortar/locks/folders.lock"));
+    release_lock(&folders).unwrap();
+    assert!(!folders.path.exists());
+    for lock in [&join, &land, &independent] {
+        assert_eq!(decode_lock_record(&fs::read_to_string(&lock.path).unwrap()).unwrap(), lock.record);
+    }
+    let next = acquire_lock(&f.common, &LockName::Folders, &contender, &KillPidProbe).unwrap();
+    assert_eq!(next.record, contender);
+    assert_eq!(decode_lock_record(&fs::read_to_string(&next.path).unwrap()).unwrap(), contender);
+    for lock in [&next, &join, &land, &independent] {
+        release_lock(lock).unwrap();
+        assert!(!lock.path.exists());
+    }
+}
+
+#[test]
 fn dead_process_lock_is_taken_over_and_previous_holder_cannot_release_it() {
     // Joins real process exit -> KillPidProbe -> acquire_lock's stale takeover -> release_lock ownership.
     let f = Fixture::new();

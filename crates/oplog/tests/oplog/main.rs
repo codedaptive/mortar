@@ -7,4 +7,5 @@ mod apply;
 mod crash;
 mod locks;
 mod recovery;
+mod ref_names;
 mod refined_recovery;
