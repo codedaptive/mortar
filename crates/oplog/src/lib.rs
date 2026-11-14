@@ -4,13 +4,15 @@ pub mod apply;
 pub mod change_id;
 pub mod history;
 pub mod locks;
+pub mod protect;
 pub mod recover;
 pub mod store;
 pub mod trailers;
+pub mod undo;
 
 pub use apply::{
-    apply, check_ref_moves, check_ref_names, close_after_update, find_done_record, new_op_id,
-    op_id_from_parts, ref_format_verdict, ref_updates, takeover_op, ApplyOutcome,
+    apply, check_ref_moves, check_ref_names, close_after_update, find_done_record, guard_removal_op,
+    new_op_id, op_id_from_parts, ref_format_verdict, ref_updates, takeover_op, ApplyOutcome,
 };
 pub use change_id::{new_change_id, ChangeId, ChangeIdError};
 pub use history::{filter_history, history, HistoryFilter};
@@ -29,4 +31,8 @@ pub use trailers::{
     carry_mortar_trailers, mortar_trailer_pairs, pick_mortar_trailers, read_mortar_trailers,
     write_mortar_trailers, MortarTrailerError, MortarTrailers, MORTAR_CHANGE_ID_KEY, MORTAR_REQUEST_KEY,
     MORTAR_ZONE_KEY,
+};
+pub use protect::{apply_protected, check_protected_moves, protected_move_verdict, ProtectedRef};
+pub use undo::{
+    caller_op, find_undo_target, last_mover, plan_restore, plan_undo, restore, undo, value_as_of_op, OpCaller,
 };

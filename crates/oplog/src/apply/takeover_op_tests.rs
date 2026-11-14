@@ -16,6 +16,7 @@ fn lock(took_over: Option<LockRecord>) -> AcquiredLock {
             since: 1763030500,
         },
         took_over,
+        removed_guards: Vec::new(),
     }
 }
 

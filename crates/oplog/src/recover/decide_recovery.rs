@@ -3,10 +3,10 @@
 use gitio::Oid;
 
 use super::RecoveryDecision;
-use crate::store::RefMove;
+use crate::store::{move_changes, oid_is_zero, RefMove};
 
-/// Decided over the moves that change something only: Done when every changing move's ref is at new (so
-/// an op with no changing move, or no moves at all, is Done); Failed when none is; Mixed when some are.
+/// Decided over the moves that change something (move_changes) only: Done when every changing move's ref is at new
+/// (so an op with no changing move, or no moves at all, is Done); Failed when none is; Mixed when some are.
 /// Failed and Mixed carry every move, changing or not, with its actual value.
 /// update_refs is one all-or-nothing transaction (S-1), so a changing move not at new proves nothing moved.
 /// An unchanged move (old == new, or a delete of an absent ref) sits at its new value whether or not the
@@ -16,7 +16,7 @@ use crate::store::RefMove;
 pub fn decide_recovery(refs: &[(RefMove, Option<Oid>)]) -> RecoveryDecision {
     let changing_at_new: Vec<bool> = refs
         .iter()
-        .filter(|(m, _)| changes_something(m))
+        .filter(|(m, _)| move_changes(m))
         .map(|(m, actual)| at_new(m, actual.as_ref()))
         .collect();
     if changing_at_new.iter().all(|&b| b) {
@@ -31,19 +31,7 @@ pub fn decide_recovery(refs: &[(RefMove, Option<Oid>)]) -> RecoveryDecision {
 /// An all-zero `new` deletes the ref, so an absent ref is at it; otherwise the ref must hold `new`.
 fn at_new(m: &RefMove, actual: Option<&Oid>) -> bool {
     match actual {
-        None => is_zero(&m.new),
+        None => oid_is_zero(&m.new),
         Some(oid) => *oid == m.new,
     }
-}
-
-/// False when the move's old value already is its new one: old == new, or a delete of an absent ref.
-fn changes_something(m: &RefMove) -> bool {
-    match &m.old {
-        None => !is_zero(&m.new),
-        Some(old) => *old != m.new,
-    }
-}
-
-fn is_zero(oid: &Oid) -> bool {
-    oid.as_str().bytes().all(|b| b == b'0')
 }

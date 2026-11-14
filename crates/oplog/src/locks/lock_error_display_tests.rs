@@ -25,6 +25,7 @@ fn held_names_holder_path_and_says_wait() {
     let err = LockError::Held {
         path: PathBuf::from("/repo/.git/mortar/locks/land.lock"),
         holder: holder(),
+        removed_guards: Vec::new(),
     };
     let text = err.to_string();
     assert_names_holder(&text, "/repo/.git/mortar/locks/land.lock");
@@ -36,6 +37,7 @@ fn takeover_in_progress_names_guard_holder_and_removal() {
     let err = LockError::TakeoverInProgress {
         path: PathBuf::from("/repo/.git/mortar/locks/land.lock.takeover"),
         holder: holder(),
+        removed_guards: Vec::new(),
     };
     let text = err.to_string();
     assert_names_holder(&text, "/repo/.git/mortar/locks/land.lock.takeover");
@@ -69,6 +71,7 @@ fn not_ours_without_file_says_no_lock_file() {
 fn contended_names_path_and_says_try_again() {
     let err = LockError::Contended {
         path: PathBuf::from("/repo/.git/mortar/locks/land.lock"),
+        removed_guards: Vec::new(),
     };
     assert_eq!(
         err.to_string(),
@@ -95,6 +98,7 @@ fn malformed_names_path_and_reason() {
     let err = LockError::Malformed {
         path: Some(PathBuf::from("/repo/.git/mortar/locks/land.lock")),
         reason: "has 3 lines, not 4".to_string(),
+        removed_guards: Vec::new(),
     };
     let text = err.to_string();
     assert!(text.contains("/repo/.git/mortar/locks/land.lock"), "{text}");
@@ -107,6 +111,7 @@ fn malformed_without_path_names_reason() {
     let err = LockError::Malformed {
         path: None,
         reason: "pid is empty".to_string(),
+        removed_guards: Vec::new(),
     };
     let text = err.to_string();
     assert!(text.contains("pid is empty"), "{text}");
@@ -125,6 +130,7 @@ fn io_names_path_and_cause() {
     let err = LockError::Io {
         path: PathBuf::from("/repo/.git/mortar/locks"),
         source: std::io::Error::new(std::io::ErrorKind::PermissionDenied, "denied here"),
+        removed_guards: Vec::new(),
     };
     let text = err.to_string();
     assert!(text.contains("/repo/.git/mortar/locks"), "{text}");

@@ -69,5 +69,6 @@ fn io(path: &Path, source: std::io::Error) -> LockError {
     LockError::Io {
         path: path.to_path_buf(),
         source,
+        removed_guards: Vec::new(),
     }
 }

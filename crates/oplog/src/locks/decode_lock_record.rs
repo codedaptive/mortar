@@ -22,7 +22,11 @@ pub fn decode_lock_record(text: &str) -> Result<LockRecord, LockError> {
 }
 
 fn malformed(reason: String) -> LockError {
-    LockError::Malformed { path: None, reason }
+    LockError::Malformed {
+        path: None,
+        reason,
+        removed_guards: Vec::new(),
+    }
 }
 
 /// The value of `line`, which must be `<name>=<value>`; split at the first '='.

@@ -16,6 +16,7 @@ pub(crate) fn read_lock_file(path: &Path) -> Result<Option<LockRecord>, LockErro
             return Err(LockError::Io {
                 path: path.to_path_buf(),
                 source,
+                removed_guards: Vec::new(),
             })
         }
     };
@@ -24,6 +25,7 @@ pub(crate) fn read_lock_file(path: &Path) -> Result<Option<LockRecord>, LockErro
         Err(LockError::Malformed { reason, .. }) => Err(LockError::Malformed {
             path: Some(path.to_path_buf()),
             reason,
+            removed_guards: Vec::new(),
         }),
         Err(other) => Err(other),
     }

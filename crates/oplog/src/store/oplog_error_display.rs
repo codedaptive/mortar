@@ -1,10 +1,11 @@
 //! How an op log refusal reads: each names its line, path, op or refs, and says what to do.
+//! A Protected refusal of a delete is told by an all-zero new value (oid_is_zero).
 
 use std::fmt;
 
 use gitio::Oid;
 
-use super::OplogError;
+use super::{oid_is_zero, OplogError};
 
 impl fmt::Display for OplogError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -52,6 +53,66 @@ impl fmt::Display for OplogError {
             OplogError::BadMove { refname, reason } => write!(
                 f,
                 "op cannot be applied: ref {refname:?} {reason}; fix the op's moves and run again"
+            ),
+            OplogError::Protected {
+                refname,
+                current,
+                new,
+                by,
+            } => {
+                let cur = oid_text(current.as_ref());
+                if oid_is_zero(new) {
+                    write!(
+                        f,
+                        "ref {refname} is protected by {by}: deleting it is refused (it holds {cur}); nothing was \
+                         changed; ask {by} before removing it"
+                    )
+                } else {
+                    write!(
+                        f,
+                        "ref {refname} is protected by {by}: moving it from {cur} to {} is not a fast-forward; \
+                         nothing was changed; move it only to a commit that has {cur} as an ancestor, or ask {by}",
+                        new.as_str()
+                    )
+                }
+            }
+            OplogError::NothingToUndo { refs } => write!(
+                f,
+                "nothing to undo: no done op in the op log moved {}; check the ref names with history by ref",
+                refs.join(", ")
+            ),
+            OplogError::MovedSince {
+                op_id,
+                refname,
+                left,
+                actual,
+                moved_by,
+            } => {
+                let left = oid_text(left.as_ref());
+                let actual = oid_text(actual.as_ref());
+                match moved_by {
+                    Some((mop, actor)) => write!(
+                        f,
+                        "cannot undo op {op_id}: ref {refname} moved since (that op left it at {left}, it now \
+                         holds {actual}), by op {mop} of {actor}; undo op {mop} first, or restore the ref to the \
+                         value you want"
+                    ),
+                    None => write!(
+                        f,
+                        "cannot undo op {op_id}: ref {refname} moved since (that op left it at {left}, it now \
+                         holds {actual}) outside mortar: no logged op explains it; find who moved it, then \
+                         restore the ref to the value you want"
+                    ),
+                }
+            }
+            OplogError::UnknownOp { op_id } => write!(
+                f,
+                "cannot restore: op {op_id} is not in the op log; find the op id with history"
+            ),
+            OplogError::ValueUnknown { op_id, refname } => write!(
+                f,
+                "cannot restore ref {refname} as of op {op_id}: no done op in the op log moved it, so its value \
+                 then is unknown; name only refs mortar has moved"
             ),
         }
     }

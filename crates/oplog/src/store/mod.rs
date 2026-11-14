@@ -15,7 +15,9 @@ mod json_error;
 mod json_value;
 mod line_error;
 mod log_line;
+mod move_changes;
 mod object_fields;
+mod oid_is_zero;
 mod op;
 mod op_log;
 mod op_phase;
@@ -57,7 +59,11 @@ mod intent_record_tests;
 #[cfg(test)]
 mod log_line_tests;
 #[cfg(test)]
+mod move_changes_tests;
+#[cfg(test)]
 mod object_fields_tests;
+#[cfg(test)]
+mod oid_is_zero_tests;
 #[cfg(test)]
 mod oplog_error_display_tests;
 #[cfg(test)]
@@ -103,7 +109,9 @@ pub(crate) use json_error::JsonError;
 pub(crate) use json_value::JsonValue;
 pub(crate) use line_error::LineError;
 pub(crate) use log_line::log_line;
+pub(crate) use move_changes::move_changes;
 pub(crate) use object_fields::object_fields;
+pub(crate) use oid_is_zero::oid_is_zero;
 pub(crate) use parse_json::parse_json;
 pub(crate) use parse_json_string::parse_json_string;
 pub(crate) use take_oid::take_oid;

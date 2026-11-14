@@ -26,7 +26,7 @@ fn acquire_fresh_directory_refuses_live_holder_then_release_removes_file() {
     let message = error.to_string();
     assert!(message.contains("live-holder") && message.contains(&me.host) && message.contains("since 100"), "{message}");
     match error {
-        LockError::Held { path, holder } => {
+        LockError::Held { path, holder, .. } => {
             assert_eq!(path, lock.path);
             assert_eq!(holder, me);
         }
@@ -54,7 +54,7 @@ fn folders_lock_is_exclusive_per_store_and_distinct_from_join_and_land() {
     let bytes = fs::read(&folders.path).unwrap();
     assert_eq!(decode_lock_record(std::str::from_utf8(&bytes).unwrap()).unwrap(), me);
     match acquire_lock(&f.common, &LockName::Folders, &contender, &KillPidProbe).unwrap_err() {
-        LockError::Held { path, holder } => {
+        LockError::Held { path, holder, .. } => {
             assert_eq!(path, folders.path);
             assert_eq!(holder, me);
         }
@@ -105,7 +105,7 @@ fn dead_process_lock_is_taken_over_and_previous_holder_cannot_release_it() {
     assert_eq!(decode_lock_record(&fs::read_to_string(&taken.path).unwrap()).unwrap(), me);
     assert!(!f.common.join("mortar/locks/land.lock.takeover").exists());
     assert_eq!(fs::read_dir(f.common.join("mortar/locks")).unwrap().count(), 1);
-    let stale_handle = AcquiredLock { path: taken.path.clone(), record: previous, took_over: None };
+    let stale_handle = AcquiredLock { path: taken.path.clone(), record: previous, took_over: None, removed_guards: Vec::new() };
     match release_lock(&stale_handle).unwrap_err() {
         LockError::NotOurs { path, holder: Some(current) } => {
             assert_eq!(path, taken.path);
