@@ -173,7 +173,7 @@ fn other_host_holder_is_not_stale_even_with_a_dead_pid() {
     release_lock(&lock).unwrap();
 }
 
-fn holder(key: &str) -> LockRecord {
+pub(super) fn holder(key: &str) -> LockRecord {
     LockRecord { pid: std::process::id(), host: host_name().unwrap(), key: key.into(), since: 100 }
 }
 
