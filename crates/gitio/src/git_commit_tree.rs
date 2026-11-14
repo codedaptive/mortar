@@ -1,5 +1,5 @@
-//! Git::commit_tree: write a commit object. It only runs git, so it has no unit tests; Nagatha's integration test
-//! "commit_tree writing a commit with its parents, message, author and committer as given" is to cover it.
+//! Git::commit_tree: write a commit object. It only runs git, so it has no unit tests; tests/typed/commits_and_refs.rs
+//! and tests/typed/author_round_trip.rs cover it.
 
 use crate::commit_tree_request::commit_tree_request;
 use crate::oid_line::oid_line;
