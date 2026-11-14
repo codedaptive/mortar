@@ -1,0 +1,65 @@
+//! Makes a request's folder: its branch, cut from the zone branch's tip, and a sparse worktree on it.
+//! No unit test: it takes a lock, appends to the op log, runs git and writes files (S-5). zone_branch_tests,
+//! request_branch_tests, sparse_paths_tests, branch_op_tests, branch_step_after_tests, repeat_decision_tests,
+//! refill_cone_tests, branch_holder_tests and attach_head_request_tests cover its decisions. Nagatha's
+//! integration group is to cover, in a throwaway repository: a request folder is made on req/<zone>/<request>
+//! at zone/<zone>'s tip, holds the cone and its record, and its branch op is in the op log; a second call
+//! fills the folder again (finishing a fill that was interrupted), answers the same record and logs no new op; a
+//! missing zone branch refuses with ZoneBranchMissing; a request branch already at another commit refuses with
+//! BranchExists; a branch deleted after it was made, then make again at the same zone tip: the branch is made
+//! again; a folders lock held by a live process refuses with FolderError::Lock and makes nothing.
+
+use super::attach_head::attach_head;
+use super::check_before_make::check_before_make;
+use super::fill_folder::fill_folder;
+use super::make_branch::make_branch;
+use super::refill_folder::refill_folder;
+use super::with_folders_lock::with_folders_lock;
+use super::{FolderError, FolderSetup};
+use crate::plan::{request_branch, sparse_paths, zone_branch};
+use crate::record::{FolderKind, FolderRecord};
+
+/// Makes the folder for `request` in `zone` at setup.path, holding `paths` (the work order's paths), and
+/// returns its record. Under the folders lock, keyed `folders:make:req/<zone>/<request>`: reads zone/<zone>'s
+/// tip; when the folder exists and differs only in its base and needed paths, fills it again and answers its
+/// record; refuses a different folder, the request branch checked out elsewhere, and free disk under the
+/// floor, all before the branch is made, so a refused folder leaves no branch; makes the branch through
+/// make_branch; adds the worktree detached at the tip and points its HEAD at the branch; then writes the record
+/// and fills the folder.
+///
+/// The caller runs oplog::recover first, as apply requires.
+pub fn make_request_folder(
+    setup: &FolderSetup,
+    zone: &str,
+    request: &str,
+    paths: &[String],
+) -> Result<FolderRecord, FolderError> {
+    let zb = zone_branch(zone).map_err(FolderError::Plan)?;
+    let rb = request_branch(zone, request).map_err(FolderError::Plan)?;
+    let cone = sparse_paths(paths, &[]).map_err(FolderError::Plan)?;
+    let git = setup.git;
+    let common = git.common_dir().map_err(FolderError::Git)?;
+    with_folders_lock(git, &common, &format!("folders:make:{rb}"), setup.pids, || {
+        let tip = git
+            .read_ref(&format!("refs/heads/{zb}"))
+            .map_err(FolderError::Git)?
+            .ok_or_else(|| FolderError::ZoneBranchMissing { branch: zb.clone() })?;
+        let wanted = FolderRecord {
+            kind: FolderKind::Request,
+            zone: zone.to_string(),
+            request: Some(request.to_string()),
+            base: tip.clone(),
+            work_order_paths: cone.clone(),
+            needed_paths: Vec::new(),
+            parent: Some(zb.clone()),
+        };
+        if let Some(existing) = check_before_make(setup, &wanted, &rb)? {
+            return refill_folder(git, &setup.path, existing);
+        }
+        make_branch(setup, &common, &rb, &tip)?;
+        git.worktree_add(&setup.path, &tip, None).map_err(FolderError::Git)?;
+        attach_head(git, &setup.path, &rb)?;
+        fill_folder(git, &setup.path, &wanted, &cone)?;
+        Ok(wanted)
+    })
+}
