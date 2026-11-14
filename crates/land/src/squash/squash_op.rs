@@ -1,4 +1,7 @@
 //! squash_op: the op that moves a zone's squash ref to a new squash commit.
+//! No sibling unit test (S-104): every test of it runs gitio's Oid Display (S-101). Covered by tests/squash_zit
+//! through squash (a_squash_keeps_origins_newer_change_and_adds_only_the_zones, a_resquash_keeps_the_change_id);
+//! its unit cases are Nagatha's RITs (owed).
 
 use gitio::Oid;
 use oplog::{Op, RefMove};

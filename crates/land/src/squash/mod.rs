@@ -45,13 +45,9 @@ mod squash_error_error_tests;
 #[cfg(test)]
 mod squash_message_tests;
 #[cfg(test)]
-mod squash_op_tests;
-#[cfg(test)]
 mod squash_ref_tests;
 #[cfg(test)]
 mod squash_requests_tests;
-#[cfg(test)]
-mod squash_trailer_pairs_tests;
 #[cfg(test)]
 mod would_merge_from_tests;
 

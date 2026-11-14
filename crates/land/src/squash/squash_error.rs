@@ -1,5 +1,7 @@
 //! SquashError: why a squash or would_merge was refused. A declaration only (S-7); squash_error_display_tests
-//! exercises each variant's text, squash_error_error_tests its source, squash_applied_tests the op variants.
+//! exercise the texts of RefMissing, OpFailed and OpRepeated, tests/land_rit those of Git, Oplog, Trailers and
+//! ChangeId; the AttrSourceMissing and Unrelated texts are Nagatha's RITs (owed, S-101).
+//! squash_error_error_tests exercise its source, squash_applied_tests the op variants.
 
 use gitio::{GitError, Oid};
 use oplog::{ChangeIdError, MortarTrailerError, OpRecord, OplogError};

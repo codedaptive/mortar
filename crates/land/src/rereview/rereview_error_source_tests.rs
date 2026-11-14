@@ -44,12 +44,3 @@ fn no_parent_has_no_source() {
     let err = RereviewError::NoParent { commit: oid("1111111111111111111111111111111111111111") };
     assert!(err.source().is_none());
 }
-
-#[test]
-fn bases_differ_has_no_source() {
-    let err = RereviewError::BasesDiffer {
-        reviewed_parent: oid("cccccccccccccccccccccccccccccccccccccccc"),
-        new_parent: oid("dddddddddddddddddddddddddddddddddddddddd"),
-    };
-    assert!(err.source().is_none());
-}

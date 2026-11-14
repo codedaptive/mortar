@@ -1,5 +1,4 @@
-//! Squash: one zone squash commit. A declaration only (S-7); Nagatha's squash integration tests of SPEC-land
-//! 01-squash.md §Tests are to exercise it (they do not exist yet).
+//! Squash: one zone squash commit. A declaration only (S-7); tests/squash_zit.rs exercises it.
 //! Not named squash.rs: that file holds the function of the same name.
 
 use gitio::Oid;

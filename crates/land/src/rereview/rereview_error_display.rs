@@ -1,4 +1,7 @@
 //! How a re-review failure reads: git's failure, the trailer failure as it is, or the refusal naming its commits.
+//! No sibling unit test (S-104): every test of it runs gitio's Oid Display or another crate's error Display
+//! (S-101). No ZIT reaches it yet; tests/land_rit covers the Git and
+//! Trailers texts; the NotSameChange and NoParent texts are Nagatha's RITs (owed).
 
 use std::fmt;
 
@@ -18,11 +21,6 @@ impl fmt::Display for RereviewError {
                 id_text(new_id)
             ),
             RereviewError::NoParent { commit } => write!(f, "{commit} has no parent to compare against"),
-            RereviewError::BasesDiffer { reviewed_parent, new_parent } => write!(
-                f,
-                "different parents: reviewed on {reviewed_parent}, new on {new_parent}; re-review across a moved \
-                 origin is not supported yet"
-            ),
         }
     }
 }

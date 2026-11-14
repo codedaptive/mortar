@@ -11,8 +11,6 @@ mod same_change;
 #[cfg(test)]
 mod plan_rereview_tests;
 #[cfg(test)]
-mod rereview_error_display_tests;
-#[cfg(test)]
 mod rereview_error_source_tests;
 #[cfg(test)]
 mod same_change_tests;

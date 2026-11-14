@@ -1,6 +1,6 @@
 //! would_merge: whether a zone's squash merges into integration, by a trial merge.
-//! No unit test: it runs git (S-5); would_merge_from_tests covers its answer. Nagatha's integration tests of
-//! SPEC-land 01-squash.md §Tests are to cover it, in a throwaway repository: would_merge yes and no.
+//! No unit test: it runs git (S-5); would_merge_from_tests covers its answer. tests/squash_zit.rs covers it, in a
+//! throwaway repository: would_merge yes and no.
 
 use crate::squash::{check_attr_source, read_tip, would_merge_from, LandRefs, Squash, SquashError, WouldMerge};
 use gitio::Git;

@@ -1,5 +1,4 @@
-//! SquashAnswer: what a squash did. A declaration only (S-7); Nagatha's squash integration tests of SPEC-land
-//! 01-squash.md §Tests are to exercise each variant (they do not exist yet).
+//! SquashAnswer: what a squash did. A declaration only (S-7); tests/squash_zit.rs exercises each variant.
 
 use crate::squash::Squash;
 use gitio::Oid;

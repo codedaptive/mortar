@@ -1,5 +1,6 @@
 //! Every way naming a landing's culprit can fail.
-//! A bare type (S-7); culprit_error_display_tests and culprit_error_source_tests exercise each variant.
+//! A bare type (S-7); culprit_error_source_tests and culprit_of_landing_tests exercise each variant;
+//! Display texts: tests/land_rit covers Trailers; NotALanding is Nagatha's RIT (owed).
 
 use gitio::Oid;
 use oplog::MortarTrailerError;
