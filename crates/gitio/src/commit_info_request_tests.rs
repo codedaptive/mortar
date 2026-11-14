@@ -3,7 +3,7 @@ use crate::Oid;
 use std::ffi::OsString;
 
 #[test]
-fn argv_is_one_nul_record_of_id_tree_parents_and_message() {
+fn argv_is_one_nul_record_of_id_tree_parents_author_and_message_with_raw_date() {
     let (args, _) = commit_info_request(&Oid::parse("726080b6b018f93a1bbce14e3537e998ff5f62bd").unwrap());
     let want: Vec<OsString> = [
         "log",
@@ -11,7 +11,8 @@ fn argv_is_one_nul_record_of_id_tree_parents_and_message() {
         "-z",
         "--no-show-signature",
         "--encoding=UTF-8",
-        "--format=%H%x00%T%x00%P%x00%B",
+        "--date=raw",
+        "--format=%H%x00%T%x00%P%x00%an%x00%ae%x00%ad%x00%B",
         "--end-of-options",
         "726080b6b018f93a1bbce14e3537e998ff5f62bd",
         "--",
