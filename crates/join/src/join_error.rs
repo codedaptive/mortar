@@ -17,6 +17,8 @@ pub enum JoinError {
     MergeCommit(Oid),
     /// The commit has no parent; replay takes one-parent commits only.
     RootCommit(Oid),
+    /// The commit's author date is empty; commit_tree cannot hand an empty date back unchanged.
+    EmptyAuthorDate(Oid),
     /// git's replay was clean but gave no update for the tip ref.
     TipNotReplayed(String),
 }

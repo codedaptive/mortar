@@ -57,3 +57,12 @@ fn tip_not_replayed_names_the_ref() {
         "git replay gave no update for the tip ref refs/heads/topic"
     );
 }
+
+#[test]
+fn empty_author_date_names_the_commit_and_says_why() {
+    assert_eq!(
+        JoinError::EmptyAuthorDate(id()).to_string(),
+        "commit 1111111111111111111111111111111111111111 has an empty author date; commit_tree cannot hand an empty \
+         date back unchanged"
+    );
+}

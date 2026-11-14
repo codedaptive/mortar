@@ -22,15 +22,19 @@ fn oid(hex: &str) -> Oid {
     Oid::parse(hex).unwrap()
 }
 
-fn author() -> Person {
-    Person { name: "Ana Núñez".to_string(), email: "ana@example.com".to_string(), date: Some("1700000000 +0530".to_string()) }
+fn author(date: &str) -> Person {
+    Person { name: "Ana Núñez".to_string(), email: "ana@example.com".to_string(), date: Some(date.to_string()) }
 }
 
 fn fake(parents: &[&str], merge: Option<MergeTreeOutcome>) -> ReplayGitFake {
+    fake_dated(parents, merge, "1700000000 +0530")
+}
+
+fn fake_dated(parents: &[&str], merge: Option<MergeTreeOutcome>, date: &str) -> ReplayGitFake {
     let info = CommitInfo {
         tree: oid(OLD_TREE),
         parents: parents.iter().map(|hex| oid(hex)).collect(),
-        author: author(),
+        author: author(date),
         message: MESSAGE.to_string(),
     };
     let mut git = ReplayGitFake { new_commits: RefCell::new(VecDeque::from([oid(NEW)])), ..ReplayGitFake::default() };
@@ -96,6 +100,16 @@ fn merge_commit_is_refused_before_any_merge() {
     assert_eq!(
         replay_commit(&git, &oid(ONTO), &oid(RUNNING), &oid(COMMIT)),
         Err(JoinError::MergeCommit(oid(COMMIT)))
+    );
+    assert_eq!(*git.calls.borrow(), vec![FakeCall::CommitInfo(oid(COMMIT))]);
+}
+
+#[test]
+fn empty_author_date_is_refused_before_any_merge_and_writes_no_commit() {
+    let git = fake_dated(&[PARENT], Some(MergeTreeOutcome::Clean(oid(TREE))), "");
+    assert_eq!(
+        replay_commit(&git, &oid(ONTO), &oid(RUNNING), &oid(COMMIT)),
+        Err(JoinError::EmptyAuthorDate(oid(COMMIT)))
     );
     assert_eq!(*git.calls.borrow(), vec![FakeCall::CommitInfo(oid(COMMIT))]);
 }

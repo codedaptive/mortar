@@ -18,6 +18,10 @@ impl fmt::Display for JoinError {
             JoinError::RootCommit(commit) => {
                 write!(f, "commit {commit} is a root commit; replay takes one-parent commits only")
             }
+            JoinError::EmptyAuthorDate(commit) => write!(
+                f,
+                "commit {commit} has an empty author date; commit_tree cannot hand an empty date back unchanged"
+            ),
             JoinError::TipNotReplayed(tip) => write!(f, "git replay gave no update for the tip ref {tip}"),
         }
     }
