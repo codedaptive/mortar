@@ -66,6 +66,51 @@ fn branch_at_old_moves_only_the_request_branch_with_one_exact_folder_move_operat
 }
 
 #[test]
+fn local_unstaged_staged_and_untracked_obstructions_refuse_without_branch_entry_file_or_log_changes() {
+    // Even when the caller passes saved=true, real gitio read-tree must refuse work it would overwrite.
+    for obstruction in ["unstaged", "staged", "untracked"] {
+        let m = MoveFixture::new();
+        let blocked = if obstruction == "untracked" { "kit/zone/new" } else { "kit/zone/file" };
+        write(&m.folder, blocked, b"must not be overwritten\n");
+        if obstruction == "staged" { run(&m.local, &["add", "--", blocked]); }
+        let prefix = match obstruction { "unstaged" => " M", "staged" => "M ", _ => "??" };
+        assert_eq!(run(&m.local, &["status", "--porcelain", "--", blocked]), format!("{prefix} {blocked}\n").as_bytes(), "{obstruction} fixture precondition");
+        let before = m.observe();
+        let error = m.move_saved(true).expect_err(&format!("real {obstruction} obstruction must refuse without overwriting {blocked}"));
+        match error {
+            HeldLockError::Work(FolderError::MoveRefused { path, paths }) => {
+                assert_eq!(path, m.folder);
+                assert_eq!(paths, vec![PathBuf::from(blocked)], "{obstruction}");
+            }
+            other => panic!("expected MoveRefused for {obstruction}: {other:?}"),
+        }
+        // Compare semantic index entries: gitio legitimately refreshes index stat/cache data before refusing.
+        assert_eq!(m.observe(), before, "{obstruction}");
+        assert_eq!(m.f.git.read_ref(BRANCH).unwrap(), Some(m.f.head.clone()));
+    }
+}
+
+#[test]
+fn ignored_obstruction_is_replaced_by_the_target_blob_while_unrelated_ignored_work_survives() {
+    // #1179/S-55: move_folder -> gitio protection skips ignored files, then real sparse move installs target.
+    let m = MoveFixture::new();
+    fs::write(m.f.common.join("info/exclude"), b"/kit/zone/new\n/local-ignored\n").unwrap();
+    write(&m.folder, "kit/zone/new", b"ignored bytes may be replaced\n");
+    write(&m.folder, "local-ignored", b"unrelated ignored bytes stay\n");
+    assert_eq!(run(&m.local, &["check-ignore", "--", "kit/zone/new"]), b"kit/zone/new\n");
+    assert!(run(&m.local, &["status", "--porcelain", "--", "kit/zone/new"]).is_empty());
+    let start = read_op_log(&m.f.common).unwrap().records.len();
+    m.move_saved(true).unwrap();
+    m.assert_moved();
+    assert_eq!(fs::read(m.folder.join("kit/zone/new")).unwrap(), b"new path bytes\n");
+    assert_eq!(fs::read(m.folder.join("local-ignored")).unwrap(), b"unrelated ignored bytes stay\n");
+    assert_move_op(&read_op_log(&m.f.common).unwrap().records[start..], &m.f.head, &m.new);
+    let after = m.observe();
+    m.move_saved(true).unwrap();
+    assert_eq!(m.observe(), after);
+}
+
+#[test]
 fn tracked_local_edits_refuse_the_move_without_ref_index_file_or_log_changes() {
     // WO-orc-folders-it-3 #975, move_folder case 4: folders -> real gitio refusal -> no oplog operation.
     // saved=true deliberately reaches gitio's protection, rather than the early NotSaved guard.

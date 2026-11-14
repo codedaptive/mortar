@@ -1,8 +1,9 @@
 //! Runs a verb's act under its oplog lock, after recover (S-16, S-25).
-//! Shell API with no caller yet: the ref-moving verbs of WO-cli-2..6 call it.
+//! Shell API: `mortar join` (run_join) and `mortar save` (run_save) call it, and so will each later verb that
+//! moves a ref.
 //! No unit test: it takes a real lock file and runs git and the op log (S-5); lock_report_tests and
 //! failure_report_tests cover what it reports. Nagatha's integration group is to cover, with the mortar binary
-//! as a child process in a throwaway repository and the first ref-moving verb: a lock held by a live pid is
+//! as a child process in a throwaway repository and `mortar join`: a lock held by a live pid is
 //! exit 3 naming the holder's pid, host and since, and the act does not run; an open intent left in the op log
 //! is settled by recover before the act runs; the lock file is gone after the act, whether it was done or
 //! refused; an act's refusal comes back as its own report.
@@ -15,8 +16,9 @@ use oplog::{recover, with_lock, HeldLockError, LockName, PidProbe};
 use super::lock_report;
 use crate::report::{failure_report, Report};
 
-/// Holds `name` under `common` for op key `key`, runs oplog recover, then `act`. A lock refusal is
-/// lock_report; recover or the op log failing is failure_report; `act`'s own report comes back as it is.
+/// Holds `name` under `common`, recording `key` as the lock holder's op key (not passed to the op log's apply,
+/// S-90), runs oplog recover, then `act`. A lock refusal is lock_report; recover or the op log
+/// failing is failure_report; `act`'s own report comes back as it is.
 pub fn locked_act<T>(
     git: &Git,
     common: &Path,

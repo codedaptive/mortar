@@ -5,6 +5,7 @@ use std::{fs, path::PathBuf};
 use testkit::{write_git_shim, TestRepo};
 
 mod overlap;
+mod resolution;
 
 #[test]
 fn clean_replay_keeps_each_author_message_and_trailer_and_moves_no_ref_on_either_path() {

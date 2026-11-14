@@ -1,5 +1,5 @@
 //! Mortar's per-repository settings (S-70): `<common>/mortar/config.json`, its type, its one-line JSON form,
-//! and the protected list built from it (S-56).
+//! and the protected list (S-56) and snapshot settings built from it.
 
 mod config;
 mod config_error;
@@ -13,6 +13,8 @@ mod formatter_config;
 mod parse_config_json;
 mod protected_refs;
 mod read_config;
+mod snapshot_settings;
+mod snapshot_settings_for;
 mod take_members;
 mod take_name;
 mod take_number;
@@ -35,6 +37,8 @@ mod parse_config_json_tests;
 #[cfg(test)]
 mod protected_refs_tests;
 #[cfg(test)]
+mod snapshot_settings_for_tests;
+#[cfg(test)]
 mod take_members_tests;
 #[cfg(test)]
 mod take_name_tests;
@@ -51,6 +55,8 @@ pub use encode_config::encode_config;
 pub use formatter_config::FormatterConfig;
 pub use protected_refs::protected_refs;
 pub use read_config::read_config;
+pub use snapshot_settings::SnapshotSettings;
+pub use snapshot_settings_for::snapshot_settings_for;
 pub use write_config::write_config;
 pub use zone_config::ZoneConfig;
 

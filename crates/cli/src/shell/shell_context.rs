@@ -1,5 +1,5 @@
 //! What every verb runs with, once the shell has read it.
-//! A bare type (S-7). Shell API: run builds it; the verbs of WO-cli-2..6 read it. run has no unit test, so
+//! A bare type (S-7). Shell API: run builds it; the verbs read it. run has no unit test, so
 //! Nagatha's integration cases listed there exercise it.
 
 use oplog::ProtectedRef;
