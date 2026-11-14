@@ -26,6 +26,7 @@ fn a_move_is_its_line_and_its_tips() {
         old: Oid::parse("1111111111111111111111111111111111111111").expect("a valid oid"),
         new: Oid::parse("2222222222222222222222222222222222222222").expect("a valid oid"),
         op_id: "op-rebase".to_string(),
+        folder_tree: None,
     };
     assert_eq!(
         finished_move_part(Some(&moved)),

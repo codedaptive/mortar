@@ -11,8 +11,8 @@
 //! the folder's files and HEAD at the new tip with the resolved content and edits outside the resolved paths kept;
 //! conflicted again on a later commit is exit 2 listing the files; an edit on a path the zone changed is exit 1 naming
 //! the paths and the snapshot ref; a kill after join's final op and before the folder move is finished by the next
-//! resolve or join (with WO-join-3e: from the op's folder_tree); a held lock is exit 3; an attempt folder is exit 1
-//! with nothing run; any argument is exit 4.
+//! resolve or join (from the op's folder_tree); a held lock is exit 3; an attempt folder is exit 1 with nothing run;
+//! any argument is exit 4.
 
 use folders::move_folder;
 use folders::plan::snap_ref;

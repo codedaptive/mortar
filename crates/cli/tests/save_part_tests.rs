@@ -92,6 +92,7 @@ fn a_finished_move_comes_first() {
         old: oid(OLD),
         new: oid(NEW),
         op_id: "op-rebase".to_string(),
+        folder_tree: None,
     };
     let (lines, fields) = save_part(&unwritten(), Some(&moved));
     assert_eq!(
