@@ -17,6 +17,6 @@ pub(crate) fn resolved_folder_tree(
     caller_tree: &Oid,
 ) -> Result<Oid, JoinRunError> {
     let info = git.commit_info(&state.request_tip).map_err(JoinRunError::Git)?;
-    git.tree_with_paths(&info.tree, caller_tree, &state.all_files)
+    git.tree_with_paths_typed(&info.tree, caller_tree, &state.all_files)
         .map_err(|error| tree_refusal(error, &state.all_files))
 }

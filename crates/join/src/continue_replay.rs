@@ -1,8 +1,8 @@
 //! continue_replay: a resolve's replay, from the resolved commit through the commits still to replay.
-//! No unit test: it composes join functions (check_onto, tree_with_paths through ReplayGit, resolved_commit,
+//! No unit test: it composes join functions (check_onto, tree_with_paths_typed through ReplayGit, resolved_commit,
 //! replay_commits, after_replay, tree_refusal), so its tests are integration (rule 11; WO-join-3g order).
 //! Nagatha's integration tests are to cover:
-//! - the resolved tree is tree_with_paths(state.tree, the caller's tree, state.files) and is the tree committed
+//! - the resolved tree is tree_with_paths_typed(state.tree, the caller's tree, state.files) and is the tree committed
 //!   (S-50);
 //! - with no remaining commits, the step rebases the request ref from the request tip to the resolved commit
 //!   (WO-join-3 order, Goal 3: "Clean: one op moves the request branch");
@@ -42,7 +42,7 @@ pub(crate) fn continue_replay(
 ) -> Result<AfterReplayStep, JoinRunError> {
     check_onto(git, &state.onto).map_err(JoinRunError::Replay)?;
     let resolved_tree = git
-        .tree_with_paths(&state.tree, caller_tree, &state.files)
+        .tree_with_paths_typed(&state.tree, caller_tree, &state.files)
         .map_err(|error| tree_refusal(error, &state.files))?;
     let resolved = resolved_commit(git, state, &resolved_tree).map_err(JoinRunError::Replay)?;
     let result = replay_commits(git, &state.onto, &resolved, &state.remaining).map_err(JoinRunError::Replay)?;

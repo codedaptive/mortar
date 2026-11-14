@@ -1,150 +1,80 @@
-//! tree_refusal: a git failure, a killed run included, passes through as Git; each of gitio's refusal shapes,
-//! written out by hand, maps to the resolve refusal naming the conflicted path, including a quoted or spaced path and
-//! an overlap.
+//! tree_refusal: a folder refusal is ConflictedPathIsFolder naming its path as given; a Git failure with an exit
+//! code or args passes through equal; a wrong-shape refusal (no code, no args) is refused naming no path.
+//! The typed refusals whose reason is gitio's Display are RITs owed to Nagatha (S-101, WO-join-3cr), so they are
+//! not tested here.
 
 use crate::tree_refusal::tree_refusal;
 use crate::JoinRunError;
-use gitio::GitError;
+use gitio::{GitError, TreeWithPathsError, TreeWithPathsRefusal};
 use std::path::PathBuf;
 
-fn refusal(stderr: &str) -> GitError {
-    GitError { args: Vec::new(), code: None, stderr: stderr.to_string() }
+fn p(path: &str) -> PathBuf {
+    PathBuf::from(path)
 }
 
 fn files() -> Vec<PathBuf> {
-    vec![PathBuf::from("src/a.rs"), PathBuf::from("my \"odd\" file.txt"), PathBuf::from("lib"), PathBuf::from("lib/x")]
+    vec![p("src/a.rs"), p("my \"odd\" file.txt"), p("lib"), p("lib/x")]
+}
+
+fn refused(refusal: TreeWithPathsRefusal, files: &[PathBuf]) -> JoinRunError {
+    tree_refusal(TreeWithPathsError::Refused(refusal), files)
+}
+
+fn is_folder(mapped: JoinRunError) -> PathBuf {
+    let JoinRunError::ConflictedPathIsFolder { path } = mapped else { panic!("want ConflictedPathIsFolder: {mapped:?}") };
+    path
+}
+
+fn path_refused(mapped: JoinRunError) -> (Option<PathBuf>, String) {
+    let JoinRunError::ConflictedPathRefused { path, reason } = mapped else {
+        panic!("want ConflictedPathRefused: {mapped:?}")
+    };
+    (path, reason)
 }
 
 #[test]
-fn a_git_run_that_failed_passes_through_unchanged() {
-    let error = GitError {
-        args: vec!["ls-tree".to_string()],
-        code: Some(128),
-        stderr: "fatal: not a tree object: \"src/a.rs\" is a folder\n".to_string(),
+fn a_folder_in_from_is_conflicted_path_is_folder_naming_it() {
+    assert_eq!(is_folder(refused(TreeWithPathsRefusal::FolderInFrom { path: p("src/a.rs") }, &files())), p("src/a.rs"));
+}
+
+#[test]
+fn a_folder_in_base_is_conflicted_path_is_folder_naming_it() {
+    assert_eq!(is_folder(refused(TreeWithPathsRefusal::FolderInBase { path: p("lib") }, &files())), p("lib"));
+}
+
+#[test]
+fn a_quoted_and_spaced_path_is_carried_through_unchanged() {
+    let path = p("my \"odd\" file.txt");
+    assert_eq!(is_folder(refused(TreeWithPathsRefusal::FolderInFrom { path }, &files())), p("my \"odd\" file.txt"));
+}
+
+#[test]
+fn a_git_run_with_an_exit_code_passes_through_equal() {
+    let error = GitError { args: vec!["ls-tree".to_string()], code: Some(128), stderr: "fatal: bad tree\n".to_string() };
+    let JoinRunError::Git(passed) = tree_refusal(TreeWithPathsError::Git(error), &files()) else {
+        panic!("a failed git run must stay Git")
     };
-    let JoinRunError::Git(passed) = tree_refusal(error, &files()) else { panic!("a failed git run must stay Git") };
     assert_eq!(
         passed,
-        GitError {
-            args: vec!["ls-tree".to_string()],
-            code: Some(128),
-            stderr: "fatal: not a tree object: \"src/a.rs\" is a folder\n".to_string(),
-        }
+        GitError { args: vec!["ls-tree".to_string()], code: Some(128), stderr: "fatal: bad tree\n".to_string() }
     );
 }
 
 #[test]
-fn a_killed_run_with_no_exit_code_passes_through_unchanged() {
-    let error = GitError {
-        args: vec!["update-index".to_string(), "--index-info".to_string()],
-        code: None,
-        stderr: "\"src/a.rs\" is a folder".to_string(),
+fn a_killed_run_with_args_and_no_exit_code_passes_through_equal() {
+    let error = GitError { args: vec!["update-index".to_string()], code: None, stderr: "killed".to_string() };
+    let JoinRunError::Git(passed) = tree_refusal(TreeWithPathsError::Git(error), &files()) else {
+        panic!("a killed git run must stay Git")
     };
-    let JoinRunError::Git(passed) = tree_refusal(error, &files()) else { panic!("a killed git run must stay Git") };
+    assert_eq!(passed, GitError { args: vec!["update-index".to_string()], code: None, stderr: "killed".to_string() });
+}
+
+#[test]
+fn a_wrong_shape_refusal_with_no_code_and_no_args_is_refused_naming_no_path() {
+    let stderr = "not ls-tree records for the paths asked (no final NUL): \"100644 blob\"";
+    let error = GitError { args: Vec::new(), code: None, stderr: stderr.to_string() };
     assert_eq!(
-        passed,
-        GitError {
-            args: vec!["update-index".to_string(), "--index-info".to_string()],
-            code: None,
-            stderr: "\"src/a.rs\" is a folder".to_string(),
-        }
+        path_refused(tree_refusal(TreeWithPathsError::Git(error), &files())),
+        (None, "not ls-tree records for the paths asked (no final NUL): \"100644 blob\"".to_string())
     );
-}
-
-#[test]
-fn a_path_that_is_a_folder_is_conflicted_path_is_folder() {
-    let mapped = tree_refusal(refusal("not a file entry: \"src/a.rs\" is a folder"), &files());
-    assert!(
-        matches!(&mapped, JoinRunError::ConflictedPathIsFolder { path } if *path == PathBuf::from("src/a.rs")),
-        "{mapped:?}"
-    );
-}
-
-#[test]
-fn a_quoted_and_spaced_path_that_is_a_folder_is_named() {
-    let mapped = tree_refusal(refusal("not a file entry: \"my \\\"odd\\\" file.txt\" is a folder"), &files());
-    let JoinRunError::ConflictedPathIsFolder { path } = mapped else { panic!("{mapped:?}") };
-    assert_eq!(path, PathBuf::from("my \"odd\" file.txt"));
-}
-
-#[test]
-fn an_overlap_names_the_first_conflicted_path_and_is_not_a_folder_refusal() {
-    let reason = "not usable paths (one is a folder holding the other): \"lib\" and \"lib/x\"";
-    let mapped = tree_refusal(refusal(reason), &files());
-    let JoinRunError::ConflictedPathRefused { path, reason } = mapped else { panic!("{mapped:?}") };
-    assert_eq!(path, Some(PathBuf::from("lib")));
-    assert_eq!(reason, "not usable paths (one is a folder holding the other): \"lib\" and \"lib/x\"");
-}
-
-#[test]
-fn an_overlap_takes_the_first_in_files_order_not_in_the_message() {
-    let files = vec![PathBuf::from("lib/x"), PathBuf::from("lib")];
-    let reason = "not usable paths (one is a folder holding the other): \"lib\" and \"lib/x\"";
-    let mapped = tree_refusal(refusal(reason), &files);
-    let JoinRunError::ConflictedPathRefused { path, .. } = mapped else { panic!("{mapped:?}") };
-    assert_eq!(path, Some(PathBuf::from("lib/x")));
-}
-
-#[test]
-fn a_path_not_as_git_stores_it_is_refused_naming_it() {
-    let files = vec![PathBuf::from("ok.txt"), PathBuf::from("a/../b")];
-    let reason = "not a usable path (not as git stores it: a leading '/', or an empty, '.' or '..' part): \"a/../b\"";
-    let JoinRunError::ConflictedPathRefused { path, reason: kept } = tree_refusal(refusal(reason), &files) else {
-        panic!("a stored-form refusal must be ConflictedPathRefused");
-    };
-    assert_eq!(path, Some(PathBuf::from("a/../b")));
-    assert_eq!(
-        kept,
-        "not a usable path (not as git stores it: a leading '/', or an empty, '.' or '..' part): \"a/../b\""
-    );
-}
-
-#[test]
-fn a_path_ending_in_a_slash_is_refused_naming_it() {
-    let files = vec![PathBuf::from("dir/")];
-    let reason = "not a usable path (ends in '/', naming a folder's children): \"dir/\"";
-    let mapped = tree_refusal(refusal(reason), &files);
-    let JoinRunError::ConflictedPathRefused { path, .. } = mapped else { panic!("{mapped:?}") };
-    assert_eq!(path, Some(PathBuf::from("dir/")));
-}
-
-#[test]
-fn a_refusal_naming_no_conflicted_path_has_no_path() {
-    let reason = "not ls-tree records for the paths asked (no final NUL): \"100644 blob\"";
-    let JoinRunError::ConflictedPathRefused { path, reason: kept } = tree_refusal(refusal(reason), &files()) else {
-        panic!("a refusal naming no path must be ConflictedPathRefused");
-    };
-    assert_eq!(path, None);
-    assert_eq!(kept, "not ls-tree records for the paths asked (no final NUL): \"100644 blob\"");
-}
-
-#[test]
-fn a_folder_refusal_names_the_path_whose_form_holds_another_in_either_order() {
-    let reason = "not a file entry: \"q\\\"x\" is a folder";
-    for files in [vec![PathBuf::from("x"), PathBuf::from("q\"x")], vec![PathBuf::from("q\"x"), PathBuf::from("x")]] {
-        let mapped = tree_refusal(refusal(reason), &files);
-        let JoinRunError::ConflictedPathIsFolder { path } = mapped else { panic!("{mapped:?}") };
-        assert_eq!(path, PathBuf::from("q\"x"));
-    }
-}
-
-#[test]
-fn a_single_path_refusal_names_the_path_whose_form_holds_another_in_either_order() {
-    let reason = "not a usable path (not as git stores it: a leading '/', or an empty, '.' or '..' part): \"q\\\"x\"";
-    for files in [vec![PathBuf::from("x"), PathBuf::from("q\"x")], vec![PathBuf::from("q\"x"), PathBuf::from("x")]] {
-        let mapped = tree_refusal(refusal(reason), &files);
-        let JoinRunError::ConflictedPathRefused { path, .. } = mapped else { panic!("{mapped:?}") };
-        assert_eq!(path, Some(PathBuf::from("q\"x")));
-    }
-}
-
-#[test]
-fn a_path_inside_a_message_of_another_shape_is_not_named() {
-    let files = vec![PathBuf::from("x")];
-    let reason = "not a file entry: \"x\" is a folder, and more text after it";
-    let JoinRunError::ConflictedPathRefused { path, reason: kept } = tree_refusal(refusal(reason), &files) else {
-        panic!("a message of no known shape must be ConflictedPathRefused");
-    };
-    assert_eq!(path, None);
-    assert_eq!(kept, "not a file entry: \"x\" is a folder, and more text after it");
 }

@@ -10,8 +10,8 @@
 //! - a conflicted path the conflicted tree lacks (rename/rename) is skipped by the first run and listed in the answer
 //!   (S-50);
 //! - a first run lists a conflicted gitlink (submodule) apart, with its next step, and writes no file for it (S-64);
-//! - a next run takes a conflicted gitlink from the caller's tree through tree_with_paths, with no marker check on it
-//!   (S-64);
+//! - a next run takes a conflicted gitlink from the caller's tree through tree_with_paths_typed, with no marker check
+//!   on it (S-64);
 //! - a next run refuses while a marker remains, naming each file and line (WO-join-3 Goal 3);
 //! - a next run with the markers gone commits the conflicted tree with the conflicted paths taken from the caller's
 //!   tree as the resolved commit, edits outside them left out (S-50) and, clean, moves the request branch by one op,
