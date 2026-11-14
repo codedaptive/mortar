@@ -3,14 +3,27 @@
 //! No unit test: it runs git and appends to the op log, and holds no decision of its own (S-5); save_message,
 //! save_head, save_unchanged, save_change_id, save_trailers, save_op, save_from_apply and real_index_git are its
 //! decisions and have their tests. The commit's parents are always [HEAD], so there is no parent decision.
-//! Nagatha's integration tests, in a throwaway repository, are TO BE COVERED (none exist yet):
-//! - a save leaves `git status` clean;
-//! - a folder unchanged from HEAD writes no commit, leaves the branch alone and sets the index to HEAD's tree;
-//! - a save after IndexNotSet sets the index to HEAD's tree;
-//! - a second save on the request reuses HEAD's change ID;
-//! - a first save on a zone tip draws a new change ID;
-//! - a detached or unborn HEAD is refused with nothing written;
-//! - a branch moved under save gives BranchMoved.
+//! Nagatha's integration tests, in a throwaway repository, cover these cases:
+//! - a save leaves `git status` clean, in
+//!   tests/snapshot/save_cases.rs::save_on_zone_tip_draws_a_new_id_leaves_status_clean_and_next_save_reuses_the_requests_id
+//!   and, for the retry after IndexNotSet, in
+//!   tests/snapshot/save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement;
+//! - a folder unchanged from HEAD writes no commit, leaves the branch alone and keeps the index at HEAD's tree and
+//!   entries: save_cases.rs::unchanged_save_keeps_index_at_heads_tree_and_entries_and_repeat_writes_no_history;
+//! - a save after IndexNotSet sets the stale index to HEAD's tree, with no commit, ref or log movement:
+//!   save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement;
+//! - a first save on a zone tip draws a new change ID and a second save on the request reuses it:
+//!   save_cases.rs::save_on_zone_tip_draws_a_new_id_leaves_status_clean_and_next_save_reuses_the_requests_id;
+//! - a detached or unborn HEAD is refused with nothing written:
+//!   save_cases.rs::detached_and_unborn_heads_are_named_before_any_snapshot_commit_ref_or_op_is_written;
+//! - a branch moved under save gives BranchMoved:
+//!   tests/snapshot/save_race.rs::branch_moved_during_save_is_named_without_overwriting_foreign_head_index_work_or_caller_lock;
+//! - IndexNotSet after the branch moved leaves the files and the old index alone:
+//!   save_cases.rs::real_index_lock_produces_index_not_set_after_logged_branch_move_without_touching_files_or_old_index;
+//! - the index step leaves a caller's GIT_INDEX_FILE untouched, after a written save in
+//!   save_cases.rs::save_on_zone_tip_draws_a_new_id_leaves_status_clean_and_next_save_reuses_the_requests_id and after
+//!   an unchanged one in save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement.
+//! Not yet covered by an integration test: IndexNotSet from an unchanged save, and OpRepeated or ChangeId through save.
 
 use crate::real_index_git::real_index_git;
 use crate::save_change_id::save_change_id;
