@@ -1,4 +1,6 @@
 //! A request's attempts, read from the repository's refs and worktrees.
+//! Its tests are zone integration tests in tests/folders/attempt_plans.rs: it uses plan/attempt_number.rs for real
+//! (#1264).
 
 use gitio::{Oid, Worktree};
 

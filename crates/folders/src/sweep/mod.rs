@@ -17,8 +17,6 @@ mod sweep_refs;
 mod sweep_refs_op;
 
 #[cfg(test)]
-mod closed_snap_refs_tests;
-#[cfg(test)]
 mod extra_ref_verdict_tests;
 #[cfg(test)]
 mod idle_folders_tests;

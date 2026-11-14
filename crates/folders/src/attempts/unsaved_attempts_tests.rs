@@ -1,5 +1,5 @@
 //! unsaved_attempts: unlisted and false entries named in k order, by folder or else by full branch name; the
-//! excepted attempt never named.
+//! excepted k never named.
 
 use std::path::PathBuf;
 

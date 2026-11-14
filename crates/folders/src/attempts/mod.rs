@@ -1,7 +1,8 @@
-//! Attempt folders (S-69, S-82): making a request's attempts, keeping one and dropping them all, and as data the
-//! attempts to make, the attempts a repository holds, the attempt folders whose branch is gone, what of a request's
-//! attempts is left, which are unsaved, what keeping one removes, deletes and moves, and what dropping them removes
-//! and deletes.
+//! Attempt folders (S-69, S-82): making a request's attempts, re-making its orphan attempts from their snapshots
+//! (S-98), keeping one and dropping them all, and as data the attempts to make, the attempts a repository holds, the
+//! attempt folders whose branch is gone, what of a request's attempts is left, which are unsaved, what keeping one
+//! removes, deletes and moves, what dropping them removes and deletes, and how an orphan attempt is re-made from its
+//! snapshot: at which tree and parent, with which message and trailers.
 
 mod attempt;
 mod attempt_refs_left;
@@ -19,21 +20,29 @@ mod make_attempts;
 mod orphan_attempts;
 mod plan_attempts;
 mod planned_attempt;
+mod remade_message;
+mod remade_trailers;
+mod remake;
+mod remake_orphans;
+mod remake_plan;
 mod request_held;
+mod snap;
 mod unsaved_attempts;
 
 #[cfg(test)]
 mod attempt_refs_left_tests;
 #[cfg(test)]
-mod attempts_of_tests;
-#[cfg(test)]
 mod drop_op_tests;
 #[cfg(test)]
 mod keep_op_tests;
 #[cfg(test)]
-mod orphan_attempts_tests;
-#[cfg(test)]
 mod plan_attempts_tests;
+#[cfg(test)]
+mod remade_message_tests;
+#[cfg(test)]
+mod remade_trailers_tests;
+#[cfg(test)]
+mod remake_plan_tests;
 #[cfg(test)]
 mod request_held_tests;
 #[cfg(test)]
@@ -54,5 +63,11 @@ pub use make_attempts::make_attempts;
 pub use orphan_attempts::orphan_attempts;
 pub use plan_attempts::plan_attempts;
 pub use planned_attempt::PlannedAttempt;
+pub use remade_message::remade_message;
+pub use remade_trailers::remade_trailers;
+pub use remake::Remake;
+pub use remake_orphans::remake_orphans;
+pub use remake_plan::remake_plan;
 pub use request_held::request_held;
+pub use snap::Snap;
 pub(crate) use unsaved_attempts::unsaved_attempts;

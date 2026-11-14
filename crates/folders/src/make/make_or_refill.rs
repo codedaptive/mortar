@@ -36,7 +36,7 @@ pub(crate) fn make_or_refill(
     if let Some(existing) = check_before_make(setup, &wanted, branch)? {
         return refill_folder(git, &setup.path, existing);
     }
-    make_branch(setup, common, branch, tip)?;
+    make_branch(git, &setup.actor, common, branch, tip)?;
     git.worktree_add(&setup.path, tip, None).map_err(FolderError::Git)?;
     attach_head(git, &setup.path, branch)?;
     fill_folder(git, &setup.path, &wanted, cone)?;

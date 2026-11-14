@@ -3,8 +3,8 @@
 //! No unit test: it takes a lock, appends to the op log, runs git and writes files (S-5). request_branch_tests,
 //! attempt_branch_tests, attempt_path_tests, sparse_paths_tests, plan_attempts_tests, branch_op_tests,
 //! branch_step_after_tests, repeat_decision_tests, skip_refill_tests, refill_cone_tests, branch_holder_tests and
-//! attach_head_request_tests cover its decisions. Nagatha's integration group is to cover, in a throwaway
-//! repository: the request branch and attempt branches try/<zone>/<request>/1..n all exist together, each folder at
+//! attach_head_request_tests cover its decisions. tests/folders/attempts_make.rs covers, in a throwaway repository:
+//! the request branch and attempt branches try/<zone>/<request>/1..n all exist together, each folder at
 //! <dir>/try-<k> on its branch at the request tip with an Attempt(k) record, and n folder-branch ops are logged; a
 //! repeat makes nothing new and returns the same records; n = 0 is Plan; a missing request branch is
 //! RequestBranchMissing; a folders lock held by a live pid is Lock.

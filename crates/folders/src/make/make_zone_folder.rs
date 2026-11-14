@@ -62,7 +62,7 @@ pub fn make_zone_folder(
             return refill_folder(git, &setup.path, existing);
         }
         if let ZoneStart::Create(_) = zone_start {
-            make_branch(setup, &common, &zb, &base)?;
+            make_branch(git, &setup.actor, &common, &zb, &base)?;
         }
         git.worktree_add(&setup.path, &base, None).map_err(FolderError::Git)?;
         attach_head(git, &setup.path, &zb)?;
