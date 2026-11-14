@@ -6,3 +6,6 @@ mod lifecycle;
 mod sparse_excludes;
 mod caps;
 mod race;
+mod formatter;
+mod formatter_paths;
+mod formatter_timeout;
