@@ -12,7 +12,6 @@ mod folder_error;
 mod folder_error_display;
 mod folder_error_source;
 mod folder_setup;
-mod guard_removal_ops;
 mod make_branch;
 mod make_request_folder;
 mod make_zone_folder;
@@ -37,8 +36,6 @@ mod branch_step_after_tests;
 mod folder_error_display_tests;
 #[cfg(test)]
 mod folder_error_source_tests;
-#[cfg(test)]
-mod guard_removal_ops_tests;
 #[cfg(test)]
 mod refill_cone_tests;
 #[cfg(test)]
