@@ -1,4 +1,6 @@
 //! How a culprit failure reads: the commit that is not a landing with its parent count, or the trailer error.
+//! No sibling unit test (S-104): every test of it runs gitio's Oid Display or oplog's error Display (S-101). No ZIT
+//! reaches it yet; tests/land_rit covers the Trailers text; the NotALanding text is Nagatha's RIT (owed).
 
 use std::fmt;
 

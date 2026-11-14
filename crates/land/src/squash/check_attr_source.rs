@@ -2,8 +2,8 @@
 //! Why: squash and would_merge read merge attributes with `--attr-source=<commit>`, and git exits 0 with every
 //! attribute unspecified when that names no object, so a `merge=union` file would silently merge without its rule. A
 //! missing attribute source is an error, never a silent run.
-//! No unit test: it runs git (S-5). Nagatha's integration tests of SPEC-land 01-squash.md §Tests are to cover it, in
-//! a throwaway repository: every squash and would_merge test passes through it with an existing tip.
+//! No unit test: it runs git (S-5). tests/squash_zit.rs covers it, in a throwaway repository: every would_merge
+//! case and every squash case with something to squash passes through it with an existing tip.
 
 use crate::squash::SquashError;
 use gitio::{Git, Oid};

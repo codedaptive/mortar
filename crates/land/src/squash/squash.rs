@@ -2,10 +2,12 @@
 //! 01-squash.md, S-57). It takes no lock: the caller holds `land` and has run recover (S-16). It never moves the zone
 //! branch and never rewrites a zone commit.
 //! No unit test: it runs git and writes the op log (S-5); squash_requests_tests, squash_message_tests,
-//! squash_trailer_pairs_tests, choose_change_id_tests, same_squash_tests, squash_op_tests and squash_applied_tests
-//! cover its decisions. Nagatha's integration tests of SPEC-land 01-squash.md §Tests are to cover, in a throwaway
-//! repository: a squash keeps origin's newer change and adds only the zone's; a re-squash keeps the change ID; a
-//! conflict lists the files and moves nothing.
+//! choose_change_id_tests, same_squash_tests and squash_applied_tests cover its decisions. In a
+//! throwaway repository, tests/squash_zit/squash_cases.rs
+//! covers a_squash_keeps_origins_newer_change_and_adds_only_the_zones, a_conflict_lists_the_files_and_moves_nothing
+//! and a_zone_at_origin_has_nothing_to_squash; tests/squash_zit/resquash.rs covers a_resquash_keeps_the_change_id,
+//! a_repeated_squash_answers_same_and_writes_nothing and
+//! a_squash_after_the_prior_one_is_in_origin_draws_a_new_change_id.
 
 use crate::squash::{
     check_attr_source, choose_change_id, read_prior_squash, read_tip, request_commits, same_squash, squash_applied,

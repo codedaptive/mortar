@@ -1,6 +1,6 @@
 //! Every way a re-review can fail.
-//! A bare type (S-7); rereview_error_source_tests exercises each variant, rereview_error_display_tests the
-//! refusals' texts, and same_change_tests and plan_rereview_tests the refusals.
+//! A bare type (S-7); rereview_error_source_tests exercises each variant, and same_change_tests and
+//! plan_rereview_tests the refusals; the refusals' texts are Nagatha's RITs (owed).
 
 use gitio::{GitError, Oid};
 use oplog::{ChangeId, MortarTrailerError};
@@ -16,6 +16,4 @@ pub enum RereviewError {
     NotSameChange { reviewed: Oid, reviewed_id: Option<ChangeId>, new: Oid, new_id: Option<ChangeId> },
     /// The commit is a root, so it has no parent to diff from.
     NoParent { commit: Oid },
-    /// The two commits sit on different first parents (refused until WO-gitio-15, S-77).
-    BasesDiffer { reviewed_parent: Oid, new_parent: Oid },
 }

@@ -7,9 +7,7 @@ impl std::error::Error for RereviewError {
         match self {
             RereviewError::Git(e) => Some(e),
             RereviewError::Trailers(e) => Some(e),
-            RereviewError::NotSameChange { .. }
-            | RereviewError::NoParent { .. }
-            | RereviewError::BasesDiffer { .. } => None,
+            RereviewError::NotSameChange { .. } | RereviewError::NoParent { .. } => None,
         }
     }
 }

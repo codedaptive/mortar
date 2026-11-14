@@ -1,7 +1,7 @@
 //! read_prior_squash: the commit already at a zone's squash ref, as choose_change_id and same_squash read it.
 //! No unit test: it runs git (S-5); choose_change_id_tests and same_squash_tests cover the decisions made from it.
-//! Nagatha's integration tests of SPEC-land 01-squash.md §Tests are to cover it, in a throwaway repository: a
-//! re-squash keeps the change ID; a squash after the prior one landed in origin draws a new one.
+//! tests/squash_zit.rs covers it, in a throwaway repository: a re-squash keeps the change ID; a squash after the
+//! prior one landed in origin draws a new one.
 
 use crate::squash::{PriorSquash, SquashError};
 use gitio::{Git, Oid};
