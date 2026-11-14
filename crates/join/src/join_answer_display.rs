@@ -1,4 +1,5 @@
-//! Display for JoinAnswer: what a join did and what to do next. join_answer_display_tests covers each variant.
+//! Display for JoinAnswer: what a join or a resolve did and what to do next. join_answer_display_tests covers each
+//! variant.
 
 use crate::JoinAnswer;
 use std::fmt;
@@ -23,6 +24,19 @@ impl fmt::Display for JoinAnswer {
                     write!(f, "\n  {}", file.display())?;
                 }
                 write!(f, "\nresolve the files, then run `mortar resolve`")
+            }
+            JoinAnswer::FilesWritten { commit, files, skipped } => {
+                write!(f, "files written: the conflicted versions from commit {commit}, markers included:")?;
+                for file in files {
+                    write!(f, "\n  {}", file.display())?;
+                }
+                if !skipped.is_empty() {
+                    write!(f, "\nthe conflicted tree has no version of these, so nothing was written for them:")?;
+                    for file in skipped {
+                        write!(f, "\n  {}", file.display())?;
+                    }
+                }
+                write!(f, "\nedit the files written, then run `mortar resolve` again")
             }
         }
     }

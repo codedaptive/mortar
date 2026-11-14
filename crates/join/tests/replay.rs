@@ -313,7 +313,7 @@ fn join_conflict_lists_files_writes_exact_resolve_state_and_moves_no_ref() {
         other => panic!("expected paused join: {other:?}"),
     };
     assert_eq!(state, common.join("mortar-join.json"));
-    let expected = format!("{{\"request_ref\":\"{REQUEST_REF}\",\"request_tip\":\"{tip}\",\"onto\":\"{zone}\",\"replayed_tip\":\"{zone}\",\"commit\":\"{bad}\",\"tree\":\"{conflict_tree}\",\"remaining\":[\"{tip}\"],\"files\":[\"conflict file.txt\"]}}\n");
+    let expected = format!("{{\"request_ref\":\"{REQUEST_REF}\",\"request_tip\":\"{tip}\",\"onto\":\"{zone}\",\"replayed_tip\":\"{zone}\",\"commit\":\"{bad}\",\"tree\":\"{conflict_tree}\",\"remaining\":[\"{tip}\"],\"files\":[\"conflict file.txt\"],\"files_written\":false,\"rebased_to\":null}}\n");
     assert_eq!(fs::read_to_string(state).unwrap(), expected);
     let conflicted = String::from_utf8(f.blob(&conflict_tree, "conflict file.txt")).unwrap();
     assert!(conflicted.contains("<<<<<<<") && conflicted.contains("zone\n") && conflicted.contains("request\n"), "{conflicted}");

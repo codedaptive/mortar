@@ -6,6 +6,7 @@ use crate::fake_call::FakeCall;
 use crate::replay_git::ReplayGit;
 use crate::replay_git_fake::ReplayGitFake;
 use gitio::{CommitInfo, GitError, MergeTreeOutcome, Oid, Person, ReplayOutcome};
+use std::path::PathBuf;
 
 impl ReplayGit for ReplayGitFake {
     fn replay_available(&self) -> Result<bool, GitError> {
@@ -74,5 +75,14 @@ impl ReplayGit for ReplayGitFake {
             committer: committer.cloned(),
         });
         Ok(self.new_commits.borrow_mut().pop_front().expect("unscripted commit_tree"))
+    }
+
+    fn tree_with_paths(&self, base: &Oid, from: &Oid, paths: &[PathBuf]) -> Result<Oid, GitError> {
+        self.calls.borrow_mut().push(FakeCall::TreeWithPaths {
+            base: base.clone(),
+            from: from.clone(),
+            paths: paths.to_vec(),
+        });
+        self.tree_with_paths.clone().expect("unscripted tree_with_paths")
     }
 }

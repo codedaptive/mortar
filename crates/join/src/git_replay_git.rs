@@ -3,6 +3,7 @@
 
 use crate::replay_git::ReplayGit;
 use gitio::{CommitInfo, Git, GitError, MergeTreeOutcome, Oid, Person, ReplayOutcome};
+use std::path::PathBuf;
 
 impl ReplayGit for Git {
     fn replay_available(&self) -> Result<bool, GitError> {
@@ -49,5 +50,9 @@ impl ReplayGit for Git {
         committer: Option<&Person>,
     ) -> Result<Oid, GitError> {
         Git::commit_tree(self, tree, parents, message, author, committer)
+    }
+
+    fn tree_with_paths(&self, base: &Oid, from: &Oid, paths: &[PathBuf]) -> Result<Oid, GitError> {
+        Git::tree_with_paths(self, base, from, paths)
     }
 }

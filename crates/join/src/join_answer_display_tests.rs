@@ -76,3 +76,32 @@ fn conflicted_names_commit_state_each_file_on_its_own_line_and_resolve() {
     assert!(lines.iter().any(|line| line.trim() == "b.txt"), "{text}");
     assert!(text.contains("mortar resolve"), "{text}");
 }
+
+#[test]
+fn files_written_names_the_commit_each_file_and_the_next_step() {
+    let answer = JoinAnswer::FilesWritten {
+        commit: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        files: vec![PathBuf::from("src/a.rs"), PathBuf::from("b.txt")],
+        skipped: Vec::new(),
+    };
+    assert_eq!(
+        answer.to_string(),
+        "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
+         included:\n  src/a.rs\n  b.txt\nedit the files written, then run `mortar resolve` again"
+    );
+}
+
+#[test]
+fn files_written_lists_the_skipped_paths_under_their_own_line() {
+    let answer = JoinAnswer::FilesWritten {
+        commit: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        files: vec![PathBuf::from("src/a.rs")],
+        skipped: vec![PathBuf::from("old/name.rs"), PathBuf::from("c.txt")],
+    };
+    assert_eq!(
+        answer.to_string(),
+        "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
+         included:\n  src/a.rs\nthe conflicted tree has no version of these, so nothing was written for them:\n  \
+         old/name.rs\n  c.txt\nedit the files written, then run `mortar resolve` again"
+    );
+}

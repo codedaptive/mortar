@@ -20,5 +20,7 @@ pub(crate) struct ReplayGitFake {
     pub(crate) merges: HashMap<Oid, MergeTreeOutcome>,
     /// commit_tree's answers, one per call, in order.
     pub(crate) new_commits: RefCell<VecDeque<Oid>>,
+    /// tree_with_paths' answer, whatever its arguments.
+    pub(crate) tree_with_paths: Option<Result<Oid, GitError>>,
     pub(crate) calls: RefCell<Vec<FakeCall>>,
 }
