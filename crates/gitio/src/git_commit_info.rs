@@ -1,6 +1,6 @@
 //! Git::commit_info: one commit's tree, parents, author and message. It only runs git, so it has no unit tests;
-//! Nagatha's integration tests "commit_info on a root, a one-parent and a merge commit" and "commit_info's author
-//! passed to commit_tree rebuilds the same commit id (non-ASCII name, non-UTC offset)" are to cover it.
+//! tests/typed/author_round_trip.rs covers its author passed to commit_tree rebuilding the same commit id, and
+//! Nagatha's integration test "commit_info on a root, a one-parent and a merge commit" is to cover the rest.
 
 use crate::commit_info_request::commit_info_request;
 use crate::read_commit_info::read_commit_info;
