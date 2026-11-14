@@ -119,3 +119,104 @@ fn bad_move_shows_an_empty_ref_name_as_empty_quotes() {
         "op cannot be applied: ref \"\" is empty; fix the op's moves and run again"
     );
 }
+
+#[test]
+fn protected_delete_names_the_ref_its_value_and_the_protector() {
+    let err = OplogError::Protected {
+        refname: "refs/heads/main".to_string(),
+        current: Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")),
+        new: oid("0000000000000000000000000000000000000000"),
+        by: "land".to_string(),
+    };
+    assert_eq!(
+        err.to_string(),
+        "ref refs/heads/main is protected by land: deleting it is refused (it holds \
+         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa); nothing was changed; ask land before removing it"
+    );
+}
+
+#[test]
+fn protected_move_names_both_values_and_says_fast_forward_only() {
+    let err = OplogError::Protected {
+        refname: "refs/heads/main".to_string(),
+        current: Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")),
+        new: oid("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+        by: "land".to_string(),
+    };
+    assert_eq!(
+        err.to_string(),
+        "ref refs/heads/main is protected by land: moving it from aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa to \
+         bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb is not a fast-forward; nothing was changed; move it only to a \
+         commit that has aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa as an ancestor, or ask land"
+    );
+}
+
+#[test]
+fn nothing_to_undo_joins_the_refs() {
+    let err = OplogError::NothingToUndo {
+        refs: vec!["refs/heads/a".to_string(), "refs/heads/b".to_string()],
+    };
+    assert_eq!(
+        err.to_string(),
+        "nothing to undo: no done op in the op log moved refs/heads/a, refs/heads/b; check the ref names with \
+         history by ref"
+    );
+}
+
+#[test]
+fn moved_since_by_a_logged_op_names_that_op_and_its_actor() {
+    let err = OplogError::MovedSince {
+        op_id: "op-1".to_string(),
+        refname: "refs/heads/a".to_string(),
+        left: Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")),
+        actual: Some(oid("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")),
+        moved_by: Some(("op-2".to_string(), "simms".to_string())),
+    };
+    assert_eq!(
+        err.to_string(),
+        "cannot undo op op-1: ref refs/heads/a moved since (that op left it at \
+         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, it now holds bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb), by op \
+         op-2 of simms; undo op op-2 first, or restore the ref to the value you want"
+    );
+}
+
+#[test]
+fn moved_since_outside_mortar_says_no_logged_op_explains_it() {
+    let err = OplogError::MovedSince {
+        op_id: "op-1".to_string(),
+        refname: "refs/heads/a".to_string(),
+        left: None,
+        actual: Some(oid("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")),
+        moved_by: None,
+    };
+    assert_eq!(
+        err.to_string(),
+        "cannot undo op op-1: ref refs/heads/a moved since (that op left it at absent, it now holds \
+         bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb) outside mortar: no logged op explains it; find who moved it, \
+         then restore the ref to the value you want"
+    );
+}
+
+#[test]
+fn unknown_op_names_the_op_and_says_find_it_with_history() {
+    let err = OplogError::UnknownOp {
+        op_id: "op-404".to_string(),
+    };
+    assert_eq!(
+        err.to_string(),
+        "cannot restore: op op-404 is not in the op log; find the op id with history"
+    );
+}
+
+#[test]
+fn value_unknown_names_the_ref_and_the_op() {
+    let err = OplogError::ValueUnknown {
+        op_id: "op-3".to_string(),
+        refname: "refs/heads/x".to_string(),
+    };
+    assert_eq!(
+        err.to_string(),
+        "cannot restore ref refs/heads/x as of op op-3: no done op in the op log moved it, so its value then is \
+         unknown; name only refs mortar has moved"
+    );
+}

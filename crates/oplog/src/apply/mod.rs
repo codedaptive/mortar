@@ -7,6 +7,7 @@ mod check_ref_moves;
 mod check_ref_names;
 mod close_after_update;
 mod find_done_record;
+mod guard_removal_op;
 mod new_op_id;
 mod op_id_from_parts;
 mod ref_format_verdict;
@@ -19,6 +20,8 @@ mod check_ref_moves_tests;
 mod close_after_update_tests;
 #[cfg(test)]
 mod find_done_record_tests;
+#[cfg(test)]
+mod guard_removal_op_tests;
 #[cfg(test)]
 mod op_id_from_parts_tests;
 #[cfg(test)]
@@ -34,6 +37,7 @@ pub use check_ref_moves::check_ref_moves;
 pub use check_ref_names::check_ref_names;
 pub use close_after_update::close_after_update;
 pub use find_done_record::find_done_record;
+pub use guard_removal_op::guard_removal_op;
 pub use new_op_id::new_op_id;
 pub use op_id_from_parts::op_id_from_parts;
 pub use ref_format_verdict::ref_format_verdict;

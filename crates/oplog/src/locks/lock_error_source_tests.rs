@@ -11,6 +11,7 @@ fn io_source_is_the_inner_io_error() {
     let err = LockError::Io {
         path: PathBuf::from("/repo/.git/mortar/locks"),
         source: std::io::Error::new(ErrorKind::PermissionDenied, "denied here"),
+        removed_guards: Vec::new(),
     };
     let inner = err
         .source()
@@ -29,6 +30,7 @@ fn non_io_variants_have_no_source() {
             key: "land".to_string(),
             since: 1763030400,
         },
+        removed_guards: Vec::new(),
     };
     assert!(held.source().is_none());
     assert!(LockError::BadName("a/b".to_string()).source().is_none());

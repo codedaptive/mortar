@@ -34,6 +34,7 @@ pub fn release_lock(lock: &AcquiredLock) -> Result<(), LockError> {
         _ => LockError::Io {
             path: path.clone(),
             source,
+            removed_guards: Vec::new(),
         },
     })
 }

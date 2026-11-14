@@ -62,3 +62,36 @@ fn bad_move_has_no_source() {
     };
     assert!(err.source().is_none());
 }
+
+#[test]
+fn protect_undo_and_restore_refusals_have_no_source() {
+    let zero = gitio::Oid::parse("0000000000000000000000000000000000000000").unwrap();
+    let errs = [
+        OplogError::Protected {
+            refname: "refs/heads/main".to_string(),
+            current: None,
+            new: zero,
+            by: "land".to_string(),
+        },
+        OplogError::NothingToUndo {
+            refs: vec!["refs/heads/a".to_string()],
+        },
+        OplogError::MovedSince {
+            op_id: "o".to_string(),
+            refname: "refs/heads/a".to_string(),
+            left: None,
+            actual: None,
+            moved_by: None,
+        },
+        OplogError::UnknownOp {
+            op_id: "o".to_string(),
+        },
+        OplogError::ValueUnknown {
+            op_id: "o".to_string(),
+            refname: "refs/heads/a".to_string(),
+        },
+    ];
+    for err in &errs {
+        assert!(err.source().is_none(), "{err:?}");
+    }
+}

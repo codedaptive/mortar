@@ -15,13 +15,13 @@ fn holder_text(holder: &LockRecord) -> String {
 impl fmt::Display for LockError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            LockError::Held { path, holder } => write!(
+            LockError::Held { path, holder, .. } => write!(
                 f,
                 "{} is held by {}; wait for it to finish",
                 path.display(),
                 holder_text(holder)
             ),
-            LockError::TakeoverInProgress { path, holder } => write!(
+            LockError::TakeoverInProgress { path, holder, .. } => write!(
                 f,
                 "takeover guard {} is held by {}: a takeover is running or crashed; \
                  if no takeover is running, remove {} by hand",
@@ -41,7 +41,7 @@ impl fmt::Display for LockError {
             LockError::NotOurs { path, holder: None } => {
                 write!(f, "{} is not ours to release: no lock file, so nothing to release", path.display())
             }
-            LockError::Contended { path } => write!(
+            LockError::Contended { path, .. } => write!(
                 f,
                 "{} changed hands repeatedly while acquiring; try again",
                 path.display()
@@ -55,19 +55,20 @@ impl fmt::Display for LockError {
             LockError::Malformed {
                 path: Some(path),
                 reason,
+                ..
             } => write!(
                 f,
                 "{} is not a lock record ({reason}); check no mortar process holds it, then remove it by hand",
                 path.display()
             ),
-            LockError::Malformed { path: None, reason } => {
+            LockError::Malformed { path: None, reason, .. } => {
                 write!(f, "lock record is malformed: {reason}; mortar did not write this text, so check what did")
             }
             LockError::HostUnknown(reason) => write!(
                 f,
                 "cannot read this host's name: {reason}; check that `hostname` runs on this machine"
             ),
-            LockError::Io { path, source } => write!(
+            LockError::Io { path, source, .. } => write!(
                 f,
                 "{}: {source}; check that path's folder and its permissions, then run again",
                 path.display()

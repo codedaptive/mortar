@@ -7,7 +7,14 @@ impl std::error::Error for OplogError {
         match self {
             OplogError::Io { source, .. } => Some(source),
             OplogError::Git(e) => Some(e),
-            OplogError::Malformed { .. } | OplogError::Mixed { .. } | OplogError::BadMove { .. } => None,
+            OplogError::Malformed { .. }
+            | OplogError::Mixed { .. }
+            | OplogError::BadMove { .. }
+            | OplogError::Protected { .. }
+            | OplogError::NothingToUndo { .. }
+            | OplogError::MovedSince { .. }
+            | OplogError::UnknownOp { .. }
+            | OplogError::ValueUnknown { .. } => None,
         }
     }
 }

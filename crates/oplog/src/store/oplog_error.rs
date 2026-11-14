@@ -29,4 +29,28 @@ pub enum OplogError {
     /// An op with a move whose ref name is empty, holds a NUL, is not a full refs/ name, or is refused by git
     /// check-ref-format, found before anything is written: the ref and why.
     BadMove { refname: String, reason: String },
+    /// A move of a protected ref that is neither a fast-forward nor a creation (S-29): `current` is what the ref
+    /// holds (None: absent), `new` what the op asked for (all-zero: a delete), `by` who protects it.
+    Protected {
+        refname: String,
+        current: Option<Oid>,
+        new: Oid,
+        by: String,
+    },
+    /// undo found no done op with a move of any of these refs.
+    NothingToUndo { refs: Vec<String> },
+    /// undo's target op `op_id` left `refname` at `left` (None: absent), but it now holds `actual`; `moved_by` is
+    /// the op id and actor of the latest done op after it that moved the ref, or None when no logged op explains
+    /// the move.
+    MovedSince {
+        op_id: String,
+        refname: String,
+        left: Option<Oid>,
+        actual: Option<Oid>,
+        moved_by: Option<(String, String)>,
+    },
+    /// restore named an op id the log does not hold.
+    UnknownOp { op_id: String },
+    /// restore cannot tell what `refname` held as of `op_id`: no done op in the log moved it.
+    ValueUnknown { op_id: String, refname: String },
 }
