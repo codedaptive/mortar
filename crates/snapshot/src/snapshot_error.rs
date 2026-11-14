@@ -1,6 +1,8 @@
-//! SnapshotError: why a snapshot or a save did not happen. A declaration only; snapshot_ref_name_tests exercises
-//! BadTarget, snapshot_from_apply_tests OpRepeated and RefMoved, capped_excludes_tests PathNotUtf8, save_head_tests
-//! UnbornHead and DetachedHead, save_message_tests BadSentence, save_change_id_tests ChangeIdMissing, and
+//! SnapshotError: why a snapshot or a save did not happen. A declaration only: its Display is snapshot_error_display,
+//! and snapshot_error_display_tests exercises the text of every variant that needs no other crate's code.
+//! snapshot_ref_name_tests exercises BadTarget, snapshot_from_apply_tests OpRepeated and RefMoved,
+//! capped_excludes_tests PathNotUtf8, save_head_tests UnbornHead and DetachedHead, save_message_tests BadSentence,
+//! save_change_id_tests ChangeIdMissing, and
 //! save_from_apply_tests OpRepeated and BranchMoved. Nagatha's integration tests get, through snapshot: RefMoved in
 //! tests/snapshot/race.rs::foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or_files;
 //! FileSize (an ELOOP) in
@@ -23,7 +25,7 @@
 use gitio::Oid;
 use std::path::PathBuf;
 
-/// Debug only: oplog's OplogError is neither Clone nor Eq.
+/// Derives Debug only, since oplog's OplogError is neither Clone nor Eq; its Display is in snapshot_error_display.rs.
 #[derive(Debug)]
 pub enum SnapshotError {
     /// A git run failed.

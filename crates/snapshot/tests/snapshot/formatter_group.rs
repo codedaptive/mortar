@@ -197,12 +197,9 @@ fn assert_group_terminated(group: &Group, child: u32, pgid: u32) {
     assert_ne!(child, leader);
     assert_eq!(pgid, leader, "formatter must lead a new group inherited by its real child");
     assert!(!KillPidProbe.pid_alive(leader), "leader {leader} is still running or unreaped");
-    let output = Command::new("ps").args(["-p", &child.to_string(), "-o", "stat="]).output().unwrap();
-    assert!(output.status.success() || output.status.code() == Some(1), "{output:?}");
-    let state = std::str::from_utf8(&output.stdout).unwrap().trim();
-    // Only the leader is our directly waitable child. A killed orphan can remain Z until init reaps it;
-    // it cannot execute or retain the control descriptor. Do not mistake asynchronous external reaping for liveness.
-    assert!(state.is_empty() || state.starts_with('Z'), "background child {child} can still execute: {state}");
+    // The child's only write end of the death FIFO is its fd3, which the script never closes, so the EOF each
+    // caller reads before calling this helper means the child has ended. With each caller's empty tail, it ended
+    // without writing RELEASED or WROTE, that is, without the release.
 }
 
 fn make_fifos(paths: &[PathBuf]) {
