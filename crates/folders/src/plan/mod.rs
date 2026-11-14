@@ -1,4 +1,4 @@
-//! A folder's plan as data: branch names, sparse paths, the free-disk floor, the branch op.
+//! A folder's plan as data: branch and snapshot ref names, sparse paths, the free-disk floor, the branch op.
 
 mod below_floor;
 mod below_floor_display;
@@ -12,6 +12,8 @@ mod plan_error;
 mod plan_error_display;
 mod read_df_available;
 mod request_branch;
+mod snap_ref;
+mod snap_ref_prefix;
 mod sparse_paths;
 mod sweep_estimate;
 mod zone_branch;
@@ -31,6 +33,8 @@ mod read_df_available_tests;
 #[cfg(test)]
 mod request_branch_tests;
 #[cfg(test)]
+mod snap_ref_tests;
+#[cfg(test)]
 mod sparse_paths_tests;
 #[cfg(test)]
 mod zone_branch_tests;
@@ -45,6 +49,8 @@ pub use free_disk::FreeDisk;
 pub use plan_error::PlanError;
 pub use read_df_available::read_df_available;
 pub use request_branch::request_branch;
+pub use snap_ref::snap_ref;
+pub use snap_ref_prefix::SNAP_REF_PREFIX;
 pub use sparse_paths::sparse_paths;
 pub use sweep_estimate::SweepEstimate;
 pub use zone_branch::zone_branch;

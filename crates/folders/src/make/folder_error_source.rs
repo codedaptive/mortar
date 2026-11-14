@@ -20,7 +20,13 @@ impl std::error::Error for FolderError {
             | FolderError::ZoneBranchMissing { .. }
             | FolderError::NotSaved { .. }
             | FolderError::MoveRefused { .. }
-            | FolderError::BranchElsewhere { .. } => None,
+            | FolderError::BranchElsewhere { .. }
+            | FolderError::NotRemovedUnsaved { .. }
+            | FolderError::NotJoined { .. }
+            | FolderError::ZoneFolder { .. }
+            | FolderError::RefMoved { .. }
+            | FolderError::RemovedRefsLeft { .. }
+            | FolderError::ExtraRefRefused { .. } => None,
         }
     }
 }

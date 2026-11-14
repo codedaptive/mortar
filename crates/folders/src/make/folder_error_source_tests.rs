@@ -150,6 +150,34 @@ fn variants_wrapping_nothing_have_no_source() {
             old: Oid::parse("489d82745705a031306253da29bdad7aee19d2e5").unwrap(),
             new: Oid::parse("1111111111111111111111111111111111111111").unwrap(),
         },
+        FolderError::NotRemovedUnsaved {
+            path: PathBuf::from("/wt/a"),
+            refused: vec![PathBuf::from("big.bin")],
+            cap: Some(1048576),
+        },
+        FolderError::NotJoined {
+            path: PathBuf::from("/wt/a"),
+            branch: "refs/heads/req/a/b".to_string(),
+            zone_branch: "refs/heads/zone/a".to_string(),
+        },
+        FolderError::ZoneFolder {
+            path: PathBuf::from("/wt/z"),
+            zone: "a".to_string(),
+        },
+        FolderError::RefMoved {
+            refname: "refs/heads/req/a/b".to_string(),
+            at: None,
+        },
+        FolderError::RemovedRefsLeft {
+            path: PathBuf::from("/wt/a"),
+            branch: "refs/heads/req/a/b".to_string(),
+            moved: "refs/mortar/snap/a/b".to_string(),
+            at: None,
+        },
+        FolderError::ExtraRefRefused {
+            refname: "refs/heads/main".to_string(),
+            reason: "is under refs/heads/".to_string(),
+        },
     ];
     for err in &none {
         assert!(err.source().is_none(), "{err:?} has a source");
