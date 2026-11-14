@@ -1,5 +1,6 @@
 use crate::snapshot_from_apply::snapshot_from_apply;
-use crate::{RefusedFile, SnapshotError, SnapshotOutcome};
+use crate::{FormatterResult, FormatterRun, RefusedFile, SnapshotError, SnapshotOutcome};
+use std::ffi::OsString;
 use std::path::PathBuf;
 use gitio::Oid;
 use oplog::{ApplyOutcome, OpPhase, OpRecord, OpResult, RefMove};
@@ -33,6 +34,7 @@ fn done_is_the_commit_and_tree_written_with_the_refused_files() {
         oid("dddddddddddddddddddddddddddddddddddddddd"),
         oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
         vec![RefusedFile { path: PathBuf::from("assets/big.bin"), size: 6_291_456, cap: 5_242_880 }],
+        None,
     );
     assert_eq!(
         outcome.unwrap(),
@@ -41,6 +43,38 @@ fn done_is_the_commit_and_tree_written_with_the_refused_files() {
             tree: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
             written: true,
             refused: vec![RefusedFile { path: PathBuf::from("assets/big.bin"), size: 6_291_456, cap: 5_242_880 }],
+            formatted: None,
+        }
+    );
+}
+
+#[test]
+fn done_carries_a_failed_formatter_run_and_is_still_written() {
+    let outcome = snapshot_from_apply(
+        ApplyOutcome::Done(record(OpPhase::Done, OpResult::Moved)),
+        oid("dddddddddddddddddddddddddddddddddddddddd"),
+        oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        Vec::new(),
+        Some(FormatterRun {
+            program: PathBuf::from("rustfmt"),
+            args: vec![OsString::from("--")],
+            paths: vec![PathBuf::from("src/a.rs")],
+            result: FormatterResult::Failed { code: Some(1), stderr: "error: src/a.rs\n".to_string() },
+        }),
+    );
+    assert_eq!(
+        outcome.unwrap(),
+        SnapshotOutcome {
+            commit: oid("dddddddddddddddddddddddddddddddddddddddd"),
+            tree: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+            written: true,
+            refused: Vec::new(),
+            formatted: Some(FormatterRun {
+                program: PathBuf::from("rustfmt"),
+                args: vec![OsString::from("--")],
+                paths: vec![PathBuf::from("src/a.rs")],
+                result: FormatterResult::Failed { code: Some(1), stderr: "error: src/a.rs\n".to_string() },
+            }),
         }
     );
 }
@@ -53,6 +87,7 @@ fn repeated_is_op_repeated_with_the_earlier_done_record() {
         oid("dddddddddddddddddddddddddddddddddddddddd"),
         oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
         Vec::new(),
+        None,
     );
     match outcome {
         Err(SnapshotError::OpRepeated(carried)) => assert_eq!(carried, done),
@@ -74,6 +109,7 @@ fn failed_is_ref_moved_with_the_failed_record() {
         oid("dddddddddddddddddddddddddddddddddddddddd"),
         oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
         Vec::new(),
+        None,
     );
     match outcome {
         Err(SnapshotError::RefMoved(carried)) => assert_eq!(carried, failed),

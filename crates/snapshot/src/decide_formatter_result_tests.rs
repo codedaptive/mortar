@@ -1,0 +1,43 @@
+use crate::decide_formatter_result::decide_formatter_result;
+use crate::formatter_result::FormatterResult;
+use std::io;
+
+fn failed(code: Option<i32>, stderr: &str) -> FormatterResult {
+    FormatterResult::Failed { code, stderr: stderr.to_string() }
+}
+
+#[test]
+fn exit_zero_is_formatted_and_drops_stderr() {
+    assert_eq!(decide_formatter_result(Ok((Some(0), b"warning\n".to_vec()))), FormatterResult::Formatted);
+}
+
+#[test]
+fn a_non_zero_exit_is_failed_with_its_code_and_stderr() {
+    assert_eq!(decide_formatter_result(Ok((Some(1), b"error: bad.rs\n".to_vec()))), failed(Some(1), "error: bad.rs\n"));
+}
+
+#[test]
+fn killed_by_a_signal_is_failed_with_no_code() {
+    assert_eq!(decide_formatter_result(Ok((None, Vec::new()))), failed(None, ""));
+}
+
+#[test]
+fn stderr_is_cut_to_4096_bytes() {
+    assert_eq!(decide_formatter_result(Ok((Some(2), vec![b'x'; 5000]))), failed(Some(2), &"x".repeat(4096)));
+}
+
+#[test]
+fn stderr_at_4096_bytes_is_kept_whole() {
+    assert_eq!(decide_formatter_result(Ok((Some(2), vec![b'y'; 4096]))), failed(Some(2), &"y".repeat(4096)));
+}
+
+#[test]
+fn a_spawn_error_is_spawn_failed_with_its_text() {
+    let error = io::Error::new(io::ErrorKind::NotFound, "no such file");
+    assert_eq!(decide_formatter_result(Err(error)), FormatterResult::SpawnFailed { error: "no such file".to_string() });
+}
+
+#[test]
+fn invalid_utf8_in_stderr_is_replaced() {
+    assert_eq!(decide_formatter_result(Ok((Some(1), b"bad \xff".to_vec()))), failed(Some(1), "bad \u{FFFD}"));
+}
