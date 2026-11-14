@@ -12,7 +12,7 @@
 //! - one writing more than FORMATTER_STDERR_CAP bytes of stderr is drained, and is listed Failed with code 1 and the
 //!   first 4096 bytes: formatter_timeout.rs::stderr_larger_than_pipe_and_cap_is_drained_but_only_first_4096_bytes_are_reported.
 //! In tests/snapshot/formatter_group.rs (S-37) each case also shows that the background child's process group id is
-//! the formatter's pid, the formatter is gone and reaped, the child is gone or a zombie, and the snapshot is written:
+//! the formatter's pid, the formatter is gone and reaped, the child ended without being released, and the snapshot is written:
 //! - an `sh` wrapper whose background child blocks is listed TimedOut with the limit and the wrapper's stderr:
 //!   formatter_group.rs::wrapper_and_its_fifo_blocked_child_are_terminated_on_timeout_and_snapshot_is_written;
 //! - on Linux and macOS, a formatter that exits 0 leaving a background child holding stderr is listed Formatted, not

@@ -1,4 +1,6 @@
 //! snapshot: see the Mortar mission (Layout).
+//! The crate's bridge file: module declarations and re-exports only, one line per public symbol, so it grows past
+//! the 150-line ceiling by design (charter exception, Coord-snapshot, 2026-11-14); it is not split.
 
 mod candidate_size;
 mod cap_candidate;
@@ -52,9 +54,11 @@ mod save_trailers;
 mod save_unchanged;
 mod saved_state;
 mod saved_state_type;
+mod sentence_refusal;
 mod snapshot;
 mod snapshot_decision;
 mod snapshot_error;
+mod snapshot_error_display;
 mod snapshot_excludes;
 mod snapshot_formatted;
 mod snapshot_from_apply;
@@ -78,6 +82,7 @@ pub use save::save;
 pub use save_outcome::SaveOutcome;
 pub use saved_state::saved_state;
 pub use saved_state_type::SavedState;
+pub use sentence_refusal::sentence_refusal;
 pub use snapshot::snapshot;
 pub use snapshot_error::SnapshotError;
 pub use snapshot_formatted::snapshot_formatted;
@@ -138,6 +143,10 @@ mod save_op_tests;
 mod save_trailers_tests;
 #[cfg(test)]
 mod save_unchanged_tests;
+#[cfg(test)]
+mod sentence_refusal_tests;
+#[cfg(test)]
+mod snapshot_error_display_tests;
 #[cfg(test)]
 mod snapshot_excludes_tests;
 #[cfg(test)]
