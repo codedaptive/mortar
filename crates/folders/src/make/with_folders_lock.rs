@@ -9,21 +9,15 @@
 use std::path::Path;
 
 use gitio::Git;
-use oplog::{
-    acquire_lock, apply, host_name, lock_path, new_op_id, release_lock, takeover_op, unix_now, LockName,
-    LockRecord, PidProbe,
-};
+use oplog::{with_lock, HeldLockError, LockName, PidProbe};
 
-use super::guard_removal_ops::guard_removal_ops;
 use super::FolderError;
 
-/// Takes oplog's folders lock (LockName::Folders) under `common` for op `key`, logs each takeover guard the
-/// acquire removed as an op (S-30), then a takeover of a stale holder (S-4), runs `work`, and releases the lock
-/// whatever work or the logging returned. The guard ops come first because those removals happened before the
-/// lock was won; a failed apply skips the rest of the logging and work. When the acquire refuses, its guard ops
-/// are still applied and the refusal is returned as FolderError::Lock, unless applying a guard op failed: then that
-/// FolderError::Oplog is returned, because the guard is already gone and a retry would not see it to log it again.
-/// work's error wins over a release error; a release error is returned only when work succeeded.
+/// Takes oplog's folders lock (LockName::Folders) under `common` for holder key `key` and runs `work` through
+/// oplog::with_lock, which logs the S-30 takeover-guard-removal ops and the S-4 lock-takeover op in the order its
+/// doc gives, runs work under the lock and releases the lock whatever work returned. HeldLockError::Lock becomes
+/// FolderError::Lock, HeldLockError::Oplog becomes FolderError::Oplog, and work's own FolderError is returned
+/// untouched.
 pub(crate) fn with_folders_lock<T>(
     git: &Git,
     common: &Path,
@@ -31,28 +25,9 @@ pub(crate) fn with_folders_lock<T>(
     pids: &dyn PidProbe,
     work: impl FnOnce() -> Result<T, FolderError>,
 ) -> Result<T, FolderError> {
-    let me = LockRecord {
-        pid: std::process::id(),
-        host: host_name().map_err(FolderError::Lock)?,
-        key: key.to_string(),
-        since: unix_now(),
-    };
-    let path = lock_path(common, &LockName::Folders).map_err(FolderError::Lock)?;
-    let acquired = acquire_lock(common, &LockName::Folders, &me, pids);
-    let logged = guard_removal_ops(&acquired, &path, &me, &mut new_op_id, unix_now())
-        .iter()
-        .try_for_each(|op| apply(git, common, op).map(drop).map_err(FolderError::Oplog));
-    let lock = match acquired {
-        Ok(lock) => lock,
-        Err(e) => return logged.and(Err(FolderError::Lock(e))),
-    };
-    let result = logged
-        .and_then(|()| match takeover_op(&lock, new_op_id(), unix_now()) {
-            Some(op) => apply(git, common, &op).map(drop).map_err(FolderError::Oplog),
-            None => Ok(()),
-        })
-        .and_then(|()| work());
-    let released = release_lock(&lock).map_err(FolderError::Lock);
-    let value = result?;
-    released.map(|()| value)
+    with_lock(git, common, &LockName::Folders, key, pids, work).map_err(|e| match e {
+        HeldLockError::Lock(e) => FolderError::Lock(e),
+        HeldLockError::Oplog(e) => FolderError::Oplog(e),
+        HeldLockError::Work(e) => e,
+    })
 }
