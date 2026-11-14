@@ -18,7 +18,8 @@ pub enum JoinAnswer {
     Conflicted { commit: Oid, files: Vec<PathBuf>, state: PathBuf },
     /// A resolve's first run wrote the conflicted versions of `files`, markers included, from commit `commit`'s
     /// conflict into the folder; no ref moved. `skipped` are conflicted paths the conflicted tree has no version of (a
-    /// rename/rename conflict, S-50), so nothing was written for them. The next step is to edit the files written,
-    /// then run `mortar resolve` again.
-    FilesWritten { commit: Oid, files: Vec<PathBuf>, skipped: Vec<PathBuf> },
+    /// rename/rename conflict, S-50), so nothing was written for them. `gitlinks` are conflicted paths that are
+    /// submodules, so no file was written for them either; their next step is to set each submodule's commit in the
+    /// folder (S-64). The next step is to edit the files written, then run `mortar resolve` again.
+    FilesWritten { commit: Oid, files: Vec<PathBuf>, skipped: Vec<PathBuf>, gitlinks: Vec<PathBuf> },
 }

@@ -25,7 +25,7 @@ impl fmt::Display for JoinAnswer {
                 }
                 write!(f, "\nresolve the files, then run `mortar resolve`")
             }
-            JoinAnswer::FilesWritten { commit, files, skipped } => {
+            JoinAnswer::FilesWritten { commit, files, skipped, gitlinks } => {
                 write!(f, "files written: the conflicted versions from commit {commit}, markers included:")?;
                 for file in files {
                     write!(f, "\n  {}", file.display())?;
@@ -33,6 +33,16 @@ impl fmt::Display for JoinAnswer {
                 if !skipped.is_empty() {
                     write!(f, "\nthe conflicted tree has no version of these, so nothing was written for them:")?;
                     for file in skipped {
+                        write!(f, "\n  {}", file.display())?;
+                    }
+                }
+                if !gitlinks.is_empty() {
+                    write!(
+                        f,
+                        "\nthese are submodules, so nothing was written for them: set each one's commit in the \
+                         folder:"
+                    )?;
+                    for file in gitlinks {
                         write!(f, "\n  {}", file.display())?;
                     }
                 }

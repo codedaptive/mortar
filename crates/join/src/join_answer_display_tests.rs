@@ -83,6 +83,7 @@ fn files_written_names_the_commit_each_file_and_the_next_step() {
         commit: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
         files: vec![PathBuf::from("src/a.rs"), PathBuf::from("b.txt")],
         skipped: Vec::new(),
+        gitlinks: Vec::new(),
     };
     assert_eq!(
         answer.to_string(),
@@ -97,11 +98,45 @@ fn files_written_lists_the_skipped_paths_under_their_own_line() {
         commit: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
         files: vec![PathBuf::from("src/a.rs")],
         skipped: vec![PathBuf::from("old/name.rs"), PathBuf::from("c.txt")],
+        gitlinks: Vec::new(),
     };
     assert_eq!(
         answer.to_string(),
         "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
          included:\n  src/a.rs\nthe conflicted tree has no version of these, so nothing was written for them:\n  \
          old/name.rs\n  c.txt\nedit the files written, then run `mortar resolve` again"
+    );
+}
+
+#[test]
+fn files_written_lists_the_submodules_with_their_step() {
+    let answer = JoinAnswer::FilesWritten {
+        commit: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        files: vec![PathBuf::from("src/a.rs")],
+        skipped: Vec::new(),
+        gitlinks: vec![PathBuf::from("vendor/lib"), PathBuf::from("ext")],
+    };
+    assert_eq!(
+        answer.to_string(),
+        "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
+         included:\n  src/a.rs\nthese are submodules, so nothing was written for them: set each one's commit in the \
+         folder:\n  vendor/lib\n  ext\nedit the files written, then run `mortar resolve` again"
+    );
+}
+
+#[test]
+fn files_written_lists_the_skipped_paths_then_the_submodules() {
+    let answer = JoinAnswer::FilesWritten {
+        commit: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+        files: vec![PathBuf::from("src/a.rs")],
+        skipped: vec![PathBuf::from("old/name.rs")],
+        gitlinks: vec![PathBuf::from("vendor/lib")],
+    };
+    assert_eq!(
+        answer.to_string(),
+        "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
+         included:\n  src/a.rs\nthe conflicted tree has no version of these, so nothing was written for them:\n  \
+         old/name.rs\nthese are submodules, so nothing was written for them: set each one's commit in the folder:\
+         \n  vendor/lib\nedit the files written, then run `mortar resolve` again"
     );
 }
