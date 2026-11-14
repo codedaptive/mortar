@@ -1,4 +1,4 @@
-//! What a sweep would free, as the caller supplies it; a below-floor refusal reports it.
+//! What a sweep would free, as the caller supplies it or disk() computes it; a below-floor refusal reports it.
 //! A bare type; below_floor_display_tests exercises it.
 
 /// `bytes` is the figure; `reason`, when given, says why the figure is what it is (for example,

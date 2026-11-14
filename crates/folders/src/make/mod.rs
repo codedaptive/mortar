@@ -16,6 +16,7 @@ mod make_branch;
 mod make_request_folder;
 mod make_zone_folder;
 mod read_folder_record;
+mod ref_moved_from;
 mod refill_cone;
 mod refill_folder;
 mod repeat;
@@ -37,6 +38,8 @@ mod folder_error_display_tests;
 #[cfg(test)]
 mod folder_error_source_tests;
 #[cfg(test)]
+mod ref_moved_from_tests;
+#[cfg(test)]
 mod refill_cone_tests;
 #[cfg(test)]
 mod repeat_decision_tests;
@@ -53,6 +56,7 @@ pub use folder_setup::FolderSetup;
 pub use make_request_folder::make_request_folder;
 pub use make_zone_folder::make_zone_folder;
 pub use read_folder_record::read_folder_record;
+pub(crate) use ref_moved_from::ref_moved_from;
 pub use repeat::Repeat;
 pub use repeat_decision::repeat_decision;
 pub(crate) use with_folders_lock::with_folders_lock;

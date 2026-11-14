@@ -224,3 +224,154 @@ fn branch_elsewhere_with_no_commit_says_so() {
          489d82745705a031306253da29bdad7aee19d2e5 nor its new tip 1111111111111111111111111111111111111111"
     );
 }
+
+#[test]
+fn not_removed_unsaved_with_no_refused_file_says_save() {
+    let err = FolderError::NotRemovedUnsaved {
+        path: PathBuf::from("/wt/a"),
+        refused: vec![],
+        cap: Some(1048576),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a holds work that is not saved; the folder was not removed; next step: mortar save"
+    );
+}
+
+#[test]
+fn not_removed_unsaved_names_the_refused_files_and_the_cap() {
+    let err = FolderError::NotRemovedUnsaved {
+        path: PathBuf::from("/wt/a"),
+        refused: vec![PathBuf::from("big.bin"), PathBuf::from("data/huge.tar")],
+        cap: Some(1048576),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a holds files the snapshot size cap (1048576 bytes) refused: big.bin, data/huge.tar; they are in no \
+         snapshot, so the folder was not removed; next step: move or delete them, then mortar save"
+    );
+}
+
+#[test]
+fn not_removed_unsaved_with_no_cap_leaves_the_cap_out() {
+    let err = FolderError::NotRemovedUnsaved {
+        path: PathBuf::from("/wt/a"),
+        refused: vec![PathBuf::from("big.bin")],
+        cap: None,
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a holds files the snapshot size cap refused: big.bin; they are in no snapshot, so the folder was not \
+         removed; next step: move or delete them, then mortar save"
+    );
+}
+
+#[test]
+fn not_joined_names_both_branches_and_the_next_step() {
+    let err = FolderError::NotJoined {
+        path: PathBuf::from("/wt/a"),
+        branch: "refs/heads/req/folders/WO-1".to_string(),
+        zone_branch: "refs/heads/zone/folders".to_string(),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a was not removed: branch refs/heads/req/folders/WO-1 is not contained in refs/heads/zone/folders; \
+         next step: mortar join"
+    );
+}
+
+#[test]
+fn zone_folder_names_the_zone() {
+    let err = FolderError::ZoneFolder {
+        path: PathBuf::from("/wt/z"),
+        zone: "folders".to_string(),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/z is the zone folder for zone folders; remove takes request folders only; nothing changed"
+    );
+}
+
+#[test]
+fn ref_moved_names_the_ref_and_where_it_is() {
+    let err = FolderError::RefMoved {
+        refname: "refs/mortar/snap/folders/WO-1".to_string(),
+        at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
+    };
+    assert_eq!(
+        text(err),
+        "ref refs/mortar/snap/folders/WO-1 moved while it was being deleted (now at \
+         2222222222222222222222222222222222222222); nothing was deleted; run again"
+    );
+}
+
+#[test]
+fn ref_moved_with_no_commit_says_so() {
+    let err = FolderError::RefMoved {
+        refname: "refs/heads/req/folders/WO-1".to_string(),
+        at: None,
+    };
+    assert_eq!(
+        text(err),
+        "ref refs/heads/req/folders/WO-1 moved while it was being deleted (now at no commit); nothing was deleted; \
+         run again"
+    );
+}
+
+#[test]
+fn removed_refs_left_names_the_folder_both_refs_and_where_the_moved_one_is() {
+    let err = FolderError::RemovedRefsLeft {
+        path: PathBuf::from("/wt/a"),
+        branch: "refs/heads/req/folders/WO-1".to_string(),
+        moved: "refs/mortar/snap/folders/WO-1".to_string(),
+        at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a was removed, but ref refs/mortar/snap/folders/WO-1 moved (now at \
+         2222222222222222222222222222222222222222) before branch refs/heads/req/folders/WO-1 and its snapshot ref \
+         were deleted; both are left as they are; the work they hold is in the zone; next step: mortar sweep"
+    );
+}
+
+#[test]
+fn removed_refs_left_with_no_commit_says_so() {
+    let err = FolderError::RemovedRefsLeft {
+        path: PathBuf::from("/wt/a"),
+        branch: "refs/heads/req/folders/WO-1".to_string(),
+        moved: "refs/heads/req/folders/WO-1".to_string(),
+        at: None,
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a was removed, but ref refs/heads/req/folders/WO-1 moved (now at no commit) before branch \
+         refs/heads/req/folders/WO-1 and its snapshot ref were deleted; both are left as they are; the work they \
+         hold is in the zone; next step: mortar sweep"
+    );
+}
+
+#[test]
+fn extra_ref_refused_names_the_ref_and_its_reason() {
+    let err = FolderError::ExtraRefRefused {
+        refname: "refs/heads/main".to_string(),
+        reason: "is under refs/heads/".to_string(),
+    };
+    assert_eq!(
+        text(err),
+        "extra ref refs/heads/main is under refs/heads/; sweep_refs deletes no ref under refs/heads/, refs/mortar/ \
+         or refs/remotes/, nor a protected one; nothing was swept"
+    );
+}
+
+#[test]
+fn extra_ref_refused_for_a_protected_ref() {
+    let err = FolderError::ExtraRefRefused {
+        refname: "refs/proven/folders".to_string(),
+        reason: "is protected by land".to_string(),
+    };
+    assert_eq!(
+        text(err),
+        "extra ref refs/proven/folders is protected by land; sweep_refs deletes no ref under refs/heads/, \
+         refs/mortar/ or refs/remotes/, nor a protected one; nothing was swept"
+    );
+}
