@@ -1,12 +1,13 @@
-//! JSON text to a JsonValue, for the subset an op record uses.
+//! JSON text to a JsonValue, for the JSON subset Mortar's records use.
 
 use super::{parse_json_string, JsonError, JsonValue};
 
-/// One JSON value with optional whitespace around it. Objects, arrays, strings, null and non-negative
-/// integers (no sign, fraction, exponent or leading zero; must fit u64). Text that ends before the value
-/// is complete is EndOfInput, the mark of a torn write; anything else wrong, trailing text included, is
-/// Invalid.
-pub(crate) fn parse_json(text: &str) -> Result<JsonValue, JsonError> {
+/// One JSON value with optional whitespace around it: objects, arrays, strings, null and non-negative
+/// integers that fit u64. Booleans, negative numbers, fractions, exponents and leading zeros are
+/// refused. An object keeps its keys in text order, duplicates included. Text that ends before the
+/// value is complete is EndOfInput, the mark of a torn write; anything else wrong, trailing text
+/// included, is Invalid.
+pub fn parse_json(text: &str) -> Result<JsonValue, JsonError> {
     let (value, end) = value(text, skip_ws(text, 0))?;
     let rest = skip_ws(text, end);
     if rest < text.len() {

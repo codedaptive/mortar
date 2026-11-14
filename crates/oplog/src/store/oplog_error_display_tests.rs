@@ -91,8 +91,8 @@ fn mixed_names_op_key_and_each_ref_with_its_values() {
          old ones: \
          refs/heads/a planned absent -> aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, now aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa; \
          refs/heads/b planned bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb -> cccccccccccccccccccccccccccccccccccccccc, now absent; \
-         nothing was changed; find who moved them with history by ref, then close the op by hand with a done \
-         or failed record in the op log, since recover refuses every command until it is closed"
+         nothing was changed; find who moved them with mortar log --ref <ref>, then close the op by hand \
+         with a done or failed record in the op log, since recover refuses every command until it is closed"
     );
 }
 
@@ -159,7 +159,7 @@ fn nothing_to_undo_joins_the_refs() {
     assert_eq!(
         err.to_string(),
         "nothing to undo: no done op in the op log moved refs/heads/a, refs/heads/b; check the ref names with \
-         history by ref"
+         mortar log --ref <ref>"
     );
 }
 
@@ -198,13 +198,13 @@ fn moved_since_outside_mortar_says_no_logged_op_explains_it() {
 }
 
 #[test]
-fn unknown_op_names_the_op_and_says_find_it_with_history() {
+fn unknown_op_names_the_op_and_says_find_it_with_mortar_log() {
     let err = OplogError::UnknownOp {
         op_id: "op-404".to_string(),
     };
     assert_eq!(
         err.to_string(),
-        "cannot restore: op op-404 is not in the op log; find the op id with history"
+        "cannot restore: op op-404 is not in the op log; find the op id with mortar log"
     );
 }
 
@@ -218,5 +218,18 @@ fn value_unknown_names_the_ref_and_the_op() {
         err.to_string(),
         "cannot restore ref refs/heads/x as of op op-3: no done op in the op log moved it, so its value then is \
          unknown; name only refs mortar has moved"
+    );
+}
+
+#[test]
+fn not_open_names_the_op_and_says_find_it_in_the_log_file() {
+    let err = OplogError::NotOpen {
+        op_id: "op-9".to_string(),
+    };
+    assert_eq!(
+        err.to_string(),
+        "cannot close op op-9: it has no open intent in the op log (never written, or already closed); nothing \
+         was written; in mortar/oplog.jsonl, find the intent line that no later done or failed line closes and \
+         use its op_id"
     );
 }

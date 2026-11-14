@@ -20,6 +20,7 @@ mod json_error;
 mod json_value;
 mod line_error;
 mod log_line;
+mod marked;
 mod move_changes;
 mod object_fields;
 mod oid_is_zero;
@@ -64,8 +65,6 @@ mod decode_ref_actual_tests;
 #[cfg(test)]
 mod decode_ref_move_tests;
 #[cfg(test)]
-mod decode_valued_line_tests;
-#[cfg(test)]
 mod decode_valued_log_tests;
 #[cfg(test)]
 mod encode_op_record_tests;
@@ -73,8 +72,6 @@ mod encode_op_record_tests;
 mod encode_valued_record_tests;
 #[cfg(test)]
 mod intent_record_tests;
-#[cfg(test)]
-mod log_line_tests;
 #[cfg(test)]
 mod move_changes_tests;
 #[cfg(test)]
@@ -112,6 +109,8 @@ pub use encode_op_record::encode_op_record;
 pub use encode_valued_record::encode_valued_record;
 pub use intent_record::intent_record;
 pub use json_error::JsonError;
+pub use json_value::JsonValue;
+pub use marked::{append_marked_record, decode_marked_log, read_marked_log, MarkedLog, MarkedRecord};
 pub use op::Op;
 pub use op_log::OpLog;
 pub use op_phase::OpPhase;
@@ -119,6 +118,7 @@ pub use op_record::OpRecord;
 pub use op_result::OpResult;
 pub use oplog_error::OplogError;
 pub use oplog_path::oplog_path;
+pub use parse_json::parse_json;
 pub use parse_json_string::parse_json_string;
 pub use read_op_log::read_op_log;
 pub use read_ref_value::read_ref_value;
@@ -135,13 +135,11 @@ pub(crate) use decode_op_values::decode_op_values;
 pub(crate) use decode_ref_actual::decode_ref_actual;
 pub(crate) use decode_ref_move::decode_ref_move;
 pub(crate) use decode_valued_line::decode_valued_line;
-pub(crate) use json_value::JsonValue;
 pub(crate) use line_error::LineError;
 pub(crate) use log_line::log_line;
 pub(crate) use move_changes::move_changes;
 pub(crate) use object_fields::object_fields;
 pub(crate) use oid_is_zero::oid_is_zero;
-pub(crate) use parse_json::parse_json;
 pub(crate) use plain_log::plain_log;
 pub(crate) use take_oid::take_oid;
 pub(crate) use take_optional_oid::take_optional_oid;

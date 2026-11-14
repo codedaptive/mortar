@@ -53,4 +53,7 @@ pub enum OplogError {
     UnknownOp { op_id: String },
     /// restore cannot tell what `refname` held as of `op_id`: no done op in the log moved it.
     ValueUnknown { op_id: String, refname: String },
+    /// close_intent named an op_id with no open intent in the log (never written, or already closed);
+    /// nothing was appended.
+    NotOpen { op_id: String },
 }

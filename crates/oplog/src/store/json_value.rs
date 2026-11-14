@@ -1,10 +1,11 @@
-//! A parsed JSON value, limited to what an op record holds.
+//! A parsed JSON value: null, unsigned integers, strings, arrays and objects.
 //! A bare type; parse_json_tests and the decode tests exercise it.
+//! Public: parse_json returns it.
 
-/// No booleans and no fractions: the record has none, so parse_json refuses them.
-/// An object keeps its keys in text order, duplicates included, so the decoders can refuse a repeat.
+/// No booleans, no negative numbers and no fractions: parse_json refuses them.
+/// An object keeps its keys in text order, duplicates included, so a caller decides what a repeat means.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum JsonValue {
+pub enum JsonValue {
     Null,
     Number(u64),
     String(String),
