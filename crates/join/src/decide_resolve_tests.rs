@@ -1,5 +1,6 @@
-//! decide_resolve: each rule in order, the precedence between them, and that the markers are read only at the
-//! marker check: every step before it gets a marker read that panics if called.
+//! decide_resolve: each rule in order, the precedence between them, Finish and Rebase carrying the state's saved
+//! folder tree (None and Some), and that the markers are read only at the marker check: every step before it gets a
+//! marker read that panics if called.
 
 use crate::decide_resolve::decide_resolve;
 use crate::join_state::JoinState;
@@ -13,6 +14,7 @@ const STATE_TREE: &str = "2222222222222222222222222222222222222222";
 const CALLER_TREE: &str = "3333333333333333333333333333333333333333";
 const REBASED: &str = "4444444444444444444444444444444444444444";
 const ELSEWHERE: &str = "5555555555555555555555555555555555555555";
+const FOLDER_TREE: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 fn oid(hex: &str) -> Oid {
     Oid::parse(hex).unwrap()
@@ -28,8 +30,10 @@ fn state(files_written: bool, rebased_to: Option<&str>) -> JoinState {
         tree: oid(STATE_TREE),
         remaining: vec![oid("9999999999999999999999999999999999999999")],
         files: vec![PathBuf::from("src/a.rs"), PathBuf::from("b.txt")],
+        all_files: vec![PathBuf::from("old/c.md"), PathBuf::from("src/a.rs"), PathBuf::from("b.txt")],
         files_written,
         rebased_to: rebased_to.map(oid),
+        folder_tree: None,
     }
 }
 
@@ -56,6 +60,7 @@ fn rebased_to_with_the_ref_already_there_finishes() {
         Ok(ResolveStep::Finish {
             from: oid("1111111111111111111111111111111111111111"),
             to: oid("4444444444444444444444444444444444444444"),
+            folder_tree: None,
         })
     );
 }
@@ -89,6 +94,7 @@ fn rebased_to_with_the_ref_still_at_the_request_tip_rebases_without_reading_mark
         Ok(ResolveStep::Rebase {
             from: oid("1111111111111111111111111111111111111111"),
             to: oid("4444444444444444444444444444444444444444"),
+            folder_tree: None,
         })
     );
 }
@@ -152,6 +158,34 @@ fn rebased_to_with_the_ref_elsewhere_is_stale() {
         Ok(ResolveStep::Stale {
             expected: oid("1111111111111111111111111111111111111111"),
             actual: Some(oid("5555555555555555555555555555555555555555")),
+        })
+    );
+}
+
+#[test]
+fn finish_carries_the_states_saved_folder_tree() {
+    let saved = JoinState { folder_tree: Some(oid(FOLDER_TREE)), ..state(true, Some(REBASED)) };
+    let step = decide_resolve(Some(&saved), Some(&oid(REBASED)), never, &oid(CALLER_TREE));
+    assert_eq!(
+        step,
+        Ok(ResolveStep::Finish {
+            from: oid("1111111111111111111111111111111111111111"),
+            to: oid("4444444444444444444444444444444444444444"),
+            folder_tree: Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")),
+        })
+    );
+}
+
+#[test]
+fn rebase_carries_the_states_saved_folder_tree() {
+    let saved = JoinState { folder_tree: Some(oid(FOLDER_TREE)), ..state(true, Some(REBASED)) };
+    let step = decide_resolve(Some(&saved), Some(&oid(REQUEST_TIP)), never, &oid(CALLER_TREE));
+    assert_eq!(
+        step,
+        Ok(ResolveStep::Rebase {
+            from: oid("1111111111111111111111111111111111111111"),
+            to: oid("4444444444444444444444444444444444444444"),
+            folder_tree: Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")),
         })
     );
 }

@@ -1,5 +1,6 @@
 //! join: see the Mortar mission (Layout).
 
+mod accumulate_paths;
 mod after_replay;
 mod after_replay_step;
 mod check_onto;
@@ -51,6 +52,7 @@ mod replay_result;
 mod resolve;
 mod resolve_step;
 mod resolved_commit;
+mod resolved_folder_tree;
 mod save_join_state;
 mod step;
 mod tree_refusal;
@@ -71,6 +73,8 @@ pub use replay::replay;
 pub use replay_result::ReplayResult;
 pub use resolve::resolve;
 
+#[cfg(test)]
+mod accumulate_paths_tests;
 #[cfg(test)]
 mod after_replay_tests;
 #[cfg(test)]
@@ -125,5 +129,7 @@ mod replay_git_fake_impl;
 mod replay_in_tests;
 #[cfg(test)]
 mod resolved_commit_tests;
+#[cfg(test)]
+mod resolved_folder_tree_tests;
 #[cfg(test)]
 mod tree_refusal_tests;

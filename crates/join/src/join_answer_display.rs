@@ -13,10 +13,16 @@ impl fmt::Display for JoinAnswer {
             JoinAnswer::FastForwarded { zone_ref, from, to } => {
                 write!(f, "joined: {zone_ref} moved forward from {from} to {to}")
             }
-            JoinAnswer::Rebased { request_ref, from, to } => write!(
+            JoinAnswer::Rebased { request_ref, from, to, folder_tree: None } => write!(
                 f,
                 "rebased: {request_ref} moved from {from} to {to}, replayed onto the zone; the unit tests must \
                  run again, then run `mortar join`"
+            ),
+            JoinAnswer::Rebased { request_ref, from, to, folder_tree: Some(tree) } => write!(
+                f,
+                "rebased: {request_ref} moved from {from} to {to}, replayed onto the zone; the folder moves from \
+                 tree {tree}, which holds this join's resolved files; the unit tests must run again, then run \
+                 `mortar join`"
             ),
             JoinAnswer::Conflicted { commit, files, state } => {
                 write!(f, "conflicted: commit {commit} did not apply; state in {}", state.display())?;
@@ -39,8 +45,9 @@ impl fmt::Display for JoinAnswer {
                 if !gitlinks.is_empty() {
                     write!(
                         f,
-                        "\nthese are submodules, so nothing was written for them: set each one's commit in the \
-                         folder:"
+                        "\nthese are submodules, so nothing was written for them: populate each one in the folder \
+                         and check out the commit it should have there, then resolve again (an empty submodule \
+                         folder is recorded as the request tip's commit):"
                     )?;
                     for file in gitlinks {
                         write!(f, "\n  {}", file.display())?;

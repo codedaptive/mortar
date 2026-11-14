@@ -19,7 +19,9 @@ pub(crate) enum ResolveStep {
     /// replay.
     Continue { tree: Oid },
     /// The continued replay was clean and saved, but the request ref has not moved yet: move it, then remove the state.
-    Rebase { from: Oid, to: Oid },
-    /// The request ref already moved to the continued replay's tip: only remove the state.
-    Finish { from: Oid, to: Oid },
+    /// `folder_tree` is the state's saved folder tree (S-87).
+    Rebase { from: Oid, to: Oid, folder_tree: Option<Oid> },
+    /// The request ref already moved to the continued replay's tip: only remove the state. `folder_tree` is the
+    /// state's saved folder tree (S-87).
+    Finish { from: Oid, to: Oid, folder_tree: Option<Oid> },
 }

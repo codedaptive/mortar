@@ -27,7 +27,14 @@
 //! - a request branch moved since the pause is refused as StateStale, mortar-join.json kept (the WO-join-3 order,
 //!   "Rework ruled 2026-11-14", item 4);
 //! - a conflicted path that became a folder in the caller's tree is refused as ConflictedPathIsFolder naming it, and
-//!   nothing is committed (the WO-join-3 order, "Rework ruled 2026-11-14", item 6).
+//!   nothing is committed (the WO-join-3 order, "Rework ruled 2026-11-14", item 6);
+//! - a two-round resolve answers Rebased with folder_tree = the old request tip's tree with every round's paths taken
+//!   from the caller's tree (S-87, WO-join-3d);
+//! - a kill after the final op and before the state's removal, then a repeat, answers the same Rebased with the same
+//!   folder_tree, read from the state (S-87, WO-join-3d);
+//! - an earlier round's path that became a folder is refused as ConflictedPathIsFolder naming it, the state kept
+//!   (S-87, WO-join-3d).
+//! A kill after the state is removed loses folder_tree for a repeat; recording it in the op is WO-join-3e's (S-89).
 
 use crate::after_replay_step::AfterReplayStep;
 use crate::continue_replay::continue_replay;
@@ -41,6 +48,7 @@ use crate::read_marked_files::read_marked_files;
 use crate::rebase_op::rebase_op;
 use crate::remove_join_state::remove_join_state;
 use crate::resolve_step::ResolveStep;
+use crate::resolved_folder_tree::resolved_folder_tree;
 use crate::save_join_state::save_join_state;
 use crate::write_conflicted_files::write_conflicted_files;
 use crate::{JoinAnswer, JoinRunError};
@@ -54,9 +62,10 @@ use std::path::Path;
 /// apart. A next run refuses while any file holds a marker line (StillMarked), a folder (no file text)
 /// having none; otherwise it commits the conflicted tree with the conflicted paths taken from `tree` as the resolved
 /// commit and continues the replay: conflicted again, it pauses with a new state and answers Conflicted; clean, it
-/// saves the new tip in the state, moves the request ref there by one op naming `actor`, removes the state and answers
-/// Rebased. A repeat finds where that stopped and finishes it. No state is NothingToResolve; a request ref moved since
-/// the pause is StateStale, and the state is kept.
+/// builds the folder tree (resolved_folder_tree), saves it with the new tip in the state, moves the request ref there
+/// by one op naming `actor`, removes the state and answers Rebased carrying that folder_tree, the tree the caller
+/// moves the folder from (S-87). A repeat finds where that stopped and finishes it with the state's folder_tree. No
+/// state is NothingToResolve; a request ref moved since the pause is StateStale, and the state is kept.
 pub fn resolve(git: &Git, folder: &Path, tree: &Oid, actor: &str) -> Result<JoinAnswer, JoinRunError> {
     let git_dir = git.git_dir(folder).map_err(JoinRunError::Git)?;
     let path = join_state_path(&git_dir);
@@ -82,22 +91,25 @@ pub fn resolve(git: &Git, folder: &Path, tree: &Oid, actor: &str) -> Result<Join
         (ResolveStep::Continue { tree }, Some(mut state)) => {
             match continue_replay(git, &state, &tree)? {
                 AfterReplayStep::Rebase { from, to } => {
+                    let folder_tree = resolved_folder_tree(git, &state, &tree)?;
                     state.rebased_to = Some(to.clone());
+                    state.folder_tree = Some(folder_tree);
                     save_join_state(&git_dir, &state)?;
                     finish(git, &path, &state, from, to, actor)
                 }
                 AfterReplayStep::Pause(next) => pause(git, folder, next),
             }
         }
-        (ResolveStep::Rebase { from, to }, Some(state)) => finish(git, &path, &state, from, to, actor),
-        (ResolveStep::Finish { from, to }, Some(state)) => {
+        (ResolveStep::Rebase { from, to, .. }, Some(state)) => finish(git, &path, &state, from, to, actor),
+        (ResolveStep::Finish { from, to, folder_tree }, Some(state)) => {
             remove_join_state(&path)?;
-            Ok(JoinAnswer::Rebased { request_ref: state.request_ref, from, to })
+            Ok(JoinAnswer::Rebased { request_ref: state.request_ref, from, to, folder_tree })
         }
     }
 }
 
-/// Moves the request ref from `from` to `to` by one op, as join's rebase does, then removes the state at `path`.
+/// Moves the request ref from `from` to `to` by one op, as join's rebase does, then removes the state at `path` and
+/// answers Rebased with the state's folder_tree.
 fn finish(
     git: &Git,
     path: &Path,
@@ -110,5 +122,6 @@ fn finish(
     let op = rebase_op(&state.request_ref, &from, &to, &state.onto, new_op_id(), actor, unix_now());
     op_applied(apply(git, &common, &op))?;
     remove_join_state(path)?;
-    Ok(JoinAnswer::Rebased { request_ref: state.request_ref.clone(), from, to })
+    let folder_tree = state.folder_tree.clone();
+    Ok(JoinAnswer::Rebased { request_ref: state.request_ref.clone(), from, to, folder_tree })
 }
