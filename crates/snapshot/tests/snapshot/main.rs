@@ -9,3 +9,4 @@ mod race;
 mod formatter;
 mod formatter_paths;
 mod formatter_timeout;
+mod formatter_group;

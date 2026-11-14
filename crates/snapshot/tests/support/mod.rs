@@ -7,6 +7,9 @@ mod blob;
 mod tree_names;
 mod formatter_script;
 mod assert_snapshot_written;
+mod fifo_hang_guard;
+
+pub use fifo_hang_guard::fifo_hang_guard;
 
 pub use formatter_script::formatter_script;
 pub use assert_snapshot_written::assert_snapshot_written;

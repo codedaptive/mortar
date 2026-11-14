@@ -1,6 +1,6 @@
 //! SPEC-snapshot WO-snapshot-4, S-35: deadline outcomes, real child death/reaping and capped stderr.
 //! No elapsed-time assertions; no background children, held-pipe case or process-group behavior (S-37).
-use crate::support::{assert_snapshot_written, blob, formatter_script, write, Fixture};
+use crate::support::{assert_snapshot_written, blob, fifo_hang_guard, formatter_script, write, Fixture};
 use oplog::{KillPidProbe, PidProbe};
 use snapshot::{snapshot_formatted, Formatter, FormatterResult, DEFAULT_SIZE_CAP};
 use std::{fs, path::PathBuf, process::Command, time::Duration};
@@ -14,6 +14,8 @@ fn fifo_blocked_formatter_is_timed_out_with_limit_and_stderr_killed_reaped_and_s
     let fifo = f.common.join("never-released-fifo");
     let made = Command::new("mkfifo").arg(&fifo).output().unwrap();
     assert!(made.status.success(), "{}", String::from_utf8_lossy(&made.stderr));
+    let guard_fired = f.common.join("fifo-hang-guard-fired");
+    let _hang_guard = fifo_hang_guard(vec![fifo.clone()], guard_fired.clone(), Duration::from_secs(30));
     let pid_file = f.common.join("timeout-formatter.pid");
     let _cleanup = StopFormatterOnDrop { pid_file: pid_file.clone() };
     let program = f.common.join("block-on-fifo.sh");
@@ -29,6 +31,7 @@ fn fifo_blocked_formatter_is_timed_out_with_limit_and_stderr_killed_reaped_and_s
     assert_eq!(run.program, formatter.program);
     assert_eq!(run.args, formatter.args);
     assert_eq!(run.paths, vec![PathBuf::from("root.txt")]);
+    assert!(!guard_fired.exists(), "hang guard had to unblock the FIFO: kill/reap regressed");
     assert_eq!(run.result, FormatterResult::TimedOut { limit, stderr: "formatter stalled on FIFO\n".into() });
     let pid = formatter_pid(&pid_file);
     assert_ne!(pid, std::process::id());
