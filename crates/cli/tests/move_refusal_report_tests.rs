@@ -1,13 +1,13 @@
 //! move_refusal_report: files in the way and a branch elsewhere are exit 1 owned by the folder, after the lines
 //! of what was already done; anything else is a failure with those lines first.
+//! ZIT (S-79 as replaced: the line is the file): it calls report::failure_report for real.
 
 use std::path::PathBuf;
 
 use folders::FolderError;
 use gitio::Oid;
 
-use super::move_refusal_report;
-use crate::report::{ExitCode, Report};
+use cli::{move_refusal_report, ExitCode, Report};
 
 const OLD: &str = "1111111111111111111111111111111111111111";
 const NEW: &str = "2222222222222222222222222222222222222222";

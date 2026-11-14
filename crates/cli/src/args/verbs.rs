@@ -22,6 +22,13 @@ pub const VERBS: &[VerbSpec] = &[
         usage: "mortar join [--key <operation key>] [--json]",
     },
     VerbSpec {
+        name: "resolve",
+        kind: VerbKind::Agent,
+        lock: LockNeed::Join,
+        needs_config: true,
+        usage: "mortar resolve [--key <operation key>] [--json]",
+    },
+    VerbSpec {
         name: "save",
         kind: VerbKind::Agent,
         lock: LockNeed::Join,

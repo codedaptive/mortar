@@ -9,10 +9,6 @@ mod repository_error;
 mod repository_report;
 
 #[cfg(test)]
-mod actor_for_tests;
-#[cfg(test)]
-mod context_report_tests;
-#[cfg(test)]
 mod repository_error_tests;
 #[cfg(test)]
 mod repository_report_tests;

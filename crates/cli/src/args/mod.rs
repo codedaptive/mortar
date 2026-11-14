@@ -15,8 +15,6 @@ mod find_verb_tests;
 #[cfg(test)]
 mod parse_args_tests;
 #[cfg(test)]
-mod usage_report_tests;
-#[cfg(test)]
 mod verbs_tests;
 
 pub use find_verb::find_verb;

@@ -1,14 +1,13 @@
 //! One command line, from the words to the report the binary prints.
-//! No unit test: it runs git through read_folder_context, load_config and the verbs (S-5); usage_report_tests,
-//! actor_for_tests, context_report_tests, repository_report_tests and missing_config_report_tests cover what
-//! it reports. Nagatha's integration group is to cover, with the mortar binary as a child process in a
-//! throwaway repository: an
-//! unknown verb is exit 4 listing the verbs; `mortar init` without --actor is exit 4; with --json stdout holds
-//! one JSON object and nothing else, also for a usage error; an agent verb outside a Mortar folder is refused,
-//! exit 1 (with `mortar join`); a verb that needs the config is refused without one, exit 1, next "mortar init",
-//! and outside any git repository is refused, exit 1, outcome "not-a-folder" for an agent verb (`mortar join`)
-//! and "not-a-repository" for a harness verb that needs the config (with the first such verb); every report
-//! names its verb ("" when none was read).
+//! No unit test: it runs git through read_folder_context, load_config and the verbs (S-5); the tests in
+//! crates/cli/tests (usage_report_tests, actor_for_tests, context_report_tests) and in src (repository_report_tests,
+//! missing_config_report_tests) cover what it reports. Nagatha's integration group is to cover, with the mortar binary
+//! as a child process in a throwaway repository: an unknown verb is exit 4 listing the verbs; `mortar init` without
+//! --actor is exit 4; with --json stdout holds one JSON object and nothing else, also for a usage error; an agent verb
+//! outside a Mortar folder is refused, exit 1 (with `mortar join`); a verb that needs the config is refused without
+//! one, exit 1, next "mortar init", and outside any git repository is refused, exit 1, outcome "not-a-folder" for an
+//! agent verb (`mortar join`) and "not-a-repository" for a harness verb that needs the config (with the first such
+//! verb); every report names its verb ("" when none was read).
 
 use std::path::Path;
 
@@ -21,6 +20,7 @@ use crate::context::{actor_for, context_report, read_folder_context, repository_
 use crate::init::run_init;
 use crate::join::run_join;
 use crate::report::{failure_report, Report};
+use crate::resolve::run_resolve;
 use crate::save::run_save;
 
 /// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. Agent verbs
@@ -61,6 +61,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
     match context.args.verb.name {
         "init" => run_init(&context.args, cwd),
         "join" => run_join(context),
+        "resolve" => run_resolve(context),
         "save" => run_save(context),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
     }

@@ -7,9 +7,9 @@ fn verb(name: &str) -> &'static VerbSpec {
 }
 
 #[test]
-fn init_join_and_save_are_built_in_that_order() {
+fn init_join_resolve_and_save_are_built_in_that_order() {
     let names: Vec<&str> = VERBS.iter().map(|verb| verb.name).collect();
-    assert_eq!(names, vec!["init", "join", "save"]);
+    assert_eq!(names, vec!["init", "join", "resolve", "save"]);
 }
 
 #[test]
@@ -29,6 +29,15 @@ fn join_is_an_agent_verb_under_the_join_lock_that_needs_the_config() {
     assert_eq!(join.lock, LockNeed::Join);
     assert!(join.needs_config);
     assert_eq!(join.usage, "mortar join [--key <operation key>] [--json]");
+}
+
+#[test]
+fn resolve_is_an_agent_verb_under_the_join_lock_that_needs_the_config() {
+    let resolve = verb("resolve");
+    assert_eq!(resolve.kind, VerbKind::Agent);
+    assert_eq!(resolve.lock, LockNeed::Join);
+    assert!(resolve.needs_config);
+    assert_eq!(resolve.usage, "mortar resolve [--key <operation key>] [--json]");
 }
 
 #[test]

@@ -8,8 +8,6 @@ mod save_sentence;
 mod snapshot_target_for;
 
 #[cfg(test)]
-mod save_error_report_tests;
-#[cfg(test)]
 mod save_report_tests;
 #[cfg(test)]
 mod save_sentence_tests;

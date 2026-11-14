@@ -1,4 +1,5 @@
 //! save_part: the finished move, the save and the refused files, as lines and as --json fields in their order.
+//! ZIT (S-79 as replaced: the line is the file): it calls join/finished_move_part for real.
 
 use std::path::PathBuf;
 
@@ -6,8 +7,7 @@ use gitio::Oid;
 use oplog::ChangeId;
 use snapshot::{RefusedFile, SaveOutcome};
 
-use super::{save_part, PendingMove};
-use crate::report::OutValue;
+use cli::{save_part, OutValue, PendingMove};
 
 const COMMIT: &str = "4444444444444444444444444444444444444444";
 const TREE: &str = "5555555555555555555555555555555555555555";

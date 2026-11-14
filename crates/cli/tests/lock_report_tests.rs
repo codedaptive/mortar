@@ -1,12 +1,12 @@
 //! lock_report: a held lock or a takeover is busy naming the holder; contention is busy; a bad zone is refused;
 //! the rest are failures.
+//! ZIT (S-79 as replaced: the line is the file): it calls report::failure_report for real.
 
 use std::path::PathBuf;
 
 use oplog::{LockError, LockRecord};
 
-use super::lock_report;
-use crate::report::{ExitCode, OutValue, Report};
+use cli::{lock_report, ExitCode, OutValue, Report};
 
 fn holder() -> LockRecord {
     LockRecord { pid: 4242, host: "build-7".to_string(), key: "join-a1b2".to_string(), since: 1_763_100_000 }
