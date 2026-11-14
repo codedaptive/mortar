@@ -1,6 +1,8 @@
 //! A folder record as one line of JSON.
 
-use super::{write_json_string, FolderKind, FolderRecord};
+use oplog::write_json_string;
+
+use super::{FolderKind, FolderRecord};
 
 /// One line of JSON, no trailing newline, keys in the order kind, zone, request, base, work_order_paths,
 /// needed_paths, parent; an absent request or parent is null. Every string is escaped, so any record encodes.
