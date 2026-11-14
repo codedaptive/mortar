@@ -8,9 +8,9 @@ use super::Leftover;
 const REQ_PREFIX: &str = "refs/heads/req/";
 
 /// The refs in `refs` (list_refs' shape: id, then full refname), in input order, named exactly
-/// `refs/heads/req/<zone>/<request>` (two non-empty segments, so an attempt branch `.../try-k` is not one), not in
-/// `checked_out` (full branch names, as gitio's Worktree.branch gives them), and whose `refs/heads/zone/<zone>` is
-/// in `refs`; that ref's id is the zone_tip.
+/// `refs/heads/req/<zone>/<request>` (two non-empty segments: the request branch's shape), not in `checked_out`
+/// (full branch names, as gitio's Worktree.branch gives them), and whose `refs/heads/zone/<zone>` is in `refs`; that
+/// ref's id is the zone_tip.
 pub fn leftover_branches(refs: &[(Oid, String)], checked_out: &[String]) -> Vec<Leftover> {
     refs.iter()
         .filter(|(_, name)| !checked_out.contains(name))

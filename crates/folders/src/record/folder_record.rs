@@ -5,8 +5,8 @@ use gitio::Oid;
 
 use super::FolderKind;
 
-/// A folder's record. `request` names the request for a Request folder and is None for a Zone folder;
-/// decode_folder_record refuses any other pairing.
+/// A folder's record. `request` names the request for a Request or an Attempt folder and is None for a Zone
+/// folder; decode_folder_record refuses any other pairing.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FolderRecord {
     pub kind: FolderKind,

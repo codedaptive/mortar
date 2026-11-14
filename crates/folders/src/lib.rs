@@ -1,5 +1,6 @@
 //! folders: see the Mortar mission (Layout).
 
+pub mod attempts;
 pub mod disk;
 pub mod make;
 pub mod moves;
@@ -9,6 +10,7 @@ pub mod record;
 pub mod remove;
 pub mod sweep;
 
+pub use attempts::{keep, keep_op, make_attempts};
 pub use disk::{disk, DiskReport, FolderDisk};
 pub use make::{make_request_folder, make_zone_folder, FolderError, FolderSetup};
 pub use moves::{move_folder, move_op};

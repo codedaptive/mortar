@@ -6,7 +6,7 @@ use crate::plan::SweepEstimate;
 use super::FolderDisk;
 
 /// Each Mortar folder; `store_bytes`, the shared object store, counted once; `refs`, the count of refs in each
-/// namespace (refs_by_namespace); and `sweep`, what sweep_build would free, with what it leaves unmeasured.
+/// namespace (refs_by_namespace); and `sweep`, what sweep_build and sweep_refs would free, an upper bound (S-75).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiskReport {
     pub folders: Vec<FolderDisk>,

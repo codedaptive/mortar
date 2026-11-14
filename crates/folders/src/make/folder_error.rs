@@ -1,5 +1,6 @@
-//! Every way making a folder, widening one with need, moving one with move_folder, removing one with remove, or
-//! measuring or sweeping with disk, sweep_build or sweep_refs can be refused.
+//! Every way making a folder, making attempt folders with make_attempts, keeping one with keep, widening one with
+//! need, moving one with move_folder, removing one with remove, or measuring or sweeping with disk, sweep_build or
+//! sweep_refs can be refused.
 //! A bare type; folder_error_display_tests exercises each variant's text, folder_error_source_tests its source.
 
 use std::path::PathBuf;
@@ -10,11 +11,11 @@ use oplog::{LockError, OplogError};
 use crate::plan::{BelowFloor, PlanError};
 use crate::record::{FolderRecord, RecordError};
 
-/// A refusal from make_zone_folder, make_request_folder, need, move_folder, remove, disk, sweep_build or
-/// sweep_refs. Debug only: io::Error, OplogError and LockError are neither Clone nor Eq.
+/// A refusal from make_zone_folder, make_request_folder, make_attempts, keep, need, move_folder, remove, disk,
+/// sweep_build or sweep_refs. Debug only: io::Error, OplogError and LockError are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum FolderError {
-    /// A zone or request name, or a sparse path, the plan refused.
+    /// A zone or request name, a sparse path, or an attempt count of 0, the plan refused.
     Plan(PlanError),
     /// The folder record at `path` is not one mortar writes.
     Record { path: PathBuf, error: RecordError },
@@ -40,6 +41,18 @@ pub enum FolderError {
     BranchExists { branch: String },
     /// The zone branch a folder is cut from does not exist.
     ZoneBranchMissing { branch: String },
+    /// The request branch (short name) that attempts are cut from, or that keep moves, does not exist.
+    RequestBranchMissing { branch: String },
+    /// keep found no attempt branch (short name) for the attempt asked for.
+    AttemptMissing { branch: String },
+    /// keep refused: the attempts at `paths`, which it would drop, hold work that is not saved (S-32): each is
+    /// named by its folder, or by its full branch name when it has no folder; nothing was touched.
+    AttemptsUnsaved { paths: Vec<PathBuf> },
+    /// keep refused: request branch `branch` has commits the kept attempt's branch `attempt` does not hold, so
+    /// moving it would drop them; nothing was touched.
+    RequestMovedOn { branch: String, attempt: String },
+    /// remove refused the folder at `path`: it is attempt `k`'s folder, and keep removes attempt folders.
+    AttemptFolder { path: PathBuf, k: u32 },
     /// The folder at `path` holds work that is not saved; nothing ran.
     NotSaved { path: PathBuf },
     /// git refused to move the folder at `path` over local changes at `paths`; nothing changed, nothing logged.

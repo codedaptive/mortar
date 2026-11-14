@@ -7,10 +7,11 @@
 //! in a throwaway repository: a joined, saved request folder is removed with its branch and snapshot ref deleted by
 //! one folder-remove op in mortar/oplog.jsonl; a repeat after that op was logged and the branch was made again at
 //! the same tip deletes it again; a branch not joined is NotJoined, with nothing changed; a zone folder is
-//! ZoneFolder; a detached HEAD, an unborn branch and a worktree with no record each refuse with NotAFolder; a
-//! missing zone branch is ZoneBranchMissing; an untracked file in the folder is git's refusal, with nothing
-//! deleted; a snapshot ref moved between its read and the op, or a repeat with the branch elsewhere, is
-//! RemovedRefsLeft, with the branch kept; a git or op-log error in the op passes through as Git or Oplog.
+//! ZoneFolder; an attempt folder is AttemptFolder, with nothing changed; a detached HEAD, an unborn branch and a
+//! worktree with no record each refuse with NotAFolder; a missing zone branch is ZoneBranchMissing; an untracked
+//! file in the folder is git's refusal, with nothing deleted; a snapshot ref moved between its read and the op, or
+//! a repeat with the branch elsewhere, is RemovedRefsLeft, with the branch kept; a git or op-log error in the op
+//! passes through as Git or Oplog.
 
 use std::path::{Path, PathBuf};
 
@@ -27,12 +28,13 @@ use crate::record::FolderKind;
 /// Removes the request folder at `folder`. `saved` is the caller's is_saved with no refused file (S-32); false, or
 /// any file in `refused` (those the snapshot size cap of `cap` bytes refused), is NotRemovedUnsaved before any git
 /// run. A HEAD with no branch or no commit, a worktree with no folder record, a request record with no request, or
-/// HEAD on another branch than the record's request branch is NotAFolder; a zone folder is ZoneFolder; a missing
-/// zone branch is ZoneBranchMissing; a branch not contained in its zone branch is NotJoined. Then git removes the
-/// worktree without force, so git itself refuses modified or untracked files (Git, nothing deleted), and one
-/// folder-remove op deletes the branch and the snapshot ref, if there is one; a ref not where it was read keeps both
-/// refs and is RemovedRefsLeft, since the worktree is already gone. The caller holds the lock and runs
-/// oplog::recover first (S-16, S-25); remove takes no lock itself.
+/// HEAD on another branch than the record's request branch is NotAFolder; an attempt folder is AttemptFolder, as
+/// soon as its record is read; a zone folder is ZoneFolder; a missing zone branch is ZoneBranchMissing; a branch
+/// not contained in its zone branch is NotJoined. Then git removes the worktree without force, so git itself
+/// refuses modified or untracked files (Git, nothing deleted), and one folder-remove op deletes the branch and the
+/// snapshot ref, if there is one; a ref not where it was read keeps both refs and is RemovedRefsLeft, since the
+/// worktree is already gone. The caller holds the lock and runs oplog::recover first (S-16, S-25); remove takes no
+/// lock itself.
 pub fn remove(
     git: &Git,
     folder: &Path,
@@ -60,6 +62,12 @@ pub fn remove(
         return Err(not_a_folder("a worktree with no Mortar folder record".to_string()));
     };
     let request = match (record.kind, &record.request) {
+        (FolderKind::Attempt(k), _) => {
+            return Err(FolderError::AttemptFolder {
+                path: folder.to_path_buf(),
+                k,
+            })
+        }
         (FolderKind::Zone, _) => String::new(),
         (FolderKind::Request, Some(request)) => request.clone(),
         (FolderKind::Request, None) => return Err(not_a_folder("its record names no request".to_string())),
@@ -67,8 +75,9 @@ pub fn remove(
     let zone_short = zone_branch(&record.zone).map_err(FolderError::Plan)?;
     let zone_ref = format!("refs/heads/{zone_short}");
     let (expected, merge_base) = match record.kind {
-        // remove_step_for answers ZoneFolder for a zone record before it reads either.
-        FolderKind::Zone => (String::new(), None),
+        // remove_step_for answers ZoneFolder for a zone record before it reads either; an attempt record
+        // returned AttemptFolder above, so it never reaches here.
+        FolderKind::Zone | FolderKind::Attempt(_) => (String::new(), None),
         FolderKind::Request => {
             let rb = request_branch(&record.zone, &request).map_err(FolderError::Plan)?;
             let zone_tip = git

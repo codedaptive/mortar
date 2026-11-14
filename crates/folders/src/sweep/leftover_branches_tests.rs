@@ -1,5 +1,5 @@
 //! leftover_branches: a req/<zone>/<request> branch checked out nowhere, with its zone branch present, is picked
-//! with the zone's tip; a checked-out one, one with no zone branch, an attempt branch, a three-segment name and a
+//! with the zone's tip; a checked-out one, one with no zone branch, a try/ attempt branch, a three-segment name and a
 //! non-req ref are not; input order is kept.
 
 use gitio::Oid;
@@ -45,8 +45,8 @@ fn a_branch_whose_zone_branch_is_missing_is_skipped() {
 }
 
 #[test]
-fn an_attempt_branch_is_not_picked() {
-    let input = refs(&[(A, "refs/heads/req/z/r/try-1"), (B, "refs/heads/zone/z")]);
+fn a_try_attempt_branch_is_not_picked() {
+    let input = refs(&[(A, "refs/heads/try/z/r/1"), (B, "refs/heads/zone/z")]);
     assert_eq!(leftover_branches(&input, &[]), Vec::<Leftover>::new());
 }
 

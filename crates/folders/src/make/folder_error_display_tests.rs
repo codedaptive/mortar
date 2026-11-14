@@ -375,3 +375,89 @@ fn extra_ref_refused_for_a_protected_ref() {
          refs/mortar/ or refs/remotes/, nor a protected one; nothing was swept"
     );
 }
+
+#[test]
+fn different_folder_names_an_attempt_folder_and_its_request() {
+    let err = FolderError::DifferentFolder {
+        path: PathBuf::from("/wt/a"),
+        existing: existing(FolderKind::Attempt(2), Some("WO-1")),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a is already attempt 2's folder for zone folders, request WO-1; remove it or choose another path"
+    );
+}
+
+#[test]
+fn different_folder_names_an_attempt_folder_with_no_request() {
+    let err = FolderError::DifferentFolder {
+        path: PathBuf::from("/wt/a"),
+        existing: existing(FolderKind::Attempt(7), None),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a is already attempt 7's folder for zone folders; remove it or choose another path"
+    );
+}
+
+#[test]
+fn request_branch_missing_names_the_branch_and_the_next_step() {
+    let err = FolderError::RequestBranchMissing {
+        branch: "req/folders/WO-1".to_string(),
+    };
+    assert_eq!(
+        text(err),
+        "request branch req/folders/WO-1 does not exist; make the request folder first"
+    );
+}
+
+#[test]
+fn attempt_missing_names_the_branch_and_what_keep_leaves() {
+    let err = FolderError::AttemptMissing {
+        branch: "try/folders/WO-1/3".to_string(),
+    };
+    assert_eq!(
+        text(err),
+        "no attempt branch try/folders/WO-1/3; nothing changed; if keep already ran, the request branch holds the \
+         kept attempt"
+    );
+}
+
+#[test]
+fn attempts_unsaved_names_every_folder_and_the_next_step() {
+    let err = FolderError::AttemptsUnsaved {
+        paths: vec![PathBuf::from("/wt/try-1"), PathBuf::from("refs/heads/try/z/r/3")],
+    };
+    assert_eq!(
+        text(err),
+        "dropped attempts /wt/try-1, refs/heads/try/z/r/3 hold work that is not saved; nothing changed; next step: \
+         mortar save in each, then keep again"
+    );
+}
+
+#[test]
+fn request_moved_on_names_both_branches_and_the_next_step() {
+    let err = FolderError::RequestMovedOn {
+        branch: "req/folders/WO-1".to_string(),
+        attempt: "try/folders/WO-1/2".to_string(),
+    };
+    assert_eq!(
+        text(err),
+        "request branch req/folders/WO-1 has commits attempt branch try/folders/WO-1/2 does not hold; keeping \
+         try/folders/WO-1/2 would drop them; nothing changed; next step: bring them into try/folders/WO-1/2 or make \
+         the attempts again"
+    );
+}
+
+#[test]
+fn attempt_folder_names_the_folder_and_its_number() {
+    let err = FolderError::AttemptFolder {
+        path: PathBuf::from("/wt/try-4"),
+        k: 4,
+    };
+    assert_eq!(
+        text(err),
+        "/wt/try-4 is attempt 4's folder; remove takes request folders only; keep removes attempt folders; nothing \
+         changed"
+    );
+}

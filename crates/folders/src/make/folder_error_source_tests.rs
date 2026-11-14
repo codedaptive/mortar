@@ -183,3 +183,29 @@ fn variants_wrapping_nothing_have_no_source() {
         assert!(err.source().is_none(), "{err:?} has a source");
     }
 }
+
+#[test]
+fn attempt_variants_have_no_source() {
+    let none = [
+        FolderError::RequestBranchMissing {
+            branch: "req/a/b".to_string(),
+        },
+        FolderError::AttemptMissing {
+            branch: "try/a/b/1".to_string(),
+        },
+        FolderError::AttemptsUnsaved {
+            paths: vec![PathBuf::from("/wt/try-1")],
+        },
+        FolderError::RequestMovedOn {
+            branch: "req/a/b".to_string(),
+            attempt: "try/a/b/1".to_string(),
+        },
+        FolderError::AttemptFolder {
+            path: PathBuf::from("/wt/try-1"),
+            k: 1,
+        },
+    ];
+    for err in &none {
+        assert!(source_text(err).is_none(), "{err:?} has a source");
+    }
+}

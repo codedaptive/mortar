@@ -10,11 +10,7 @@
 //! BranchExists; a branch deleted after it was made, then make again at the same zone tip: the branch is made
 //! again; a folders lock held by a live process refuses with FolderError::Lock and makes nothing.
 
-use super::attach_head::attach_head;
-use super::check_before_make::check_before_make;
-use super::fill_folder::fill_folder;
-use super::make_branch::make_branch;
-use super::refill_folder::refill_folder;
+use super::make_or_refill::make_or_refill;
 use super::with_folders_lock::with_folders_lock;
 use super::{FolderError, FolderSetup};
 use crate::plan::{request_branch, sparse_paths, zone_branch};
@@ -26,7 +22,7 @@ use crate::record::{FolderKind, FolderRecord};
 /// entries) and answers its record; refuses a different folder, the request branch checked out elsewhere, and free disk
 /// under the floor, all before the branch is made, so a refused folder leaves no branch; makes the branch through
 /// make_branch; adds the worktree detached at the tip and points its HEAD at the branch; then writes the record and
-/// fills the folder.
+/// fills the folder. The steps after reading the tip are make_or_refill's.
 ///
 /// The caller runs oplog::recover first, as apply requires.
 pub fn make_request_folder(
@@ -54,13 +50,6 @@ pub fn make_request_folder(
             needed_paths: Vec::new(),
             parent: Some(zb.clone()),
         };
-        if let Some(existing) = check_before_make(setup, &wanted, &rb)? {
-            return refill_folder(git, &setup.path, existing);
-        }
-        make_branch(setup, &common, &rb, &tip)?;
-        git.worktree_add(&setup.path, &tip, None).map_err(FolderError::Git)?;
-        attach_head(git, &setup.path, &rb)?;
-        fill_folder(git, &setup.path, &wanted, &cone)?;
-        Ok(wanted)
+        make_or_refill(setup, &common, wanted, &rb, &tip, &cone)
     })
 }
