@@ -1,20 +1,14 @@
-//! Reads the op log file whole and decodes it.
-//! No unit test: it reads a real file (S-5); decode_op_log_tests covers the decoding. Nagatha's
-//! integration group should cover: a missing file reads as an empty log; records appended by
-//! append_op_record read back equal and in order; a file cut mid-record reads with that line in
-//! torn_lines; an unreadable path is an Io error naming the log's path.
+//! Reads the op log file whole and decodes it, without the records' values.
+//! No unit test: it reads a real file (S-5) through read_valued_log; plain_log_tests covers dropping the
+//! values. Nagatha's integration group should cover: a log whose lines carry values reads as the same
+//! records without them.
 
-use std::io::ErrorKind;
 use std::path::Path;
 
-use super::{decode_op_log, oplog_path, OpLog, OplogError};
+use super::{plain_log, read_valued_log, OpLog, OplogError};
 
-/// The log at `<common>/mortar/oplog.jsonl`; a missing file is an empty log.
+/// The log read_valued_log reads at `<common>/mortar/oplog.jsonl`, each record's values dropped by
+/// plain_log; a missing file is an empty log.
 pub fn read_op_log(common: &Path) -> Result<OpLog, OplogError> {
-    let path = oplog_path(common);
-    match std::fs::read(&path) {
-        Ok(bytes) => decode_op_log(&bytes),
-        Err(e) if e.kind() == ErrorKind::NotFound => Ok(OpLog::default()),
-        Err(source) => Err(OplogError::Io { path, source }),
-    }
+    read_valued_log(common).map(plain_log)
 }

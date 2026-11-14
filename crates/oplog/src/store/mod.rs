@@ -2,14 +2,19 @@
 //! `<common>/mortar/oplog.jsonl`.
 
 mod append_op_record;
+mod append_valued_record;
 mod close_record;
 mod decode_op_line;
 mod decode_op_log;
 mod decode_op_record;
 mod decode_op_result;
+mod decode_op_values;
 mod decode_ref_actual;
 mod decode_ref_move;
+mod decode_valued_line;
+mod decode_valued_log;
 mod encode_op_record;
+mod encode_valued_record;
 mod intent_record;
 mod json_error;
 mod json_value;
@@ -29,13 +34,17 @@ mod oplog_error_source;
 mod oplog_path;
 mod parse_json;
 mod parse_json_string;
+mod plain_log;
 mod read_op_log;
 mod read_ref_value;
+mod read_valued_log;
 mod ref_move;
 mod take_oid;
 mod take_optional_oid;
 mod take_string;
 mod unix_now;
+mod valued_log;
+mod valued_record;
 mod write_json_string;
 
 #[cfg(test)]
@@ -49,11 +58,19 @@ mod decode_op_record_tests;
 #[cfg(test)]
 mod decode_op_result_tests;
 #[cfg(test)]
+mod decode_op_values_tests;
+#[cfg(test)]
 mod decode_ref_actual_tests;
 #[cfg(test)]
 mod decode_ref_move_tests;
 #[cfg(test)]
+mod decode_valued_line_tests;
+#[cfg(test)]
+mod decode_valued_log_tests;
+#[cfg(test)]
 mod encode_op_record_tests;
+#[cfg(test)]
+mod encode_valued_record_tests;
 #[cfg(test)]
 mod intent_record_tests;
 #[cfg(test)]
@@ -75,6 +92,8 @@ mod parse_json_string_tests;
 #[cfg(test)]
 mod parse_json_tests;
 #[cfg(test)]
+mod plain_log_tests;
+#[cfg(test)]
 mod take_oid_tests;
 #[cfg(test)]
 mod take_optional_oid_tests;
@@ -84,10 +103,13 @@ mod take_string_tests;
 mod write_json_string_tests;
 
 pub use append_op_record::append_op_record;
+pub use append_valued_record::append_valued_record;
 pub use close_record::close_record;
 pub use decode_op_log::decode_op_log;
 pub use decode_op_record::decode_op_record;
+pub use decode_valued_log::decode_valued_log;
 pub use encode_op_record::encode_op_record;
+pub use encode_valued_record::encode_valued_record;
 pub use intent_record::intent_record;
 pub use json_error::JsonError;
 pub use op::Op;
@@ -100,14 +122,19 @@ pub use oplog_path::oplog_path;
 pub use parse_json_string::parse_json_string;
 pub use read_op_log::read_op_log;
 pub use read_ref_value::read_ref_value;
+pub use read_valued_log::read_valued_log;
 pub use ref_move::RefMove;
 pub use unix_now::unix_now;
+pub use valued_log::ValuedLog;
+pub use valued_record::ValuedRecord;
 pub use write_json_string::write_json_string;
 
 pub(crate) use decode_op_line::decode_op_line;
 pub(crate) use decode_op_result::decode_op_result;
+pub(crate) use decode_op_values::decode_op_values;
 pub(crate) use decode_ref_actual::decode_ref_actual;
 pub(crate) use decode_ref_move::decode_ref_move;
+pub(crate) use decode_valued_line::decode_valued_line;
 pub(crate) use json_value::JsonValue;
 pub(crate) use line_error::LineError;
 pub(crate) use log_line::log_line;
@@ -115,6 +142,7 @@ pub(crate) use move_changes::move_changes;
 pub(crate) use object_fields::object_fields;
 pub(crate) use oid_is_zero::oid_is_zero;
 pub(crate) use parse_json::parse_json;
+pub(crate) use plain_log::plain_log;
 pub(crate) use take_oid::take_oid;
 pub(crate) use take_optional_oid::take_optional_oid;
 pub(crate) use take_string::take_string;
