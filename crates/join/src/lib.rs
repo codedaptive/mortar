@@ -3,12 +3,15 @@
 mod after_replay;
 mod after_replay_step;
 mod check_onto;
+mod classify_conflicted;
+mod conflicted_entry;
 mod continue_replay;
 mod decide_join;
 mod decide_resolve;
 mod decode_join_state;
 mod encode_join_state;
 mod fast_forward_op;
+mod file_markers;
 mod git_replay_git;
 mod join;
 mod join_answer;
@@ -68,6 +71,8 @@ mod after_replay_tests;
 #[cfg(test)]
 mod check_onto_tests;
 #[cfg(test)]
+mod classify_conflicted_tests;
+#[cfg(test)]
 mod decide_join_tests;
 #[cfg(test)]
 mod decide_resolve_tests;
@@ -79,6 +84,8 @@ mod encode_join_state_tests;
 mod fake_call;
 #[cfg(test)]
 mod fast_forward_op_tests;
+#[cfg(test)]
+mod file_markers_tests;
 #[cfg(test)]
 mod join_answer_display_tests;
 #[cfg(test)]

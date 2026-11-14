@@ -9,8 +9,8 @@
 //! - clean remaining commits chain onto the resolved commit (SPEC-join §WO-join-3: "Use it as the resolved commit
 //!   and continue the replay from S-21's state");
 //! - a remaining commit that conflicts pauses with a new state (WO-join-3 order, Goal 3, "Conflicted again");
-//! - a conflicted path that is a folder is refused before any commit (WO-join-3 order, "Rework ruled 2026-11-14",
-//!   item 6);
+//! - a conflicted path that is a folder in the caller's tree is refused before any commit (WO-join-3 order,
+//!   "Rework ruled 2026-11-14", item 6);
 //! - a missing onto is refused before any other call (SPEC-join §WO-join-1: "Before any replay, merge_tree or
 //!   attr_check, join checks the `--attr-source` commit exists").
 

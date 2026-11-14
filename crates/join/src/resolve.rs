@@ -9,6 +9,9 @@
 //!   and answers the files (WO-join-3 Goal 2); a first run repeated rewrites the same files (WO-join-3 Goal 4);
 //! - a conflicted path the conflicted tree lacks (rename/rename) is skipped by the first run and listed in the answer
 //!   (S-50);
+//! - a first run lists a conflicted gitlink (submodule) apart, with its next step, and writes no file for it (S-64);
+//! - a next run takes a conflicted gitlink from the caller's tree through tree_with_paths, with no marker check on it
+//!   (S-64);
 //! - a next run refuses while a marker remains, naming each file and line (WO-join-3 Goal 3);
 //! - a next run with the markers gone commits the conflicted tree with the conflicted paths taken from the caller's
 //!   tree as the resolved commit, edits outside them left out (S-50) and, clean, moves the request branch by one op,
@@ -46,12 +49,13 @@ use std::path::Path;
 
 /// Resolves the join paused in `folder` (its state is mortar-join.json in the folder's git dir), taking `tree`, the
 /// folder's tree, from the caller. A first run writes the conflicted files the conflicted tree has, markers included,
-/// saves that it did and answers FilesWritten, listing the ones it lacks as skipped. A next run refuses while any of
-/// them holds a marker line (StillMarked); otherwise it commits the conflicted tree with the conflicted paths taken
-/// from `tree` as the resolved commit and continues the replay: conflicted again, it pauses with a new state and
-/// answers Conflicted; clean, it saves the new tip in the state, moves the request ref there by one op naming
-/// `actor`, removes the state and answers Rebased. A repeat finds where that stopped and finishes it. No state is
-/// NothingToResolve; a request ref moved since the pause is StateStale, and the state is kept.
+/// saves that it did and answers FilesWritten, listing the ones it lacks as skipped and the gitlinks (submodules)
+/// apart. A next run refuses while any file holds a marker line (StillMarked), a folder (no file text)
+/// having none; otherwise it commits the conflicted tree with the conflicted paths taken from `tree` as the resolved
+/// commit and continues the replay: conflicted again, it pauses with a new state and answers Conflicted; clean, it
+/// saves the new tip in the state, moves the request ref there by one op naming `actor`, removes the state and answers
+/// Rebased. A repeat finds where that stopped and finishes it. No state is NothingToResolve; a request ref moved since
+/// the pause is StateStale, and the state is kept.
 pub fn resolve(git: &Git, folder: &Path, tree: &Oid, actor: &str) -> Result<JoinAnswer, JoinRunError> {
     let git_dir = git.git_dir(folder).map_err(JoinRunError::Git)?;
     let path = git_dir.join("mortar-join.json");
@@ -69,10 +73,10 @@ pub fn resolve(git: &Git, folder: &Path, tree: &Oid, actor: &str) -> Result<Join
         }
         (ResolveStep::StillMarked(files), Some(_)) => Err(JoinRunError::StillMarked(files)),
         (ResolveStep::WriteFiles { tree, files }, Some(mut state)) => {
-            let (files, skipped) = write_conflicted_files(git, folder, &tree, files)?;
+            let (files, skipped, gitlinks) = write_conflicted_files(git, folder, &tree, files)?;
             state.files_written = true;
             save_join_state(&git_dir, &state)?;
-            Ok(JoinAnswer::FilesWritten { commit: state.commit, files, skipped })
+            Ok(JoinAnswer::FilesWritten { commit: state.commit, files, skipped, gitlinks })
         }
         (ResolveStep::Continue { tree }, Some(mut state)) => {
             match continue_replay(git, &state, &tree)? {
