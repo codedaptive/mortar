@@ -10,8 +10,6 @@ mod snapshot_target_for;
 #[cfg(test)]
 mod save_report_tests;
 #[cfg(test)]
-mod save_sentence_tests;
-#[cfg(test)]
 mod snapshot_target_for_tests;
 
 pub use run_save::run_save;

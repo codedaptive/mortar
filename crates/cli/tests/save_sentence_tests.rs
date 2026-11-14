@@ -1,7 +1,9 @@
 //! save_sentence: exactly one non-blank, one-line argument is the sentence; anything else is refused with why.
+//! Integration group. The no-word and two-word cases are ZITs (S-79 as replaced, S-102): they call
+//! save_error_report and the report module for real. The one-argument cases also run snapshot::sentence_refusal
+//! for real, so they are RITs by S-101, listed in save_sentence.rs's header for Nagatha.
 
-use super::save_sentence;
-use crate::report::{ExitCode, Report};
+use cli::{save_sentence, ExitCode, Report};
 
 fn words(list: &[&str]) -> Vec<String> {
     list.iter().map(|word| word.to_string()).collect()
@@ -21,7 +23,7 @@ fn refused(why: &str) -> Report {
 
 const NOT_ONE: &str = "save takes one sentence, quoted as one argument";
 const EMPTY: &str = "the sentence is empty or only whitespace";
-const BREAK: &str = "the sentence holds a line break; a save's sentence is one line (S-41)";
+const BREAK: &str = "the sentence holds a line break; a commit subject is one line";
 
 #[test]
 fn one_sentence_is_the_word() {
