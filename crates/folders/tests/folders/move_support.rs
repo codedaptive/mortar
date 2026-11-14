@@ -71,7 +71,7 @@ pub fn caller_move(git: &Git, common: &Path, folder: &Path, old: &Oid, new: &Oid
     // The caller, not folders::move_folder, owns this precondition (S-16/S-25/S-49).
     with_lock(git, common, &LockName::Join("red".into()), "move-folder-caller", &KillPidProbe, || {
         oplog::recover(git, common).map_err(FolderError::Oplog)?;
-        move_folder(git, folder, old, new, saved, ACTOR)
+        move_folder(git, folder, old, new, saved, ACTOR, None)
     })
 }
 
