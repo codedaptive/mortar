@@ -17,7 +17,10 @@ impl std::error::Error for FolderError {
             | FolderError::NotAFolder { .. }
             | FolderError::BranchCheckedOut { .. }
             | FolderError::BranchExists { .. }
-            | FolderError::ZoneBranchMissing { .. } => None,
+            | FolderError::ZoneBranchMissing { .. }
+            | FolderError::NotSaved { .. }
+            | FolderError::MoveRefused { .. }
+            | FolderError::BranchElsewhere { .. } => None,
         }
     }
 }
