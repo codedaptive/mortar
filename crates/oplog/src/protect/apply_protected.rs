@@ -19,7 +19,8 @@ use crate::store::{read_op_log, Op, OplogError};
 /// The caller runs recover first, as for apply. A repeat of a done key returns Repeated before any protected
 /// ref is read. Then check_ref_moves refuses an empty, NUL-holding or non-refs/ name as BadMove before any ref
 /// is read, and a refused protected move returns Protected; both come before the intent, so nothing is
-/// written. apply itself is unchanged and keeps its own behaviour for callers that protect nothing.
+/// written. The ref transaction then runs through apply, which carries MORTAR_OP on it (op_git); apply keeps
+/// its own behaviour for callers that protect nothing.
 pub fn apply_protected(
     git: &Git,
     common: &Path,

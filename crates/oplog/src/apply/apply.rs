@@ -10,13 +10,14 @@
 //! an all-zero new deletes the ref; a git failure in the transaction returns OplogError::Git with the intent
 //! left open; an error reading the refused ref after a stale refusal returns that error with the intent open;
 //! a kill after Stale, then recover, closes an op that changes a ref as failed recording each ref's actual
-//! value, and an op that changes no ref as done.
+//! value, and an op that changes no ref as done; a reference-transaction hook sees MORTAR_OP=<op_id> on the
+//! transaction, while the name checks and the stale read do not need it.
 
 use std::path::Path;
 
 use gitio::{Git, UpdateRefsOutcome};
 
-use super::{check_ref_names, close_after_update, find_done_record, ref_updates, ApplyOutcome};
+use super::{check_ref_names, close_after_update, find_done_record, op_git, ref_updates, ApplyOutcome};
 use crate::store::{append_op_record, intent_record, read_op_log, read_ref_value, unix_now, Op, OplogError};
 
 /// Runs `op` against the log at `<common>/mortar/oplog.jsonl` and the refs of `git`.
@@ -29,6 +30,9 @@ use crate::store::{append_op_record, intent_record, read_op_log, read_ref_value,
 /// holds a NUL, is not a full refs/ name, or that git check-ref-format refuses returns BadMove before the
 /// intent is written, so nothing is left open; a git failure while checking returns OplogError::Git, also
 /// with nothing written.
+///
+/// The transaction runs with MORTAR_OP=<op.op_id> (op_git) so the guard hook can match it to the open intent;
+/// the name check and the read after a stale refusal run with the plain `git`.
 ///
 /// The transaction runs even with no moves: git accepts an empty one. A git error in the transaction returns
 /// with the intent open, and recover settles it from the refs: done if every ref the op changes is at new,
@@ -44,7 +48,7 @@ pub fn apply(git: &Git, common: &Path, op: &Op) -> Result<ApplyOutcome, OplogErr
     check_ref_names(git, &op.moves)?;
     let intent = intent_record(op);
     append_op_record(common, &intent)?;
-    let outcome = git
+    let outcome = op_git(git, &op.op_id)
         .update_refs(&ref_updates(&op.moves))
         .map_err(OplogError::Git)?;
     let actual = match &outcome {
