@@ -3,6 +3,7 @@
 
 use std::ffi::OsString;
 use std::path::PathBuf;
+use std::time::Duration;
 
 /// Run as `program`, then `args`, then the paths to format, with no shell, in the folder (the child's current
 /// directory). `program` is a bare name, looked up on PATH, or an absolute path; a relative path holding a separator
@@ -13,4 +14,9 @@ use std::path::PathBuf;
 pub struct Formatter {
     pub program: PathBuf,
     pub args: Vec<OsString>,
+    /// Set by the caller and required: there is no default and no unlimited, because the caller holds its lock
+    /// around the snapshot and a hung formatter would hold it (S-25, S-35). A formatter still running when `timeout`
+    /// has passed since its spawn is killed and reaped and listed as FormatterResult::TimedOut, and the snapshot goes
+    /// ahead with the files as they are.
+    pub timeout: Duration,
 }

@@ -2,7 +2,8 @@
 //! commit on the request's snapshot ref.
 //! No unit test: it runs git and the formatter and appends to the op log, and holds no decision of its own (S-5);
 //! decide_snapshot, snapshot_ref_name, snapshot_parents, snapshot_trailers, snapshot_op, snapshot_from_apply,
-//! formatter_paths, formatter_argv and decide_formatter_result are its decisions and have their tests.
+//! formatter_paths, formatter_argv, decide_formatter_wait and decide_formatter_result are its decisions and have their
+//! tests.
 //! Nagatha's integration group should cover, in a throwaway repository: a first snapshot writes a commit with
 //! parents [HEAD], message "snapshot" with Mortar-Request and Mortar-Zone trailers, moves
 //! refs/mortar/snap/<zone>/<request> to it and leaves a done op record; a second snapshot of an unchanged folder
@@ -11,8 +12,9 @@
 //! as found; a new 6 MB file over DEFAULT_SIZE_CAP is left out of the commit's tree and listed in refused, on a
 //! written and on an unchanged answer; the formatter cases run_formatter's header lists: a rewriting formatter's
 //! output is what the tree holds, a failing or missing formatter is listed in formatted and the snapshot is still
-//! written, excluded, refused, deleted, conflicted, symlinked and submodule paths are not passed, a clean folder or
-//! no formatter gives formatted None.
+//! written, a formatter still running at its timeout is listed TimedOut and the snapshot is still written, excluded,
+//! refused, deleted, conflicted, symlinked and submodule paths are not passed, a clean folder or no formatter gives
+//! formatted None.
 
 use crate::decide_snapshot::decide_snapshot;
 use crate::folder_tree::folder_tree;
@@ -39,7 +41,8 @@ use std::path::Path;
 /// differently from HEAD, not conflicted), so the snapshot saves the formatted files; the run is in `formatted`.
 /// `formatter` is taken as the caller has it configured: None runs nothing, not even git status, and gives
 /// formatted None (run_formatter returns first); no file to format gives formatted None too. A formatter that
-/// fails or cannot start is listed in formatted and does not stop the snapshot. The folder's index is untouched
+/// fails, cannot start or runs past its timeout (killed and reaped) is listed in formatted and does not stop the
+/// snapshot. The folder's index is untouched
 /// (gitio's snapshot_tree builds the tree in a temp index); its files change only by what the formatter writes.
 ///
 /// A tree equal to the last snapshot's writes nothing and returns that snapshot with written false; that is the

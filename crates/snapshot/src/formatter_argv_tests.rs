@@ -2,9 +2,14 @@ use crate::formatter::Formatter;
 use crate::formatter_argv::formatter_argv;
 use std::ffi::OsString;
 use std::path::PathBuf;
+use std::time::Duration;
 
 fn formatter(args: &[&str]) -> Formatter {
-    Formatter { program: PathBuf::from("rustfmt"), args: args.iter().map(OsString::from).collect() }
+    Formatter {
+        program: PathBuf::from("rustfmt"),
+        args: args.iter().map(OsString::from).collect(),
+        timeout: Duration::from_secs(30),
+    }
 }
 
 fn paths(list: &[&str]) -> Vec<PathBuf> {
