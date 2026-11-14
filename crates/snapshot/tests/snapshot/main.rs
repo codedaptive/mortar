@@ -11,3 +11,7 @@ mod formatter_paths;
 mod formatter_timeout;
 mod formatter_group;
 mod sizing_edges;
+mod save_cases;
+mod save_repair;
+mod save_race;
+mod sizing_none;
