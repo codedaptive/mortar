@@ -1,6 +1,6 @@
 use crate::{JoinError, JoinRunError};
 use gitio::{GitError, Oid};
-use oplog::{LockError, OpPhase, OpRecord, OpResult, OplogError, RefMove};
+use oplog::{OpPhase, OpRecord, OpResult, OplogError, RefMove};
 use std::path::PathBuf;
 
 const OLD: &str = "1111111111111111111111111111111111111111";
@@ -17,13 +17,6 @@ fn replay_carries_the_replay_refusal_and_says_nothing_moved() {
         text,
         "join replay: tip ref refs/heads/topic does not exist (read by its full name); no ref was moved"
     );
-}
-
-#[test]
-fn lock_names_the_join_lock_and_the_lock_refusal() {
-    let text = JoinRunError::Lock(LockError::BadName("bad zone".to_string())).to_string();
-    assert!(text.starts_with("join lock: "), "{text}");
-    assert!(text.contains("bad lock zone name \"bad zone\""), "{text}");
 }
 
 #[test]

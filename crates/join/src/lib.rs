@@ -20,6 +20,10 @@ mod join_run_error;
 mod join_run_error_display;
 mod join_state;
 mod op_applied;
+mod open_request;
+mod overlap;
+mod overlap_pair;
+mod pair_overlaps;
 mod read_git_replay;
 mod rebase_op;
 mod replay;
@@ -29,13 +33,15 @@ mod replay_git;
 mod replay_in;
 mod replay_result;
 mod step;
-mod with_join_lock;
 mod write_join_state;
 
 pub use join::join;
 pub use join_answer::JoinAnswer;
 pub use join_error::JoinError;
 pub use join_run_error::JoinRunError;
+pub use open_request::OpenRequest;
+pub use overlap::overlap;
+pub use overlap_pair::OverlapPair;
 pub use replay::replay;
 pub use replay_result::ReplayResult;
 
@@ -61,6 +67,8 @@ mod join_error_from_git_tests;
 mod join_run_error_display_tests;
 #[cfg(test)]
 mod op_applied_tests;
+#[cfg(test)]
+mod pair_overlaps_tests;
 #[cfg(test)]
 mod read_git_replay_tests;
 #[cfg(test)]
