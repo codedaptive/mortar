@@ -1,54 +1,17 @@
-//! Appends one record with its values to the op log and syncs it to disk (S-1).
-//! The I/O only; log_line_tests covers the line it writes. No unit test of its own: it writes a real file
-//! (S-5). Nagatha's integration group should cover: the first append creates `<common>/mortar/` and the
-//! file; each append adds exactly one line that read_valued_log returns with its values; an append after
-//! a torn tail (a file not ending in '\n') starts on a new line, so the torn line stays torn and the new
-//! record decodes; an unwritable folder is an Io error naming the path.
+//! Appends one record with its values to the op log and syncs it to disk (S-1), with no remote mark.
+//! No unit test of its own: it writes a real file (S-5) through append_marked_record, whose header names
+//! what the integration tests cover; each append adds exactly one line that read_valued_log returns with
+//! its values.
 
-use std::fs::{File, OpenOptions};
-use std::io::{Read, Seek, SeekFrom, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-use super::{log_line, oplog_path, OpRecord, OplogError};
+use super::{append_marked_record, OpRecord, OplogError};
 
-/// Writes log_line(r, values, the file's last byte) with O_APPEND in one write, fsyncs the file, then
-/// fsyncs the `<common>/mortar/` folder.
+/// append_marked_record(common, r, values, None): the line has no `remote` key.
 pub fn append_valued_record(
     common: &Path,
     r: &OpRecord,
     values: &[(String, String)],
 ) -> Result<(), OplogError> {
-    let path = oplog_path(common);
-    let folder = path.parent().unwrap_or(common);
-    std::fs::create_dir_all(folder).map_err(|source| io(folder.to_path_buf(), source))?;
-    let mut file = OpenOptions::new()
-        .read(true)
-        .append(true)
-        .create(true)
-        .open(&path)
-        .map_err(|source| io(path.clone(), source))?;
-    let last = last_byte(&mut file).map_err(|source| io(path.clone(), source))?;
-    file.write_all(log_line(r, values, last).as_bytes())
-        .and_then(|()| file.sync_all())
-        .map_err(|source| io(path.clone(), source))?;
-    // A file's fsync does not make its directory entry durable: without syncing the folder, a log file
-    // created by this append could vanish in a crash. Done on every append; it is one cheap call.
-    File::open(folder)
-        .and_then(|dir| dir.sync_all())
-        .map_err(|source| io(folder.to_path_buf(), source))
-}
-
-/// The file's last byte, None when it is empty.
-fn last_byte(file: &mut File) -> std::io::Result<Option<u8>> {
-    if file.metadata()?.len() == 0 {
-        return Ok(None);
-    }
-    file.seek(SeekFrom::End(-1))?;
-    let mut last = [0u8; 1];
-    file.read_exact(&mut last)?;
-    Ok(Some(last[0]))
-}
-
-fn io(path: PathBuf, source: std::io::Error) -> OplogError {
-    OplogError::Io { path, source }
+    append_marked_record(common, r, values, None)
 }

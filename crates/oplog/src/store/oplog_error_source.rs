@@ -14,7 +14,8 @@ impl std::error::Error for OplogError {
             | OplogError::NothingToUndo { .. }
             | OplogError::MovedSince { .. }
             | OplogError::UnknownOp { .. }
-            | OplogError::ValueUnknown { .. } => None,
+            | OplogError::ValueUnknown { .. }
+            | OplogError::NotOpen { .. } => None,
         }
     }
 }

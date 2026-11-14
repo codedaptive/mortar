@@ -12,8 +12,9 @@ pub mod undo;
 
 pub use apply::{
     apply, apply_with_values, check_ref_moves, check_ref_names, close_after_update, find_done_record,
-    guard_removal_op, new_op_id, op_git, op_id_from_parts, ref_format_verdict, ref_updates, takeover_op,
-    with_lock, ApplyOutcome, HeldLockError, ValuedOutcome, MORTAR_OP_ENV,
+    guard_removal_op, new_op_id, op_git, op_id_from_parts, open_remote_intent, ref_format_verdict,
+    ref_updates, takeover_op, with_lock, ApplyOutcome, HeldLockError, RemoteIntentOutcome, ValuedOutcome,
+    MORTAR_OP_ENV,
 };
 pub use change_id::{new_change_id, ChangeId, ChangeIdError};
 pub use history::{filter_history, history, HistoryFilter};
@@ -23,19 +24,20 @@ pub use locks::{
     KillPidProbe, LockError, LockName, LockRecord, LockStaleness, PidProbe,
 };
 pub use recover::{
-    decide_recovery, open_intent, open_intent_moves, open_intents, recover, recovery_close,
-    recovery_close_valued, RecoveryDecision,
+    close_intent, decide_recovery, open_intent, open_intent_moves, open_intents, recover, recovery_close,
+    recovery_close_valued, IntentClose, RecoveryDecision,
 };
 pub use store::{
-    append_op_record, append_valued_record, close_record, decode_op_log, decode_op_record,
-    decode_valued_log, encode_op_record, encode_valued_record, intent_record, oplog_path,
-    parse_json_string, read_op_log, read_ref_value, read_valued_log, unix_now, write_json_string,
-    JsonError, Op, OpLog, OpPhase, OpRecord, OpResult, OplogError, RefMove, ValuedLog, ValuedRecord,
+    append_marked_record, append_op_record, append_valued_record, close_record, decode_marked_log,
+    decode_op_log, decode_op_record, decode_valued_log, encode_op_record, encode_valued_record,
+    intent_record, oplog_path, parse_json, parse_json_string, read_marked_log, read_op_log,
+    read_ref_value, read_valued_log, unix_now, write_json_string, JsonError, JsonValue, MarkedLog,
+    MarkedRecord, Op, OpLog, OpPhase, OpRecord, OpResult, OplogError, RefMove, ValuedLog, ValuedRecord,
 };
 pub use trailers::{
     carry_mortar_trailers, mortar_trailer_pairs, pick_mortar_trailers, read_mortar_trailers,
     write_mortar_trailers, MortarTrailerError, MortarTrailers, MORTAR_CHANGE_ID_KEY, MORTAR_REQUEST_KEY,
-    MORTAR_ZONE_KEY,
+    MORTAR_SQUASH_OF_KEY, MORTAR_ZONE_KEY,
 };
 pub use protect::{apply_protected, check_protected_moves, protected_move_verdict, ProtectedRef};
 pub use undo::{

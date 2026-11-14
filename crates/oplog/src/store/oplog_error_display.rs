@@ -45,9 +45,9 @@ impl fmt::Display for OplogError {
                     )?;
                 }
                 f.write_str(
-                    " nothing was changed; find who moved them with history by ref, then close the op by hand \
-                     with a done or failed record in the op log, since recover refuses every command until it \
-                     is closed",
+                    " nothing was changed; find who moved them with mortar log --ref <ref>, then close the op \
+                     by hand with a done or failed record in the op log, since recover refuses every command \
+                     until it is closed",
                 )
             }
             OplogError::BadMove { refname, reason } => write!(
@@ -78,7 +78,8 @@ impl fmt::Display for OplogError {
             }
             OplogError::NothingToUndo { refs } => write!(
                 f,
-                "nothing to undo: no done op in the op log moved {}; check the ref names with history by ref",
+                "nothing to undo: no done op in the op log moved {}; check the ref names with mortar log \
+                 --ref <ref>",
                 refs.join(", ")
             ),
             OplogError::MovedSince {
@@ -107,12 +108,18 @@ impl fmt::Display for OplogError {
             }
             OplogError::UnknownOp { op_id } => write!(
                 f,
-                "cannot restore: op {op_id} is not in the op log; find the op id with history"
+                "cannot restore: op {op_id} is not in the op log; find the op id with mortar log"
             ),
             OplogError::ValueUnknown { op_id, refname } => write!(
                 f,
                 "cannot restore ref {refname} as of op {op_id}: no done op in the op log moved it, so its value \
                  then is unknown; name only refs mortar has moved"
+            ),
+            OplogError::NotOpen { op_id } => write!(
+                f,
+                "cannot close op {op_id}: it has no open intent in the op log (never written, or already \
+                 closed); nothing was written; in mortar/oplog.jsonl, find the intent line that no later \
+                 done or failed line closes and use its op_id"
             ),
         }
     }

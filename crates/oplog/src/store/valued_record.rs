@@ -1,5 +1,5 @@
 //! One op record with the name/value pairs its caller set beside it.
-//! A bare type; decode_valued_line_tests and decode_valued_log_tests exercise it.
+//! A bare type; decode_valued_log_tests and crates/oplog/tests/oplog/valued_lines.rs exercise it.
 
 use super::OpRecord;
 

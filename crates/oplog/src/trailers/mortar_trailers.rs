@@ -3,7 +3,7 @@
 
 use crate::change_id::ChangeId;
 
-/// Mortar's three trailers on a message (S-2); None means the trailer is absent.
+/// Three of Mortar's four trailers on a message (S-2); Mortar-Squash-Of is not held here; None means the trailer is absent.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MortarTrailers {
     /// The Mortar-Change-Id trailer.
