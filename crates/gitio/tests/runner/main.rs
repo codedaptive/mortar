@@ -6,5 +6,6 @@ mod support;
 mod environment_overrides;
 mod exit_codes;
 mod hook_environment;
+mod pathspec_environment;
 mod io_and_cwd;
 mod version_floor;

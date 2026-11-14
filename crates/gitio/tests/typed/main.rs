@@ -7,5 +7,6 @@ mod author_round_trip;
 mod merge;
 mod replay;
 mod snapshot;
+mod set_index;
 mod trailers;
 mod worktrees;
