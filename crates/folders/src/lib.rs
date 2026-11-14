@@ -10,7 +10,7 @@ pub mod record;
 pub mod remove;
 pub mod sweep;
 
-pub use attempts::{keep, keep_op, make_attempts};
+pub use attempts::{drop_attempts, drop_op, keep, keep_op, make_attempts};
 pub use disk::{disk, DiskReport, FolderDisk};
 pub use make::{make_request_folder, make_zone_folder, FolderError, FolderSetup};
 pub use moves::{move_folder, move_op};

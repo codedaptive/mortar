@@ -204,6 +204,15 @@ fn attempt_variants_have_no_source() {
             path: PathBuf::from("/wt/try-1"),
             k: 1,
         },
+        FolderError::AttemptsRemain {
+            path: PathBuf::from("/wt/WO-1"),
+            attempts: vec!["refs/heads/try/a/b/1".to_string()],
+        },
+        FolderError::AttemptRefsLeft {
+            moved: "refs/heads/try/a/b/1".to_string(),
+            at: None,
+            removed: vec![PathBuf::from("/wt/try-1")],
+        },
     ];
     for err in &none {
         assert!(source_text(err).is_none(), "{err:?} has a source");

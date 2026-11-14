@@ -1,6 +1,6 @@
-//! Every way making a folder, making attempt folders with make_attempts, keeping one with keep, widening one with
-//! need, moving one with move_folder, removing one with remove, or measuring or sweeping with disk, sweep_build or
-//! sweep_refs can be refused.
+//! Every way making a folder, making attempt folders with make_attempts, keeping one with keep, dropping them with
+//! drop_attempts, widening one with need, moving one with move_folder, removing one with remove, or measuring or
+//! sweeping with disk, sweep_build or sweep_refs can be refused.
 //! A bare type; folder_error_display_tests exercises each variant's text, folder_error_source_tests its source.
 
 use std::path::PathBuf;
@@ -11,8 +11,8 @@ use oplog::{LockError, OplogError};
 use crate::plan::{BelowFloor, PlanError};
 use crate::record::{FolderRecord, RecordError};
 
-/// A refusal from make_zone_folder, make_request_folder, make_attempts, keep, need, move_folder, remove, disk,
-/// sweep_build or sweep_refs. Debug only: io::Error, OplogError and LockError are neither Clone nor Eq.
+/// A refusal from make_zone_folder, make_request_folder, make_attempts, keep, drop_attempts, need, move_folder,
+/// remove, disk, sweep_build or sweep_refs. Debug only: io::Error, OplogError and LockError are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum FolderError {
     /// A zone or request name, a sparse path, or an attempt count of 0, the plan refused.
@@ -45,9 +45,12 @@ pub enum FolderError {
     RequestBranchMissing { branch: String },
     /// keep found no attempt branch (short name) for the attempt asked for.
     AttemptMissing { branch: String },
-    /// keep refused: the attempts at `paths`, which it would drop, hold work that is not saved (S-32): each is
-    /// named by its folder, or by its full branch name when it has no folder; nothing was touched.
+    /// keep or drop_attempts refused: the attempts at `paths`, each named by its folder, or by its full branch name
+    /// when it has no folder, are not marked saved by the caller (S-32); nothing was touched.
     AttemptsUnsaved { paths: Vec<PathBuf> },
+    /// remove refused the request folder at `path`: attempt branches (full names) or attempt folders (paths, as
+    /// display text) of its request remain (S-82); nothing changed.
+    AttemptsRemain { path: PathBuf, attempts: Vec<String> },
     /// keep refused: request branch `branch` has commits the kept attempt's branch `attempt` does not hold, so
     /// moving it would drop them; nothing was touched.
     RequestMovedOn { branch: String, attempt: String },
@@ -80,9 +83,18 @@ pub enum FolderError {
     },
     /// remove refused the folder at `path`: it is `zone`'s standing folder, and remove takes request folders only.
     ZoneFolder { path: PathBuf, zone: String },
-    /// The ref `refname` was not where sweep_refs read it when its delete op ran, so the op log deleted nothing; `at`
-    /// is where it is now (None when absent).
+    /// The ref `refname` was not where it was read when sweep_refs' delete op ran, so the op log deleted nothing;
+    /// `at` is where it is now (None when absent). keep and drop_attempts return AttemptRefsLeft for this case, and
+    /// remove (delete_folder_refs) returns RemovedRefsLeft.
     RefMoved { refname: String, at: Option<Oid> },
+    /// keep or drop_attempts removed the attempt folders at `removed` (empty when none was left to remove), then its
+    /// op moved nothing because the ref `moved` was not where it was read (`at`: where it is now, None when absent);
+    /// every attempt branch is kept.
+    AttemptRefsLeft {
+        moved: String,
+        at: Option<Oid>,
+        removed: Vec<PathBuf>,
+    },
     /// remove took the folder at `path` away, but the ref `moved` was not where remove read it when the delete op
     /// ran (`at`: where it is now, None when absent), so neither `branch` nor its snapshot ref was deleted. The
     /// branch is already contained in its zone, so the work they hold is in the zone; mortar sweep (sweep_refs)

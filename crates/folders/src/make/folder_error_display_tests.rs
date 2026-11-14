@@ -319,6 +319,21 @@ fn ref_moved_with_no_commit_says_so() {
 }
 
 #[test]
+fn attempt_refs_left_names_the_ref_where_it_is_and_the_removed_folders() {
+    let err = FolderError::AttemptRefsLeft {
+        moved: "refs/heads/try/folders/WO-1/2".to_string(),
+        at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
+        removed: vec![PathBuf::from("/wt/try-1"), PathBuf::from("/wt/try-2")],
+    };
+    assert_eq!(
+        text(err),
+        "ref refs/heads/try/folders/WO-1/2 moved (now at 2222222222222222222222222222222222222222) before the attempt \
+         branches were deleted; every attempt branch is kept; the attempt folders /wt/try-1, /wt/try-2 were already \
+         removed; next step: run the same command again with the same saved attempts"
+    );
+}
+
+#[test]
 fn removed_refs_left_names_the_folder_both_refs_and_where_the_moved_one_is() {
     let err = FolderError::RemovedRefsLeft {
         path: PathBuf::from("/wt/a"),
@@ -430,8 +445,22 @@ fn attempts_unsaved_names_every_folder_and_the_next_step() {
     };
     assert_eq!(
         text(err),
-        "dropped attempts /wt/try-1, refs/heads/try/z/r/3 hold work that is not saved; nothing changed; next step: \
-         mortar save in each, then keep again"
+        "attempts /wt/try-1, refs/heads/try/z/r/3 are not marked saved; nothing changed; next step: mortar save in \
+         each listed folder, then run the same command again; a listed branch has no folder to save in: its work is \
+         on that branch, and the command goes ahead only once the caller passes it as saved"
+    );
+}
+
+#[test]
+fn attempts_remain_names_the_folder_every_attempt_and_the_next_step() {
+    let err = FolderError::AttemptsRemain {
+        path: PathBuf::from("/wt/WO-1"),
+        attempts: vec!["refs/heads/try/z/r/1".to_string(), "/wt/try-2".to_string()],
+    };
+    assert_eq!(
+        text(err),
+        "/wt/WO-1 was not removed: attempts of its request remain: refs/heads/try/z/r/1, /wt/try-2; nothing \
+         changed; next step: keep one attempt or drop them all (drop_attempts)"
     );
 }
 

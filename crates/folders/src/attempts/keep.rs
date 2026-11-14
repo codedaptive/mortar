@@ -1,18 +1,22 @@
 //! Keeps one attempt: removes every attempt folder, then one folder-keep op moves the request branch to the kept
 //! attempt's tip and deletes every attempt branch (S-69).
 //! No unit test: it runs git and appends to the op log (S-5). request_branch_tests, attempt_branch_tests,
-//! attempts_of_tests, keep_plan_tests, request_held_tests, keep_op_tests and ref_moved_from_tests cover its decisions.
+//! attempts_of_tests, request_held_tests, keep_op_tests, ref_moved_from_tests, attempt_refs_left_tests and
+//! tests/folders/attempt_plans.rs cover its decisions.
 //! A kill between the removals and the op leaves the remaining folders and every branch; a repeat given the same saved
 //! list finds them and finishes. Nagatha's integration group is to cover, in a throwaway repository: keep(2) of 3 with
 //! every dropped attempt saved leaves the request branch at try-2's tip, all three try folders and branches gone, and
 //! one folder-keep op logged; an unsaved dropped attempt is AttemptsUnsaved, with nothing changed; a request branch
 //! moved on (a commit on it after the attempts were cut) is RequestMovedOn, with nothing changed; an untracked file in
 //! an attempt folder is git's refusal, with the op not run, and a repeat after cleaning it finishes; a repeat after a
-//! completed keep is AttemptMissing; the attempts' trysnap refs are left in place.
+//! completed keep is AttemptMissing; the attempts' trysnap refs are left in place; a try branch or the request branch
+//! moved between the read and the op is AttemptRefsLeft, with every branch kept and the folders already removed, and a
+//! repeat given the same saved list finishes or refuses afresh.
 
 use gitio::{Git, Oid};
 use oplog::{apply, new_op_id, unix_now, ApplyOutcome, Op};
 
+use super::attempt_refs_left::attempt_refs_left;
 use super::{attempts_of, keep_op, keep_plan, request_held, Kept};
 use crate::make::{ref_moved_from, FolderError};
 use crate::plan::{attempt_branch, request_branch};
@@ -23,8 +27,10 @@ use crate::plan::{attempt_branch, request_branch};
 /// attempt k must exist (AttemptMissing), every dropped attempt, with a folder or not, must be saved (AttemptsUnsaved),
 /// and the kept tip must descend from the request tip (RequestMovedOn). Then git removes each attempt folder without
 /// force, the kept attempt's last, so git itself refuses modified or untracked files (Git, the op not run). Then the
-/// folder-keep op runs; see apply_keep. The caller holds the lock and runs oplog::recover first (S-16, S-25); keep
-/// takes no lock itself. After a completed keep no attempt branch is left, so a repeat is AttemptMissing.
+/// folder-keep op runs; see apply_keep. A try branch or the request branch moved between the read and the op is
+/// AttemptRefsLeft, naming the folders already removed; every branch is kept. The caller holds the lock and runs
+/// oplog::recover first (S-16, S-25); keep takes no lock itself. After a completed keep no attempt branch is left, so
+/// a repeat is AttemptMissing.
 pub fn keep(
     git: &Git,
     zone: &str,
@@ -52,7 +58,7 @@ pub fn keep(
     for folder in &kept.remove {
         git.worktree_remove(folder, false).map_err(FolderError::Git)?;
     }
-    apply_keep(git, &request_ref, &request_tip, &kept, actor)?;
+    apply_keep(git, &request_ref, &request_tip, &kept, actor).map_err(|e| attempt_refs_left(e, &kept.remove))?;
     Ok((request_tip, kept.tip))
 }
 

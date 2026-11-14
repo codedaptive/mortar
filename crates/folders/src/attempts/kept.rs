@@ -1,5 +1,5 @@
 //! What keeping one attempt does, as keep_plan plans it.
-//! A bare type; keep_plan_tests and keep_op_tests exercise it.
+//! A bare type; keep_op_tests and tests/folders/attempt_plans.rs exercise it.
 
 use std::path::PathBuf;
 
