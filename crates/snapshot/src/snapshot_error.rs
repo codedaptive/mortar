@@ -1,6 +1,8 @@
 //! SnapshotError: why a snapshot did not happen. A declaration only; snapshot_ref_name_tests exercises BadTarget,
-//! snapshot_from_apply_tests OpRepeated and RefMoved, capped_excludes_tests PathNotUtf8. FileSize and CapMismatch
-//! come only from I/O, so Nagatha's integration group should cover them.
+//! snapshot_from_apply_tests OpRepeated and RefMoved, capped_excludes_tests PathNotUtf8. Nagatha's integration test
+//! tests/snapshot/race.rs::foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or_files gets
+//! RefMoved through snapshot. FileSize and CapMismatch come only from I/O, and are not yet covered by an
+//! integration test.
 
 use std::path::PathBuf;
 

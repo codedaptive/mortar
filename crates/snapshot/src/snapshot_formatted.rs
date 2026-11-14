@@ -4,15 +4,20 @@
 //! decide_snapshot, snapshot_ref_name, snapshot_parents, snapshot_trailers, snapshot_op, snapshot_from_apply,
 //! formatter_paths, formatter_argv, decide_formatter_wait and decide_formatter_result are its decisions and have their
 //! tests.
-//! Nagatha's integration group should cover, in a throwaway repository: a first snapshot writes a commit with
-//! parents [HEAD], message "snapshot" with Mortar-Request and Mortar-Zone trailers, moves
-//! refs/mortar/snap/<zone>/<request> to it and leaves a done op record; a second snapshot of an unchanged folder
-//! writes nothing and returns the same commit with written false; a snapshot after a change chains parents
-//! [HEAD, previous snapshot]; a ref moved by someone else between the read and the apply gives RefMoved and is left
-//! as found; a new 6 MB file over DEFAULT_SIZE_CAP is left out of the commit's tree and listed in refused, on a
-//! written and on an unchanged answer.
-//! The formatter cases are run_formatter's header's: tests/snapshot/formatter.rs, formatter_paths.rs and
-//! formatter_timeout.rs cover them, except the S-37 process-group cases still to be written.
+//! Nagatha's integration tests cover it through snapshot, in a throwaway repository:
+//! - a first snapshot writes a commit with parents [HEAD], message "snapshot" with Mortar-Request and Mortar-Zone
+//!   trailers, moves refs/mortar/snap/<zone>/<request> to it and leaves a done op record:
+//!   tests/snapshot/lifecycle.rs::first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op;
+//! - a second snapshot of an unchanged folder writes nothing and returns the same commit with written false; a
+//!   snapshot after a change chains parents [HEAD, previous snapshot]:
+//!   lifecycle.rs::unchanged_writes_nothing_then_changed_snapshot_chains_head_and_previous;
+//! - a ref moved by someone else between the read and the apply gives RefMoved and is left as found:
+//!   tests/snapshot/race.rs::foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or_files;
+//! - a new 6 MiB file over DEFAULT_SIZE_CAP is left out of the commit's tree and listed in refused, on a written
+//!   answer (tests/snapshot/caps.rs::new_six_mib_file_is_reported_but_large_changed_head_file_is_kept) and on an
+//!   unchanged one (caps.rs::refused_only_change_is_saved_and_unchanged_outcome_still_reports_the_refusal).
+//! The formatter cases are run_formatter's header's: tests/snapshot/formatter.rs, formatter_paths.rs,
+//! formatter_timeout.rs and formatter_group.rs (the S-37 process-group cases) cover them.
 
 use crate::decide_snapshot::decide_snapshot;
 use crate::folder_tree::folder_tree;

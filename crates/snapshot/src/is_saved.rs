@@ -1,8 +1,14 @@
 //! is_saved: whether a folder's files equal the request's last snapshot.
 //! No unit test: it only runs git and holds no decision of its own (S-5); decide_snapshot_tests covers the
-//! comparison. Nagatha's integration group should cover, in a throwaway repository: true right after a snapshot;
-//! false after a file in the folder changes; false when the request has no snapshot ref; true when the only change
-//! since the snapshot is a new file over the cap.
+//! comparison. Nagatha's integration tests cover it, in a throwaway repository:
+//! - false when the request has no snapshot ref, and true right after a snapshot, without appending to the op log:
+//!   tests/snapshot/lifecycle.rs::first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op;
+//! - false after a file in the folder changes:
+//!   lifecycle.rs::unchanged_writes_nothing_then_changed_snapshot_chains_head_and_previous;
+//! - true when the only change since the snapshot is a new file over the cap:
+//!   tests/snapshot/caps.rs::refused_only_change_is_saved_and_unchanged_outcome_still_reports_the_refusal, and when
+//!   that over-cap file was renamed since the snapshot:
+//!   caps.rs::new_against_head_file_that_grows_or_is_renamed_over_cap_drops_from_next_snapshot.
 
 use crate::decide_snapshot::decide_snapshot;
 use crate::folder_tree::folder_tree;

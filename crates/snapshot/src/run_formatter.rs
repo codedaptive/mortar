@@ -2,14 +2,22 @@
 //! No unit test: it runs git and the formatter, and holds no decision of its own (S-5); formatter_paths,
 //! formatter_argv, decide_formatter_wait and decide_formatter_result are its decisions and have their tests;
 //! run_formatter_child is the formatter's process I/O.
-//! Nagatha's integration tests cover it, in a throwaway repository. tests/snapshot/formatter.rs: a formatter that
-//! rewrites a changed file (the snapshot tree holds the formatted contents, formatted lists Formatted with the paths),
-//! one exiting 1 (Failed with code 1 and its stderr, snapshot written), a missing program (SpawnFailed, snapshot
-//! written), a clean folder (runs nothing, formatted None), no formatter (no git status, formatted None), and
-//! is_saved never running the formatter. tests/snapshot/formatter_paths.rs: a deleted file, a refused 6 MB new file, a
-//! file under target/, a caller-excluded file, a conflicted path, a symlink and a submodule directory among the
-//! changes are not passed. tests/snapshot/formatter_timeout.rs: the cases run_formatter_child's header lists; its
-//! process-group cases (S-37) are still to be written.
+//! Nagatha's integration tests cover it through snapshot_formatted, in a throwaway repository:
+//! - a formatter that rewrites a changed file (the snapshot tree holds the formatted contents, formatted lists
+//!   Formatted with the paths), and is_saved never running the formatter:
+//!   tests/snapshot/formatter.rs::rewriting_formatter_runs_once_with_literal_argv_in_folder_and_snapshot_saves_its_output;
+//! - one exiting 1 (Failed with code 1 and its stderr, snapshot written):
+//!   formatter.rs::exit_one_is_reported_with_code_and_stderr_but_snapshot_still_records_unformatted_files;
+//! - a missing program (SpawnFailed, snapshot written):
+//!   formatter.rs::missing_formatter_is_spawn_failed_and_does_not_prevent_snapshot_or_log;
+//! - a clean folder (runs nothing, formatted None):
+//!   formatter.rs::clean_folder_has_no_formatter_invocation_but_first_snapshot_is_written;
+//! - no formatter (no git status, formatted None):
+//!   formatter.rs::no_formatter_skips_git_status_and_returns_none_while_saving_changed_files;
+//! - a deleted file, a refused 6 MiB new file, a file under target/, a caller-excluded file, a conflicted path, a
+//!   symlink and a submodule directory among the changes are not passed:
+//!   tests/snapshot/formatter_paths.rs::formatter_gets_only_regular_saved_nonconflicted_changes_not_deleted_refused_excluded_links_or_submodules;
+//! - the cases run_formatter_child's header lists: tests/snapshot/formatter_timeout.rs and formatter_group.rs.
 
 use crate::decide_formatter_result::decide_formatter_result;
 use crate::folder_tree::folder_tree;

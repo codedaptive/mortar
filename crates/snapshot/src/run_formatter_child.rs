@@ -13,14 +13,24 @@
 //! (setsid, setpgid) is out of reach of a group kill; the limit still bounds the call.
 //! A stderr read error or a panicked reader is the Err only where the reader is joined (exited, stderr at EOF); where
 //! it is left detached (TimedOut, or a held pipe at the limit) the read error is dropped.
-//! Nagatha's integration tests in tests/snapshot/formatter_timeout.rs cover, in a throwaway repository: a formatter
-//! blocked on a FIFO (`exec cat`) at a short limit is listed TimedOut with that limit and its stderr, its pid is gone
-//! and reaped, and the snapshot is written; a formatter that exits before its limit is listed Formatted and is reaped;
-//! one writing more than FORMATTER_STDERR_CAP bytes of stderr is drained, and is listed Failed with code 1 and the
-//! first 4096 bytes. Still to be written (S-37), also hers, in that file: an `sh -c` wrapper whose child hangs is
-//! listed TimedOut, the child is gone and the snapshot is written; on Linux and macOS, a formatter that exits 0 after
-//! starting a background child holding stderr is listed Formatted, returns well before the limit and the child is
-//! gone; a background child that writes a file after the formatter exits: the write is not in the snapshot tree.
+//! Nagatha's integration tests cover it through snapshot_formatted, in a throwaway repository:
+//! - a formatter blocked on a FIFO (`exec cat`) at a short limit is listed TimedOut with that limit and its stderr,
+//!   its pid is gone and reaped, and the snapshot is written:
+//!   tests/snapshot/formatter_timeout.rs::fifo_blocked_formatter_is_timed_out_with_limit_and_stderr_killed_reaped_and_snapshot_logged;
+//! - a formatter that exits before its limit is listed Formatted and is reaped:
+//!   formatter_timeout.rs::normal_formatter_exits_within_its_limit_and_is_reaped_without_timeout_result;
+//! - one writing more than FORMATTER_STDERR_CAP bytes of stderr is drained, and is listed Failed with code 1 and the
+//!   first 4096 bytes: formatter_timeout.rs::stderr_larger_than_pipe_and_cap_is_drained_but_only_first_4096_bytes_are_reported.
+//! In tests/snapshot/formatter_group.rs (S-37) each case also shows that the background child's process group id is
+//! the formatter's pid, the formatter is gone and reaped, the child is gone or a zombie, and the snapshot is written:
+//! - an `sh` wrapper whose background child blocks is listed TimedOut with the limit and the wrapper's stderr:
+//!   formatter_group.rs::wrapper_and_its_fifo_blocked_child_are_terminated_on_timeout_and_snapshot_is_written;
+//! - on Linux and macOS, a formatter that exits 0 leaving a background child holding stderr is listed Formatted, not
+//!   TimedOut, at a 60 s limit, and the group kill ends the child without the test releasing it:
+//!   formatter_group.rs::normally_exited_leader_kills_child_holding_stderr_without_external_release_or_timeout_result;
+//! - on Linux and macOS, a background child told to write a file after the formatter exits never writes it: the file
+//!   on disk and in the snapshot tree keep their earlier contents:
+//!   formatter_group.rs::background_write_released_after_leader_exit_cannot_enter_snapshot_tree.
 
 use crate::child_exit::ChildExit;
 use crate::decide_formatter_end::decide_formatter_end;
