@@ -25,8 +25,8 @@ pub use locks::{
 pub use recover::{decide_recovery, open_intents, recover, recovery_close, RecoveryDecision};
 pub use store::{
     append_op_record, close_record, decode_op_log, decode_op_record, encode_op_record, intent_record,
-    oplog_path, read_op_log, read_ref_value, unix_now, write_json_string, Op, OpLog, OpPhase, OpRecord,
-    OpResult, OplogError, RefMove,
+    oplog_path, parse_json_string, read_op_log, read_ref_value, unix_now, write_json_string, JsonError,
+    Op, OpLog, OpPhase, OpRecord, OpResult, OplogError, RefMove,
 };
 pub use trailers::{
     carry_mortar_trailers, mortar_trailer_pairs, pick_mortar_trailers, read_mortar_trailers,

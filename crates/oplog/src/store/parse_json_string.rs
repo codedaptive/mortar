@@ -2,10 +2,12 @@
 
 use super::JsonError;
 
-/// Reads a string whose opening quote sits just before byte `start` of `text`. Returns the string and the
-/// byte after its closing quote. A raw control char, an unknown escape or a lone surrogate is Invalid;
-/// text that ends inside the string, a `\u` escape or a surrogate pair is EndOfInput.
-pub(crate) fn parse_json_string(text: &str, start: usize) -> Result<(String, usize), JsonError> {
+/// Reads one JSON string of `text`, `start` being the byte just after its opening quote. Returns the string
+/// and the byte after its closing quote. It is the reader for what write_json_string writes (parse_json uses
+/// it) and reads every JSON escape: the short forms (`\/` included), `\uXXXX` in either hex case, and
+/// surrogate pairs. A raw control char, an unknown escape or a lone surrogate is Invalid; text that ends
+/// inside the string, a `\u` escape or a surrogate pair is EndOfInput.
+pub fn parse_json_string(text: &str, start: usize) -> Result<(String, usize), JsonError> {
     let bytes = text.as_bytes();
     let mut out = String::new();
     let mut run = start;
