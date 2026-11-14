@@ -1,4 +1,5 @@
-//! after_replay: a clean replay rebases from the request tip; a conflicted one pauses with every field kept.
+//! after_replay: a clean replay rebases from the request tip; a conflicted one pauses with every field kept, no
+//! files written and no rebased tip.
 
 use crate::after_replay::after_replay;
 use crate::after_replay_step::AfterReplayStep;
@@ -53,6 +54,8 @@ fn conflicted_pauses_with_every_field_carried_over() {
                 oid("dddddddddddddddddddddddddddddddddddddddd"),
             ],
             files: vec![PathBuf::from("src/a.rs"), PathBuf::from("b.txt")],
+            files_written: false,
+            rebased_to: None,
         }
     );
 }

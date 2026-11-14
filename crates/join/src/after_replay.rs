@@ -6,7 +6,8 @@ use crate::ReplayResult;
 use gitio::Oid;
 
 /// A clean replay rebases the request ref from `request_tip` to the new tip. A conflicted one pauses with
-/// a JoinState carrying the request ref, its tip, `onto` and every field of the conflict.
+/// a JoinState carrying the request ref, its tip, `onto` and every field of the conflict, with no files written
+/// yet and no rebased tip.
 pub(crate) fn after_replay(request_ref: &str, request_tip: &Oid, onto: &Oid, result: ReplayResult) -> AfterReplayStep {
     match result {
         ReplayResult::Clean(new) => AfterReplayStep::Rebase { from: request_tip.clone(), to: new },
@@ -19,6 +20,8 @@ pub(crate) fn after_replay(request_ref: &str, request_tip: &Oid, onto: &Oid, res
             tree,
             remaining,
             files,
+            files_written: false,
+            rebased_to: None,
         }),
     }
 }

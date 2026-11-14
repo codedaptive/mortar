@@ -2,6 +2,7 @@
 //! (replay_git_fake). A declaration only; git_replay_git implements it for gitio::Git.
 
 use gitio::{CommitInfo, GitError, MergeTreeOutcome, Oid, Person, ReplayOutcome};
+use std::path::PathBuf;
 
 /// gitio's methods of the same names and signatures, except replay.
 pub(crate) trait ReplayGit {
@@ -27,4 +28,5 @@ pub(crate) trait ReplayGit {
         author: Option<&Person>,
         committer: Option<&Person>,
     ) -> Result<Oid, GitError>;
+    fn tree_with_paths(&self, base: &Oid, from: &Oid, paths: &[PathBuf]) -> Result<Oid, GitError>;
 }

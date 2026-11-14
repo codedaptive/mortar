@@ -1,4 +1,5 @@
-//! encode_join_state: literal expected text written by hand, empty arrays, escapes, and a non-UTF-8 path.
+//! encode_join_state: literal expected text written by hand, empty arrays, both flag values, a rebased tip,
+//! escapes, and a non-UTF-8 path.
 
 use crate::encode_join_state::encode_join_state;
 use crate::join_state::JoinState;
@@ -21,6 +22,8 @@ fn state(remaining: Vec<Oid>, files: Vec<PathBuf>) -> JoinState {
         tree: oid("5555555555555555555555555555555555555555"),
         remaining,
         files,
+        files_written: false,
+        rebased_to: None,
     }
 }
 
@@ -40,7 +43,8 @@ fn full_state_is_one_object_in_key_order_with_a_trailing_newline() {
             \"tree\":\"5555555555555555555555555555555555555555\",\
             \"remaining\":[\"6666666666666666666666666666666666666666\",\
             \"7777777777777777777777777777777777777777\"],\
-            \"files\":[\"src/a.rs\",\"b.txt\"]}\n"
+            \"files\":[\"src/a.rs\",\"b.txt\"],\
+            \"files_written\":false,\"rebased_to\":null}\n"
             .to_string())
     );
 }
@@ -55,7 +59,28 @@ fn empty_remaining_and_files_are_empty_arrays() {
             \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
             \"commit\":\"4444444444444444444444444444444444444444\",\
             \"tree\":\"5555555555555555555555555555555555555555\",\
-            \"remaining\":[],\"files\":[]}\n"
+            \"remaining\":[],\"files\":[],\"files_written\":false,\"rebased_to\":null}\n"
+            .to_string())
+    );
+}
+
+#[test]
+fn files_written_true_and_a_rebased_tip_end_the_object() {
+    let s = JoinState {
+        files_written: true,
+        rebased_to: Some(oid("8888888888888888888888888888888888888888")),
+        ..state(Vec::new(), Vec::new())
+    };
+    assert_eq!(
+        encode_join_state(&s),
+        Ok("{\"request_ref\":\"refs/heads/request/r1\",\
+            \"request_tip\":\"1111111111111111111111111111111111111111\",\
+            \"onto\":\"2222222222222222222222222222222222222222\",\
+            \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
+            \"commit\":\"4444444444444444444444444444444444444444\",\
+            \"tree\":\"5555555555555555555555555555555555555555\",\
+            \"remaining\":[],\"files\":[],\"files_written\":true,\
+            \"rebased_to\":\"8888888888888888888888888888888888888888\"}\n"
             .to_string())
     );
 }
@@ -63,13 +88,14 @@ fn empty_remaining_and_files_are_empty_arrays() {
 #[test]
 fn path_with_quote_backslash_newline_and_control_chars_is_escaped() {
     let text = encode_join_state(&state(Vec::new(), vec![PathBuf::from("a\"b\\c\nd\u{1}e\tf\u{8}g\u{c}h\ri")])).unwrap();
-    assert!(text.ends_with("\"files\":[\"a\\\"b\\\\c\\nd\\u0001e\\tf\\bg\\fh\\ri\"]}\n"), "{text}");
+    let escaped = "\"files\":[\"a\\\"b\\\\c\\nd\\u0001e\\tf\\bg\\fh\\ri\"],\"files_written\"";
+    assert!(text.contains(escaped), "{text}");
 }
 
 #[test]
 fn non_ascii_path_is_written_as_is() {
     let text = encode_join_state(&state(Vec::new(), vec![PathBuf::from("café.txt")])).unwrap();
-    assert!(text.ends_with("\"files\":[\"café.txt\"]}\n"), "{text}");
+    assert!(text.contains("\"files\":[\"café.txt\"],\"files_written\""), "{text}");
 }
 
 #[test]

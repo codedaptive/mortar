@@ -1,23 +1,22 @@
 //! join: joins a request ref to its zone. It takes no lock: the caller holds join-<zone> and has run recover
 //! (S-47, S-16).
-//! No unit test: it runs git and writes real files; decide_join_tests, after_replay_tests, encode_join_state_tests,
-//! fast_forward_op_tests, rebase_op_tests and op_applied_tests cover its decisions.
+//! No unit test: it runs git, applies ops and, through pause, writes real files; decide_join_tests,
+//! after_replay_tests, encode_join_state_tests, fast_forward_op_tests, rebase_op_tests and op_applied_tests cover
+//! its decisions.
 //! Nagatha's integration tests are to cover, in a throwaway repository: a fast-forward join; a zone moved under a
-//! request rebases and stops with the request ref moved and the zone not moved (SPEC-join §Tests); a conflict lists
-//! the files, writes mortar-join.json and moves no ref; a repeat of a joined request answers Joined and moves
+//! request rebases and stops with the request ref moved and the zone not moved (SPEC-join §Tests; S-20); a conflict
+//! lists the files, writes mortar-join.json and moves no ref; a repeat of a joined request answers Joined and moves
 //! nothing (SPEC-join §WO-join-2, WO-join-2); a missing zone or request ref is refused (ZoneMissing, RequestMissing).
 
 use crate::after_replay::after_replay;
 use crate::after_replay_step::AfterReplayStep;
 use crate::decide_join::decide_join;
-use crate::encode_join_state::encode_join_state;
 use crate::fast_forward_op::fast_forward_op;
 use crate::join_decision::JoinDecision;
 use crate::join_read::JoinRead;
-use crate::join_state::JoinState;
 use crate::op_applied::op_applied;
+use crate::pause::pause;
 use crate::rebase_op::rebase_op;
-use crate::write_join_state::write_join_state;
 use crate::{replay, JoinAnswer, JoinRunError};
 use gitio::Git;
 use oplog::{apply, apply_protected, new_op_id, unix_now, ProtectedRef};
@@ -66,13 +65,4 @@ pub fn join(git: &Git, folder: &Path, zone: &str, request_ref: &str, actor: &str
         }
         JoinDecision::Unrelated => Err(JoinRunError::Unrelated { zone_ref, request_ref: request_ref.to_string() }),
     }
-}
-
-/// Writes `state` as mortar-join.json in `folder`'s git dir and answers Conflicted naming it. A conflicted path
-/// that is not UTF-8 is refused (StatePath) before anything is written.
-fn pause(git: &Git, folder: &Path, state: JoinState) -> Result<JoinAnswer, JoinRunError> {
-    let text = encode_join_state(&state).map_err(JoinRunError::StatePath)?;
-    let git_dir = git.git_dir(folder).map_err(JoinRunError::Git)?;
-    let path = write_join_state(&git_dir, &text)?;
-    Ok(JoinAnswer::Conflicted { commit: state.commit, files: state.files, state: path })
 }
