@@ -1,7 +1,7 @@
 //! run_formatter: run a snapshot's formatter over the folder's changed files, and say how it ended.
 //! No unit test: it runs git and the formatter, and holds no decision of its own (S-5); formatter_paths,
-//! formatter_argv, decide_formatter_wait and decide_formatter_result are its decisions and have their tests;
-//! run_formatter_child is the formatter's process I/O.
+//! formatter_argv, decide_formatter_wait, decide_group_run_end and decide_formatter_result are its decisions and have
+//! their tests; run_in_group is its process runner.
 //! Nagatha's integration tests cover it through snapshot_formatted, in a throwaway repository:
 //! - a formatter that rewrites a changed file (the snapshot tree holds the formatted contents, formatted lists
 //!   Formatted with the paths), and is_saved never running the formatter:
@@ -17,13 +17,14 @@
 //! - a deleted file, a refused 6 MiB new file, a file under target/, a caller-excluded file, a conflicted path, a
 //!   symlink and a submodule directory among the changes are not passed:
 //!   tests/snapshot/formatter_paths.rs::formatter_gets_only_regular_saved_nonconflicted_changes_not_deleted_refused_excluded_links_or_submodules;
-//! - the cases run_formatter_child's header lists: tests/snapshot/formatter_timeout.rs and formatter_group.rs.
+//! - the timeout and process-group cases run_in_group's header lists: tests/snapshot/formatter_timeout.rs and
+//!   formatter_group.rs.
 
 use crate::decide_formatter_result::decide_formatter_result;
 use crate::folder_tree::folder_tree;
 use crate::formatter_argv::formatter_argv;
 use crate::formatter_paths::formatter_paths;
-use crate::run_formatter_child::run_formatter_child;
+use crate::run_in_group::run_in_group;
 use crate::{Formatter, FormatterRun, SnapshotError};
 use gitio::Git;
 use std::collections::HashSet;
@@ -62,7 +63,7 @@ pub(crate) fn run_formatter(
         program: formatter.program.clone(),
         args: formatter.args.clone(),
         paths,
-        result: decide_formatter_result(run_formatter_child(&formatter.program, &argv, folder, formatter.timeout)),
+        result: decide_formatter_result(run_in_group(&formatter.program, &argv, folder, formatter.timeout)),
     }))
 }
 

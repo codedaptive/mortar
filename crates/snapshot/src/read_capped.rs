@@ -1,4 +1,4 @@
-//! read_capped: drain a formatter's stderr to EOF, keeping only its first FORMATTER_STDERR_CAP bytes.
+//! read_capped: drain a command's stderr to EOF, keeping only its first FORMATTER_STDERR_CAP bytes.
 
 use crate::formatter_stderr_cap::FORMATTER_STDERR_CAP;
 use std::io::{self, Read};

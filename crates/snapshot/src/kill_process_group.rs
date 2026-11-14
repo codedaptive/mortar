@@ -1,4 +1,5 @@
-//! kill_process_group: signal a formatter's process group, and see its leader's exit without reaping it.
+//! kill_process_group: signal a run_in_group child's process group (Unix), and see its leader's exit without reaping
+//! it (Linux and macOS).
 //! The crate's only `unsafe` (S-38): std starts a process group (CommandExt::process_group) but cannot signal one, nor
 //! see a child's exit without reaping it; libc or nix would be a new dependency for two calls. So this file declares
 //! kill(2) and waitid(2) itself, and their two calls are the only unsafe code in it. S-38 puts both externs in this
@@ -7,7 +8,7 @@
 //! have their tests.
 //! Non-Unix: the externs and the Unix bodies are compiled out (S-38); the two stubs there do nothing. No group is
 //! started; kill_process_group sends nothing; peek_leader_exit gives None, so run_formatter_child falls back to
-//! try_wait; the timeout kills only the formatter process.
+//! try_wait; the timeout kills only the child process.
 
 use std::io;
 
