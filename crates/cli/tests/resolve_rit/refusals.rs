@@ -77,5 +77,40 @@ fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_loca
     assert_eq!(f.blob(&new, "src/file"), b"chosen resolution\n");
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(r.zone.clone())); assert_one_rebase(f, &r.old, &new);
     assert!(!r.state.exists()); assert!(!f.lock_path().exists());
-    // No retry/catch-up claim: the op's durable folder_tree is still join3e's explicitly deferred work.
+    // CLI read_pending_move -> Oplog's valued log: the durable tree is old tip + resolved paths, not the new tip.
+    let expected_tree = crate::objects::tree(f, &r.old, &[("src/file", b"chosen resolution\n")], &[], &[]);
+    assert_ne!(expected_tree, f.git.commit_info(&new).unwrap().tree);
+    let before_read = f.observe();
+    let pending = cli::read_pending_move(&f.git, &f.common, REQUEST, "join").unwrap().unwrap();
+    assert_eq!((pending.old, pending.new, pending.folder_tree), (r.old.clone(), new.clone(), Some(expected_tree.clone())));
+    assert_eq!(f.observe(), before_read, "reading the valued log must not write or move anything");
+    let valued = oplog::read_valued_log(&f.common).unwrap();
+    for record in valued.records.iter().filter(|v| v.record.kind == "join-rebase") {
+        assert_eq!(record.values, vec![("folder_tree".to_string(), expected_tree.as_str().to_string())]);
+    }
+
+    // Follow the refusal's actual next step, leaving the chosen resolution intact.
+    f.write("sub/keep", b"keep\n");
+    let start = f.records().len();
+    let done = f.report(&["--json", "join"], "join", 0, "joined");
+    assert_eq!(done.text("finished_move_from"), r.old.as_str());
+    assert_eq!(done.text("finished_move_to"), new.as_str());
+    assert!(!done.flag("saved_written"), "catch-up precedes save; old folder bytes are not new request work");
+    // After catch-up, join fast-forwards the zone to the already-rebased request (run_join / S-72).
+    assert_eq!(f.head(), new); assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(new.clone()));
+    assert_eq!(fs::read(f.request.join("src/file")).unwrap(), b"chosen resolution\n");
+    assert_eq!(fs::read(f.request.join("sub/keep")).unwrap(), b"zone changed this path\n");
+    assert_eq!(fs::read(f.request.join("src/upstream")).unwrap(), b"advanced zone work\n");
+    assert_eq!(raw(&f.local(), &["write-tree"]), format!("{}\n", f.git.commit_info(&new).unwrap().tree).as_bytes());
+    assert!(raw(&f.local(), &["status", "--porcelain"]).is_empty());
+    let records = f.records();
+    let first_snapshot = records[start..].iter().find(|r| r.kind == "snapshot" && r.phase == oplog::OpPhase::Done).unwrap();
+    assert_eq!(f.blob(&first_snapshot.moves[0].new, "sub/keep"), b"keep\n");
+    assert_eq!(f.blob(&first_snapshot.moves[0].new, "src/file"), b"chosen resolution\n");
+    assert_eq!(f.blob(&snap, "sub/keep"), b"local obstruction must survive\n");
+    assert_one_rebase(f, &r.old, &new); assert!(!r.state.exists()); assert!(!f.lock_path().exists());
+    let before_repeat = f.observe();
+    let repeat = f.report(&["--json", "join"], "join", 0, "joined");
+    assert_eq!(repeat.text("finished_move_to"), new.as_str()); assert!(!repeat.flag("saved_written"));
+    assert_eq!(f.observe(), before_repeat); assert!(!f.lock_path().exists());
 }
