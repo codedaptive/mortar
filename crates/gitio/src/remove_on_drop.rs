@@ -1,6 +1,6 @@
 //! RemoveOnDrop: a temporary index that is removed when it goes out of scope. It only touches the file system, so it
-//! has no unit tests; Nagatha's integration tests of snapshot_tree and tree_with_paths, each checking that no temp
-//! index is left behind, are to cover it.
+//! has no unit tests; the zone's integration tests of snapshot_tree and tree_with_paths (tests/typed), each
+//! checking that no temp index is left behind, cover it.
 
 use std::path::PathBuf;
 

@@ -1,27 +1,32 @@
 //! read_path_entries: read the answer of `ls-tree -z --full-tree <from> -- <paths...>`.
 
-use crate::{GitError, Oid};
+use crate::{GitError, Oid, TreeWithPathsError, TreeWithPathsRefusal};
 use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
 
 /// One item per path in `paths`, in request order: the mode and id of the NUL-ended record
 /// `<mode> <type> <oid>\t<path>` whose path is that path byte for byte, or None when there is none (the tree lacks
 /// it). Records are looked up, never consumed: ls-tree prints tree order, and a path asked twice gets its record twice.
-/// A `blob` (a file or a 120000 symlink) or `commit` (a 160000 gitlink) is taken; a `tree` is refused naming the path,
-/// which must name a file entry. A record for a path not asked, a mode that is not octal digits, a bad id, a missing
-/// final NUL or any other shape is refused naming the output.
-pub(crate) fn read_path_entries(stdout: &[u8], paths: &[PathBuf]) -> Result<Vec<Option<(String, Oid)>>, GitError> {
+/// A `blob` (a file or a 120000 symlink) or `commit` (a 160000 gitlink) is taken; a `tree` is Refused with the
+/// refusal `folder` builds from the requested path (FolderInFrom or FolderInBase, by which tree was listed), since a
+/// path must name a file entry. A record for a path not asked, a mode that is not octal digits, a bad id, a missing
+/// final NUL or any other shape is Git: a GitError refusal naming the output.
+pub(crate) fn read_path_entries(
+    stdout: &[u8],
+    paths: &[PathBuf],
+    folder: fn(PathBuf) -> TreeWithPathsRefusal,
+) -> Result<Vec<Option<(String, Oid)>>, TreeWithPathsError> {
     let refuse = |why: &str| {
-        GitError::refusal(
+        TreeWithPathsError::Git(GitError::refusal(
             Vec::new(),
             format!("not ls-tree records for the paths asked ({why}): {:?}", String::from_utf8_lossy(stdout)),
-        )
+        ))
     };
     let mut records: Vec<(&[u8], String, Oid)> = Vec::new();
     if !stdout.is_empty() {
         let body = stdout.strip_suffix(b"\0").ok_or_else(|| refuse("no final NUL"))?;
         for record in body.split(|b| *b == 0) {
-            records.push(entry(record, paths, &refuse)?);
+            records.push(entry(record, paths, folder, &refuse)?);
         }
     }
     Ok(paths
@@ -38,8 +43,9 @@ pub(crate) fn read_path_entries(stdout: &[u8], paths: &[PathBuf]) -> Result<Vec<
 fn entry<'a>(
     record: &'a [u8],
     paths: &[PathBuf],
-    refuse: &dyn Fn(&str) -> GitError,
-) -> Result<(&'a [u8], String, Oid), GitError> {
+    folder: fn(PathBuf) -> TreeWithPathsRefusal,
+    refuse: &dyn Fn(&str) -> TreeWithPathsError,
+) -> Result<(&'a [u8], String, Oid), TreeWithPathsError> {
     let tab = record.iter().position(|b| *b == b'\t').ok_or_else(|| refuse("not <mode> <type> <oid>\\t<path>"))?;
     let header: Vec<&[u8]> = record[..tab].split(|b| *b == b' ').collect();
     let [mode, kind, hex] = header[..] else {
@@ -59,7 +65,7 @@ fn entry<'a>(
         .ok_or_else(|| refuse("a path not asked"))?;
     match kind {
         b"blob" | b"commit" => Ok((found, String::from_utf8_lossy(mode).into_owned(), oid)),
-        b"tree" => Err(GitError::refusal(Vec::new(), format!("not a file entry: {path:?} is a folder"))),
+        b"tree" => Err(TreeWithPathsError::Refused(folder(path.clone()))),
         _ => Err(refuse("a type that is not blob, commit or tree")),
     }
 }

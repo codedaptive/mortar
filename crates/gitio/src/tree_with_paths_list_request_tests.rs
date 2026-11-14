@@ -1,5 +1,5 @@
 use crate::tree_with_paths_list_request::tree_with_paths_list_request;
-use crate::Oid;
+use crate::{Oid, TreeWithPathsError, TreeWithPathsRefusal};
 use std::ffi::{OsStr, OsString};
 use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
@@ -12,11 +12,11 @@ fn paths(items: &[&str]) -> Vec<PathBuf> {
     items.iter().map(PathBuf::from).collect()
 }
 
-fn refused(items: Vec<PathBuf>) -> String {
-    let err = tree_with_paths_list_request(&from(), &items).unwrap_err();
-    assert_eq!(err.code, None);
-    assert!(err.args.is_empty());
-    err.stderr
+fn refused(items: Vec<PathBuf>) -> TreeWithPathsRefusal {
+    match tree_with_paths_list_request(&from(), &items) {
+        Err(TreeWithPathsError::Refused(refusal)) => refusal,
+        other => panic!("expected a refusal: {other:?}"),
+    }
 }
 
 #[test]
@@ -70,61 +70,62 @@ fn a_non_utf8_path_goes_into_argv_as_its_bytes() {
 }
 
 #[test]
-fn an_empty_path_is_refused() {
-    assert_eq!(refused(paths(&["ok", ""])), "not a usable path (empty): \"\"");
+fn an_empty_path_is_unusable() {
+    assert_eq!(refused(paths(&["ok", ""])), TreeWithPathsRefusal::Unusable { path: PathBuf::from("") });
 }
 
 #[test]
-fn a_nul_in_a_path_is_refused_naming_it() {
+fn a_nul_in_a_path_is_unusable_naming_it() {
     let items = vec![PathBuf::from("ok"), PathBuf::from(OsStr::from_bytes(b"a\0b"))];
-    assert_eq!(refused(items), "path holds a NUL: \"a\\0b\"");
+    assert_eq!(refused(items), TreeWithPathsRefusal::Unusable { path: PathBuf::from(OsStr::from_bytes(b"a\0b")) });
 }
 
 #[test]
-fn a_path_ending_in_a_slash_is_refused_naming_it() {
-    assert_eq!(
-        refused(paths(&["ok", "dir/"])),
-        "not a usable path (ends in '/', naming a folder's children): \"dir/\""
-    );
+fn a_path_ending_in_a_slash_is_not_as_stored_naming_it() {
+    assert_eq!(refused(paths(&["ok", "dir/"])), TreeWithPathsRefusal::NotAsStored { path: PathBuf::from("dir/") });
 }
 
-const NOT_STORED: &str = "not a usable path (not as git stores it: a leading '/', or an empty, '.' or '..' part): ";
-
 #[test]
-fn a_path_not_as_git_stores_it_is_refused_naming_it() {
-    for (path, named) in [
-        ("/a", "\"/a\""),
-        ("./a", "\"./a\""),
-        ("a//b", "\"a//b\""),
-        ("a/./b", "\"a/./b\""),
-        ("a/../b", "\"a/../b\""),
-        ("..", "\"..\""),
-    ] {
-        assert_eq!(refused(paths(&["ok", path])), format!("{NOT_STORED}{named}"));
+fn a_path_not_as_git_stores_it_is_not_as_stored_naming_it() {
+    for path in ["/a", "./a", "a//b", "a/./b", "a/../b", ".."] {
+        assert_eq!(refused(paths(&["ok", path])), TreeWithPathsRefusal::NotAsStored { path: PathBuf::from(path) });
     }
 }
 
 #[test]
-fn a_folder_and_a_path_under_it_are_refused_naming_both() {
+fn an_unusable_path_is_refused_before_a_later_not_as_stored_one() {
+    assert_eq!(refused(paths(&["", "/a"])), TreeWithPathsRefusal::Unusable { path: PathBuf::from("") });
+}
+
+#[test]
+fn a_bad_path_is_refused_before_an_overlap() {
+    assert_eq!(
+        refused(paths(&["f", "f/x", "a//b"])),
+        TreeWithPathsRefusal::NotAsStored { path: PathBuf::from("a//b") }
+    );
+}
+
+#[test]
+fn a_folder_and_a_path_under_it_overlap_naming_both() {
     assert_eq!(
         refused(paths(&["f", "g", "f/x"])),
-        "not usable paths (one is a folder holding the other): \"f\" and \"f/x\""
+        TreeWithPathsRefusal::Overlap { folder: PathBuf::from("f"), inner: PathBuf::from("f/x") }
     );
 }
 
 #[test]
-fn a_path_under_a_folder_given_first_is_refused_naming_both() {
+fn a_path_under_a_folder_given_first_overlaps_naming_the_folder_first() {
     assert_eq!(
         refused(paths(&["f/x", "f"])),
-        "not usable paths (one is a folder holding the other): \"f\" and \"f/x\""
+        TreeWithPathsRefusal::Overlap { folder: PathBuf::from("f"), inner: PathBuf::from("f/x") }
     );
 }
 
 #[test]
-fn a_folder_and_a_path_deep_under_it_are_refused() {
+fn a_folder_and_a_path_deep_under_it_overlap() {
     assert_eq!(
         refused(paths(&["a", "a/b/c"])),
-        "not usable paths (one is a folder holding the other): \"a\" and \"a/b/c\""
+        TreeWithPathsRefusal::Overlap { folder: PathBuf::from("a"), inner: PathBuf::from("a/b/c") }
     );
 }
 

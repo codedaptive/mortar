@@ -1,17 +1,24 @@
 use crate::read_tree_entry::read_tree_entry;
+use crate::{EntryKind, TreeEntryError};
 use std::ffi::OsStr;
 use std::os::unix::ffi::OsStrExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn found(stdout: &[u8], path: &str) -> String {
     read_tree_entry(stdout, Path::new(path)).unwrap().unwrap().as_str().to_string()
 }
 
 fn refused(stdout: &[u8], path: &str) -> String {
-    let err = read_tree_entry(stdout, Path::new(path)).unwrap_err();
+    let TreeEntryError::Git(err) = read_tree_entry(stdout, Path::new(path)).unwrap_err() else {
+        panic!("not refused as Git");
+    };
     assert_eq!(err.code, None);
     assert!(err.args.is_empty());
     err.stderr
+}
+
+fn not_a_blob(path: &str, kind: EntryKind) -> TreeEntryError {
+    TreeEntryError::NotABlob { path: PathBuf::from(path), kind }
 }
 
 #[test]
@@ -82,14 +89,29 @@ fn empty_output_is_a_missing_path() {
 
 #[test]
 fn captured_tree_entry_is_refused_as_not_a_blob() {
-    let stderr = refused(b"040000 tree aaff74984cccd156a469afa7d9ab10e4777beb24\tdir\x00", "dir");
-    assert_eq!(stderr, "not a blob: \"dir\" is a \"tree\"");
+    let stdout = b"040000 tree aaff74984cccd156a469afa7d9ab10e4777beb24\tdir\x00";
+    assert_eq!(read_tree_entry(stdout, Path::new("dir")), Err(not_a_blob("dir", EntryKind::Tree)));
 }
 
 #[test]
 fn a_submodule_commit_is_refused_as_not_a_blob() {
-    let stderr = refused(b"160000 commit aaff74984cccd156a469afa7d9ab10e4777beb24\tsub\x00", "sub");
-    assert_eq!(stderr, "not a blob: \"sub\" is a \"commit\"");
+    let stdout = b"160000 commit aaff74984cccd156a469afa7d9ab10e4777beb24\tsub\x00";
+    assert_eq!(read_tree_entry(stdout, Path::new("sub")), Err(not_a_blob("sub", EntryKind::Commit)));
+}
+
+#[test]
+fn an_unknown_type_is_refused_as_not_a_blob_kept_as_found() {
+    let stdout = b"100644 t\xffg aaff74984cccd156a469afa7d9ab10e4777beb24\tx\x00";
+    assert_eq!(
+        read_tree_entry(stdout, Path::new("x")),
+        Err(not_a_blob("x", EntryKind::Other("t\u{fffd}g".to_string())))
+    );
+}
+
+#[test]
+fn a_bad_id_is_refused_before_the_type() {
+    let stderr = refused(b"040000 tree AAFF74984CCCD156A469AFA7D9AB10E4777BEB24\tdir\x00", "dir");
+    assert!(stderr.contains("(a bad object id)"), "{stderr}");
 }
 
 #[test]
@@ -100,49 +122,4 @@ fn folder_children_record_is_refused_as_another_path() {
         "not one ls-tree record for \"dir/\" (another path): \
          \"100644 blob 78981922613b2afb6025042ff6bd878ac1994e85\\tdir/a\\0\""
     );
-}
-
-#[test]
-fn two_records_are_refused_naming_the_output() {
-    let stdout = b"100644 blob 5626abf0f72e58d7a153368ba57db4c673c0e171\tf\x00\
-                   120000 blob 4d1ae35ba2c8ec712fa2a379db44ad639ca277bd\tlink\x00";
-    let stderr = refused(stdout, "f");
-    assert!(stderr.contains("not exactly one NUL-ended record"), "{stderr}");
-    assert!(stderr.contains("\\tlink\\0\""), "{stderr}");
-}
-
-#[test]
-fn a_record_without_its_nul_is_refused() {
-    let stderr = refused(b"100644 blob 5626abf0f72e58d7a153368ba57db4c673c0e171\tf", "f");
-    assert!(stderr.contains("not exactly one NUL-ended record"), "{stderr}");
-}
-
-#[test]
-fn a_bad_object_id_is_refused() {
-    let stderr = refused(b"100644 blob 5626ABF0F72E58D7A153368BA57DB4C673C0E171\tf\x00", "f");
-    assert!(stderr.contains("(a bad object id)"), "{stderr}");
-    assert!(stderr.contains("5626ABF0F72E58D7A153368BA57DB4C673C0E171"), "{stderr}");
-}
-
-#[test]
-fn a_record_without_a_tab_is_refused() {
-    let stderr = refused(b"100644 blob 5626abf0f72e58d7a153368ba57db4c673c0e171 f\x00", "f");
-    assert!(stderr.contains("not <mode> <type> <oid>\\t<path>)"), "{stderr}");
-}
-
-#[test]
-fn a_header_with_a_missing_field_is_refused() {
-    let stderr = refused(b"blob 5626abf0f72e58d7a153368ba57db4c673c0e171\tf\x00", "f");
-    assert!(stderr.contains("not <mode> <type> <oid>"), "{stderr}");
-}
-
-#[test]
-fn a_header_with_an_extra_field_is_refused() {
-    let stderr = refused(b"100644 blob 5626abf0f72e58d7a153368ba57db4c673c0e171 9\tf\x00", "f");
-    assert!(stderr.contains("not <mode> <type> <oid>"), "{stderr}");
-}
-
-#[test]
-fn a_lone_nul_is_refused() {
-    assert!(read_tree_entry(b"\x00", Path::new("f")).is_err());
 }

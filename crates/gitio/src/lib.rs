@@ -7,11 +7,16 @@ mod blob_bytes_request;
 mod changed_files_request;
 mod check_exit;
 mod check_ref_format_request;
+mod classify_fetch_ref;
 mod classify_update_refs;
 mod commit_info;
 mod commit_info_request;
 mod commit_tree_request;
 mod disk_usage_only_request;
+mod entry_kind;
+mod fetch_ref_outcome;
+mod fetch_ref_request;
+mod first_parent_list_request;
 mod folder_move_outcome;
 mod folder_move_requests;
 mod git;
@@ -27,16 +32,26 @@ mod git_dir_request;
 mod git_disk_usage_only;
 mod git_error;
 mod git_error_display;
+mod git_error_from_tree_entry_error;
+mod git_error_from_tree_with_paths_error;
 mod git_error_refusal;
+mod git_fetch_ref;
+mod git_first_parent_list;
 mod git_folder_move;
 mod git_git_dir;
 mod git_head;
+mod git_hooks_path;
+mod git_is_ancestor;
 mod git_list_refs;
+mod git_ls_remote;
 mod git_maintenance;
 mod git_merge_base;
 mod git_merge_tree;
 mod git_new;
+mod git_path_kind;
+mod git_push;
 mod git_range_diff;
+mod git_range_diff_ranges;
 mod git_read_ref;
 mod git_replay;
 mod git_replay_available;
@@ -52,18 +67,24 @@ mod git_status_paths;
 mod git_toplevel;
 mod git_trailers;
 mod git_tree_entry;
+mod git_tree_entry_typed;
 mod git_tree_with_paths;
+mod git_tree_with_paths_typed;
 mod git_update_refs;
 mod git_version;
 mod git_with_trailers;
 mod git_worktree_add;
+mod git_worktree_fill;
 mod git_worktree_list;
 mod git_worktree_remove;
 mod git_write_blob_paths;
 mod head_requests;
+mod hooks_path_request;
 mod index_info_stdin;
+mod is_ancestor_request;
 mod list_refs_request;
 mod lossy_args;
+mod ls_remote_request;
 mod maintenance_request;
 mod merge_base_request;
 mod merge_tree_outcome;
@@ -77,20 +98,31 @@ mod oid_line;
 mod oid_parse;
 mod output;
 mod path_from_bytes;
+mod path_kind;
 mod path_line;
 mod person;
+mod push_lease;
+mod push_outcome;
+mod push_ref;
+mod push_refusal;
+mod push_request;
+mod range_diff_ranges_request;
 mod range_diff_request;
 mod read_attr_check;
 mod read_check_ref_format;
 mod read_commit_info;
 mod read_disk_usage;
 mod read_folder_move;
+mod read_is_ancestor;
+mod read_ls_remote;
 mod read_merge_base;
 mod read_merge_tree;
 mod read_message;
 mod read_nul_paths;
 mod read_oid_lines;
 mod read_path_entries;
+mod read_path_kind;
+mod read_push;
 mod read_ref_list;
 mod read_ref_request;
 mod read_replay;
@@ -102,6 +134,7 @@ mod read_status_paths;
 mod read_symbolic_ref;
 mod read_trailers;
 mod read_tree_entry;
+mod read_tree_entry_record;
 mod read_worktree_list;
 mod ref_update;
 mod remove_on_drop;
@@ -123,13 +156,21 @@ mod temp_index_path;
 mod text_refusal;
 mod trailers_add_request;
 mod trailers_parse_request;
+mod tree_entry_error;
+mod tree_entry_error_display;
 mod tree_entry_request;
+mod tree_with_paths_error;
+mod tree_with_paths_error_display;
 mod tree_with_paths_list_request;
+mod tree_with_paths_refusal;
+mod tree_with_paths_refusal_display;
 mod tree_with_paths_requests;
 mod unquote_c_style;
 mod update_refs_outcome;
 mod update_refs_stdin;
 mod usable_path;
+mod usable_ref_arg;
+mod usable_remote;
 mod usable_sparse_path;
 mod usable_worktree_path;
 mod version;
@@ -137,21 +178,32 @@ mod version_parse;
 mod version_require_floor;
 mod worktree;
 mod worktree_add_request;
+mod worktree_fill_request;
 mod worktree_remove_request;
 mod write_blob_paths_request;
 
 pub use commit_info::CommitInfo;
+pub use entry_kind::EntryKind;
+pub use fetch_ref_outcome::FetchRefOutcome;
 pub use folder_move_outcome::FolderMoveOutcome;
 pub use git::Git;
 pub use git_error::GitError;
 pub use merge_tree_outcome::MergeTreeOutcome;
 pub use oid::Oid;
 pub use output::Output;
+pub use path_kind::PathKind;
 pub use person::Person;
+pub use push_lease::PushLease;
+pub use push_outcome::PushOutcome;
+pub use push_ref::PushRef;
+pub use push_refusal::PushRefusal;
 pub use ref_update::RefUpdate;
 pub use replay_outcome::ReplayOutcome;
 pub use run_opts::RunOpts;
 pub use status_paths::StatusPaths;
+pub use tree_entry_error::TreeEntryError;
+pub use tree_with_paths_error::TreeWithPathsError;
+pub use tree_with_paths_refusal::TreeWithPathsRefusal;
 pub use update_refs_outcome::UpdateRefsOutcome;
 pub use version::Version;
 pub use worktree::Worktree;
@@ -169,6 +221,8 @@ mod check_exit_tests;
 #[cfg(test)]
 mod check_ref_format_request_tests;
 #[cfg(test)]
+mod classify_fetch_ref_tests;
+#[cfg(test)]
 mod classify_update_refs_tests;
 #[cfg(test)]
 mod commit_info_request_tests;
@@ -176,6 +230,12 @@ mod commit_info_request_tests;
 mod commit_tree_request_tests;
 #[cfg(test)]
 mod disk_usage_only_request_tests;
+#[cfg(test)]
+mod entry_kind_tests;
+#[cfg(test)]
+mod fetch_ref_request_tests;
+#[cfg(test)]
+mod first_parent_list_request_tests;
 #[cfg(test)]
 mod folder_move_requests_tests;
 #[cfg(test)]
@@ -186,6 +246,10 @@ mod git_dir_request_tests;
 mod git_disk_usage_only_tests;
 #[cfg(test)]
 mod git_error_display_tests;
+#[cfg(test)]
+mod git_error_from_tree_entry_error_tests;
+#[cfg(test)]
+mod git_error_from_tree_with_paths_error_tests;
 #[cfg(test)]
 mod git_error_refusal_tests;
 #[cfg(test)]
@@ -201,11 +265,17 @@ mod git_version_tests;
 #[cfg(test)]
 mod head_requests_tests;
 #[cfg(test)]
+mod hooks_path_request_tests;
+#[cfg(test)]
 mod index_info_stdin_tests;
+#[cfg(test)]
+mod is_ancestor_request_tests;
 #[cfg(test)]
 mod list_refs_request_tests;
 #[cfg(test)]
 mod lossy_args_tests;
+#[cfg(test)]
+mod ls_remote_request_tests;
 #[cfg(test)]
 mod maintenance_request_tests;
 #[cfg(test)]
@@ -231,7 +301,13 @@ mod output_tests;
 #[cfg(test)]
 mod path_from_bytes_tests;
 #[cfg(test)]
+mod path_kind_tests;
+#[cfg(test)]
 mod path_line_tests;
+#[cfg(test)]
+mod push_request_tests;
+#[cfg(test)]
+mod range_diff_ranges_request_tests;
 #[cfg(test)]
 mod range_diff_request_tests;
 #[cfg(test)]
@@ -245,6 +321,10 @@ mod read_disk_usage_tests;
 #[cfg(test)]
 mod read_folder_move_tests;
 #[cfg(test)]
+mod read_is_ancestor_tests;
+#[cfg(test)]
+mod read_ls_remote_tests;
+#[cfg(test)]
 mod read_merge_base_tests;
 #[cfg(test)]
 mod read_merge_tree_tests;
@@ -256,6 +336,10 @@ mod read_nul_paths_tests;
 mod read_oid_lines_tests;
 #[cfg(test)]
 mod read_path_entries_tests;
+#[cfg(test)]
+mod read_path_kind_tests;
+#[cfg(test)]
+mod read_push_tests;
 #[cfg(test)]
 mod read_ref_list_tests;
 #[cfg(test)]
@@ -276,6 +360,8 @@ mod read_status_paths_tests;
 mod read_symbolic_ref_tests;
 #[cfg(test)]
 mod read_trailers_tests;
+#[cfg(test)]
+mod read_tree_entry_record_tests;
 #[cfg(test)]
 mod read_tree_entry_tests;
 #[cfg(test)]
@@ -313,9 +399,21 @@ mod trailers_add_request_tests;
 #[cfg(test)]
 mod trailers_parse_request_tests;
 #[cfg(test)]
+mod tree_entry_error_display_tests;
+#[cfg(test)]
+mod tree_entry_error_tests;
+#[cfg(test)]
 mod tree_entry_request_tests;
 #[cfg(test)]
+mod tree_with_paths_error_display_tests;
+#[cfg(test)]
+mod tree_with_paths_error_tests;
+#[cfg(test)]
 mod tree_with_paths_list_request_tests;
+#[cfg(test)]
+mod tree_with_paths_refusal_display_tests;
+#[cfg(test)]
+mod tree_with_paths_refusal_tests;
 #[cfg(test)]
 mod tree_with_paths_requests_tests;
 #[cfg(test)]
@@ -324,6 +422,10 @@ mod unquote_c_style_tests;
 mod update_refs_stdin_tests;
 #[cfg(test)]
 mod usable_path_tests;
+#[cfg(test)]
+mod usable_ref_arg_tests;
+#[cfg(test)]
+mod usable_remote_tests;
 #[cfg(test)]
 mod usable_sparse_path_tests;
 #[cfg(test)]
@@ -336,6 +438,8 @@ mod version_require_floor_tests;
 mod version_tests;
 #[cfg(test)]
 mod worktree_add_request_tests;
+#[cfg(test)]
+mod worktree_fill_request_tests;
 #[cfg(test)]
 mod worktree_remove_request_tests;
 #[cfg(test)]
