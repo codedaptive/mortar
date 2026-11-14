@@ -38,6 +38,6 @@ fn a_gitlink_is_refused_as_not_a_blob_of_kind_commit() {
     let (r, root, _) = holding_file_folder_and_gitlink();
     let typed = r.git.tree_entry_typed(&root, Path::new("sub"));
     assert_eq!(typed, Err(TreeEntryError::NotABlob { path: PathBuf::from("sub"), kind: EntryKind::Commit }));
-    // join's classify_conflicted matches this text.
+    // The untyped tree_entry keeps this text.
     assert_eq!(r.git.tree_entry(&root, Path::new("sub")), refusal("not a blob: \"sub\" is a \"commit\""));
 }

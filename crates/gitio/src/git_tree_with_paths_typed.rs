@@ -31,7 +31,8 @@ impl Git {
     /// - FolderInBase: a path `from` lacks that names a folder in `base` (removal drops only an entry of exactly that
     ///   name, so the folder would stay).
     ///
-    /// A git run that fails, or an ls-tree answer of the wrong shape, is Git.
+    /// A git run that fails, an ls-tree answer of the wrong shape, or a write-tree answer that is not one id line, is
+    /// Git.
     pub fn tree_with_paths_typed(&self, base: &Oid, from: &Oid, paths: &[PathBuf]) -> Result<Oid, TreeWithPathsError> {
         let entries = match tree_with_paths_list_request(from, paths)? {
             Some((args, opts)) => {
