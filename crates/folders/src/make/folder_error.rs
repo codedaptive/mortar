@@ -1,16 +1,16 @@
-//! Every way making a folder, or widening one with need, can be refused.
+//! Every way making a folder, widening one with need, or moving one with move_folder can be refused.
 //! A bare type; folder_error_display_tests exercises each variant's text, folder_error_source_tests its source.
 
 use std::path::PathBuf;
 
-use gitio::GitError;
+use gitio::{GitError, Oid};
 use oplog::{LockError, OplogError};
 
 use crate::plan::{BelowFloor, PlanError};
 use crate::record::{FolderRecord, RecordError};
 
-/// A refusal from make_zone_folder, make_request_folder or need. Debug only: io::Error, OplogError and LockError are
-/// neither Clone nor Eq.
+/// A refusal from make_zone_folder, make_request_folder, need or move_folder. Debug only: io::Error, OplogError
+/// and LockError are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum FolderError {
     /// A zone or request name, or a sparse path, the plan refused.
@@ -39,6 +39,17 @@ pub enum FolderError {
     BranchExists { branch: String },
     /// The zone branch a folder is cut from does not exist.
     ZoneBranchMissing { branch: String },
+    /// The folder at `path` holds work that is not saved; nothing ran.
+    NotSaved { path: PathBuf },
+    /// git refused to move the folder at `path` over local changes at `paths`; nothing changed, nothing logged.
+    MoveRefused { path: PathBuf, paths: Vec<PathBuf> },
+    /// The folder's branch is at neither tip of the move; `at` is None when it has no commit.
+    BranchElsewhere {
+        branch: String,
+        at: Option<Oid>,
+        old: Oid,
+        new: Oid,
+    },
     /// A file system call on `path` failed.
     Io {
         path: PathBuf,

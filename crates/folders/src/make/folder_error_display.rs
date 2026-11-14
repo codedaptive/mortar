@@ -2,6 +2,8 @@
 
 use std::fmt;
 
+use gitio::Oid;
+
 use super::FolderError;
 use crate::record::{FolderKind, FolderRecord};
 
@@ -35,6 +37,24 @@ impl fmt::Display for FolderError {
                  the folder was not made"
             ),
             FolderError::ZoneBranchMissing { branch } => write!(f, "zone branch {branch} does not exist"),
+            FolderError::NotSaved { path } => write!(
+                f,
+                "{} holds work that is not saved; the folder was not moved; next step: mortar save",
+                path.display()
+            ),
+            FolderError::MoveRefused { path, paths } => write!(
+                f,
+                "{} was not moved: local changes are in the way at {}; nothing changed",
+                path.display(),
+                paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")
+            ),
+            FolderError::BranchElsewhere { branch, at, old, new } => write!(
+                f,
+                "branch {branch} is at {}, neither the move's old tip {} nor its new tip {}",
+                at.as_ref().map_or("no commit", Oid::as_str),
+                old.as_str(),
+                new.as_str()
+            ),
             FolderError::Io { path, source } => write!(f, "{}: {source}", path.display()),
         }
     }

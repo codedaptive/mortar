@@ -137,6 +137,19 @@ fn variants_wrapping_nothing_have_no_source() {
         FolderError::ZoneBranchMissing {
             branch: "zone/folders".to_string(),
         },
+        FolderError::NotSaved {
+            path: PathBuf::from("/wt/a"),
+        },
+        FolderError::MoveRefused {
+            path: PathBuf::from("/wt/a"),
+            paths: vec![PathBuf::from("src/a.rs")],
+        },
+        FolderError::BranchElsewhere {
+            branch: "refs/heads/req/a/b".to_string(),
+            at: None,
+            old: Oid::parse("489d82745705a031306253da29bdad7aee19d2e5").unwrap(),
+            new: Oid::parse("1111111111111111111111111111111111111111").unwrap(),
+        },
     ];
     for err in &none {
         assert!(err.source().is_none(), "{err:?} has a source");

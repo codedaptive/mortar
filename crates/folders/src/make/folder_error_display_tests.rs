@@ -171,3 +171,56 @@ fn io_names_the_path_and_the_error() {
     };
     assert_eq!(text(err), "/g/x: disk full");
 }
+
+#[test]
+fn not_saved_names_the_folder_and_the_next_step() {
+    let err = FolderError::NotSaved {
+        path: PathBuf::from("/wt/a"),
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a holds work that is not saved; the folder was not moved; next step: mortar save"
+    );
+}
+
+#[test]
+fn move_refused_names_the_folder_and_every_path_in_the_way() {
+    let err = FolderError::MoveRefused {
+        path: PathBuf::from("/wt/a"),
+        paths: vec![PathBuf::from("src/a.rs"), PathBuf::from("docs/b.md")],
+    };
+    assert_eq!(
+        text(err),
+        "/wt/a was not moved: local changes are in the way at src/a.rs, docs/b.md; nothing changed"
+    );
+}
+
+#[test]
+fn branch_elsewhere_names_where_the_branch_is_and_both_tips() {
+    let err = FolderError::BranchElsewhere {
+        branch: "refs/heads/req/folders/WO-1".to_string(),
+        at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
+        old: Oid::parse("489d82745705a031306253da29bdad7aee19d2e5").unwrap(),
+        new: Oid::parse("1111111111111111111111111111111111111111").unwrap(),
+    };
+    assert_eq!(
+        text(err),
+        "branch refs/heads/req/folders/WO-1 is at 2222222222222222222222222222222222222222, neither the move's old \
+         tip 489d82745705a031306253da29bdad7aee19d2e5 nor its new tip 1111111111111111111111111111111111111111"
+    );
+}
+
+#[test]
+fn branch_elsewhere_with_no_commit_says_so() {
+    let err = FolderError::BranchElsewhere {
+        branch: "refs/heads/req/folders/WO-1".to_string(),
+        at: None,
+        old: Oid::parse("489d82745705a031306253da29bdad7aee19d2e5").unwrap(),
+        new: Oid::parse("1111111111111111111111111111111111111111").unwrap(),
+    };
+    assert_eq!(
+        text(err),
+        "branch refs/heads/req/folders/WO-1 is at no commit, neither the move's old tip \
+         489d82745705a031306253da29bdad7aee19d2e5 nor its new tip 1111111111111111111111111111111111111111"
+    );
+}
