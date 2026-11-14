@@ -5,7 +5,8 @@
 //! decisions and have their tests. The commit's parents are always [HEAD], so there is no parent decision.
 //! Nagatha's integration tests, in a throwaway repository, are TO BE COVERED (none exist yet):
 //! - a save leaves `git status` clean;
-//! - a folder unchanged from HEAD writes no commit and leaves the branch and the index alone;
+//! - a folder unchanged from HEAD writes no commit, leaves the branch alone and sets the index to HEAD's tree;
+//! - a save after IndexNotSet sets the index to HEAD's tree;
 //! - a second save on the request reuses HEAD's change ID;
 //! - a first save on a zone tip draws a new change ID;
 //! - a detached or unborn HEAD is refused with nothing written;
@@ -32,18 +33,20 @@ use std::path::Path;
 /// and environment; every run is in `folder`, which must be the folder's top.
 ///
 /// The snapshot step is the first that writes, and moves the request's snapshot ref as snapshot does (when the
-/// tree differs from the last snapshot), even when save then writes no commit. A tree equal to HEAD's writes no commit: written false,
-/// HEAD as found, change_id None, the branch and the index untouched. Otherwise the branch moves through one op log
-/// entry and the folder's index is set to the saved tree; that step runs with every GIT_INDEX_FILE entry removed
-/// from `git`'s env, so it sets the folder's own index. The folder's files are never touched.
+/// tree differs from the last snapshot), even when save then writes no commit. A tree equal to HEAD's writes no
+/// commit and leaves the branch untouched: written false, HEAD as found, change_id None, and the folder's index set
+/// to HEAD's tree (S-41), so a save after IndexNotSet repairs the index. Otherwise the branch moves through one op
+/// log entry and the folder's index is set to the saved tree. Either index step runs with every GIT_INDEX_FILE
+/// entry removed from `git`'s env, so it sets the folder's own index. The folder's files are never touched.
 ///
 /// Errors: BadSentence before anything is read or written; UnbornHead and DetachedHead before the snapshot runs;
 /// snapshot's own errors; then, after the snapshot step, with no commit written and no branch moved: Trailers when
 /// HEAD's trailers cannot be read, ChangeIdMissing when HEAD is this request's and zone's but has no change ID,
 /// ChangeId when a new ID cannot be drawn; BranchMoved when the branch was not at the HEAD read, and OpRepeated when
 /// the op key was already done (in both the commit was written and the branch did not move); IndexNotSet when the
-/// branch moved but the index could not be set; Git when another git run fails, and Oplog when apply does. The
-/// caller holds the lock and runs oplog::recover (S-25).
+/// index could not be set, after the branch moved (a written save) or with the branch at HEAD (an unchanged one);
+/// Git when another git run fails, and Oplog when apply does. The caller holds the lock and runs oplog::recover
+/// (S-25).
 pub fn save(
     git: &Git,
     folder: &Path,
@@ -57,7 +60,10 @@ pub fn save(
     let (branch, head) = save_head(folder, git.head(folder).map_err(SnapshotError::Git)?)?;
     let snap = snapshot(&git, folder, target, extra_excludes, size_cap)?;
     let info = git.commit_info(&head).map_err(SnapshotError::Git)?;
-    if save_unchanged(&snap.tree, &info.tree) {
+    if let Some(index_tree) = save_unchanged(&snap.tree, &info.tree) {
+        real_index_git(&git)
+            .set_index(folder, &index_tree)
+            .map_err(|error| SnapshotError::IndexNotSet { commit: head.clone(), error })?;
         return Ok(SaveOutcome {
             commit: head,
             tree: snap.tree,
