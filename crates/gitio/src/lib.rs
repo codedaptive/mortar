@@ -41,6 +41,7 @@ mod git_folder_move;
 mod git_git_dir;
 mod git_head;
 mod git_hooks_path;
+mod git_index_tree;
 mod git_is_ancestor;
 mod git_list_refs;
 mod git_ls_remote;
@@ -53,6 +54,7 @@ mod git_push;
 mod git_range_diff;
 mod git_range_diff_ranges;
 mod git_read_ref;
+mod git_remote_push_urls;
 mod git_replay;
 mod git_replay_available;
 mod git_rev_list;
@@ -81,6 +83,9 @@ mod git_write_blob_paths;
 mod head_requests;
 mod hooks_path_request;
 mod index_info_stdin;
+mod index_tree_error;
+mod index_tree_error_display;
+mod index_tree_request;
 mod is_ancestor_request;
 mod list_refs_request;
 mod lossy_args;
@@ -125,6 +130,7 @@ mod read_path_kind;
 mod read_push;
 mod read_ref_list;
 mod read_ref_request;
+mod read_remote_push_urls;
 mod read_replay;
 mod read_replay_probe;
 mod read_rev_parse;
@@ -135,8 +141,10 @@ mod read_symbolic_ref;
 mod read_trailers;
 mod read_tree_entry;
 mod read_tree_entry_record;
+mod read_unmerged_paths;
 mod read_worktree_list;
 mod ref_update;
+mod remote_push_urls_request;
 mod remove_on_drop;
 mod replay_outcome;
 mod replay_request;
@@ -188,6 +196,7 @@ pub use fetch_ref_outcome::FetchRefOutcome;
 pub use folder_move_outcome::FolderMoveOutcome;
 pub use git::Git;
 pub use git_error::GitError;
+pub use index_tree_error::IndexTreeError;
 pub use merge_tree_outcome::MergeTreeOutcome;
 pub use oid::Oid;
 pub use output::Output;
@@ -269,6 +278,12 @@ mod hooks_path_request_tests;
 #[cfg(test)]
 mod index_info_stdin_tests;
 #[cfg(test)]
+mod index_tree_error_display_tests;
+#[cfg(test)]
+mod index_tree_error_tests;
+#[cfg(test)]
+mod index_tree_request_tests;
+#[cfg(test)]
 mod is_ancestor_request_tests;
 #[cfg(test)]
 mod list_refs_request_tests;
@@ -345,6 +360,8 @@ mod read_ref_list_tests;
 #[cfg(test)]
 mod read_ref_request_tests;
 #[cfg(test)]
+mod read_remote_push_urls_tests;
+#[cfg(test)]
 mod read_replay_probe_tests;
 #[cfg(test)]
 mod read_replay_tests;
@@ -365,7 +382,11 @@ mod read_tree_entry_record_tests;
 #[cfg(test)]
 mod read_tree_entry_tests;
 #[cfg(test)]
+mod read_unmerged_paths_tests;
+#[cfg(test)]
 mod read_worktree_list_tests;
+#[cfg(test)]
+mod remote_push_urls_request_tests;
 #[cfg(test)]
 mod replay_request_tests;
 #[cfg(test)]

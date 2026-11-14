@@ -1,7 +1,7 @@
-//! Git::disk_usage_only: the disk bytes a set of refs alone holds. The run itself has no unit test, so Nagatha's
-//! integration tests are to cover: a ref with unique objects counts them; objects shared with another ref are not
-//! counted; a ref HEAD (or a linked worktree's HEAD) points at or contains counts 0; an unknown ref is refused naming
-//! it; an empty list answers 0.
+//! Git::disk_usage_only: the disk bytes a set of refs alone holds. The run itself has no unit test; tests/typed/
+//! disk_usage.rs covers it: a ref with unique objects counts them; objects shared with another ref are not counted;
+//! a ref HEAD (or a linked worktree's HEAD) points at or contains counts 0; an unknown ref is refused naming it; an
+//! empty list answers 0; the S-75 upper bound (objects shared only through older history are counted).
 
 use crate::disk_usage_only_request::disk_usage_only_request;
 use crate::read_disk_usage::read_disk_usage;
