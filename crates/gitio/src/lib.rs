@@ -40,6 +40,7 @@ mod git_replay_available;
 mod git_rev_list;
 mod git_rev_parse;
 mod git_run;
+mod git_set_index;
 mod git_snapshot_tree;
 mod git_sparse_add;
 mod git_sparse_list;
@@ -100,6 +101,7 @@ mod replay_request;
 mod rev_list_request;
 mod rev_parse_request;
 mod run_opts;
+mod set_index_request;
 mod settle;
 mod snapshot_tree_requests;
 mod sparse_add_request;
@@ -261,6 +263,8 @@ mod rev_list_request_tests;
 mod rev_parse_request_tests;
 #[cfg(test)]
 mod run_opts_tests;
+#[cfg(test)]
+mod set_index_request_tests;
 #[cfg(test)]
 mod settle_tests;
 #[cfg(test)]
