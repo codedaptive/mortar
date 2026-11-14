@@ -7,6 +7,7 @@ fn change_id_then_request_then_zone() {
     let target = SnapshotTarget {
         zone: "snapshot".to_string(),
         request: "WO-snapshot-3".to_string(),
+        attempt: None,
         actor: "bilby".to_string(),
     };
     let change_id = ChangeId::parse("kkkkllllmmmmnnnnooooppppqqqqrrrr").unwrap();

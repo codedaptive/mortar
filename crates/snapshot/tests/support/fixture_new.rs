@@ -24,7 +24,7 @@ impl Fixture {
         run(&git, &["commit", "-m", "fixture"]);
         let head = Oid::parse(std::str::from_utf8(&run(&git, &["rev-parse", "HEAD"])).unwrap().trim()).unwrap();
         let common = git.common_dir().unwrap();
-        let target = SnapshotTarget { zone: "snapshot-zone".into(), request: "request-17".into(), actor: "snapshot-caller".into() };
+        let target = SnapshotTarget { zone: "snapshot-zone".into(), request: "request-17".into(), attempt: None, actor: "snapshot-caller".into() };
         let refname = "refs/mortar/snap/snapshot-zone/request-17".into();
         let holder = LockRecord { pid: std::process::id(), host: host_name().unwrap(), key: "snapshot-integration".into(), since: 100 };
         let lock = acquire_lock(&common, &LockName::Join(target.zone.clone()), &holder, &KillPidProbe).unwrap();

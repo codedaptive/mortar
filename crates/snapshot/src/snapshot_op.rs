@@ -1,4 +1,4 @@
-//! snapshot_op: the op log entry that moves a request's snapshot ref.
+//! snapshot_op: the op log entry that moves a snapshot ref.
 
 use gitio::Oid;
 use oplog::{Op, RefMove};

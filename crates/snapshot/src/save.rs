@@ -45,7 +45,7 @@ use std::path::Path;
 /// built-in excludes, `extra_excludes` and `size_cap`; its refused list is passed through. `git` gives the binary
 /// and environment; every run is in `folder`, which must be the folder's top.
 ///
-/// The snapshot step is the first that writes, and moves the request's snapshot ref as snapshot does (when the
+/// The snapshot step is the first that writes, and moves the target's snapshot ref as snapshot does (when the
 /// tree differs from the last snapshot), even when save then writes no commit. A tree equal to HEAD's writes no
 /// commit and leaves the branch untouched: written false, HEAD as found, change_id None, and the folder's index set
 /// to HEAD's tree (S-41), so a save after IndexNotSet repairs the index. Otherwise the branch moves through one op
