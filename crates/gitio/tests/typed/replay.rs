@@ -23,13 +23,13 @@ fn replay_probe_gates_real_clean_conflict_and_error_results_without_ref_moves() 
     let supported = String::from_utf8_lossy(&help).contains("--ref-action");
     assert_eq!(r.git.replay_available().unwrap(), supported);
     if !supported {
-        assert!(r.git.replay(&onto, &base, "refs/heads/topic").is_err());
+        assert!(r.git.replay(&onto, &onto, &base, "refs/heads/topic").is_err());
         let after = r.git.run(&["for-each-ref", "--format=%(refname) %(objectname)"], &RunOpts::default()).unwrap().stdout;
         assert_eq!(after, before, "an unsupported optional replay must not move refs");
         return;
     }
 
-    let updates = match r.git.replay(&onto, &base, "refs/heads/topic").unwrap() {
+    let updates = match r.git.replay(&onto, &onto, &base, "refs/heads/topic").unwrap() {
         ReplayOutcome::Replayed(updates) => updates,
         other => panic!("expected clean replay: {other:?}"),
     };
@@ -45,9 +45,9 @@ fn replay_probe_gates_real_clean_conflict_and_error_results_without_ref_moves() 
 
     let conflict_tree = tree(&r.git, &[("file", b"onto conflict\n")]);
     let conflict = commit(&r.git, &conflict_tree, &[base.clone()], "conflicting upstream\n");
-    assert_eq!(r.git.replay(&conflict, &base, "refs/heads/topic").unwrap(), ReplayOutcome::Conflicted);
+    assert_eq!(r.git.replay(&conflict, &conflict, &base, "refs/heads/topic").unwrap(), ReplayOutcome::Conflicted);
     let missing = Oid::parse(&"0".repeat(40)).unwrap();
-    assert!(r.git.replay(&onto, &missing, "refs/heads/topic").is_err());
+    assert!(r.git.replay(&onto, &onto, &missing, "refs/heads/topic").is_err());
     let after = r.git.run(&["for-each-ref", "--format=%(refname) %(objectname)"], &RunOpts::default()).unwrap().stdout;
     assert_eq!(after, before, "clean/conflicted/failed replay must all leave refs alone");
 }

@@ -7,11 +7,11 @@ use crate::replay_request::replay_request;
 use crate::{Git, GitError, Oid, ReplayOutcome};
 
 impl Git {
-    /// Replays the commits of `base..tip_ref` onto `onto` and returns the ref moves that would finish it (pass them to
-    /// `update_refs`), or Conflicted. `tip_ref` must be a ref name such as `refs/heads/topic`. Writes commits; moves
-    /// no ref.
-    pub fn replay(&self, onto: &Oid, base: &Oid, tip_ref: &str) -> Result<ReplayOutcome, GitError> {
-        let (args, opts) = replay_request(onto, base, tip_ref)?;
+    /// Replays the commits of `base..tip_ref` onto `onto`, reading merge attributes from `attr_source`, and returns the
+    /// ref moves that would finish it (pass them to `update_refs`), or Conflicted. `tip_ref` must be a ref name such as
+    /// `refs/heads/topic`. Writes commits; moves no ref.
+    pub fn replay(&self, attr_source: &Oid, onto: &Oid, base: &Oid, tip_ref: &str) -> Result<ReplayOutcome, GitError> {
+        let (args, opts) = replay_request(attr_source, onto, base, tip_ref)?;
         read_replay(&self.run(&args, &opts)?)
     }
 }
