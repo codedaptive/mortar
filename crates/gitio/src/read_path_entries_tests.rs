@@ -1,5 +1,5 @@
 use crate::read_path_entries::read_path_entries;
-use crate::Oid;
+use crate::{GitError, Oid, TreeWithPathsError, TreeWithPathsRefusal};
 use std::ffi::OsStr;
 use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
@@ -12,18 +12,27 @@ fn entry(mode: &str, hex: &str) -> Option<(String, Oid)> {
     Some((mode.to_string(), Oid::parse(hex).unwrap()))
 }
 
+fn in_from(path: PathBuf) -> TreeWithPathsRefusal {
+    TreeWithPathsRefusal::FolderInFrom { path }
+}
+
+fn in_base(path: PathBuf) -> TreeWithPathsRefusal {
+    TreeWithPathsRefusal::FolderInBase { path }
+}
+
+/// The stderr of a shape refusal, which arrives as Git: a GitError with no exit code and no args.
 fn refused(stdout: &[u8], items: &[&str]) -> String {
-    let err = read_path_entries(stdout, &paths(items)).unwrap_err();
-    assert_eq!(err.code, None);
-    assert!(err.args.is_empty());
-    err.stderr
+    match read_path_entries(stdout, &paths(items), in_from) {
+        Err(TreeWithPathsError::Git(GitError { args, code: None, stderr })) if args.is_empty() => stderr,
+        other => panic!("expected a shape refusal as Git: {other:?}"),
+    }
 }
 
 #[test]
 fn a_captured_blob_is_its_mode_and_id() {
     let stdout = b"100644 blob 5626abf0f72e58d7a153368ba57db4c673c0e171\tf\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["f"])),
+        read_path_entries(stdout, &paths(&["f"]), in_from),
         Ok(vec![entry("100644", "5626abf0f72e58d7a153368ba57db4c673c0e171")])
     );
 }
@@ -32,7 +41,7 @@ fn a_captured_blob_is_its_mode_and_id() {
 fn a_captured_symlink_is_taken() {
     let stdout = b"120000 blob 4d1ae35ba2c8ec712fa2a379db44ad639ca277bd\tlink\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["link"])),
+        read_path_entries(stdout, &paths(&["link"]), in_from),
         Ok(vec![entry("120000", "4d1ae35ba2c8ec712fa2a379db44ad639ca277bd")])
     );
 }
@@ -41,7 +50,7 @@ fn a_captured_symlink_is_taken() {
 fn a_captured_gitlink_is_taken() {
     let stdout = b"160000 commit aaff74984cccd156a469afa7d9ab10e4777beb24\tsub\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["sub"])),
+        read_path_entries(stdout, &paths(&["sub"]), in_from),
         Ok(vec![entry("160000", "aaff74984cccd156a469afa7d9ab10e4777beb24")])
     );
 }
@@ -50,7 +59,7 @@ fn a_captured_gitlink_is_taken() {
 fn a_path_without_a_record_is_none() {
     let stdout = b"100644 blob 5626abf0f72e58d7a153368ba57db4c673c0e171\tf\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["gone", "f"])),
+        read_path_entries(stdout, &paths(&["gone", "f"]), in_from),
         Ok(vec![None, entry("100644", "5626abf0f72e58d7a153368ba57db4c673c0e171")])
     );
 }
@@ -60,7 +69,7 @@ fn items_follow_the_request_order_not_the_output_order() {
     let stdout = b"100644 blob 1111111111111111111111111111111111111111\ta\x00\
                    100755 blob 2222222222222222222222222222222222222222\tb\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["b", "a"])),
+        read_path_entries(stdout, &paths(&["b", "a"]), in_from),
         Ok(vec![
             entry("100755", "2222222222222222222222222222222222222222"),
             entry("100644", "1111111111111111111111111111111111111111"),
@@ -72,7 +81,7 @@ fn items_follow_the_request_order_not_the_output_order() {
 fn a_path_asked_twice_gets_its_record_twice() {
     let stdout = b"100644 blob 1111111111111111111111111111111111111111\ta\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["a", "a"])),
+        read_path_entries(stdout, &paths(&["a", "a"]), in_from),
         Ok(vec![
             entry("100644", "1111111111111111111111111111111111111111"),
             entry("100644", "1111111111111111111111111111111111111111"),
@@ -84,7 +93,7 @@ fn a_path_asked_twice_gets_its_record_twice() {
 fn a_path_holding_a_tab_and_a_newline_is_found() {
     let stdout = b"100644 blob 4bcfe98e640c8284511312660fb8709b0afa888e\tt\tb\nl\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["t\tb\nl"])),
+        read_path_entries(stdout, &paths(&["t\tb\nl"]), in_from),
         Ok(vec![entry("100644", "4bcfe98e640c8284511312660fb8709b0afa888e")])
     );
 }
@@ -93,7 +102,7 @@ fn a_path_holding_a_tab_and_a_newline_is_found() {
 fn a_non_utf8_path_is_found_byte_for_byte() {
     let stdout = b"100644 blob 4bcfe98e640c8284511312660fb8709b0afa888e\tcaf\xe9\x00";
     assert_eq!(
-        read_path_entries(stdout, &[PathBuf::from(OsStr::from_bytes(b"caf\xe9"))]),
+        read_path_entries(stdout, &[PathBuf::from(OsStr::from_bytes(b"caf\xe9"))], in_from),
         Ok(vec![entry("100644", "4bcfe98e640c8284511312660fb8709b0afa888e")])
     );
 }
@@ -102,20 +111,32 @@ fn a_non_utf8_path_is_found_byte_for_byte() {
 fn a_sha256_id_is_taken() {
     let stdout = b"100644 blob 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\tf\x00";
     assert_eq!(
-        read_path_entries(stdout, &paths(&["f"])),
+        read_path_entries(stdout, &paths(&["f"]), in_from),
         Ok(vec![entry("100644", "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef")])
     );
 }
 
 #[test]
 fn empty_output_is_none_for_every_path() {
-    assert_eq!(read_path_entries(b"", &paths(&["a", "b"])), Ok(vec![None, None]));
+    assert_eq!(read_path_entries(b"", &paths(&["a", "b"]), in_from), Ok(vec![None, None]));
 }
 
 #[test]
-fn a_captured_folder_is_refused_naming_the_path() {
+fn a_captured_folder_listed_from_from_is_folder_in_from_naming_the_path() {
     let stdout = b"040000 tree aaff74984cccd156a469afa7d9ab10e4777beb24\tdir\x00";
-    assert_eq!(refused(stdout, &["dir"]), "not a file entry: \"dir\" is a folder");
+    assert_eq!(
+        read_path_entries(stdout, &paths(&["f", "dir"]), in_from),
+        Err(TreeWithPathsError::Refused(TreeWithPathsRefusal::FolderInFrom { path: PathBuf::from("dir") }))
+    );
+}
+
+#[test]
+fn a_captured_folder_listed_from_base_is_folder_in_base_naming_the_path() {
+    let stdout = b"040000 tree aaff74984cccd156a469afa7d9ab10e4777beb24\tdir\x00";
+    assert_eq!(
+        read_path_entries(stdout, &paths(&["dir"]), in_base),
+        Err(TreeWithPathsError::Refused(TreeWithPathsRefusal::FolderInBase { path: PathBuf::from("dir") }))
+    );
 }
 
 #[test]
@@ -179,5 +200,5 @@ fn another_type_is_refused() {
 
 #[test]
 fn a_lone_nul_is_refused() {
-    assert!(read_path_entries(b"\x00", &paths(&["f"])).is_err());
+    assert!(read_path_entries(b"\x00", &paths(&["f"]), in_from).is_err());
 }
