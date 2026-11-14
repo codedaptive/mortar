@@ -1,5 +1,6 @@
-//! Applying an op: the repeat-safe lookup, the ref name check, the intent, the one ref transaction, and its
-//! closing record; and running work under a held lock, logging the lock's guard removals and takeover first.
+//! Applying an op: the repeat-safe lookup, the ref name check, the intent, the one ref transaction run through
+//! the op's git (MORTAR_OP naming the op for the guard hook), and its closing record; and running work under a
+//! held lock, logging the lock's guard removals and takeover first.
 
 mod apply;
 mod apply_outcome;
@@ -10,7 +11,9 @@ mod find_done_record;
 mod guard_removal_op;
 mod guard_removal_ops;
 mod held_lock_error;
+mod mortar_op_env;
 mod new_op_id;
+mod op_git;
 mod op_id_from_parts;
 mod ref_format_verdict;
 mod ref_updates;
@@ -28,6 +31,8 @@ mod guard_removal_op_tests;
 #[cfg(test)]
 mod guard_removal_ops_tests;
 #[cfg(test)]
+mod op_git_tests;
+#[cfg(test)]
 mod op_id_from_parts_tests;
 #[cfg(test)]
 mod ref_format_verdict_tests;
@@ -44,7 +49,9 @@ pub use close_after_update::close_after_update;
 pub use find_done_record::find_done_record;
 pub use guard_removal_op::guard_removal_op;
 pub use held_lock_error::HeldLockError;
+pub use mortar_op_env::MORTAR_OP_ENV;
 pub use new_op_id::new_op_id;
+pub use op_git::op_git;
 pub use op_id_from_parts::op_id_from_parts;
 pub use ref_format_verdict::ref_format_verdict;
 pub use ref_updates::ref_updates;

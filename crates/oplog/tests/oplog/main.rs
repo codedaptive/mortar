@@ -6,6 +6,7 @@ mod support;
 mod apply;
 mod crash;
 mod locks;
+mod open_intent_moves;
 mod protection;
 mod takeover_guards;
 mod with_lock;
