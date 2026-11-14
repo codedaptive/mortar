@@ -1,6 +1,6 @@
 //! closed_snap_refs: a closed request's snapshot and attempt snapshot refs are picked; a request branch or an
-//! attempt branch keeps them open, by exact name; odd-shaped snapshot refs and other refs are ignored; input order
-//! is kept.
+//! attempt branch keeps them open, by exact name; a non-canonical branch under the try prefix does not; odd-shaped
+//! snapshot refs and other refs are ignored; input order is kept.
 
 use gitio::Oid;
 
@@ -63,6 +63,34 @@ fn a_request_branch_keeps_snap_and_trysnap_refs() {
 fn a_try_branch_keeps_snap_and_trysnap_refs() {
     let input = refs(&[(B, "refs/mortar/snap/z/r"), (B, "refs/mortar/trysnap/z/r/1"), (A, "refs/heads/try/z/r/2")]);
     assert_eq!(closed_snap_refs(&input), Vec::<(String, Oid)>::new());
+}
+
+fn picked_beside(branch: &str) -> Vec<(String, Oid)> {
+    closed_snap_refs(&refs(&[(A, branch), (B, "refs/mortar/snap/z/r"), (A, "refs/mortar/trysnap/z/r/1")]))
+}
+
+#[test]
+fn a_try_branch_with_a_leading_zero_does_not_keep_it_open() {
+    assert_eq!(
+        picked_beside("refs/heads/try/z/r/01"),
+        vec![("refs/mortar/snap/z/r".to_string(), oid(B)), ("refs/mortar/trysnap/z/r/1".to_string(), oid(A))]
+    );
+}
+
+#[test]
+fn a_try_branch_numbered_zero_does_not_keep_it_open() {
+    assert_eq!(
+        picked_beside("refs/heads/try/z/r/0"),
+        vec![("refs/mortar/snap/z/r".to_string(), oid(B)), ("refs/mortar/trysnap/z/r/1".to_string(), oid(A))]
+    );
+}
+
+#[test]
+fn a_try_branch_nested_under_an_attempt_does_not_keep_it_open() {
+    assert_eq!(
+        picked_beside("refs/heads/try/z/r/1/x"),
+        vec![("refs/mortar/snap/z/r".to_string(), oid(B)), ("refs/mortar/trysnap/z/r/1".to_string(), oid(A))]
+    );
 }
 
 #[test]

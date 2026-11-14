@@ -15,8 +15,9 @@ use crate::plan::SNAP_REF_PREFIX;
 /// each of `joined`, its branch at its tip, then its snapshot ref (SNAP_REF_PREFIX + `<zone>/<request>` from the
 /// branch name, as closed_snap_refs names it) when `refs` holds it, so both go in the same op (S-52 (1)); then
 /// the accepted extras. A joined leftover's attempt snapshot refs (TRYSNAP_REF_PREFIX) are not in that op:
-/// closed_snap_refs keeps them while `refs` holds the request branch or any `refs/heads/try/<zone>/<request>/`
-/// branch, and picks them in a later sweep_refs once neither remains.
+/// closed_snap_refs keeps them while `refs` holds the request branch or an attempt branch
+/// `refs/heads/try/<zone>/<request>/<k>` (k an attempt number), and picks them in a later sweep_refs once neither
+/// remains.
 pub fn sweep_pick(
     refs: &[(Oid, String)],
     joined: &[Leftover],

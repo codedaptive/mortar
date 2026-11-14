@@ -1,6 +1,7 @@
 //! Making a folder: a zone's standing folder or a request's, under the folders lock, recorded and filled.
 
 mod attach_head;
+mod attempt_refs_left_text;
 mod attach_head_request;
 mod branch_holder;
 mod branch_step;
@@ -31,6 +32,8 @@ mod zone_start_for;
 
 #[cfg(test)]
 mod attach_head_request_tests;
+#[cfg(test)]
+mod attempt_refs_left_text_tests;
 #[cfg(test)]
 mod branch_holder_tests;
 #[cfg(test)]

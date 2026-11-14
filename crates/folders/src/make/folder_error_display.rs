@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 
 use gitio::Oid;
 
+use super::attempt_refs_left_text::attempt_refs_left_text;
 use super::folder_text::folder_text;
 use super::FolderError;
 
@@ -48,9 +49,17 @@ impl fmt::Display for FolderError {
             ),
             FolderError::AttemptsUnsaved { paths } => write!(
                 f,
-                "dropped attempts {} hold work that is not saved; nothing changed; next step: mortar save in each, \
-                 then keep again",
+                "attempts {} are not marked saved; nothing changed; next step: mortar save in each listed folder, \
+                 then run the same command again; a listed branch has no folder to save in: its work is on that \
+                 branch, and the command goes ahead only once the caller passes it as saved",
                 paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")
+            ),
+            FolderError::AttemptsRemain { path, attempts } => write!(
+                f,
+                "{} was not removed: attempts of its request remain: {}; nothing changed; next step: keep one \
+                 attempt or drop them all (drop_attempts)",
+                path.display(),
+                attempts.join(", ")
             ),
             FolderError::RequestMovedOn { branch, attempt } => write!(
                 f,
@@ -101,6 +110,9 @@ impl fmt::Display for FolderError {
                 "ref {refname} moved while it was being deleted (now at {}); nothing was deleted; run again",
                 at.as_ref().map_or("no commit", Oid::as_str)
             ),
+            FolderError::AttemptRefsLeft { moved, at, removed } => {
+                f.write_str(&attempt_refs_left_text(moved, at.as_ref(), removed))
+            }
             FolderError::RemovedRefsLeft { path, branch, moved, at } => write!(
                 f,
                 "{} was removed, but ref {moved} moved (now at {}) before branch {branch} and its snapshot ref were \

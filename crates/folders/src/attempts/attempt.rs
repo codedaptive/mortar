@@ -1,5 +1,5 @@
 //! One attempt a repository holds, as attempts_of reads it.
-//! A bare type; attempts_of_tests and keep_plan_tests exercise it.
+//! A bare type; attempts_of_tests and tests/folders/attempt_plans.rs exercise it.
 
 use std::path::PathBuf;
 

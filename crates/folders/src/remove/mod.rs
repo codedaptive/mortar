@@ -1,5 +1,6 @@
 //! Removing a request folder once its work has joined: its worktree, its branch and its snapshot ref.
 
+mod attempts_refusal;
 mod delete_folder_refs;
 mod remove;
 mod remove_op;

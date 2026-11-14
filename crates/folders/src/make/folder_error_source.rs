@@ -21,6 +21,7 @@ impl std::error::Error for FolderError {
             | FolderError::RequestBranchMissing { .. }
             | FolderError::AttemptMissing { .. }
             | FolderError::AttemptsUnsaved { .. }
+            | FolderError::AttemptsRemain { .. }
             | FolderError::RequestMovedOn { .. }
             | FolderError::AttemptFolder { .. }
             | FolderError::NotSaved { .. }
@@ -30,6 +31,7 @@ impl std::error::Error for FolderError {
             | FolderError::NotJoined { .. }
             | FolderError::ZoneFolder { .. }
             | FolderError::RefMoved { .. }
+            | FolderError::AttemptRefsLeft { .. }
             | FolderError::RemovedRefsLeft { .. }
             | FolderError::ExtraRefRefused { .. } => None,
         }
