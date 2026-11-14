@@ -4,19 +4,27 @@ use crate::{Git, RunOpts};
 use std::ffi::OsString;
 use std::process::Command;
 
-/// Variables git sets for the hooks it runs. Mortar runs inside git hooks, and a child git that inherited them would
-/// act on the hook's repository, index or object store instead of the one passed as `-C`.
-const SCRUBBED: [&str; 6] = [
+/// Variables a child git must not inherit. The first six are set by git for the hooks it runs: Mortar runs inside git
+/// hooks, and a child git that inherited them would act on the hook's repository, index or object store instead of
+/// the one passed as `-C`. The last four set a pathspec mode, which changes how every pathspec gitio sends is read
+/// (under GIT_LITERAL_PATHSPECS an exclude such as `:!target/` stops matching), and git refuses
+/// some pairs of them (GIT_LITERAL_PATHSPECS with GIT_GLOB_PATHSPECS or GIT_ICASE_PATHSPECS; GIT_GLOB_PATHSPECS with
+/// GIT_NOGLOB_PATHSPECS).
+const SCRUBBED: [&str; 10] = [
     "GIT_DIR",
     "GIT_WORK_TREE",
     "GIT_INDEX_FILE",
     "GIT_PREFIX",
     "GIT_OBJECT_DIRECTORY",
     "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+    "GIT_NOGLOB_PATHSPECS",
+    "GIT_LITERAL_PATHSPECS",
+    "GIT_GLOB_PATHSPECS",
+    "GIT_ICASE_PATHSPECS",
 ];
 
-/// `git.program -C <opts.cwd or git.repo> <args>`, run directly with no shell. Environment, later wins: the hook
-/// variables removed; gitio's fixed settings; then `git.env`; then `opts.env`.
+/// `git.program -C <opts.cwd or git.repo> <args>`, run directly with no shell. Environment, later wins: the hook and
+/// pathspec-mode variables removed; gitio's fixed settings; then `git.env`; then `opts.env`.
 pub(crate) fn git_command(git: &Git, args: &[OsString], opts: &RunOpts) -> Command {
     let mut command = Command::new(&git.program);
     command
