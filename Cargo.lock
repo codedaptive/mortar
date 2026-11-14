@@ -82,8 +82,11 @@ dependencies = [
 name = "land"
 version = "0.1.0"
 dependencies = [
+ "gitio",
  "join",
+ "oplog",
  "snapshot",
+ "testkit",
 ]
 
 [[package]]
