@@ -34,9 +34,19 @@ mod peek_exit_call;
 mod previous_snapshot;
 mod read_capped;
 mod read_previous_snapshot;
+mod real_index_git;
 mod refused_file;
 mod run_formatter;
 mod run_formatter_child;
+mod save;
+mod save_change_id;
+mod save_from_apply;
+mod save_head;
+mod save_message;
+mod save_op;
+mod save_outcome;
+mod save_trailers;
+mod save_unchanged;
 mod snapshot;
 mod snapshot_decision;
 mod snapshot_error;
@@ -57,6 +67,8 @@ pub use formatter_result::FormatterResult;
 pub use formatter_run::FormatterRun;
 pub use is_saved::is_saved;
 pub use refused_file::RefusedFile;
+pub use save::save;
+pub use save_outcome::SaveOutcome;
 pub use snapshot::snapshot;
 pub use snapshot_error::SnapshotError;
 pub use snapshot_formatted::snapshot_formatted;
@@ -99,6 +111,22 @@ mod literal_exclude_tests;
 mod peek_exit_call_tests;
 #[cfg(test)]
 mod read_capped_tests;
+#[cfg(test)]
+mod real_index_git_tests;
+#[cfg(test)]
+mod save_change_id_tests;
+#[cfg(test)]
+mod save_from_apply_tests;
+#[cfg(test)]
+mod save_head_tests;
+#[cfg(test)]
+mod save_message_tests;
+#[cfg(test)]
+mod save_op_tests;
+#[cfg(test)]
+mod save_trailers_tests;
+#[cfg(test)]
+mod save_unchanged_tests;
 #[cfg(test)]
 mod snapshot_excludes_tests;
 #[cfg(test)]
