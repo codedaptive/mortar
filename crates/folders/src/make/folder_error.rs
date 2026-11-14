@@ -1,6 +1,7 @@
 //! Every way making a folder, making attempt folders with make_attempts, keeping one with keep, dropping them with
-//! drop_attempts, widening one with need, moving one with move_folder, removing one with remove, or measuring or
-//! sweeping with disk, sweep_build or sweep_refs can be refused.
+//! drop_attempts, remaking orphan attempt folders with remake_orphans, widening one with need, moving one with
+//! move_folder, removing one with remove, or measuring or sweeping with disk, sweep_build or sweep_refs can be
+//! refused.
 //! A bare type; folder_error_display_tests exercises each variant's text, folder_error_source_tests its source.
 
 use std::path::PathBuf;
@@ -11,8 +12,9 @@ use oplog::{LockError, OplogError};
 use crate::plan::{BelowFloor, PlanError};
 use crate::record::{FolderRecord, RecordError};
 
-/// A refusal from make_zone_folder, make_request_folder, make_attempts, keep, drop_attempts, need, move_folder,
-/// remove, disk, sweep_build or sweep_refs. Debug only: io::Error, OplogError and LockError are neither Clone nor Eq.
+/// A refusal from make_zone_folder, make_request_folder, make_attempts, keep, drop_attempts, remake_orphans, need,
+/// move_folder, remove, disk, sweep_build or sweep_refs. Debug only: io::Error, OplogError and LockError are neither
+/// Clone nor Eq.
 #[derive(Debug)]
 pub enum FolderError {
     /// A zone or request name, a sparse path, or an attempt count of 0, the plan refused.
@@ -51,6 +53,13 @@ pub enum FolderError {
     /// remove refused the request folder at `path`: attempt branches (full names) or attempt folders (paths, as
     /// display text) of its request remain (S-82); nothing changed.
     AttemptsRemain { path: PathBuf, attempts: Vec<String> },
+    /// keep or drop_attempts refused: the attempt folders at `paths` have lost their try branch (orphans); nothing
+    /// was touched; next step: remake_orphans, which the cli runs (S-96).
+    OrphanAttempt { paths: Vec<PathBuf> },
+    /// remake_orphans refused: the orphan attempt folders at `paths` have no trysnap ref, or its commit has no
+    /// parent, so Mortar holds no copy of them; nothing changed; next step: copy out anything wanted, then remove
+    /// each folder by hand.
+    OrphanWithoutSnapshot { paths: Vec<PathBuf> },
     /// keep refused: request branch `branch` has commits the kept attempt's branch `attempt` does not hold, so
     /// moving it would drop them; nothing was touched.
     RequestMovedOn { branch: String, attempt: String },

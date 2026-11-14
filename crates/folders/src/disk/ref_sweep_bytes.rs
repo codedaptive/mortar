@@ -1,13 +1,14 @@
 //! How many refs sweep_refs would delete now, and the bytes only they hold, for the disk report's sweep figure.
 //! No unit test: it runs git (S-5); the whole choice of refs is sweep's own: joined_leftovers picks the contained
-//! branches and sweep_pick the refs, covered by joined_leftovers_tests, sweep_pick_tests, leftover_branches_tests,
-//! closed_snap_refs_tests and extra_ref_verdict_tests. Nagatha's integration group is to cover, in a throwaway
-//! repository: a closed request's snapshot ref with objects of its own counts them, an open request's does not; a
-//! closed request's attempt snapshot ref (refs/mortar/trysnap/<zone>/<request>/<k>) is counted, an open request's is
-//! not; a joined req/ branch with no worktree and its snapshot ref are counted; a req/ branch not contained in its
-//! zone, and one checked out in a worktree, are not counted; an accepted extra ref is counted, an absent one skipped,
-//! a refs/heads/ or protected one refused with ExtraRefRefused; nothing to sweep gives (0, 0); the count matches the
-//! refs sweep_refs then deletes on the same repository.
+//! branches and sweep_pick the refs, covered by joined_leftovers_tests, sweep_pick_tests, leftover_branches_tests and
+//! extra_ref_verdict_tests, and by the closed_snap_refs cases in tests/folders/attempt_plans.rs. The folders zone's
+//! integration cases are not yet written; they are to cover, in a throwaway repository: a closed request's snapshot
+//! ref with objects of its own counts them, an open request's does not; a closed request's attempt snapshot ref
+//! (refs/mortar/trysnap/<zone>/<request>/<k>) is counted, an open request's is not; a joined req/ branch with no
+//! worktree and its snapshot ref are counted; a req/ branch not contained in its zone, and one checked out in a
+//! worktree, are not counted; an accepted extra ref is counted, an absent one skipped, a refs/heads/ or protected one
+//! refused with ExtraRefRefused; nothing to sweep gives (0, 0); the count matches the refs sweep_refs then deletes on
+//! the same repository.
 
 use gitio::{Git, Oid};
 use oplog::ProtectedRef;

@@ -5,11 +5,9 @@
 //! Nagatha's integration group is to cover, in a throwaway repository: a moved folder over unsaved work is refused;
 //! after join's rebase (the branch already at the new tip) the folder's files and index move and no op is logged;
 //! with the branch at the old tip, one folder-move op moves it; a local change in the way refuses with nothing logged
-//! and the branch unmoved. With an index tree t: after a resolve, the index and files reach the new tip, edits
-//! outside the resolved paths are kept, and no op is logged with the branch already at the new tip; a repeat after a
-//! completed move finishes with no refusal (the plain move is a no-op); a run killed between setting the index to t
-//! and the move (index at t) finishes once on repeat; a local edit on a path the zone changed is MoveRefused naming
-//! the paths, with the index at t, the branch unmoved and the edit kept.
+//! and the branch unmoved. The index-tree cases (after a resolve, a repeat after a completed move, a run killed
+//! between setting the index and the move, a local edit on a zone-changed path) are covered by the ZITs in
+//! crates/folders/tests/folders/index_tree_moves.rs.
 
 use std::path::Path;
 

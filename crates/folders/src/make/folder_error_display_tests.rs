@@ -434,7 +434,7 @@ fn attempt_missing_names_the_branch_and_what_keep_leaves() {
     assert_eq!(
         text(err),
         "no attempt branch try/folders/WO-1/3; nothing changed; if keep already ran, the request branch holds the \
-         kept attempt"
+         kept attempt; an attempt whose folder lost its branch cannot be kept: keep another attempt or drop them all"
     );
 }
 
@@ -446,8 +446,8 @@ fn attempts_unsaved_names_every_folder_and_the_next_step() {
     assert_eq!(
         text(err),
         "attempts /wt/try-1, refs/heads/try/z/r/3 are not marked saved; nothing changed; next step: mortar save in \
-         each listed folder, then run the same command again; a listed branch has no folder to save in: its work is \
-         on that branch, and the command goes ahead only once the caller passes it as saved"
+         each listed folder, then run the same command again; for a listed branch with no folder, make the attempt \
+         folder again on its try branch and mortar save there, then run the same command again"
     );
 }
 
@@ -460,7 +460,33 @@ fn attempts_remain_names_the_folder_every_attempt_and_the_next_step() {
     assert_eq!(
         text(err),
         "/wt/WO-1 was not removed: attempts of its request remain: refs/heads/try/z/r/1, /wt/try-2; nothing \
-         changed; next step: keep one attempt or drop them all (drop_attempts)"
+         changed; next step: keep one attempt or drop them all (drop_attempts); for an attempt folder that lost its \
+         branch, remake_orphans first (mortar runs it), and with no snapshot of it, copy out anything wanted and \
+         remove it by hand"
+    );
+}
+
+#[test]
+fn orphan_attempt_names_every_folder_and_remake_orphans() {
+    let err = FolderError::OrphanAttempt {
+        paths: vec![PathBuf::from("/wt/try-1"), PathBuf::from("/wt/try-2")],
+    };
+    assert_eq!(
+        text(err),
+        "attempt folders /wt/try-1, /wt/try-2 have lost their try branch; nothing changed; next step: remake_orphans \
+         (mortar runs it before keep and drop), then run the same command again"
+    );
+}
+
+#[test]
+fn orphan_without_snapshot_names_every_folder_and_removal_by_hand() {
+    let err = FolderError::OrphanWithoutSnapshot {
+        paths: vec![PathBuf::from("/wt/try-1"), PathBuf::from("/wt/try-2")],
+    };
+    assert_eq!(
+        text(err),
+        "attempt folders /wt/try-1, /wt/try-2 have lost their try branch and have no snapshot, so Mortar holds no \
+         copy of them; nothing changed; next step: copy out anything wanted, then remove each folder by hand"
     );
 }
 

@@ -208,6 +208,8 @@ fn move_folder_crash_worker() {
     let path = |name| PathBuf::from(std::env::var_os(name).unwrap());
     let mut git = Git::new(path("MORTAR_TEST_MOVE_REPO"));
     git.program = path("MORTAR_TEST_MOVE_PROGRAM");
+    git.env.push(("GIT_CONFIG_NOSYSTEM".into(), "1".into()));
+    git.env.push(("GIT_CONFIG_GLOBAL".into(), "/dev/null".into()));
     git.env.push(("MORTAR_TEST_WORKER_PID".into(), std::process::id().to_string().into()));
     let old = Oid::parse(&std::env::var("MORTAR_TEST_MOVE_OLD").unwrap()).unwrap();
     let new = Oid::parse(&std::env::var("MORTAR_TEST_MOVE_NEW").unwrap()).unwrap();

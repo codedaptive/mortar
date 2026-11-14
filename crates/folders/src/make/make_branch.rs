@@ -7,25 +7,23 @@
 
 use std::path::Path;
 
-use gitio::Oid;
+use gitio::{Git, Oid};
 use oplog::{apply, new_op_id, unix_now, ApplyOutcome};
 
 use super::branch_step_after::branch_step_after;
-use super::{BranchStep, FolderError, FolderSetup};
+use super::{BranchStep, FolderError};
 use crate::plan::branch_op;
 
-/// Makes `branch` at `tip` through the op log, as branch_step_after decides from the outcome. A repeat is
-/// answered from the log alone, so only then is the branch read. A branch deleted after it was made is made
-/// again by an op whose key ends in its own op id, so the log does not answer it as a repeat; anything but
-/// Done for that op is BranchExists. The caller runs oplog::recover first, as apply requires.
-pub(crate) fn make_branch(setup: &FolderSetup, common: &Path, branch: &str, tip: &Oid) -> Result<(), FolderError> {
-    let op = branch_op(new_op_id(), setup.actor.clone(), unix_now(), branch, tip);
-    let outcome = apply(setup.git, common, &op).map_err(FolderError::Oplog)?;
+/// Makes `branch` at `tip` in `git`'s repository through the op log, each op logged under `actor`, as
+/// branch_step_after decides from the outcome. A repeat is answered from the log alone, so only then is the branch
+/// read. A branch deleted after it was made is made again by an op whose key ends in its own op id, so the log does
+/// not answer it as a repeat; anything but Done for that op is BranchExists. The caller runs oplog::recover first,
+/// as apply requires.
+pub(crate) fn make_branch(git: &Git, actor: &str, common: &Path, branch: &str, tip: &Oid) -> Result<(), FolderError> {
+    let op = branch_op(new_op_id(), actor.to_string(), unix_now(), branch, tip);
+    let outcome = apply(git, common, &op).map_err(FolderError::Oplog)?;
     let ref_now = match outcome {
-        ApplyOutcome::Repeated(_) => setup
-            .git
-            .read_ref(&format!("refs/heads/{branch}"))
-            .map_err(FolderError::Git)?,
+        ApplyOutcome::Repeated(_) => git.read_ref(&format!("refs/heads/{branch}")).map_err(FolderError::Git)?,
         ApplyOutcome::Done(_) | ApplyOutcome::Failed(_) => None,
     };
     let exists = || FolderError::BranchExists {
@@ -35,9 +33,9 @@ pub(crate) fn make_branch(setup: &FolderSetup, common: &Path, branch: &str, tip:
         BranchStep::Ready => Ok(()),
         BranchStep::Exists => Err(exists()),
         BranchStep::Remake => {
-            let mut again = branch_op(new_op_id(), setup.actor.clone(), unix_now(), branch, tip);
+            let mut again = branch_op(new_op_id(), actor.to_string(), unix_now(), branch, tip);
             again.key = format!("{}:{}", again.key, again.op_id);
-            match apply(setup.git, common, &again).map_err(FolderError::Oplog)? {
+            match apply(git, common, &again).map_err(FolderError::Oplog)? {
                 ApplyOutcome::Done(_) => Ok(()),
                 ApplyOutcome::Repeated(_) | ApplyOutcome::Failed(_) => Err(exists()),
             }

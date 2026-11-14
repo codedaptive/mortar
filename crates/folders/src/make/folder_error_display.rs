@@ -6,7 +6,9 @@ use std::path::{Path, PathBuf};
 use gitio::Oid;
 
 use super::attempt_refs_left_text::attempt_refs_left_text;
+use super::attempts_remain_text::attempts_remain_text;
 use super::folder_text::folder_text;
+use super::orphan_error_text::orphan_error_text;
 use super::FolderError;
 
 impl fmt::Display for FolderError {
@@ -45,22 +47,19 @@ impl fmt::Display for FolderError {
             FolderError::AttemptMissing { branch } => write!(
                 f,
                 "no attempt branch {branch}; nothing changed; if keep already ran, the request branch holds the kept \
-                 attempt"
+                 attempt; an attempt whose folder lost its branch cannot be kept: keep another attempt or drop them \
+                 all"
             ),
             FolderError::AttemptsUnsaved { paths } => write!(
                 f,
                 "attempts {} are not marked saved; nothing changed; next step: mortar save in each listed folder, \
-                 then run the same command again; a listed branch has no folder to save in: its work is on that \
-                 branch, and the command goes ahead only once the caller passes it as saved",
+                 then run the same command again; for a listed branch with no folder, make the attempt folder again \
+                 on its try branch and mortar save there, then run the same command again",
                 paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")
             ),
-            FolderError::AttemptsRemain { path, attempts } => write!(
-                f,
-                "{} was not removed: attempts of its request remain: {}; nothing changed; next step: keep one \
-                 attempt or drop them all (drop_attempts)",
-                path.display(),
-                attempts.join(", ")
-            ),
+            FolderError::AttemptsRemain { path, attempts } => f.write_str(&attempts_remain_text(path, attempts)),
+            FolderError::OrphanAttempt { paths } => f.write_str(&orphan_error_text(paths, false)),
+            FolderError::OrphanWithoutSnapshot { paths } => f.write_str(&orphan_error_text(paths, true)),
             FolderError::RequestMovedOn { branch, attempt } => write!(
                 f,
                 "request branch {branch} has commits attempt branch {attempt} does not hold; keeping {attempt} would \

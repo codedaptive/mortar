@@ -22,6 +22,8 @@ impl std::error::Error for FolderError {
             | FolderError::AttemptMissing { .. }
             | FolderError::AttemptsUnsaved { .. }
             | FolderError::AttemptsRemain { .. }
+            | FolderError::OrphanAttempt { .. }
+            | FolderError::OrphanWithoutSnapshot { .. }
             | FolderError::RequestMovedOn { .. }
             | FolderError::AttemptFolder { .. }
             | FolderError::NotSaved { .. }

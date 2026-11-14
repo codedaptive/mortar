@@ -213,6 +213,12 @@ fn attempt_variants_have_no_source() {
             at: None,
             removed: vec![PathBuf::from("/wt/try-1")],
         },
+        FolderError::OrphanAttempt {
+            paths: vec![PathBuf::from("/wt/try-1")],
+        },
+        FolderError::OrphanWithoutSnapshot {
+            paths: vec![PathBuf::from("/wt/try-2")],
+        },
     ];
     for err in &none {
         assert!(source_text(err).is_none(), "{err:?} has a source");

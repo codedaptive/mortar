@@ -2,13 +2,16 @@
 //! included), joined leftover request branches with their snapshot refs (S-52 (1)), and the caller's extra refs
 //! (S-53, S-54).
 //! No unit test: it runs git and appends to the op log (S-5); leftover_branches_tests, joined_leftovers_tests,
-//! extra_ref_verdict_tests, sweep_pick_tests and closed_snap_refs_tests cover the choice, and sweep_refs_op_tests the
-//! op as data. Nagatha's integration group is to cover, in a throwaway repository: a closed request's snapshot ref and
-//! its attempts' trysnap refs are deleted and an open request's are kept; a joined req/ branch with no worktree is
-//! deleted with its snapshot ref in one folder-sweep-refs op in mortar/oplog.jsonl; a joined branch with a worktree,
-//! and one not joined, are kept; a caller's extra ref is deleted, an absent one skipped, and a refs/heads/ or
-//! protected one refused with nothing deleted; maintenance runs, also when there is nothing to sweep and no op is
-//! logged; a ref moved between its read and the op gives RefMoved with nothing deleted.
+//! extra_ref_verdict_tests, sweep_pick_tests and tests/folders/attempt_plans.rs (closed_snap_refs) cover the choice,
+//! and sweep_refs_op_tests the op as data. tests/folders/attempts_sweep.rs covers, in a throwaway repository: a
+//! closed request's attempts' trysnap refs are deleted with its snapshot ref in one folder-sweep-refs op, and an open
+//! request's (its request branch or an attempt branch present) are kept; the trysnap refs drop_attempts and remove
+//! leave are deleted; with only a hand-made `try/<zone>/<request>/01` ref left, which is not an attempt, the snapshot
+//! and trysnap refs are deleted and that ref is untouched. tests/folders/sweeps.rs covers: a joined req/ branch with
+//! no worktree is deleted with its snapshot ref in one folder-sweep-refs op in mortar/oplog.jsonl; a joined branch
+//! with a worktree, and one not joined, are kept; a caller's extra ref is deleted, an absent one skipped, and a
+//! refs/heads/ or protected one refused with nothing deleted; maintenance runs, also when there is nothing to sweep
+//! and no op is logged; a ref moved between its read and the op gives RefMoved with nothing deleted.
 
 use gitio::Git;
 use oplog::{apply_protected, new_op_id, unix_now, ApplyOutcome, ProtectedRef};
