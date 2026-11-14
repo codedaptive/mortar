@@ -6,7 +6,7 @@
 pub enum OpPhase {
     /// Written before the ref transaction, with every planned move.
     Intent,
-    /// The refs moved.
+    /// The refs the op changes are at their new values.
     Done,
     /// The refs did not move.
     Failed,

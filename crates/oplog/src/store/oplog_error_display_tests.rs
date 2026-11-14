@@ -27,11 +27,11 @@ fn malformed_line_names_the_line_and_says_repair() {
 fn malformed_without_line_names_the_reason_and_says_check() {
     let err = OplogError::Malformed {
         line: None,
-        reason: "git rev-parse printed \"HEAD\", which is not a git object id".to_string(),
+        reason: "the record stops before its JSON is complete".to_string(),
     };
     assert_eq!(
         err.to_string(),
-        "malformed op data: git rev-parse printed \"HEAD\", which is not a git object id; \
+        "malformed op data: the record stops before its JSON is complete; \
          mortar did not write this text, so check what did"
     );
 }
