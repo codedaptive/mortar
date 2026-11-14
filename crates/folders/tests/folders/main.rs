@@ -8,3 +8,7 @@ mod need;
 mod guards;
 mod move_support;
 mod moves;
+mod maintenance_support;
+mod removal;
+mod sweeps;
+mod disk_cases;

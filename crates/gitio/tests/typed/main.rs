@@ -10,5 +10,6 @@ mod replay;
 mod replay_attributes;
 mod snapshot;
 mod set_index;
+mod tree_with_paths;
 mod trailers;
 mod worktrees;

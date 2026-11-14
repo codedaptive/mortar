@@ -1,0 +1,65 @@
+//! op_key: --key wins; else a fixed key for fixed inputs (FNV-1a over the NUL-ended fields, worked out by hand
+//! outside this code), the same on a repeat, and different when any one input changes.
+
+use std::path::Path;
+
+use gitio::Oid;
+use oplog::RefMove;
+
+use super::op_key;
+
+fn oid(c: char) -> Oid {
+    Oid::parse(&c.to_string().repeat(40)).expect("a valid oid")
+}
+
+fn zone_move(old: Option<char>, new: char) -> RefMove {
+    RefMove { refname: "refs/heads/zone/orc".to_string(), old: old.map(oid), new: oid(new) }
+}
+
+fn key(verb: &str, folder: &str, moves: &[RefMove]) -> String {
+    op_key(None, verb, Path::new(folder), moves)
+}
+
+#[test]
+fn fixed_inputs_give_a_fixed_key() {
+    assert_eq!(key("join", "/r/orc/WO-1", &[zone_move(Some('a'), 'b')]), "join-b6e3b2e84e6b3330");
+}
+
+#[test]
+fn an_absent_old_value_hashes_as_none() {
+    assert_eq!(key("join", "/r/orc/WO-1", &[zone_move(None, 'b')]), "join-4334624423f4d96a");
+}
+
+#[test]
+fn no_moves_hash_the_verb_and_folder() {
+    assert_eq!(key("init", "/r", &[]), "init-9ced48734e320c20");
+}
+
+#[test]
+fn a_repeat_gives_the_same_key() {
+    let moves = [zone_move(Some('a'), 'b'), zone_move(None, 'c')];
+    assert_eq!(key("land", "/r/x", &moves), key("land", "/r/x", &moves));
+}
+
+#[test]
+fn changing_any_one_input_changes_the_key() {
+    let base = key("join", "/r/orc/WO-1", &[zone_move(Some('a'), 'b')]);
+    let other_ref = RefMove { refname: "refs/heads/zone/orb".to_string(), old: Some(oid('a')), new: oid('b') };
+    let changed = [
+        key("land", "/r/orc/WO-1", &[zone_move(Some('a'), 'b')]),
+        key("join", "/r/orc/WO-2", &[zone_move(Some('a'), 'b')]),
+        key("join", "/r/orc/WO-1", &[other_ref]),
+        key("join", "/r/orc/WO-1", &[zone_move(Some('c'), 'b')]),
+        key("join", "/r/orc/WO-1", &[zone_move(None, 'b')]),
+        key("join", "/r/orc/WO-1", &[zone_move(Some('a'), 'c')]),
+        key("join", "/r/orc/WO-1", &[]),
+    ];
+    for other in changed {
+        assert_ne!(other, base);
+    }
+}
+
+#[test]
+fn the_flag_wins() {
+    assert_eq!(op_key(Some("harness-7"), "join", Path::new("/r"), &[zone_move(None, 'b')]), "harness-7");
+}
