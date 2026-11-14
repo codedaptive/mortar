@@ -1,6 +1,6 @@
 //! save_error_report: the report of a save that did not happen, one arm per SnapshotError (S-71).
-//! SnapshotError has no Display, so each text is written here; the inner git, op log, trailer and change ID errors
-//! are shown through their own Display.
+//! The cli writes its own text per arm, for its own exit, owner and next (S-71); the inner git, op log, trailer and
+//! change ID errors are shown through their own Display.
 
 use oplog::{OpRecord, OpResult};
 use snapshot::SnapshotError;

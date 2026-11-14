@@ -13,6 +13,8 @@ fn repositories_are_initialized_independently_and_removed_on_drop_or_close() {
     assert_ne!(first.path, second.path);
     assert_eq!(fs::read(first.path.join(".git/HEAD")).unwrap(), b"ref: refs/heads/main\n");
     let output = Command::new("git").arg("-C").arg(&first.path)
+        .env("GIT_CONFIG_GLOBAL", "/dev/null")
+        .env("GIT_CONFIG_NOSYSTEM", "1")
         .args(["rev-parse", "--show-toplevel"]).output().unwrap();
     assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
     assert_eq!(std::path::Path::new(String::from_utf8(output.stdout).unwrap().trim_end()), first.path.canonicalize().unwrap());
@@ -46,6 +48,8 @@ fn executable_shim_delegates_arguments_to_real_git_in_the_owned_repository() {
     write_git_shim(&shim, b"#!/bin/sh\nexec git \"$@\"\n").unwrap();
     assert_eq!(fs::metadata(&shim).unwrap().permissions().mode() & 0o777, 0o700);
     let output = Command::new(&shim).arg("-C").arg(&repo.path)
+        .env("GIT_CONFIG_GLOBAL", "/dev/null")
+        .env("GIT_CONFIG_NOSYSTEM", "1")
         .args(["rev-parse", "--show-toplevel"]).output().unwrap();
     assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
     assert_eq!(std::path::Path::new(String::from_utf8(output.stdout).unwrap().trim_end()), repo.path.canonicalize().unwrap());
