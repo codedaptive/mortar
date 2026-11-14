@@ -1,8 +1,8 @@
 //! paused_join: the join paused in a folder, if any, read from its mortar-join.json (S-84).
 //! No unit test: it reads a real file (S-79); the JoinState -> PausedJoin step is a field copy with no decision.
 //! The no-state, valid-state, corrupt and unreadable cases are ZITs in crates/join/tests/paused_join.rs (WO-join-6z).
-//! Nagatha's integration test is to cover, in a throwaway repository (crosses into gitio; S-84): after a real join
-//! that stopped on a conflict, paused_join answers that state's commit and this round's conflicted files.
+//! A real join stopped on a conflict is covered by the ZIT a_join_paused_on_a_conflict_is_answered_by_paused_join in
+//! crates/join/tests/real_join.rs.
 
 use crate::join_state_path::join_state_path;
 use crate::read_join_state::read_join_state;
