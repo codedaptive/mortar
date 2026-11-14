@@ -10,8 +10,9 @@ use gitio::Oid;
 /// Finish (the op moved it; only the state is left); the request ref anywhere but the state's request tip -> Stale;
 /// a saved `rebased_to` -> Rebase from the request tip to it; files not yet written -> WriteFiles with the state's
 /// tree and files; any file with marker lines -> StillMarked with only those, in order; else Continue with the
-/// caller's `tree`. `read_marked` is called only when the rules reach the marker check, so a file that cannot be read
-/// never stands in the way of an earlier step; its error is returned as it is.
+/// caller's `tree`. Finish and Rebase carry the state's saved `folder_tree` (S-87). `read_marked` is called only when
+/// the rules reach the marker check, so a file that cannot be read never stands in the way of an earlier step; its
+/// error is returned as it is.
 pub(crate) fn decide_resolve<E>(
     state: Option<&JoinState>,
     request_now: Option<&Oid>,
@@ -23,13 +24,13 @@ pub(crate) fn decide_resolve<E>(
     };
     let from = state.request_tip.clone();
     if let Some(to) = state.rebased_to.as_ref().filter(|to| request_now == Some(*to)) {
-        return Ok(ResolveStep::Finish { from, to: to.clone() });
+        return Ok(ResolveStep::Finish { from, to: to.clone(), folder_tree: state.folder_tree.clone() });
     }
     if request_now != Some(&state.request_tip) {
         return Ok(ResolveStep::Stale { expected: from, actual: request_now.cloned() });
     }
     if let Some(to) = &state.rebased_to {
-        return Ok(ResolveStep::Rebase { from, to: to.clone() });
+        return Ok(ResolveStep::Rebase { from, to: to.clone(), folder_tree: state.folder_tree.clone() });
     }
     if !state.files_written {
         return Ok(ResolveStep::WriteFiles { tree: state.tree.clone(), files: state.files.clone() });

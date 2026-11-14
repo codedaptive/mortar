@@ -1,5 +1,6 @@
 //! decode_join_state: reads the text of mortar-join.json back into a JoinState. decode_join_state_tests covers a
-//! hand-written text, an escape encode_join_state never writes, and each refusal.
+//! hand-written text, an escape encode_join_state never writes, and each refusal, a text missing all_files or
+//! folder_tree included.
 //! Why a strict reader of one layout, not a general JSON parser: only encode_join_state writes this file, so text
 //! in any other layout is not a state join wrote, and resolve must not act on it. Strings are read by oplog's
 //! parse_json_string, which takes every JSON escape.
@@ -9,7 +10,7 @@ use gitio::Oid;
 use oplog::{parse_json_string, JsonError};
 use std::path::PathBuf;
 
-/// Reads exactly the layout encode_join_state writes: one JSON object with no whitespace, its 10 keys in
+/// Reads exactly the layout encode_join_state writes: one JSON object with no whitespace, its 12 keys in
 /// encode_join_state's order, and at most one trailing newline. Strings may hold any JSON escape; ids must be valid
 /// object ids. Anything else is refused with the reason and the byte it was found at.
 pub(crate) fn decode_join_state(text: &str) -> Result<JoinState, String> {
@@ -22,8 +23,10 @@ pub(crate) fn decode_join_state(text: &str) -> Result<JoinState, String> {
     let (tree, at) = id(body, key(body, at, "tree")?)?;
     let (remaining, at) = array(body, key(body, at, "remaining")?, id)?;
     let (files, at) = array(body, key(body, at, "files")?, path)?;
+    let (all_files, at) = array(body, key(body, at, "all_files")?, path)?;
     let (files_written, at) = flag(body, key(body, at, "files_written")?)?;
     let (rebased_to, at) = optional_id(body, key(body, at, "rebased_to")?)?;
+    let (folder_tree, at) = optional_id(body, key(body, at, "folder_tree")?)?;
     if body.get(at..) != Some("}") {
         return Err(format!("expected the closing brace and the end of the text at byte {at}"));
     }
@@ -36,8 +39,10 @@ pub(crate) fn decode_join_state(text: &str) -> Result<JoinState, String> {
         tree,
         remaining,
         files,
+        all_files,
         files_written,
         rebased_to,
+        folder_tree,
     })
 }
 

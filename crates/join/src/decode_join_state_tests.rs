@@ -1,6 +1,7 @@
-//! decode_join_state: a hand-written text read into the expected state; JSON escapes encode_join_state never writes
-//! read as JSON; an unreadable string refused saying why; and refusal of keys out of order, a missing key, a bad id
-//! or flag, trailing junk, spaces, bad arrays, empty text.
+//! decode_join_state: a hand-written text read into the expected state, all_files differing from files and a
+//! folder tree included; JSON escapes encode_join_state never writes read as JSON; an unreadable string refused saying
+//! why; and refusal of keys out of order, a missing key (all_files and folder_tree included), a bad id or flag,
+//! trailing junk, spaces, bad arrays, empty text.
 
 use crate::decode_join_state::decode_join_state;
 use crate::join_state::JoinState;
@@ -11,8 +12,16 @@ fn oid(hex: &str) -> Oid {
     Oid::parse(hex).unwrap()
 }
 
-/// A valid text with the given remaining, files, files_written and rebased_to values, as raw JSON.
-fn text(remaining: &str, files: &str, files_written: &str, rebased_to: &str) -> String {
+/// A valid text with the given remaining, files, all_files, files_written, rebased_to and folder_tree values, as raw
+/// JSON.
+fn full_text(
+    remaining: &str,
+    files: &str,
+    all_files: &str,
+    files_written: &str,
+    rebased_to: &str,
+    folder_tree: &str,
+) -> String {
     format!(
         "{{\"request_ref\":\"refs/heads/request/r1\",\
          \"request_tip\":\"1111111111111111111111111111111111111111\",\
@@ -20,8 +29,14 @@ fn text(remaining: &str, files: &str, files_written: &str, rebased_to: &str) -> 
          \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
          \"commit\":\"4444444444444444444444444444444444444444\",\
          \"tree\":\"5555555555555555555555555555555555555555\",\
-         \"remaining\":{remaining},\"files\":{files},\"files_written\":{files_written},\"rebased_to\":{rebased_to}}}\n"
+         \"remaining\":{remaining},\"files\":{files},\"all_files\":{all_files},\"files_written\":{files_written},\
+         \"rebased_to\":{rebased_to},\"folder_tree\":{folder_tree}}}\n"
     )
+}
+
+/// A valid text with an empty all_files and a null folder_tree.
+fn text(remaining: &str, files: &str, files_written: &str, rebased_to: &str) -> String {
+    full_text(remaining, files, "[]", files_written, rebased_to, "null")
 }
 
 fn base() -> JoinState {
@@ -34,18 +49,22 @@ fn base() -> JoinState {
         tree: oid("5555555555555555555555555555555555555555"),
         remaining: Vec::new(),
         files: Vec::new(),
+        all_files: Vec::new(),
         files_written: false,
         rebased_to: None,
+        folder_tree: None,
     }
 }
 
 #[test]
 fn hand_written_text_reads_into_every_field() {
-    let input = text(
+    let input = full_text(
         "[\"6666666666666666666666666666666666666666\",\"7777777777777777777777777777777777777777\"]",
         "[\"src/a.rs\",\"say \\\"hi\\\"\\n.txt\"]",
+        "[\"old/c.md\",\"src/a.rs\",\"say \\\"hi\\\"\\n.txt\"]",
         "true",
         "\"8888888888888888888888888888888888888888\"",
+        "\"9999999999999999999999999999999999999999\"",
     );
     assert_eq!(
         decode_join_state(&input),
@@ -55,8 +74,10 @@ fn hand_written_text_reads_into_every_field() {
                 oid("7777777777777777777777777777777777777777"),
             ],
             files: vec![PathBuf::from("src/a.rs"), PathBuf::from("say \"hi\"\n.txt")],
+            all_files: vec![PathBuf::from("old/c.md"), PathBuf::from("src/a.rs"), PathBuf::from("say \"hi\"\n.txt")],
             files_written: true,
             rebased_to: Some(oid("8888888888888888888888888888888888888888")),
+            folder_tree: Some(oid("9999999999999999999999999999999999999999")),
             ..base()
         })
     );
@@ -89,15 +110,44 @@ fn keys_out_of_order_are_refused() {
 fn a_missing_key_is_refused() {
     let tree_key = ",\"tree\":\"5555555555555555555555555555555555555555\"";
     let without_tree = text("[]", "[]", "false", "null").replace(tree_key, "");
-    assert!(!without_tree.contains("tree\""));
+    assert!(!without_tree.contains("\"tree\""));
     assert!(decode_join_state(&without_tree).is_err());
     let without_rebased = "{\"request_ref\":\"r\",\"request_tip\":\"1111111111111111111111111111111111111111\",\
         \"onto\":\"2222222222222222222222222222222222222222\",\
         \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
         \"commit\":\"4444444444444444444444444444444444444444\",\
         \"tree\":\"5555555555555555555555555555555555555555\",\
-        \"remaining\":[],\"files\":[],\"files_written\":false}\n";
+        \"remaining\":[],\"files\":[],\"all_files\":[],\"files_written\":false,\"folder_tree\":null}\n";
     assert!(decode_join_state(without_rebased).is_err());
+}
+
+#[test]
+fn a_text_missing_all_files_is_refused() {
+    let without_all_files = "{\"request_ref\":\"r\",\"request_tip\":\"1111111111111111111111111111111111111111\",\
+        \"onto\":\"2222222222222222222222222222222222222222\",\
+        \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
+        \"commit\":\"4444444444444444444444444444444444444444\",\
+        \"tree\":\"5555555555555555555555555555555555555555\",\
+        \"remaining\":[],\"files\":[\"a.txt\"],\"files_written\":false,\"rebased_to\":null,\"folder_tree\":null}\n";
+    assert!(decode_join_state(without_all_files).is_err());
+}
+
+#[test]
+fn a_text_missing_folder_tree_is_refused() {
+    let without_folder_tree = "{\"request_ref\":\"r\",\"request_tip\":\"1111111111111111111111111111111111111111\",\
+        \"onto\":\"2222222222222222222222222222222222222222\",\
+        \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
+        \"commit\":\"4444444444444444444444444444444444444444\",\
+        \"tree\":\"5555555555555555555555555555555555555555\",\
+        \"remaining\":[],\"files\":[\"a.txt\"],\"all_files\":[\"a.txt\"],\"files_written\":true,\
+        \"rebased_to\":\"8888888888888888888888888888888888888888\"}\n";
+    assert!(decode_join_state(without_folder_tree).is_err());
+}
+
+#[test]
+fn a_folder_tree_that_is_not_an_object_id_is_refused() {
+    assert!(decode_join_state(&full_text("[]", "[]", "[]", "false", "null", "\"zz\"")).is_err());
+    assert!(decode_join_state(&full_text("[]", "[]", "[]", "false", "null", "\"\"")).is_err());
 }
 
 #[test]

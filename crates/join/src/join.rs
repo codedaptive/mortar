@@ -27,7 +27,8 @@ use std::path::Path;
 /// behind the request moves the zone ref forward by one op, applied with the zone ref protected, so a move that is
 /// not a fast-forward is refused. Otherwise the request's commits after the fork are replayed onto the zone tip:
 /// clean, the request ref moves to the replayed tip by one op, the zone does not move, and Rebased carries the
-/// request ref's old and new tips so the caller can move the request's folder (S-47); conflicted, no ref moves and
+/// request ref's old and new tips so the caller can move the request's folder (S-47), with no folder_tree (the
+/// folder moves from `from`); conflicted, no ref moves and
 /// the state is written to `folder`'s git dir as mortar-join.json. Ops name `actor` as who moved the refs. Each
 /// op's key carries its op id, so a done record already holding that key means this join moved nothing: it is
 /// refused (OpRepeated), never answered as a move.
@@ -54,11 +55,11 @@ pub fn join(git: &Git, folder: &Path, zone: &str, request_ref: &str, actor: &str
         }
         JoinDecision::Replay { base, onto } => {
             let result = replay(git, &base, request_ref, &onto).map_err(JoinRunError::Replay)?;
-            match after_replay(request_ref, &read.request_tip, &onto, result) {
+            match after_replay(request_ref, &read.request_tip, &onto, &[], result) {
                 AfterReplayStep::Rebase { from, to } => {
                     let op = rebase_op(request_ref, &from, &to, &onto, new_op_id(), actor, unix_now());
                     op_applied(apply(git, &common, &op))?;
-                    Ok(JoinAnswer::Rebased { request_ref: request_ref.to_string(), from, to })
+                    Ok(JoinAnswer::Rebased { request_ref: request_ref.to_string(), from, to, folder_tree: None })
                 }
                 AfterReplayStep::Pause(state) => pause(git, folder, state),
             }

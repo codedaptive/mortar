@@ -33,8 +33,10 @@ fn state() -> JoinState {
         tree: oid("5555555555555555555555555555555555555555"),
         remaining: Vec::new(),
         files: vec![PathBuf::from("x.txt")],
+        all_files: vec![PathBuf::from("x.txt")],
         files_written: true,
         rebased_to: None,
+        folder_tree: None,
     }
 }
 
