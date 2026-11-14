@@ -7,8 +7,10 @@ mod cap_mismatch;
 mod cap_refusals;
 mod capped_excludes;
 mod child_exit;
+mod decide_formatter_end;
 mod decide_formatter_result;
 mod decide_formatter_wait;
+mod decide_group_kill;
 mod decide_snapshot;
 mod default_size_cap;
 mod empty_tree;
@@ -16,14 +18,21 @@ mod file_size;
 mod folder_tree;
 mod formatter;
 mod formatter_argv;
+mod formatter_end;
 mod formatter_paths;
 mod formatter_result;
 mod formatter_run;
 mod formatter_stderr_cap;
 mod formatter_wait;
+mod group_kill_target;
 mod is_saved;
+mod kept_bytes;
+mod kill_process_group;
+mod leader_state;
 mod literal_exclude;
+mod peek_exit_call;
 mod previous_snapshot;
+mod read_capped;
 mod read_previous_snapshot;
 mod refused_file;
 mod run_formatter;
@@ -40,6 +49,7 @@ mod snapshot_parents;
 mod snapshot_ref_name;
 mod snapshot_target;
 mod snapshot_trailers;
+mod waitid_args;
 
 pub use default_size_cap::DEFAULT_SIZE_CAP;
 pub use formatter::Formatter;
@@ -64,9 +74,13 @@ mod cap_refusals_tests;
 #[cfg(test)]
 mod capped_excludes_tests;
 #[cfg(test)]
+mod decide_formatter_end_tests;
+#[cfg(test)]
 mod decide_formatter_result_tests;
 #[cfg(test)]
 mod decide_formatter_wait_tests;
+#[cfg(test)]
+mod decide_group_kill_tests;
 #[cfg(test)]
 mod decide_snapshot_tests;
 #[cfg(test)]
@@ -76,7 +90,15 @@ mod formatter_argv_tests;
 #[cfg(test)]
 mod formatter_paths_tests;
 #[cfg(test)]
+mod group_kill_target_tests;
+#[cfg(test)]
+mod kept_bytes_tests;
+#[cfg(test)]
 mod literal_exclude_tests;
+#[cfg(test)]
+mod peek_exit_call_tests;
+#[cfg(test)]
+mod read_capped_tests;
 #[cfg(test)]
 mod snapshot_excludes_tests;
 #[cfg(test)]

@@ -10,11 +10,9 @@
 //! writes nothing and returns the same commit with written false; a snapshot after a change chains parents
 //! [HEAD, previous snapshot]; a ref moved by someone else between the read and the apply gives RefMoved and is left
 //! as found; a new 6 MB file over DEFAULT_SIZE_CAP is left out of the commit's tree and listed in refused, on a
-//! written and on an unchanged answer; the formatter cases run_formatter's header lists: a rewriting formatter's
-//! output is what the tree holds, a failing or missing formatter is listed in formatted and the snapshot is still
-//! written, a formatter still running at its timeout is listed TimedOut and the snapshot is still written, excluded,
-//! refused, deleted, conflicted, symlinked and submodule paths are not passed, a clean folder or no formatter gives
-//! formatted None.
+//! written and on an unchanged answer.
+//! The formatter cases are run_formatter's header's: tests/snapshot/formatter.rs, formatter_paths.rs and
+//! formatter_timeout.rs cover them, except the S-37 process-group cases still to be written.
 
 use crate::decide_snapshot::decide_snapshot;
 use crate::folder_tree::folder_tree;

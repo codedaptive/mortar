@@ -6,7 +6,8 @@
 pub(crate) enum FormatterWait {
     /// Still running inside the limit: poll again.
     Wait,
-    /// Not over at or past the limit: stop waiting; the formatter is killed if it is still running.
+    /// Not over at or past the limit: stop waiting; the formatter's group is killed while the formatter is unreaped,
+    /// and the formatter too if it is still running.
     Kill,
     /// The run is over (formatter reaped and its stderr at EOF): keep its result.
     Done,
