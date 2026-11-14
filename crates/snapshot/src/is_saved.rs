@@ -9,7 +9,8 @@
 //!   tests/snapshot/caps.rs::refused_only_change_is_saved_and_unchanged_outcome_still_reports_the_refusal, and when
 //!   that over-cap file was renamed since the snapshot:
 //!   caps.rs::new_against_head_file_that_grows_or_is_renamed_over_cap_drops_from_next_snapshot.
-//! Not yet covered by an integration test: is_saved reading an attempt's trysnap ref (Nagatha's).
+//! - false for an attempt that has no snapshot, true after a snapshot of that attempt, reading only that attempt's
+//!   trysnap ref: tests/snapshot/attempts.rs::attempts_have_independent_snapshot_chains_and_saved_reads_only_the_selected_ref.
 
 use crate::saved_state::saved_state;
 use crate::{SnapshotError, SnapshotTarget};
