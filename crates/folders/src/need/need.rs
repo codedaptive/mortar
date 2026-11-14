@@ -23,9 +23,11 @@ use crate::record::FolderRecord;
 ///
 /// The record is written first, so an interrupted need leaves a record naming the path. A repeat need finds it
 /// already needed, leaves the record unchanged without an error, and runs sparse_add again, which is safe to
-/// repeat; a repeat make refills the folder to the recorded cone, needed paths included.
+/// repeat; a repeat make refills the folder to the recorded cone, needed paths included (unless its index has
+/// unmerged entries, S-36).
 ///
-/// The caller runs oplog::recover first, as apply requires: with_folders_lock may apply a takeover op.
+/// The caller runs oplog::recover first, as apply requires: with_folders_lock may apply a takeover op or
+/// guard-removal ops (S-30).
 pub fn need(git: &Git, folder: &Path, path: &str, pids: &dyn PidProbe) -> Result<FolderRecord, FolderError> {
     let clean = need_path(path).map_err(FolderError::Plan)?;
     let git_dir = git.git_dir(folder).map_err(FolderError::Git)?;
