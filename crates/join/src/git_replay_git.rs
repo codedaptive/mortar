@@ -2,7 +2,7 @@
 //! gitio's attr_source. No unit test: it only runs git; Nagatha's integration tests of `replay` are to cover it.
 
 use crate::replay_git::ReplayGit;
-use gitio::{CommitInfo, Git, GitError, MergeTreeOutcome, Oid, Person, ReplayOutcome};
+use gitio::{CommitInfo, Git, GitError, MergeTreeOutcome, Oid, Person, ReplayOutcome, TreeWithPathsError};
 use std::path::PathBuf;
 
 impl ReplayGit for Git {
@@ -52,7 +52,7 @@ impl ReplayGit for Git {
         Git::commit_tree(self, tree, parents, message, author, committer)
     }
 
-    fn tree_with_paths(&self, base: &Oid, from: &Oid, paths: &[PathBuf]) -> Result<Oid, GitError> {
-        Git::tree_with_paths(self, base, from, paths)
+    fn tree_with_paths_typed(&self, base: &Oid, from: &Oid, paths: &[PathBuf]) -> Result<Oid, TreeWithPathsError> {
+        Git::tree_with_paths_typed(self, base, from, paths)
     }
 }

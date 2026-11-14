@@ -2,7 +2,7 @@
 //! declared test-only. Each answer is set in a field; every call is logged in `calls`, in order, with its arguments.
 
 use crate::fake_call::FakeCall;
-use gitio::{CommitInfo, GitError, MergeTreeOutcome, Oid, ReplayOutcome};
+use gitio::{CommitInfo, GitError, MergeTreeOutcome, Oid, ReplayOutcome, TreeWithPathsError};
 use std::cell::RefCell;
 use std::collections::{HashMap, VecDeque};
 
@@ -20,7 +20,7 @@ pub(crate) struct ReplayGitFake {
     pub(crate) merges: HashMap<Oid, MergeTreeOutcome>,
     /// commit_tree's answers, one per call, in order.
     pub(crate) new_commits: RefCell<VecDeque<Oid>>,
-    /// tree_with_paths' answer, whatever its arguments.
-    pub(crate) tree_with_paths: Option<Result<Oid, GitError>>,
+    /// tree_with_paths_typed's answer, whatever its arguments.
+    pub(crate) tree_with_paths: Option<Result<Oid, TreeWithPathsError>>,
     pub(crate) calls: RefCell<Vec<FakeCall>>,
 }

@@ -1,18 +1,14 @@
-//! classify_conflicted: a blob is written, no entry is absent, gitio's gitlink refusal (written out by hand) is a
-//! gitlink, including for a quoted or spaced path; every other error comes back unchanged.
+//! classify_conflicted: a blob is written, no entry is absent, and a commit refusal naming the file is a gitlink,
+//! including for a quoted or spaced path. Every other refusal goes through gitio's From, so its cases are RITs
+//! owed to Nagatha (S-101, WO-join-3cr), not tested here.
 
 use crate::classify_conflicted::classify_conflicted;
 use crate::conflicted_entry::ConflictedEntry;
-use gitio::{GitError, Oid};
-use std::path::Path;
+use gitio::{EntryKind, Oid, TreeEntryError};
+use std::path::{Path, PathBuf};
 
-fn refusal(stderr: &str) -> GitError {
-    GitError { args: Vec::new(), code: None, stderr: stderr.to_string() }
-}
-
-/// Asserts `error` for `file` comes back as the same error.
-fn passes_through(file: &str, error: GitError) {
-    assert_eq!(classify_conflicted(Path::new(file), Err(error.clone())), Err(error));
+fn not_a_blob(path: &str, kind: EntryKind) -> TreeEntryError {
+    TreeEntryError::NotABlob { path: PathBuf::from(path), kind }
 }
 
 #[test]
@@ -27,48 +23,13 @@ fn no_entry_is_absent() {
 }
 
 #[test]
-fn the_commit_refusal_naming_the_file_is_a_gitlink() {
-    let error = refusal("not a blob: \"vendor/lib\" is a \"commit\"");
-    assert_eq!(classify_conflicted(Path::new("vendor/lib"), Err(error)), Ok(ConflictedEntry::Gitlink));
+fn a_commit_naming_the_file_is_a_gitlink() {
+    let entry = Err(not_a_blob("vendor/lib", EntryKind::Commit));
+    assert_eq!(classify_conflicted(Path::new("vendor/lib"), entry), Ok(ConflictedEntry::Gitlink));
 }
 
 #[test]
 fn a_path_with_a_space_and_quotes_is_a_gitlink() {
-    let error = refusal("not a blob: \"my \\\"odd\\\" sub\" is a \"commit\"");
-    assert_eq!(classify_conflicted(Path::new("my \"odd\" sub"), Err(error)), Ok(ConflictedEntry::Gitlink));
-}
-
-#[test]
-fn a_tree_refusal_passes_through() {
-    passes_through("vendor/lib", refusal("not a blob: \"vendor/lib\" is a \"tree\""));
-}
-
-#[test]
-fn a_commit_refusal_naming_another_path_passes_through() {
-    passes_through("vendor/lib", refusal("not a blob: \"vendor/other\" is a \"commit\""));
-}
-
-#[test]
-fn a_refusal_naming_a_prefix_of_the_file_passes_through() {
-    passes_through("a/b", refusal("not a blob: \"a\" is a \"commit\""));
-}
-
-#[test]
-fn the_commit_text_with_an_exit_code_passes_through() {
-    let error = GitError {
-        args: Vec::new(),
-        code: Some(128),
-        stderr: "not a blob: \"vendor/lib\" is a \"commit\"".to_string(),
-    };
-    passes_through("vendor/lib", error);
-}
-
-#[test]
-fn the_commit_text_with_args_passes_through() {
-    let error = GitError {
-        args: vec!["ls-tree".to_string()],
-        code: None,
-        stderr: "not a blob: \"vendor/lib\" is a \"commit\"".to_string(),
-    };
-    passes_through("vendor/lib", error);
+    let entry = Err(not_a_blob("my \"odd\" sub", EntryKind::Commit));
+    assert_eq!(classify_conflicted(Path::new("my \"odd\" sub"), entry), Ok(ConflictedEntry::Gitlink));
 }

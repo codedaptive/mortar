@@ -25,7 +25,7 @@ pub(crate) fn write_conflicted_files(
     let mut absent = Vec::new();
     let mut gitlinks = Vec::new();
     for file in files {
-        match classify_conflicted(&file, git.tree_entry(tree, &file)).map_err(JoinRunError::Git)? {
+        match classify_conflicted(&file, git.tree_entry_typed(tree, &file)).map_err(JoinRunError::Git)? {
             ConflictedEntry::Write => written.push(file),
             ConflictedEntry::Absent => absent.push(file),
             ConflictedEntry::Gitlink => gitlinks.push(file),

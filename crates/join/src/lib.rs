@@ -61,6 +61,7 @@ mod tree_refusal;
 mod write_conflicted_files;
 mod write_join_state;
 
+pub use folder_tree_name::FOLDER_TREE;
 pub use join::join;
 pub use join_answer::JoinAnswer;
 pub use join_error::JoinError;

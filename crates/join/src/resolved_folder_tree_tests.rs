@@ -6,7 +6,7 @@ use crate::join_state::JoinState;
 use crate::replay_git_fake::ReplayGitFake;
 use crate::resolved_folder_tree::resolved_folder_tree;
 use crate::JoinRunError;
-use gitio::{CommitInfo, GitError, Oid, Person};
+use gitio::{CommitInfo, Oid, Person, TreeWithPathsError, TreeWithPathsRefusal};
 use std::path::PathBuf;
 
 const REQUEST_TIP: &str = "1111111111111111111111111111111111111111";
@@ -36,7 +36,7 @@ fn state() -> JoinState {
     }
 }
 
-fn fake(tree_with_paths: Result<Oid, GitError>) -> ReplayGitFake {
+fn fake(tree_with_paths: Result<Oid, TreeWithPathsError>) -> ReplayGitFake {
     let info = CommitInfo {
         tree: oid(OLD_TIP_TREE),
         parents: vec![oid("6666666666666666666666666666666666666666")],
@@ -71,8 +71,7 @@ fn builds_the_old_tips_tree_with_every_rounds_paths_from_the_callers_tree() {
 
 #[test]
 fn an_earlier_rounds_path_that_became_a_folder_is_refused_naming_it() {
-    let refusal =
-        GitError { args: Vec::new(), code: None, stderr: "not a file entry: \"old/c.md\" is a folder".to_string() };
+    let refusal = TreeWithPathsError::Refused(TreeWithPathsRefusal::FolderInFrom { path: PathBuf::from("old/c.md") });
     let answer = resolved_folder_tree(&fake(Err(refusal)), &state(), &oid(CALLER_TREE));
     let Err(JoinRunError::ConflictedPathIsFolder { path }) = answer else { panic!("{answer:?}") };
     assert_eq!(path, PathBuf::from("old/c.md"));
