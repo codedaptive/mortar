@@ -2,15 +2,23 @@
 //! left out.
 //! No unit test: it only runs git and reads file sizes, and holds no decision of its own (S-5);
 //! snapshot_excludes_tests covers the excludes it passes, and cap_candidates, cap_refusals, capped_excludes, cap_mismatch, empty_tree and
-//! candidate_size are its decisions and have their tests. Nagatha's integration group should cover, in a
-//! throwaway repository: build output directories (top-level and nested target/, node_modules/, .build/),
-//! .gitignored files and a caller exclude are left out of the tree; a sparse folder's tree keeps its out-of-cone
-//! files; the folder's index and files are unchanged afterwards; a folder with an unborn HEAD gives UnbornHead;
-//! a new 6 MB file is refused and listed, and is absent from the tree; a 6 MB file already in HEAD and changed is
-//! kept with its new contents; a new file of exactly the cap is kept; a refused name holding glob characters
-//! leaves out only itself; a HEAD directory replaced by a new over-cap file of the same name: the file is refused
-//! and the directory's files are gone from the tree; with GIT_NOGLOB_PATHSPECS=1 a refused glob-named file gives
-//! CapMismatch.
+//! candidate_size are its decisions and have their tests.
+//! Nagatha's integration tests cover it through snapshot, in a throwaway repository:
+//! - build output directories (top-level and nested target/, node_modules/, .build/), .gitignored files and a caller
+//!   exclude are left out of the tree, and similar names are kept:
+//!   tests/snapshot/sparse_excludes.rs::ignored_build_outputs_and_caller_excludes_stay_out_but_similar_names_are_saved;
+//! - a sparse folder's tree keeps its out-of-cone files:
+//!   sparse_excludes.rs::sparse_snapshot_keeps_out_of_cone_tree_and_preserves_staged_index_and_all_files;
+//! - the folder's index and files are unchanged afterwards: both sparse_excludes.rs tests;
+//! - a new 6 MiB file is refused and listed, and is absent from the tree; a 6 MiB file already in HEAD and changed is
+//!   kept with its new contents: tests/snapshot/caps.rs::new_six_mib_file_is_reported_but_large_changed_head_file_is_kept;
+//! - a new file of exactly the cap is kept; a refused name holding glob characters leaves out only itself:
+//!   caps.rs::caller_cap_is_inclusive_and_refused_glob_name_excludes_only_that_path;
+//! - a file new against HEAD that grows over the cap, and then is renamed, is refused and absent from the tree:
+//!   caps.rs::new_against_head_file_that_grows_or_is_renamed_over_cap_drops_from_next_snapshot.
+//! Not yet covered by an integration test: a folder with an unborn HEAD gives UnbornHead; a HEAD directory replaced
+//! by a new over-cap file of the same name: the file is refused and the directory's files are gone from the tree;
+//! with GIT_NOGLOB_PATHSPECS=1 a refused glob-named file gives CapMismatch.
 
 use crate::cap_candidates::cap_candidates;
 use crate::cap_mismatch::cap_mismatch;

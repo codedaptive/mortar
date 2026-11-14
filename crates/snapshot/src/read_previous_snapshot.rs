@@ -1,6 +1,12 @@
 //! read_previous_snapshot: the commit a request's snapshot ref names, and its tree.
-//! No unit test: it only runs git and holds no decision (S-5). Nagatha's integration group should cover, in a
-//! throwaway repository: an absent ref reads as None; a ref at a snapshot commit reads as that commit and its tree.
+//! No unit test: it only runs git and holds no decision (S-5). Nagatha's integration tests cover it through snapshot
+//! and is_saved, in a throwaway repository:
+//! - an absent ref reads as None: is_saved is false before any snapshot, and the first snapshot's parents are [HEAD]
+//!   and its op-log move has no old value:
+//!   tests/snapshot/lifecycle.rs::first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op;
+//! - a ref at a snapshot commit reads as that commit and its tree: an unchanged snapshot returns the first
+//!   snapshot's commit and tree, and the next snapshot's parents are [HEAD, first]:
+//!   lifecycle.rs::unchanged_writes_nothing_then_changed_snapshot_chains_head_and_previous.
 
 use crate::previous_snapshot::PreviousSnapshot;
 use crate::SnapshotError;
