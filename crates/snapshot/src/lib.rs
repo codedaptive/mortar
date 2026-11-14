@@ -6,7 +6,9 @@ mod cap_candidates;
 mod cap_mismatch;
 mod cap_refusals;
 mod capped_excludes;
+mod child_exit;
 mod decide_formatter_result;
+mod decide_formatter_wait;
 mod decide_snapshot;
 mod default_size_cap;
 mod empty_tree;
@@ -18,12 +20,14 @@ mod formatter_paths;
 mod formatter_result;
 mod formatter_run;
 mod formatter_stderr_cap;
+mod formatter_wait;
 mod is_saved;
 mod literal_exclude;
 mod previous_snapshot;
 mod read_previous_snapshot;
 mod refused_file;
 mod run_formatter;
+mod run_formatter_child;
 mod snapshot;
 mod snapshot_decision;
 mod snapshot_error;
@@ -61,6 +65,8 @@ mod cap_refusals_tests;
 mod capped_excludes_tests;
 #[cfg(test)]
 mod decide_formatter_result_tests;
+#[cfg(test)]
+mod decide_formatter_wait_tests;
 #[cfg(test)]
 mod decide_snapshot_tests;
 #[cfg(test)]
