@@ -6,17 +6,23 @@ fn oid(hex: &str) -> Oid {
 }
 
 #[test]
-fn equal_trees_are_unchanged() {
-    assert!(save_unchanged(
-        &oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-        &oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    ));
+fn equal_trees_set_the_index_to_heads_tree() {
+    assert_eq!(
+        save_unchanged(
+            &oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+            &oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        ),
+        Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
+    );
 }
 
 #[test]
-fn different_trees_are_changed() {
-    assert!(!save_unchanged(
-        &oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-        &oid("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
-    ));
+fn different_trees_have_a_commit_to_write() {
+    assert_eq!(
+        save_unchanged(
+            &oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+            &oid("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+        ),
+        None
+    );
 }

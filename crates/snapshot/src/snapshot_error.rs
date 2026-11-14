@@ -47,8 +47,9 @@ pub enum SnapshotError {
     /// The op log already held a done record for this op's key, so nothing moved and the ref was not checked; the
     /// record is that earlier done record. With a key made from a fresh op id this means an op id was reused.
     OpRepeated(oplog::OpRecord),
-    /// The branch moved to `commit`, then setting the folder's index failed; the files are untouched and the index
-    /// is the old one. A save again finds the tree equal to HEAD's, writes no commit and leaves the index as it is.
+    /// Setting the folder's index failed; `commit` is the branch's commit (the new commit on a written save, HEAD on
+    /// an unchanged one). The files are untouched and the index is the old one. A save again finds the tree equal to
+    /// HEAD's and sets the index to it (S-41).
     IndexNotSet { commit: Oid, error: gitio::GitError },
     /// A changed file's size could not be read, so the cap could not be checked; no commit was written.
     FileSize { path: PathBuf, error: std::io::Error },
