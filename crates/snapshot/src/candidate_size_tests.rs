@@ -17,6 +17,11 @@ fn a_path_not_found_gives_none() {
 }
 
 #[test]
+fn a_path_under_a_file_gives_none() {
+    assert_eq!(candidate_size(Err(Error::from(ErrorKind::NotADirectory))).unwrap(), None);
+}
+
+#[test]
 fn any_other_error_passes_through() {
     let error = candidate_size(Err(Error::from(ErrorKind::PermissionDenied))).unwrap_err();
     assert_eq!(error.kind(), ErrorKind::PermissionDenied);
