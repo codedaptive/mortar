@@ -81,3 +81,8 @@ fn refuses_a_request_with_a_slash_with_an_attempt_naming_it_and_its_text() {
     assert!(reason.contains("request"));
     assert!(reason.contains("WO/1"));
 }
+
+#[test]
+fn refuses_attempt_zero_naming_it_and_its_value() {
+    assert!(refusal("snapshot", "WO-snapshot-1", Some(0)).contains("attempt 0"));
+}

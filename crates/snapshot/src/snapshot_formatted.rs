@@ -39,8 +39,8 @@ use std::path::Path;
 /// Runs `formatter` over `folder`'s changed files, then saves `folder`'s files, minus the built-in excludes,
 /// `extra_excludes` and each new file (not in HEAD) over `size_cap` bytes, listed in refused, as a commit on
 /// the target's snapshot ref (snapshot_ref_name: `refs/mortar/snap/<zone>/<request>` (S-19), or
-/// `refs/mortar/trysnap/<zone>/<request>/<k>` (S-69) with an attempt), with parents [HEAD] for the ref's first
-/// snapshot and [HEAD, previous snapshot] after that. `git` gives the binary and environment; every run is in
+/// `refs/mortar/trysnap/<zone>/<request>/<k>` (S-69) with attempt k (from 1)), with parents [HEAD] for the ref's
+/// first snapshot and [HEAD, previous snapshot] after that. `git` gives the binary and environment; every run is in
 /// `folder`, which must be the folder's top.
 ///
 /// The formatter runs over run_formatter's files (the changed then untracked regular files the snapshot would save

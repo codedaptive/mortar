@@ -34,7 +34,7 @@ pub enum SnapshotError {
     UnbornHead { folder: PathBuf },
     /// The folder's HEAD names no branch, so save has no branch to move.
     DetachedHead { folder: PathBuf },
-    /// A zone or request that cannot form the ref name; the reason names it.
+    /// A zone, request or attempt that cannot form the ref name; the reason names it.
     BadTarget { reason: String },
     /// The sentence cannot be a commit subject; the reason says why.
     BadSentence { reason: String },
