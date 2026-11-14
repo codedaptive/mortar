@@ -1,5 +1,6 @@
 //! context_report: not in a repository or not a folder is refused "not-a-folder"; a bad record is refused naming
 //! the file; an unreadable record, any other folder error and git failing are failures.
+//! ZIT (S-79 as replaced: the line is the file): it calls report::failure_report for real.
 
 use std::path::PathBuf;
 
@@ -7,8 +8,7 @@ use folders::record::RecordError;
 use folders::FolderError;
 use gitio::GitError;
 
-use super::{context_report, ContextError};
-use crate::report::{ExitCode, Report};
+use cli::{context_report, ContextError, ExitCode, Report};
 
 fn git_error(code: Option<i32>, stderr: &str) -> GitError {
     GitError { args: vec!["rev-parse".to_string(), "--show-toplevel".to_string()], code, stderr: stderr.to_string() }

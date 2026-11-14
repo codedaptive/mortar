@@ -1,7 +1,7 @@
 //! usage_report: exit 4, the reason then the verbs, and the verb's usage (or the verb list) as next.
+//! ZIT (S-79 as replaced: the line is the file): it calls args/find_verb for real.
 
-use super::{usage_report, UsageError};
-use crate::report::{ExitCode, Report};
+use cli::{usage_report, ExitCode, Report, UsageError};
 
 const INIT_USAGE: &str = "mortar init --actor <name> --origin <branch> --integration <branch> --remote <name> \
 [--zone <zone>=<path>[,<path>...]]... [--root-file <path>]... [--build-dir <path>]... [--cap-bytes <n>] \
@@ -16,9 +16,9 @@ fn an_unknown_verb_lists_the_verbs() {
             verb: "jump".to_string(),
             exit: ExitCode::Usage,
             outcome: "usage".to_string(),
-            lines: vec!["unknown verb \"jump\"".to_string(), "verbs: init, join, save".to_string()],
+            lines: vec!["unknown verb \"jump\"".to_string(), "verbs: init, join, resolve, save".to_string()],
             owner: None,
-            next: "mortar <verb>, one of: init, join, save".to_string(),
+            next: "mortar <verb>, one of: init, join, resolve, save".to_string(),
             fields: Vec::new(),
         }
     );
@@ -28,8 +28,8 @@ fn an_unknown_verb_lists_the_verbs() {
 fn no_verb_has_an_empty_verb() {
     let report = usage_report(&UsageError { verb: None, reason: "no verb given".to_string(), json: false });
     assert_eq!(report.verb, "");
-    assert_eq!(report.lines, vec!["no verb given".to_string(), "verbs: init, join, save".to_string()]);
-    assert_eq!(report.next, "mortar <verb>, one of: init, join, save");
+    assert_eq!(report.lines, vec!["no verb given".to_string(), "verbs: init, join, resolve, save".to_string()]);
+    assert_eq!(report.next, "mortar <verb>, one of: init, join, resolve, save");
 }
 
 #[test]

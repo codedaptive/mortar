@@ -6,8 +6,6 @@ mod locked_act;
 
 #[cfg(test)]
 mod lock_name_for_tests;
-#[cfg(test)]
-mod lock_report_tests;
 
 pub use lock_name_for::lock_name_for;
 pub use lock_report::lock_report;

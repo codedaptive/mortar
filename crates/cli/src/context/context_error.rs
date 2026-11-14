@@ -1,5 +1,5 @@
 //! Why the current directory's Mortar folder cannot be read.
-//! A bare type (S-7); context_report_tests exercises each variant.
+//! A bare type (S-7); crates/cli/tests/context_report_tests.rs exercises each variant.
 
 use std::path::PathBuf;
 

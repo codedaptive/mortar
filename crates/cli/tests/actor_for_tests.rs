@@ -1,11 +1,10 @@
 //! actor_for: agent verbs act as "<zone>/<request>" and refuse --actor; harness verbs require --actor.
+//! ZIT (S-79 as replaced: the line is the file): it calls args/usage_report for real.
 
 use folders::{FolderKind, FolderRecord};
 use gitio::Oid;
 
-use super::actor_for;
-use crate::args::{LockNeed, VerbKind, VerbSpec, VERBS};
-use crate::report::ExitCode;
+use cli::{actor_for, ExitCode, LockNeed, VerbKind, VerbSpec, VERBS};
 
 const AGENT: VerbSpec = VerbSpec {
     name: "save",
@@ -72,7 +71,7 @@ fn a_harness_verb_without_actor_is_usage() {
     let report = actor_for(&VERBS[0], None, None).expect_err("usage");
     assert_eq!(report.exit as i32, 4);
     assert_eq!(report.verb, "init");
-    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: init, join, save".to_string()]);
+    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: init, join, resolve, save".to_string()]);
     assert_eq!(report.next, VERBS[0].usage);
 }
 

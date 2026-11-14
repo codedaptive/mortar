@@ -1,4 +1,5 @@
 //! save_error_report: each SnapshotError's exit, outcome, lines, owner and next (S-71).
+//! ZIT (S-79 as replaced: the line is the file): it calls report::failure_report for real.
 
 use std::path::PathBuf;
 
@@ -6,8 +7,7 @@ use gitio::{GitError, Oid};
 use oplog::{ChangeIdError, MortarTrailerError, OpPhase, OpRecord, OpResult, OplogError};
 use snapshot::SnapshotError;
 
-use super::save_error_report;
-use crate::report::{ExitCode, Report};
+use cli::{save_error_report, ExitCode, Report};
 
 const HEAD: &str = "0123456789abcdef0123456789abcdef01234567";
 
