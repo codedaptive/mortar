@@ -1,5 +1,5 @@
 //! The report of a verb whose lock could not be taken (S-71: busy is exit 3).
-//! Shell API with no caller yet but locked_act: the ref-moving verbs of WO-cli-2..6 reach it through that.
+//! Shell API with no caller but locked_act: the ref-moving verbs reach it through that.
 
 use oplog::{LockError, LockRecord};
 

@@ -11,5 +11,6 @@ mod replay_attributes;
 mod snapshot;
 mod set_index;
 mod tree_with_paths;
+mod disk_usage;
 mod trailers;
 mod worktrees;

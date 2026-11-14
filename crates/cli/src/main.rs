@@ -7,8 +7,8 @@
 //! exit 0; init without --actor is exit 4; an unknown verb is exit 4 listing the verbs; --json prints one JSON
 //! object on one line and nothing else; run outside a git repository init is refused, exit 1; a non-UTF-8
 //! argument is exit 4; a held lock is exit 3 naming the holder and since, and recover runs before the act (with
-//! WO-cli-2's first ref-moving verb); an agent verb outside a Mortar folder is refused, exit 1 (with WO-cli-2's
-//! first agent verb).
+//! mortar join, the first ref-moving verb); an agent verb outside a Mortar folder is refused, exit 1 (with
+//! mortar join, the first agent verb).
 
 use std::ffi::OsString;
 use std::io::Write;

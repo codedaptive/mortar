@@ -16,9 +16,9 @@ fn an_unknown_verb_lists_the_verbs() {
             verb: "jump".to_string(),
             exit: ExitCode::Usage,
             outcome: "usage".to_string(),
-            lines: vec!["unknown verb \"jump\"".to_string(), "verbs: init".to_string()],
+            lines: vec!["unknown verb \"jump\"".to_string(), "verbs: init, join, save".to_string()],
             owner: None,
-            next: "mortar <verb>, one of: init".to_string(),
+            next: "mortar <verb>, one of: init, join, save".to_string(),
             fields: Vec::new(),
         }
     );
@@ -28,8 +28,8 @@ fn an_unknown_verb_lists_the_verbs() {
 fn no_verb_has_an_empty_verb() {
     let report = usage_report(&UsageError { verb: None, reason: "no verb given".to_string(), json: false });
     assert_eq!(report.verb, "");
-    assert_eq!(report.lines, vec!["no verb given".to_string(), "verbs: init".to_string()]);
-    assert_eq!(report.next, "mortar <verb>, one of: init");
+    assert_eq!(report.lines, vec!["no verb given".to_string(), "verbs: init, join, save".to_string()]);
+    assert_eq!(report.next, "mortar <verb>, one of: init, join, save");
 }
 
 #[test]

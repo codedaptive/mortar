@@ -4,6 +4,7 @@
 mod support;
 
 mod apply;
+mod attribution;
 mod crash;
 mod locks;
 mod open_intent_moves;

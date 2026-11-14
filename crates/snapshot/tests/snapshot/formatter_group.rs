@@ -105,6 +105,29 @@ fn exercise_group(mode: &str, limit: Duration) {
     assert_eq!(fs::read(f.common.join("index")).unwrap(), index_before);
 }
 
+/// WO-orc-snapshot-it-8: direct run_in_group caller, sharing the proven real FIFO/group fixture.
+pub(super) fn exercise_public_runner(mode: &str, limit: Duration) {
+    let f = Fixture::new(&[]);
+    let group = group_fixture(&f, mode, limit);
+    let _guard = fifo_hang_guard(group.fifos(), group.fired.clone(), Duration::from_secs(30));
+    let (answer, pid, pgid, tail) = thread::scope(|scope| {
+        let job = scope.spawn(|| snapshot::run_in_group(&group.formatter.program, &group.formatter.args, &f.repo.path, limit));
+        let (mut channel, pid, pgid) = child_channel(&group.death);
+        let mut tail = String::new();
+        channel.read_to_string(&mut tail).unwrap();
+        (job.join().unwrap(), pid, pgid, tail)
+    });
+    assert!(!group.fired.exists(), "failure-only guard released a surviving child");
+    assert_eq!(tail, "", "child survived group cleanup until an external release");
+    assert_group_terminated(&group, pid, pgid);
+    let expected = if mode == "timeout" {
+        snapshot::GroupRunEnd::TimedOut { limit, stderr: "wrapper child ready\n".into() }
+    } else {
+        snapshot::GroupRunEnd::Exited { code: Some(0), stderr: "wrapper child ready\n".into() }
+    };
+    assert_eq!(answer, expected, "direct runner keeps raw successful stderr, unlike formatter mapping");
+}
+
 struct Group {
     formatter: Formatter, death: PathBuf, ready: PathBuf, gate: PathBuf,
     boundary: PathBuf, resume: PathBuf, exiting: PathBuf, leader: PathBuf, fired: PathBuf,
