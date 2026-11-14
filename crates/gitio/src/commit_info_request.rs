@@ -7,7 +7,9 @@ use std::ffi::OsString;
 /// --end-of-options <commit> --`, read-only. `--no-show-signature` keeps gpg lines out where log.showSignature is
 /// set; `--encoding=UTF-8` keeps i18n.logOutputEncoding from re-encoding the message into bytes read_message would
 /// refuse. `--date=raw` makes `%ad` print the author line's stored `<seconds> <offset>` verbatim, which
-/// GIT_AUTHOR_DATE takes back unchanged. `%an`/`%ae`, not `%aN`/`%aE`, so .mailmap never rewrites the identity.
+/// GIT_AUTHOR_DATE takes back unchanged; an author line with no date prints an empty `%ad`, which GIT_AUTHOR_DATE
+/// cannot hand back (S-43).
+/// `%an`/`%ae`, not `%aN`/`%aE`, so .mailmap never rewrites the identity.
 /// `--end-of-options` goes before the revision and `--` after it, so the id is never read as an option or a path.
 pub(crate) fn commit_info_request(commit: &Oid) -> (Vec<OsString>, RunOpts) {
     (

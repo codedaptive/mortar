@@ -8,9 +8,10 @@ use crate::{Oid, Person};
 pub struct CommitInfo {
     pub tree: Oid,
     pub parents: Vec<Oid>,
-    /// The author as the commit stores it: name and email unmapped by .mailmap, date as `<seconds> <offset>`
-    /// (always Some). Passed as commit_tree's author it sets GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL and GIT_AUTHOR_DATE
-    /// to the same values.
+    /// The author as the commit stores it: name and email unmapped by .mailmap, date as git prints it with
+    /// --date=raw (always Some): `<seconds> <offset>` for a well-formed commit, empty when the author line has none,
+    /// which GIT_AUTHOR_DATE cannot hand back (S-43). For a well-formed commit, passed as commit_tree's author it sets
+    /// GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL and GIT_AUTHOR_DATE to the same values.
     pub author: Person,
     pub message: String,
 }
