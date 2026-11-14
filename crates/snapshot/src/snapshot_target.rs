@@ -8,7 +8,8 @@
 pub struct SnapshotTarget {
     pub zone: String,
     pub request: String,
-    /// None for the request's own folder, Some(k) for its attempt folder k (S-69); it chooses the snapshot ref.
+    /// None for the request's own folder, Some(k) for its attempt folder k, k from 1 (S-69, S-83); it chooses the
+    /// snapshot ref. snapshot_ref_name refuses Some(0) with BadTarget.
     pub attempt: Option<u32>,
     pub actor: String,
 }

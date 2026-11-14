@@ -10,8 +10,8 @@ use std::path::Path;
 
 /// snapshot_formatted with no formatter: saves `folder`'s files, minus the built-in excludes, `extra_excludes` and
 /// each new file over `size_cap` bytes, on the target's snapshot ref (snapshot_ref_name:
-/// refs/mortar/snap/<zone>/<request>, or refs/mortar/trysnap/<zone>/<request>/<k> with an attempt), under the same
-/// rules and errors.
+/// refs/mortar/snap/<zone>/<request>, or refs/mortar/trysnap/<zone>/<request>/<k> with attempt k (from 1)), under
+/// the same rules and errors.
 /// The outcome's formatted is None.
 pub fn snapshot(
     git: &Git,
