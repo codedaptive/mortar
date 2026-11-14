@@ -15,7 +15,7 @@ fn argv(items: &[&str]) -> Vec<OsString> {
     items.iter().map(OsString::from).collect()
 }
 
-fn requests(folder: &Path) -> [(Vec<OsString>, RunOpts); 2] {
+fn requests(folder: &Path) -> [(Vec<OsString>, RunOpts); 3] {
     folder_move_requests(folder, &oid(OLD), &oid(NEW)).unwrap()
 }
 
@@ -25,9 +25,26 @@ fn first_run_refreshes_the_index_quietly_even_when_unmerged() {
 }
 
 #[test]
-fn second_run_is_a_two_tree_read_tree_old_then_new() {
+fn second_run_is_a_dry_run_read_tree_with_sparse_checkout_off() {
     assert_eq!(
         requests(Path::new("/tmp/r/wt"))[1].0,
+        argv(&[
+            "read-tree",
+            "--no-sparse-checkout",
+            "-n",
+            "-m",
+            "-u",
+            "--end-of-options",
+            "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        ])
+    );
+}
+
+#[test]
+fn third_run_is_a_two_tree_read_tree_old_then_new() {
+    assert_eq!(
+        requests(Path::new("/tmp/r/wt"))[2].0,
         argv(&[
             "read-tree",
             "-m",
@@ -41,7 +58,7 @@ fn second_run_is_a_two_tree_read_tree_old_then_new() {
 
 #[test]
 fn refresh_writes_in_the_folder_and_accepts_only_exit_0() {
-    let [(_, opts), _] = requests(Path::new("/tmp/r/wt"));
+    let [(_, opts), _, _] = requests(Path::new("/tmp/r/wt"));
     assert_eq!(opts.cwd, Some(PathBuf::from("/tmp/r/wt")));
     assert!(!opts.read_only);
     assert!(opts.answer_codes.is_empty());
@@ -50,8 +67,18 @@ fn refresh_writes_in_the_folder_and_accepts_only_exit_0() {
 }
 
 #[test]
+fn check_is_read_only_in_the_folder_and_takes_exit_128_as_an_answer() {
+    let [_, (_, opts), _] = requests(Path::new("/tmp/r/wt"));
+    assert_eq!(opts.cwd, Some(PathBuf::from("/tmp/r/wt")));
+    assert!(opts.read_only);
+    assert_eq!(opts.answer_codes, vec![128]);
+    assert_eq!(opts.stdin, None);
+    assert!(opts.env.is_empty());
+}
+
+#[test]
 fn read_tree_writes_in_the_folder_and_takes_exit_128_as_an_answer() {
-    let [_, (_, opts)] = requests(Path::new("/tmp/r/wt"));
+    let [_, _, (_, opts)] = requests(Path::new("/tmp/r/wt"));
     assert_eq!(opts.cwd, Some(PathBuf::from("/tmp/r/wt")));
     assert!(!opts.read_only);
     assert_eq!(opts.answer_codes, vec![128]);

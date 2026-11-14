@@ -11,6 +11,7 @@ mod classify_update_refs;
 mod commit_info;
 mod commit_info_request;
 mod commit_tree_request;
+mod disk_usage_only_request;
 mod folder_move_outcome;
 mod folder_move_requests;
 mod git;
@@ -23,6 +24,7 @@ mod git_commit_info;
 mod git_commit_tree;
 mod git_common_dir;
 mod git_dir_request;
+mod git_disk_usage_only;
 mod git_error;
 mod git_error_display;
 mod git_error_refusal;
@@ -81,6 +83,7 @@ mod range_diff_request;
 mod read_attr_check;
 mod read_check_ref_format;
 mod read_commit_info;
+mod read_disk_usage;
 mod read_folder_move;
 mod read_merge_base;
 mod read_merge_tree;
@@ -172,11 +175,15 @@ mod commit_info_request_tests;
 #[cfg(test)]
 mod commit_tree_request_tests;
 #[cfg(test)]
+mod disk_usage_only_request_tests;
+#[cfg(test)]
 mod folder_move_requests_tests;
 #[cfg(test)]
 mod git_command_tests;
 #[cfg(test)]
 mod git_dir_request_tests;
+#[cfg(test)]
+mod git_disk_usage_only_tests;
 #[cfg(test)]
 mod git_error_display_tests;
 #[cfg(test)]
@@ -233,6 +240,8 @@ mod read_attr_check_tests;
 mod read_check_ref_format_tests;
 #[cfg(test)]
 mod read_commit_info_tests;
+#[cfg(test)]
+mod read_disk_usage_tests;
 #[cfg(test)]
 mod read_folder_move_tests;
 #[cfg(test)]
