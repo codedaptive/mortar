@@ -8,7 +8,7 @@ use std::path::PathBuf;
 pub enum FolderMoveOutcome {
     /// The folder's index and files now hold the new tree; local edits to paths the move does not change are kept.
     Moved,
-    /// Nothing changed: a local edit, a staged change or an untracked file stood in the way. These are the paths git
-    /// named, in its order; git 2.56 names only the first.
+    /// Nothing changed: a local edit, a staged change or an untracked, not ignored file stood in the
+    /// way. These are the paths git named, in its order; git 2.56 names only the first.
     Refused(Vec<PathBuf>),
 }

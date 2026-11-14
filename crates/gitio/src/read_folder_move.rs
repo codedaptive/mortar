@@ -1,4 +1,4 @@
-//! read_folder_move: read the answer of `read-tree -m -u <old> <new>`.
+//! read_folder_move: read the answer of the two-tree `read-tree -m -u <old> <new>`, both the check and the move.
 //! A refusal's path may hold quotes and line breaks, so stderr is read record by record, never by line: each record
 //! runs from its head to the first following occurrence of its own tail. A path that itself holds its record's tail
 //! text is cut short there; the bytes after it are usually no record, so the whole stderr is read as git's error, but
@@ -17,9 +17,9 @@ const UNTRACKED: &[u8] = b"error: Untracked working tree file '";
 const UNTRACKED_TAILS: [&[u8]; 1] = [b"' would be overwritten by merge.\n"];
 
 /// Exit 0 with nothing on stdout is Moved. Exit 128 with nothing on stdout and stderr made wholly of git's refusal
-/// records (a local edit, a staged change or an untracked file in the way) is Refused, with the paths in order. Any
-/// other exit 128 is git's own error (an unmerged index, an unknown tree), returned with its stderr. Anything else is
-/// refused naming what was found.
+/// records (a local edit, a staged change or an untracked, not ignored file in the way) is Refused, with the paths
+/// in order. Any other exit 128 is git's own error (an unmerged index, an unknown tree), returned with its stderr.
+/// Anything else is refused naming what was found.
 pub(crate) fn read_folder_move(output: &Output) -> Result<FolderMoveOutcome, GitError> {
     match output.status {
         0 if output.stdout.is_empty() => Ok(FolderMoveOutcome::Moved),
