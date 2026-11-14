@@ -1,6 +1,8 @@
 //! JSON text to the members of a folder record's object, for the subset the record uses.
 
-use super::{parse_json_string, JsonError, RecordJsonValue};
+use oplog::{parse_json_string, JsonError};
+
+use super::RecordJsonValue;
 
 /// The members of the one JSON object in `text`, in text order with repeats kept, so the decoder can refuse
 /// a repeated key. Whitespace is allowed around every token. A member's value is a string, null or an array
