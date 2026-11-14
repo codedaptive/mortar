@@ -3,9 +3,11 @@
 mod support;
 mod fixture;
 mod commits_and_refs;
+mod commit_info;
 mod author_round_trip;
 mod merge;
 mod replay;
+mod replay_attributes;
 mod snapshot;
 mod set_index;
 mod trailers;

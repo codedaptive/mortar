@@ -210,3 +210,173 @@ fn assert_path(trace: &PathBuf, fallback: bool, conflict: bool) {
     assert_eq!(calls.lines().any(|line| line == "merge-tree"), fallback || conflict, "{calls}");
     if fallback || conflict { assert!(calls.lines().any(|line| line == "commit-tree"), "{calls}"); }
 }
+
+// WO-orc-join-it-2, SPEC-join WO-join-2 (S-20/S-21), plus S-43's public fallback refusal.
+const JOIN_ZONE: &str = "it-zone";
+const ZONE_REF: &str = "refs/heads/zone/it-zone";
+const REQUEST_REF: &str = "refs/heads/request/task";
+// WO-orc-join-it-3: the caller supplies attribution; lock/recovery cases remain deferred to cli.
+const JOIN_ACTOR: &str = "join-it-3-caller";
+
+#[test]
+fn join_fast_forwards_only_the_zone_and_repeat_is_joined_without_another_op() {
+    // Joins join -> protected oplog apply -> exact refs/log and inert repeat; caller-lock coverage belongs to cli.
+    let f = Fixture::new();
+    let initial = f.tree(&[("file", b"base\n")]);
+    let base = f.commit(&initial, &[], "base\n", &author("Base", "1700000000 +0000"));
+    let changed = f.tree(&[("file", b"request\n")]);
+    let tip = f.commit(&changed, &[base.clone()], "request\n", &author("Topic", "1700000100 -0530"));
+    join_refs(&f, &base, &tip);
+    let before = f.state();
+    assert_eq!(join::join(&f.git, &f.repo.path, JOIN_ZONE, REQUEST_REF, JOIN_ACTOR).unwrap(),
+        join::JoinAnswer::FastForwarded { zone_ref: ZONE_REF.into(), from: base.clone(), to: tip.clone() });
+    let expected = (moved_refs(&before.0, ZONE_REF, &base, &tip), before.1, before.2);
+    f.assert_state(&expected);
+    let common = f.git.common_dir().unwrap();
+    let log = oplog::read_op_log(&common).unwrap();
+    assert_eq!(log.records.len(), 2);
+    assert_eq!(log.records[0].phase, oplog::OpPhase::Intent);
+    assert_eq!(log.records[1].phase, oplog::OpPhase::Done);
+    assert_eq!(log.records[1].kind, "join-fast-forward");
+    assert_eq!(log.records[1].result, Some(oplog::OpResult::Moved));
+    assert_eq!(log.records[1].moves, vec![oplog::RefMove { refname: ZONE_REF.into(), old: Some(base), new: tip.clone() }]);
+    assert_eq!(log.records[1].actor, "join-it-3-caller");
+    let bytes = fs::read(oplog::oplog_path(&common)).unwrap();
+    assert_eq!(join::join(&f.git, &f.repo.path, JOIN_ZONE, REQUEST_REF, JOIN_ACTOR).unwrap(),
+        join::JoinAnswer::Joined { zone_ref: ZONE_REF.into(), request_tip: tip });
+    f.assert_state(&expected);
+    assert_eq!(fs::read(oplog::oplog_path(&common)).unwrap(), bytes);
+}
+
+#[test]
+fn join_rebases_a_moved_zone_and_stops_with_only_the_request_ref_moved() {
+    // Joins merge-base -> real replay -> request CAS, deliberately not a zone fast-forward or worktree checkout.
+    let f = Fixture::new();
+    let base_tree = f.tree(&[("file", b"base\n")]);
+    let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
+    let topic_tree = f.tree(&[("file", b"request\n")]);
+    let message = "request change\n\nMortar-Request: task\nMortar-Zone: it-zone\n";
+    let topic = f.commit(&topic_tree, &[base.clone()], message, &author("Zoë", "1700000100 -0530"));
+    let zone_tree = f.tree(&[("file", b"base\n"), ("upstream", b"zone change\n")]);
+    let zone = f.commit(&zone_tree, &[base], "zone moved\n", &author("Zone", "1700000200 +0000"));
+    join_refs(&f, &zone, &topic);
+    let before = f.state();
+    let new = match join::join(&f.git, &f.repo.path, JOIN_ZONE, REQUEST_REF, JOIN_ACTOR).unwrap() {
+        join::JoinAnswer::Rebased { request_ref, from, to } => { assert_eq!(request_ref, REQUEST_REF); assert_eq!(from, topic); to }
+        other => panic!("must stop after request rebase: {other:?}"),
+    };
+    assert_ne!(new, topic);
+    let info = f.git.commit_info(&new).unwrap();
+    assert_eq!(info.parents, vec![zone.clone()]);
+    assert_eq!(info.tree, f.tree(&[("file", b"request\n"), ("upstream", b"zone change\n")]));
+    assert_eq!(info.message, message);
+    assert_eq!(info.author, author("Zoë", "1700000100 -0530"));
+    assert_eq!(f.git.read_ref(ZONE_REF).unwrap(), Some(zone));
+    assert_eq!(f.state().0, moved_refs(&before.0, REQUEST_REF, &topic, &new));
+    assert_eq!(fs::read(f.repo.path.join(".git/index")).unwrap(), before.1);
+    assert_eq!(f.git.rev_parse("HEAD").unwrap(), Some(new));
+    assert_eq!(fs::read(f.repo.path.join("file")).unwrap(), b"request\n");
+    assert!(!f.repo.path.join("upstream").exists(), "the caller, not join, checks out the replayed request");
+    let log = oplog::read_op_log(&f.git.common_dir().unwrap()).unwrap();
+    assert_eq!(log.records.len(), 2);
+    assert!(log.records.iter().all(|record| record.kind == "join-rebase"));
+    assert_eq!(log.records[1].phase, oplog::OpPhase::Done);
+    assert_eq!(log.records[1].moves[0].refname, REQUEST_REF);
+    assert_eq!(log.records[1].actor, "join-it-3-caller");
+}
+
+#[test]
+fn join_conflict_lists_files_writes_exact_resolve_state_and_moves_no_ref() {
+    // Joins replay conflict -> mortar-join.json serialization/filesystem -> exact paused state and unchanged refs.
+    let f = Fixture::new();
+    let base_tree = f.tree(&[("conflict file.txt", b"base\n")]);
+    let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
+    let bad_tree = f.tree(&[("conflict file.txt", b"request\n")]);
+    let bad = f.commit(&bad_tree, &[base.clone()], "conflicting change\n", &author("Topic", "1700000100 +0000"));
+    let later_tree = f.tree(&[("conflict file.txt", b"request\n"), ("later", b"not replayed yet\n")]);
+    let tip = f.commit(&later_tree, &[bad.clone()], "remaining\n", &author("Later", "1700000200 +0000"));
+    let zone_tree = f.tree(&[("conflict file.txt", b"zone\n")]);
+    let zone = f.commit(&zone_tree, &[base.clone()], "zone moved\n", &author("Zone", "1700000300 +0000"));
+    join_refs(&f, &zone, &tip);
+    let conflict_tree = match f.git.merge_tree(&zone, Some(&base), &zone, &bad).unwrap() {
+        gitio::MergeTreeOutcome::Conflicted { tree, files } => { assert_eq!(files, vec![PathBuf::from("conflict file.txt")]); tree }
+        other => panic!("fixture must be a real shared-line conflict: {other:?}"),
+    };
+    let before = f.state();
+    let common = f.git.common_dir().unwrap();
+    let state = match join::join(&f.git, &f.repo.path, JOIN_ZONE, REQUEST_REF, JOIN_ACTOR).unwrap() {
+        join::JoinAnswer::Conflicted { commit, files, state } => {
+            assert_eq!(commit, bad); assert_eq!(files, vec![PathBuf::from("conflict file.txt")]); state
+        }
+        other => panic!("expected paused join: {other:?}"),
+    };
+    assert_eq!(state, common.join("mortar-join.json"));
+    let expected = format!("{{\"request_ref\":\"{REQUEST_REF}\",\"request_tip\":\"{tip}\",\"onto\":\"{zone}\",\"replayed_tip\":\"{zone}\",\"commit\":\"{bad}\",\"tree\":\"{conflict_tree}\",\"remaining\":[\"{tip}\"],\"files\":[\"conflict file.txt\"]}}\n");
+    assert_eq!(fs::read_to_string(state).unwrap(), expected);
+    let conflicted = String::from_utf8(f.blob(&conflict_tree, "conflict file.txt")).unwrap();
+    assert!(conflicted.contains("<<<<<<<") && conflicted.contains("zone\n") && conflicted.contains("request\n"), "{conflicted}");
+    f.assert_state(&before);
+    assert!(oplog::read_op_log(&common).unwrap().records.is_empty());
+}
+
+#[test]
+fn join_missing_zone_or_request_is_named_without_history() {
+    // Joins actual missing-ref observation -> named typed refusal without ref/index/file/history mutation.
+    for missing_zone in [true, false] {
+        let f = Fixture::new();
+        let contents = f.tree(&[("file", b"base\n")]);
+        let base = f.commit(&contents, &[], "base\n", &author("Base", "1700000000 +0000"));
+        let topic = f.commit(&contents, &[base.clone()], "request\n", &author("Topic", "1700000100 +0000"));
+        join_refs(&f, &base, &topic);
+        f.run(&["checkout", "--force", "main"]);
+        f.run(&["update-ref", "-d", if missing_zone { ZONE_REF } else { REQUEST_REF }]);
+        let before = f.state();
+        match (missing_zone, join::join(&f.git, &f.repo.path, JOIN_ZONE, REQUEST_REF, JOIN_ACTOR).unwrap_err()) {
+            (true, join::JoinRunError::ZoneMissing(name)) => assert_eq!(name, ZONE_REF),
+            (false, join::JoinRunError::RequestMissing(name)) => assert_eq!(name, REQUEST_REF),
+            (_, other) => panic!("wrong missing-ref refusal: {other:?}"),
+        }
+        f.assert_state(&before);
+        let common = f.git.common_dir().unwrap();
+        assert!(oplog::read_op_log(&common).unwrap().records.is_empty());
+    }
+}
+
+// S-47 / Orc #843/#848: caller-held lock and kill-mid-join/recover integration belongs to cli,
+// once cli exists. No join-owned-lock crash fixture is kept here.
+
+#[test]
+fn fallback_refuses_empty_author_date_naming_the_original_commit_before_merge_or_commit_tree() {
+    // S-43: actual malformed commit remains readable by gitio, but public join::replay must not silently re-date it.
+    let f = Fixture::new();
+    let contents = f.tree(&[("file", b"base\n")]);
+    let base = f.commit(&contents, &[], "base\n", &author("Base", "1700000000 +0000"));
+    let raw = format!("tree {contents}\nparent {base}\nauthor No Date <no-date@example.invalid> \ncommitter Committer <committer@example.invalid> 1700000200 +0000\n\nrequest with empty date\n");
+    let out = f.git.run(&["hash-object", "--literally", "-t", "commit", "-w", "--stdin"], &RunOpts {
+        stdin: Some(raw.as_bytes().to_vec()), ..RunOpts::default()
+    }).unwrap();
+    let malformed = oid(&out.stdout);
+    assert_eq!(f.git.commit_info(&malformed).unwrap().author.date.as_deref(), Some(""));
+    f.anchor(&base, &malformed);
+    let before = f.state();
+    let commits = f.run(&["cat-file", "--batch-all-objects", "--batch-check=%(objecttype) %(objectname)"]);
+    let (git, trace) = f.runner(true).unwrap();
+    assert_eq!(replay(&git, &base, "refs/heads/topic", &base).unwrap_err(), JoinError::EmptyAuthorDate(malformed));
+    assert!(fs::read_to_string(trace).unwrap_or_default().is_empty(), "refusal must precede merge-tree and commit-tree");
+    assert_eq!(f.run(&["cat-file", "--batch-all-objects", "--batch-check=%(objecttype) %(objectname)"]), commits);
+    f.assert_state(&before);
+}
+
+fn join_refs(f: &Fixture, zone: &Oid, topic: &Oid) {
+    f.run(&["update-ref", ZONE_REF, zone.as_str()]);
+    f.run(&["update-ref", REQUEST_REF, topic.as_str()]);
+    f.anchor(topic, topic);
+    f.run(&["checkout", "--force", "request/task"]);
+}
+
+fn moved_refs(before: &[u8], name: &str, old: &Oid, new: &Oid) -> Vec<u8> {
+    let old_line = format!("{name} {old}\n");
+    let before = std::str::from_utf8(before).unwrap();
+    assert!(before.contains(&old_line));
+    before.replace(&old_line, &format!("{name} {new}\n")).into_bytes()
+}

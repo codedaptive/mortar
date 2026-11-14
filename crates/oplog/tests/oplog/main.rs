@@ -8,6 +8,7 @@ mod crash;
 mod locks;
 mod protection;
 mod takeover_guards;
+mod with_lock;
 mod undo_restore;
 mod recovery;
 mod ref_names;
