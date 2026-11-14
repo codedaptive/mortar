@@ -5,7 +5,7 @@ use std::fmt::Write;
 /// Appends `s` to `out` in double quotes. Escapes '"', '\' and every char below U+0020 (\n \r \t \b \f
 /// in their short forms, the rest as \u00XX); every other char, non-ASCII included, is written as is,
 /// so a record stays on one line whatever its strings hold.
-pub(crate) fn write_json_string(out: &mut String, s: &str) {
+pub fn write_json_string(out: &mut String, s: &str) {
     out.push('"');
     for c in s.chars() {
         match c {

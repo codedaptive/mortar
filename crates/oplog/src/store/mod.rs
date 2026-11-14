@@ -100,6 +100,7 @@ pub use read_op_log::read_op_log;
 pub use read_ref_value::read_ref_value;
 pub use ref_move::RefMove;
 pub use unix_now::unix_now;
+pub use write_json_string::write_json_string;
 
 pub(crate) use decode_op_line::decode_op_line;
 pub(crate) use decode_op_result::decode_op_result;
@@ -117,4 +118,3 @@ pub(crate) use parse_json_string::parse_json_string;
 pub(crate) use take_oid::take_oid;
 pub(crate) use take_optional_oid::take_optional_oid;
 pub(crate) use take_string::take_string;
-pub(crate) use write_json_string::write_json_string;
