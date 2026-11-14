@@ -4,6 +4,8 @@ use join::{replay, JoinError, ReplayResult};
 use std::{fs, path::PathBuf};
 use testkit::{write_git_shim, TestRepo};
 
+mod overlap;
+
 #[test]
 fn clean_replay_keeps_each_author_message_and_trailer_and_moves_no_ref_on_either_path() {
     // Joins join::replay -> native replay or merge_tree/commit_info/commit_tree -> real commit chain.
