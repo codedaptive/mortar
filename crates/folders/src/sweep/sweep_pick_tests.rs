@@ -43,7 +43,7 @@ fn a_joined_branch_comes_with_its_snapshot_ref() {
     let input = refs(&[(A, "refs/heads/req/z/r"), (B, "refs/heads/zone/z"), (C, "refs/mortar/snap/z/r")]);
     let joined = [leftover("refs/heads/req/z/r", A, B)];
     assert_eq!(
-        sweep_pick(&input, &joined, &[], &[]).unwrap(),
+        sweep_pick(&input, &[], &joined, &[], &[]).unwrap(),
         picked(&[("refs/heads/req/z/r", A), ("refs/mortar/snap/z/r", C)])
     );
 }
@@ -53,7 +53,7 @@ fn a_joined_branch_whose_name_plan_would_refuse_still_comes_with_its_snapshot_re
     let input = refs(&[(A, "refs/heads/req/z/r~1"), (B, "refs/heads/zone/z"), (C, "refs/mortar/snap/z/r~1")]);
     let joined = [leftover("refs/heads/req/z/r~1", A, B)];
     assert_eq!(
-        sweep_pick(&input, &joined, &[], &[]).unwrap(),
+        sweep_pick(&input, &[], &joined, &[], &[]).unwrap(),
         picked(&[("refs/heads/req/z/r~1", A), ("refs/mortar/snap/z/r~1", C)])
     );
 }
@@ -63,7 +63,7 @@ fn a_joined_branch_with_no_snapshot_ref_comes_alone() {
     let input = refs(&[(A, "refs/heads/req/z/r"), (B, "refs/heads/zone/z"), (C, "refs/mortar/snap/z/other")]);
     let joined = [leftover("refs/heads/req/z/r", A, B)];
     assert_eq!(
-        sweep_pick(&input, &joined, &[], &[]).unwrap(),
+        sweep_pick(&input, &[], &joined, &[], &[]).unwrap(),
         picked(&[("refs/mortar/snap/z/other", C), ("refs/heads/req/z/r", A)])
     );
 }
@@ -79,7 +79,7 @@ fn closed_snapshot_refs_then_joined_then_extras() {
     ]);
     let joined = [leftover("refs/heads/req/z/r", A, B)];
     assert_eq!(
-        sweep_pick(&input, &joined, &names(&["refs/t3/checkpoint/1"]), &[]).unwrap(),
+        sweep_pick(&input, &[], &joined, &names(&["refs/t3/checkpoint/1"]), &[]).unwrap(),
         picked(&[
             ("refs/mortar/snap/y/closed", D),
             ("refs/heads/req/z/r", A),
@@ -94,7 +94,7 @@ fn a_duplicate_is_dropped_keeping_the_first() {
     let input = refs(&[(A, "refs/t3/checkpoint/1"), (B, "refs/mortar/snap/y/closed")]);
     let extras = names(&["refs/t3/checkpoint/1", "refs/t3/checkpoint/1"]);
     assert_eq!(
-        sweep_pick(&input, &[], &extras, &[]).unwrap(),
+        sweep_pick(&input, &[], &[], &extras, &[]).unwrap(),
         picked(&[("refs/mortar/snap/y/closed", B), ("refs/t3/checkpoint/1", A)])
     );
 }
@@ -104,7 +104,7 @@ fn a_joined_branch_listed_twice_is_picked_once() {
     let input = refs(&[(A, "refs/heads/req/z/r"), (B, "refs/heads/zone/z"), (C, "refs/mortar/snap/z/r")]);
     let joined = [leftover("refs/heads/req/z/r", A, B), leftover("refs/heads/req/z/r", A, B)];
     assert_eq!(
-        sweep_pick(&input, &joined, &[], &[]).unwrap(),
+        sweep_pick(&input, &[], &joined, &[], &[]).unwrap(),
         picked(&[("refs/heads/req/z/r", A), ("refs/mortar/snap/z/r", C)])
     );
 }
@@ -123,7 +123,7 @@ fn a_refused_extra_is_the_error_even_with_refs_to_sweep() {
         by: "land".to_string(),
     }];
     let extras = names(&["refs/t3/checkpoint/1", "refs/proven/z", "refs/heads/main"]);
-    match sweep_pick(&input, &joined, &extras, &protected) {
+    match sweep_pick(&input, &[], &joined, &extras, &protected) {
         Err(FolderError::ExtraRefRefused { refname, reason }) => {
             assert_eq!((refname.as_str(), reason.as_str()), ("refs/proven/z", "is protected by land"));
         }
@@ -135,5 +135,5 @@ fn a_refused_extra_is_the_error_even_with_refs_to_sweep() {
 fn a_skipped_extra_is_absent() {
     let input = refs(&[(A, "refs/t3/checkpoint/1")]);
     let extras = names(&["refs/t3/checkpoint/gone", "refs/t3/checkpoint/1"]);
-    assert_eq!(sweep_pick(&input, &[], &extras, &[]).unwrap(), picked(&[("refs/t3/checkpoint/1", A)]));
+    assert_eq!(sweep_pick(&input, &[], &[], &extras, &[]).unwrap(), picked(&[("refs/t3/checkpoint/1", A)]));
 }

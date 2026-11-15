@@ -22,7 +22,7 @@ fn a_closed_requests_trysnap_refs_go_with_its_snap_ref_and_open_requests_keep_th
     let mut expected = refs(&a.f.git);
     for name in CLOSED { expected.remove(name); }
     let start = records(&a.f).len();
-    assert_eq!(sweep(&a.f, &a.f.git, &[], &[]).unwrap(), CLOSED.map(str::to_string));
+    assert_eq!(sweep(&a.f, &a.f.git, &[], &[], &[]).unwrap(), CLOSED.map(str::to_string));
     assert_eq!(refs(&a.f.git), expected);
     for kept in [SNAP, &trysnap_ref(1), REQ_REF, OPEN_SNAP, OPEN_TRYSNAP] {
         assert_eq!(a.f.git.read_ref(kept).unwrap(), Some(head.clone()), "{kept}");
@@ -42,7 +42,7 @@ fn after_drop_attempts_and_remove_the_trysnap_refs_left_are_swept() {
     assert_eq!(a.f.git.read_ref(&trysnap_ref(1)).unwrap(), Some(head.clone()), "remove leaves trysnap refs");
     let start = records(&a.f).len();
     let swept = [trysnap_ref(1), trysnap_ref(2)];
-    assert_eq!(sweep(&a.f, &a.f.git, &[], &[]).unwrap(), swept);
+    assert_eq!(sweep(&a.f, &a.f.git, &[], &[], &[]).unwrap(), swept);
     for name in &swept { assert_eq!(a.f.git.read_ref(name).unwrap(), None, "{name}"); }
     assert_delete_pair(&records(&a.f)[start..], "folder-sweep-refs", &[swept[0].as_str(), swept[1].as_str()], &head);
 }
@@ -54,7 +54,7 @@ fn with_only_a_hand_made_try_ref_that_is_not_an_attempt_left_the_snap_and_trysna
     let swept = [SNAP, one.as_str(), two.as_str()];
     for name in swept.into_iter().chain([HAND_MADE]) { run(&f.git, &["update-ref", name, f.head.as_str()]); }
     let start = records(&f).len();
-    assert_eq!(sweep(&f, &f.git, &[], &[]).unwrap(), swept.map(str::to_string));
+    assert_eq!(sweep(&f, &f.git, &[], &[], &[]).unwrap(), swept.map(str::to_string));
     for name in swept { assert_eq!(f.git.read_ref(name).unwrap(), None, "{name}"); }
     assert_eq!(f.git.read_ref(HAND_MADE).unwrap(), Some(f.head.clone()));
     assert_delete_pair(&records(&f)[start..], "folder-sweep-refs", &swept, &f.head);
