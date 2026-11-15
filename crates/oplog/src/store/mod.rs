@@ -110,7 +110,9 @@ pub use encode_valued_record::encode_valued_record;
 pub use intent_record::intent_record;
 pub use json_error::JsonError;
 pub use json_value::JsonValue;
-pub use marked::{append_marked_record, decode_marked_log, read_marked_log, MarkedLog, MarkedRecord};
+pub use marked::{
+    append_marked_record, decode_marked_log, encode_marked_record, read_marked_log, MarkedLog, MarkedRecord,
+};
 pub use op::Op;
 pub use op_log::OpLog;
 pub use op_phase::OpPhase;
