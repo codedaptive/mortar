@@ -39,8 +39,11 @@ fn publish_moves_the_remote_then_the_local_origin_and_cleans_up() {
             ("publish-squash", OpPhase::Done),
         ]
     );
-    let push_move =
-        vec![RefMove { refname: "refs/heads/main".to_string(), old: Some(fx.base.clone()), new: squash.commit.clone() }];
+    let push_move = vec![RefMove {
+        refname: "refs/heads/main".to_string(),
+        old: Some(fx.base.clone()),
+        new: squash.commit.clone(),
+    }];
     assert_eq!(records[2].moves, push_move);
     assert_eq!(records[3].moves, push_move);
     let origin = Some("origin".to_string());

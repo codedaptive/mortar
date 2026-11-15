@@ -6,6 +6,7 @@
 //! a_remote_moved_by_someone_else_is_fetched_backed_out_onto_and_lands_again,
 //! killed_between_the_steps_recovers_and_the_repeat_publishes_once,
 //! with_no_landing_state_there_is_nothing_to_publish_and_the_remote_is_untouched,
+//! publishing::a_remote_already_past_new_with_no_open_intent_is_published,
 //! publishing::an_open_push_intent_after_the_push_is_closed_done_on_the_repeat,
 //! publishing::an_open_push_intent_before_the_push_is_closed_failed_and_pushed_again and
 //! publishing::an_open_push_intent_with_the_remote_past_new_is_closed_done (a push intent left open is settled
