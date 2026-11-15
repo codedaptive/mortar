@@ -9,7 +9,7 @@ fn verb(name: &str) -> &'static VerbSpec {
 #[test]
 fn built_verbs_are_listed_alphabetically() {
     let names: Vec<&str> = VERBS.iter().map(|verb| verb.name).collect();
-    assert_eq!(names, vec!["guard-hook", "init", "join", "need", "resolve", "save", "status"]);
+    assert_eq!(names, vec!["guard-hook", "init", "join", "log", "need", "resolve", "restore", "save", "status"]);
 }
 
 #[test]
@@ -74,4 +74,25 @@ fn status_is_an_agent_verb_without_lock_that_needs_the_config() {
     assert_eq!(status.lock, LockNeed::NoLock);
     assert!(status.needs_config);
     assert_eq!(status.usage, "mortar status [--json]");
+}
+
+#[test]
+fn log_is_a_read_only_verb_without_lock_that_needs_the_config() {
+    let log = verb("log");
+    assert_eq!(log.kind, VerbKind::ReadOnly);
+    assert_eq!(log.lock, LockNeed::NoLock);
+    assert!(log.needs_config);
+    assert_eq!(log.usage, "mortar log [--ref <full ref name>] [--actor <name>] [--key <operation key>] [--json]");
+}
+
+#[test]
+fn restore_is_a_harness_verb_whose_lock_comes_from_its_refs_that_needs_the_config() {
+    let restore = verb("restore");
+    assert_eq!(restore.kind, VerbKind::Harness);
+    assert_eq!(restore.lock, LockNeed::FromRefs);
+    assert!(restore.needs_config);
+    assert_eq!(
+        restore.usage,
+        "mortar restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]"
+    );
 }

@@ -71,3 +71,18 @@ fn fields_follow_owner_in_order_with_each_value_kind() {
          \"key\":null,\"paths\":[\"a\",\"b\"]}\n"
     );
 }
+
+#[test]
+fn a_raw_field_writes_its_values_as_they_are() {
+    let mut listed = report(ExitCode::Done, "listed");
+    listed.lines = Vec::new();
+    listed.fields = vec![
+        ("records".to_string(), OutValue::Raw(vec!["{\"op_id\":\"a\"}".to_string(), "[1,null]".to_string()])),
+        ("none".to_string(), OutValue::Raw(Vec::new())),
+    ];
+    assert_eq!(
+        render_json(&listed),
+        "{\"verb\":\"init\",\"ok\":true,\"outcome\":\"listed\",\"exit\":0,\"next\":\"mortar init\",\"lines\":[],\
+         \"owner\":null,\"records\":[{\"op_id\":\"a\"},[1,null]],\"none\":[]}\n"
+    );
+}

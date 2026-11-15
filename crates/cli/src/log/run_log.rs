@@ -1,0 +1,46 @@
+//! run_log: `mortar log [--ref <r>] [--actor <a>] [--key <k>]`, the read-only verb that lists the op log's records
+//! (S-114).
+//! No unit test: it runs git for the common dir and reads the op log file (S-5, S-104); log_filters_tests,
+//! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, and the ZIT
+//! crates/cli/tests/run_log_tests.rs its usage refusals before any read. Nagatha's integration group is to cover, with
+//! the mortar binary as a child process in a throwaway repository with ops in its log (tests running real git set
+//! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
+//! - a real log read with each filter (--ref, --actor, --key) lists the matching ops, and with two filters their AND;
+//! - with no filter it lists every op; a filter nothing matches is exit 0, outcome empty;
+//! - --json "records" equal oplog's lines for those ops, byte for byte;
+//! - log writes nothing: refs, the op log and the lock folder are unchanged after it;
+//! - run outside any git repository it is refused, exit 1, outcome not-a-repository.
+
+use std::path::Path;
+
+use gitio::Git;
+use oplog::{encode_op_record, read_op_log};
+
+use super::{log_filters, log_report, matching_records};
+use crate::args::{usage_report, UsageError};
+use crate::context::{repository_error, repository_report};
+use crate::report::{failure_report, Report};
+use crate::shell::ShellContext;
+
+/// Reads the filters first (log_filters: a bad line is log's usage, exit 4, before any read); then the repository's
+/// common dir from `cwd` (no repository: repository_report) and its op log (unreadable: failure_report), and
+/// reports the records every filter keeps (matching_records), each with its line as oplog encodes it
+/// (encode_op_record), through log_report. No lock, no op, writes nothing (S-114).
+pub fn run_log(context: &ShellContext, cwd: &Path) -> Report {
+    let args = &context.args;
+    let filters = match log_filters(&args.rest, args.key.as_deref(), args.actor.as_deref()) {
+        Ok(filters) => filters,
+        Err(reason) => return usage_report(&UsageError { verb: Some("log".to_string()), reason, json: args.json }),
+    };
+    let common = match Git::new(cwd).common_dir() {
+        Ok(common) => common,
+        Err(error) => return repository_report("log", &repository_error(cwd, error)),
+    };
+    match read_op_log(&common) {
+        Ok(log) => {
+            let records = matching_records(&log.records, &filters);
+            log_report(&records, records.iter().map(|record| encode_op_record(record)).collect())
+        }
+        Err(error) => failure_report("log", &error.to_string()),
+    }
+}

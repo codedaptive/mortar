@@ -20,3 +20,8 @@ fn land_and_folders_take_their_own_locks_whatever_the_zone() {
     assert_eq!(lock_name_for(LockNeed::Land, "orc"), Some(LockName::Land));
     assert_eq!(lock_name_for(LockNeed::Folders, "orc"), Some(LockName::Folders));
 }
+
+#[test]
+fn from_refs_takes_none_here_because_the_verb_chooses_its_lock() {
+    assert_eq!(lock_name_for(LockNeed::FromRefs, "orc"), None);
+}

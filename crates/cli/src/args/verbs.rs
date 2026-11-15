@@ -29,6 +29,13 @@ pub const VERBS: &[VerbSpec] = &[
         usage: "mortar join [--key <operation key>] [--json]",
     },
     VerbSpec {
+        name: "log",
+        kind: VerbKind::ReadOnly,
+        lock: LockNeed::NoLock,
+        needs_config: true,
+        usage: "mortar log [--ref <full ref name>] [--actor <name>] [--key <operation key>] [--json]",
+    },
+    VerbSpec {
         name: "need",
         kind: VerbKind::Agent,
         lock: LockNeed::Join,
@@ -41,6 +48,13 @@ pub const VERBS: &[VerbSpec] = &[
         lock: LockNeed::Join,
         needs_config: true,
         usage: "mortar resolve [--key <operation key>] [--json]",
+    },
+    VerbSpec {
+        name: "restore",
+        kind: VerbKind::Harness,
+        lock: LockNeed::FromRefs,
+        needs_config: true,
+        usage: "mortar restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "save",
