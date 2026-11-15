@@ -2,22 +2,13 @@
 //! with the zone's tip; a checked-out one, one with no zone branch, a try/ attempt branch, a three-segment name and a
 //! non-req ref are not; input order is kept.
 
-use gitio::Oid;
-
 use super::leftover_branches::leftover_branches;
 use super::Leftover;
+use crate::test_ref_pairs::{oid, refs};
 
 const A: &str = "0123456789abcdef0123456789abcdef01234567";
 const B: &str = "fedcba9876543210fedcba9876543210fedcba98";
 const C: &str = "1111111111111111111111111111111111111111";
-
-fn oid(hex: &str) -> Oid {
-    Oid::parse(hex).unwrap()
-}
-
-fn refs(names: &[(&str, &str)]) -> Vec<(Oid, String)> {
-    names.iter().map(|(hex, name)| (oid(hex), name.to_string())).collect()
-}
 
 #[test]
 fn a_branch_with_no_worktree_and_a_zone_branch_is_picked() {

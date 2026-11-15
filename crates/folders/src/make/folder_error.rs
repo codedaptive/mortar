@@ -54,7 +54,7 @@ pub enum FolderError {
     /// display text) of its request remain (S-82); nothing changed.
     AttemptsRemain { path: PathBuf, attempts: Vec<String> },
     /// keep or drop_attempts refused: the attempt folders at `paths` have lost their try branch (orphans); nothing
-    /// was touched; next step: remake_orphans, which the cli runs (S-96).
+    /// was touched; next step: remake_orphans, which the caller runs (S-96).
     OrphanAttempt { paths: Vec<PathBuf> },
     /// remake_orphans refused: the orphan attempt folders at `paths` have no trysnap ref, or its commit has no
     /// parent, so Mortar holds no copy of them; nothing changed; next step: copy out anything wanted, then remove
@@ -106,7 +106,7 @@ pub enum FolderError {
     },
     /// remove took the folder at `path` away, but the ref `moved` was not where remove read it when the delete op
     /// ran (`at`: where it is now, None when absent), so neither `branch` nor its snapshot ref was deleted. The
-    /// branch is already contained in its zone, so the work they hold is in the zone; mortar sweep (sweep_refs)
+    /// branch is already contained in its zone, so the work they hold is in the zone; a ref sweep (sweep_refs)
     /// deletes both once nothing holds the branch (S-52 (1)).
     RemovedRefsLeft {
         path: PathBuf,

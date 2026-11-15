@@ -29,10 +29,6 @@ mod leftover_branches_tests;
 #[cfg(test)]
 mod stale_replayed_refs_tests;
 #[cfg(test)]
-mod sweep_pick_replayed_tests;
-#[cfg(test)]
-mod sweep_pick_tests;
-#[cfg(test)]
 mod sweep_refs_op_tests;
 
 pub use closed_snap_refs::closed_snap_refs;

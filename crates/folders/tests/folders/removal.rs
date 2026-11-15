@@ -81,7 +81,8 @@ fn snapshot_raced_after_actual_worktree_removal_keeps_both_refs_and_sweep_finish
     let (git, marker, _) = instrument(&m.f, "move-ref", SNAP, &next);
     let error = m.remove(&git).unwrap_err();
     assert!(matches!(&error, FolderError::RemovedRefsLeft { path, branch, moved, at } if path == &m.folder && branch == BRANCH && moved == SNAP && at == &Some(next.clone())), "{error:?}");
-    assert!(error.to_string().contains("mortar sweep"));
+    assert!(error.to_string().contains("next step: none needed now; the harness's ref sweep deletes both"));
+    assert!(!error.to_string().contains("mortar sweep"));
     assert_eq!(fs::read(marker).unwrap(), b"removed\n"); assert!(!m.folder.exists());
     assert_eq!(m.f.git.read_ref(BRANCH).unwrap(), Some(m.f.head.clone()));
     assert_eq!(m.f.git.read_ref(SNAP).unwrap(), Some(next));

@@ -35,8 +35,8 @@ use crate::record::FolderKind;
 /// its zone branch is NotJoined; a request whose attempt branches (refs/heads/try/<zone>/<request>/<k>, k an attempt
 /// number) or attempt folders remain is AttemptsRemain (attempts_refusal), naming the branches by full name and the
 /// folders by path as display text, with nothing changed; the next step is keep or drop_attempts (S-82); an attempt
-/// folder whose branch is gone is refused by both (OrphanAttempt) until remake_orphans, which the cli runs first, makes
-/// it ordinary, and with no snapshot to re-make it from it is copied out and removed by hand. Then git
+/// folder whose branch is gone is refused by both (OrphanAttempt) until remake_orphans, which the caller runs first,
+/// makes it ordinary, and with no snapshot to re-make it from it is copied out and removed by hand. Then git
 /// removes the worktree without force, so git itself refuses modified or untracked files (Git, nothing deleted), and
 /// one folder-remove op deletes the branch and the snapshot ref, if there is one; a ref not where it was read keeps
 /// both refs and is RemovedRefsLeft, since the worktree is already gone. The caller holds the lock and runs

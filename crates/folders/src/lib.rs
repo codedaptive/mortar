@@ -10,6 +10,9 @@ pub mod record;
 pub mod remove;
 pub mod sweep;
 
+#[cfg(test)]
+mod test_ref_pairs;
+
 pub use attempts::{drop_attempts, drop_op, keep, keep_op, make_attempts, remake_orphans};
 pub use disk::{disk, DiskReport, FolderDisk};
 pub use make::{make_request_folder, make_zone_folder, FolderError, FolderSetup};

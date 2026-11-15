@@ -2,30 +2,13 @@
 //! zone is not is picked, every one when the list is empty; a zone may hold '/'; non-family names are left alone;
 //! input order is kept.
 
-use gitio::Oid;
-
 use super::stale_replayed_refs::stale_replayed_refs;
+use crate::test_ref_pairs::{picked, refs, strings as zones};
 
 const A: &str = "0123456789abcdef0123456789abcdef01234567";
 const B: &str = "fedcba9876543210fedcba9876543210fedcba98";
 const C: &str = "1111111111111111111111111111111111111111";
 const D: &str = "2222222222222222222222222222222222222222";
-
-fn oid(hex: &str) -> Oid {
-    Oid::parse(hex).unwrap()
-}
-
-fn refs(names: &[(&str, &str)]) -> Vec<(Oid, String)> {
-    names.iter().map(|(hex, name)| (oid(hex), name.to_string())).collect()
-}
-
-fn picked(pairs: &[(&str, &str)]) -> Vec<(String, Oid)> {
-    pairs.iter().map(|(name, hex)| (name.to_string(), oid(hex))).collect()
-}
-
-fn zones(list: &[&str]) -> Vec<String> {
-    list.iter().map(|zone| zone.to_string()).collect()
-}
 
 #[test]
 fn a_listed_zones_ref_is_kept() {

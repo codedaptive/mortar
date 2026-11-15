@@ -1,22 +1,14 @@
 //! extra_ref_verdict: refs/heads/, refs/mortar/ and refs/remotes/ names are refused even when absent; a protected
 //! ref is refused naming its protector; an absent ref is skipped; a present one is accepted with its id.
 
-use gitio::Oid;
 use oplog::ProtectedRef;
 
 use super::extra_ref_verdict::extra_ref_verdict;
 use super::ExtraRef;
+use crate::test_ref_pairs::{oid, refs};
 
 const A: &str = "0123456789abcdef0123456789abcdef01234567";
 const B: &str = "fedcba9876543210fedcba9876543210fedcba98";
-
-fn oid(hex: &str) -> Oid {
-    Oid::parse(hex).unwrap()
-}
-
-fn refs(names: &[(&str, &str)]) -> Vec<(Oid, String)> {
-    names.iter().map(|(hex, name)| (oid(hex), name.to_string())).collect()
-}
 
 fn guard(refname: &str, by: &str) -> ProtectedRef {
     ProtectedRef {

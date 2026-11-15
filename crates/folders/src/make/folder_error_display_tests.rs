@@ -234,7 +234,8 @@ fn not_removed_unsaved_with_no_refused_file_says_save() {
     };
     assert_eq!(
         text(err),
-        "/wt/a holds work that is not saved; the folder was not removed; next step: mortar save"
+        "/wt/a holds work that is not saved; the folder was not removed; next step: have the folder's agent run \
+         mortar save, then repeat"
     );
 }
 
@@ -248,7 +249,8 @@ fn not_removed_unsaved_names_the_refused_files_and_the_cap() {
     assert_eq!(
         text(err),
         "/wt/a holds files the snapshot size cap (1048576 bytes) refused: big.bin, data/huge.tar; they are in no \
-         snapshot, so the folder was not removed; next step: move or delete them, then mortar save"
+         snapshot, so the folder was not removed; next step: have the folder's agent move or delete them and run \
+         mortar save, then repeat"
     );
 }
 
@@ -262,7 +264,7 @@ fn not_removed_unsaved_with_no_cap_leaves_the_cap_out() {
     assert_eq!(
         text(err),
         "/wt/a holds files the snapshot size cap refused: big.bin; they are in no snapshot, so the folder was not \
-         removed; next step: move or delete them, then mortar save"
+         removed; next step: have the folder's agent move or delete them and run mortar save, then repeat"
     );
 }
 
@@ -345,7 +347,8 @@ fn removed_refs_left_names_the_folder_both_refs_and_where_the_moved_one_is() {
         text(err),
         "/wt/a was removed, but ref refs/mortar/snap/folders/WO-1 moved (now at \
          2222222222222222222222222222222222222222) before branch refs/heads/req/folders/WO-1 and its snapshot ref \
-         were deleted; both are left as they are; the work they hold is in the zone; next step: mortar sweep"
+         were deleted; both are left as they are; the work they hold is in the zone; next step: none needed now; \
+         the harness's ref sweep deletes both once nothing holds the branch"
     );
 }
 
@@ -361,7 +364,8 @@ fn removed_refs_left_with_no_commit_says_so() {
         text(err),
         "/wt/a was removed, but ref refs/heads/req/folders/WO-1 moved (now at no commit) before branch \
          refs/heads/req/folders/WO-1 and its snapshot ref were deleted; both are left as they are; the work they \
-         hold is in the zone; next step: mortar sweep"
+         hold is in the zone; next step: none needed now; the harness's ref sweep deletes both once nothing holds \
+         the branch"
     );
 }
 
@@ -445,9 +449,9 @@ fn attempts_unsaved_names_every_folder_and_the_next_step() {
     };
     assert_eq!(
         text(err),
-        "attempts /wt/try-1, refs/heads/try/z/r/3 are not marked saved; nothing changed; next step: mortar save in \
-         each listed folder, then run the same command again; for a listed branch with no folder, make the attempt \
-         folder again on its try branch and mortar save there, then run the same command again"
+        "attempts /wt/try-1, refs/heads/try/z/r/3 are not marked saved; nothing changed; next step: have each \
+         listed folder's agent run mortar save, then repeat; for a listed branch with no folder, make its attempt \
+         folder again on its try branch and have its agent run mortar save there, then repeat"
     );
 }
 
@@ -460,21 +464,21 @@ fn attempts_remain_names_the_folder_every_attempt_and_the_next_step() {
     assert_eq!(
         text(err),
         "/wt/WO-1 was not removed: attempts of its request remain: refs/heads/try/z/r/1, /wt/try-2; nothing \
-         changed; next step: keep one attempt or drop them all (drop_attempts); for an attempt folder that lost its \
-         branch, remake_orphans first (mortar runs it), and with no snapshot of it, copy out anything wanted and \
-         remove it by hand"
+         changed; next step: have the harness keep one attempt or drop them all; an attempt folder that lost its \
+         branch is re-made from its snapshot when the harness keeps or drops, and one with no snapshot: copy out \
+         anything wanted and remove it by hand"
     );
 }
 
 #[test]
-fn orphan_attempt_names_every_folder_and_remake_orphans() {
+fn orphan_attempt_names_every_folder_and_the_repeat_by_the_harness() {
     let err = FolderError::OrphanAttempt {
         paths: vec![PathBuf::from("/wt/try-1"), PathBuf::from("/wt/try-2")],
     };
     assert_eq!(
         text(err),
-        "attempt folders /wt/try-1, /wt/try-2 have lost their try branch; nothing changed; next step: remake_orphans \
-         (mortar runs it before keep and drop), then run the same command again"
+        "attempt folders /wt/try-1, /wt/try-2 have lost their try branch; nothing changed; next step: keeping or \
+         dropping re-makes each from its snapshot first, so have the harness run the same command again"
     );
 }
 
