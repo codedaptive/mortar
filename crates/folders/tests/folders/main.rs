@@ -18,6 +18,7 @@ mod index_tree_moves;
 mod maintenance_support;
 mod removal;
 mod sweeps;
+mod sweeps_replayed;
 mod disk_cases;
 mod attempt_plans;
 mod attempt_support;

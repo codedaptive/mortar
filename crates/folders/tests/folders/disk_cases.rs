@@ -7,7 +7,7 @@ use std::{fs::{self, File, FileTimes}, os::unix::fs::symlink, path::Path, time::
 #[test]
 fn disk_lists_only_live_mortar_folders_measures_literal_bytes_and_mtimes_and_counts_shared_store_once() {
     let m = Removal::new();
-    let before_store = disk(&m.f.git, 1, &[], &[]).unwrap().store_bytes;
+    let before_store = disk(&m.f.git, 1, &[], &[], &[]).unwrap().store_bytes;
     assert!(before_store > 0, "the fixture has real objects");
     let zone = m.f.repo.path.join("standing");
     make_zone_folder(&setup(&m.f.git, &zone), "red", &["kit/zone".into()], None).unwrap();
@@ -28,7 +28,7 @@ fn disk_lists_only_live_mortar_folders_measures_literal_bytes_and_mtimes_and_cou
     for name in ["refs/mortar/snap/red/closed", SNAP, "refs/tags/v1"] { run(&m.f.git, &["update-ref", name, m.f.head.as_str()]); }
     fs::write(m.f.common.join("objects/integration-accounting"), b"thirteen-byte").unwrap();
     let before_log = log(&m.f); let before_refs = refs(&m.f.git);
-    let report = disk(&m.f.git, 1, &[], &[]).unwrap();
+    let report = disk(&m.f.git, 1, &[], &[], &[]).unwrap();
     let mut names = report.folders.iter().map(|f| f.path.clone()).collect::<Vec<_>>(); names.sort();
     let mut expected = vec![m.folder.clone(), zone.clone()]; expected.sort();
     assert_eq!(names, expected, "neither main checkout nor prunable worktree is a Mortar folder");
@@ -59,7 +59,7 @@ fn disk_sweep_figure_matches_exact_idle_build_deletion_while_recent_folder_main_
     stamp_tree(&zone, 1_000_000_000); stamp_tree(&m.folder, 1_000_000_000);
     stamp(&m.folder.join("target/build"), 2_000_000_000); // A build-file touch alone keeps the folder active (S-52).
     let before_refs = refs(&m.f.git); let before_log = log(&m.f);
-    let report = disk(&m.f.git, 1, &[], &[]).unwrap(); assert_eq!(report.sweep.bytes, 7);
+    let report = disk(&m.f.git, 1, &[], &[], &[]).unwrap(); assert_eq!(report.sweep.bytes, 7);
     let result = sweep_build(&m.f.git, 1).unwrap();
     assert_eq!(result.removed, vec![zone.join("target")]); assert_eq!(result.freed_bytes, 7);
     assert_eq!(result.freed_bytes, report.sweep.bytes);
@@ -81,7 +81,7 @@ fn sweep_never_follows_or_deletes_a_symlink_build_dir_even_when_selected_as_idle
     assert!(result.removed.is_empty()); assert_eq!(result.freed_bytes, 0);
     assert!(fs::symlink_metadata(m.folder.join("target")).unwrap().file_type().is_symlink());
     assert_eq!(fs::read(m.f.repo.path.join("outside-target/keep")).unwrap(), b"external build stays\n");
-    let report = disk(&m.f.git, 0, &[], &[]).unwrap();
+    let report = disk(&m.f.git, 0, &[], &[], &[]).unwrap();
     assert_eq!(report.folders[0].build_bytes, 17, "symlink length, not the target's bytes");
 }
 
@@ -94,7 +94,7 @@ fn empty_recorded_worktree_has_zero_files_and_missing_build_has_zero_bytes_and_n
         if item.file_type().unwrap().is_dir() { fs::remove_dir_all(item.path()).unwrap(); }
         else { fs::remove_file(item.path()).unwrap(); }
     }
-    let report = disk(&m.f.git, 1, &[], &[]).unwrap();
+    let report = disk(&m.f.git, 1, &[], &[], &[]).unwrap();
     assert_eq!(report.folders.len(), 1); assert_eq!(report.folders[0].path, m.folder);
     assert_eq!(report.folders[0].files_bytes, 0); assert_eq!(report.folders[0].build_bytes, 0);
     assert_eq!(report.folders[0].newest, None);

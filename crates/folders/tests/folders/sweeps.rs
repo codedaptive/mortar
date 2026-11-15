@@ -19,7 +19,7 @@ fn sweep_deletes_closed_snapshot_joined_leftover_and_extra_but_keeps_open_unjoin
     for name in deleted { expected.remove(name); }
     let start = records(&m.f).len();
     let (git, _, maintenance) = instrument(&m.f, "observe", "", &m.f.head);
-    assert_eq!(sweep(&m.f, &git, &["refs/checkpoints/closed".into(), "refs/checkpoints/absent".into(), "refs/checkpoints/closed".into()], &[]).unwrap(), deleted.map(str::to_string));
+    assert_eq!(sweep(&m.f, &git, &[], &["refs/checkpoints/closed".into(), "refs/checkpoints/absent".into(), "refs/checkpoints/closed".into()], &[]).unwrap(), deleted.map(str::to_string));
     assert_eq!(refs(&m.f.git), expected);
     assert_eq!(m.f.git.read_ref(BRANCH).unwrap(), Some(m.f.head.clone()), "joined but checked-out request is kept");
     assert_eq!(m.f.git.read_ref(SNAP).unwrap(), Some(m.f.head.clone()));
@@ -28,7 +28,7 @@ fn sweep_deletes_closed_snapshot_joined_leftover_and_extra_but_keeps_open_unjoin
     let ops = records(&m.f); assert_delete_pair(&ops[start..], "folder-sweep-refs", &deleted, &m.f.head);
     assert_eq!(fs::read(&maintenance).unwrap(), b"maintenance\n");
     let before_log = log(&m.f);
-    assert!(sweep(&m.f, &git, &["refs/checkpoints/absent".into()], &[]).unwrap().is_empty());
+    assert!(sweep(&m.f, &git, &[], &["refs/checkpoints/absent".into()], &[]).unwrap().is_empty());
     assert_eq!(log(&m.f), before_log, "empty selection logs no op");
     assert_eq!(fs::read(maintenance).unwrap(), b"maintenance\nmaintenance\n", "maintenance still runs with no refs to sweep");
     assert_eq!(refs(&m.f.git), expected);
@@ -46,7 +46,7 @@ fn forbidden_namespace_and_caller_protected_extras_refuse_before_any_op_or_delet
             let protected = [ProtectedRef { refname: "refs/checkpoints/protected".into(), by: "fixture-owner".into() }];
             let before_refs = refs(&m.f.git); let before_log = log(&m.f);
             let (git, _, maintenance) = instrument(&m.f, "observe", "", &m.f.head);
-            let error = sweep(&m.f, &git, &["refs/checkpoints/allowed".into(), name.into()], &protected).unwrap_err();
+            let error = sweep(&m.f, &git, &[], &["refs/checkpoints/allowed".into(), name.into()], &protected).unwrap_err();
             match error {
                 FolderError::ExtraRefRefused { refname, reason } => {
                     assert_eq!(refname, name);
@@ -71,7 +71,7 @@ fn sweep_cas_race_names_changed_ref_and_deletes_none_of_the_other_selected_refs(
     let next = child(&m.f, "concurrent extra ref");
     let mut expected = refs(&m.f.git); expected.insert(extra.into(), next.to_string());
     let (git, marker, maintenance) = instrument(&m.f, "sweep-race", extra, &next);
-    let error = sweep(&m.f, &git, &[extra.into()], &[]).unwrap_err();
+    let error = sweep(&m.f, &git, &[], &[extra.into()], &[]).unwrap_err();
     assert!(matches!(error, FolderError::RefMoved { refname, at } if refname == extra && at == Some(next)));
     assert_eq!(fs::read(marker).unwrap(), b"raced\n");
     assert_eq!(refs(&m.f.git), expected, "transaction must not delete the closed snapshot either");

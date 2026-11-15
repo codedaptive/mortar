@@ -1,5 +1,6 @@
-//! Sweeps: idle folders' build dirs, and refs: closed requests' snapshot refs (attempts' included), joined
-//! leftover request branches with their snapshot refs, and refs the caller names.
+//! Sweeps: idle folders' build dirs, and refs: closed requests' snapshot refs (attempts' included), replay-record
+//! refs of zones the caller no longer lists, joined leftover request branches with their snapshot refs, and refs the
+//! caller names.
 
 mod closed_snap_refs;
 mod default_build_dir;
@@ -10,6 +11,7 @@ mod idle_folders;
 mod joined_leftovers;
 mod leftover;
 mod leftover_branches;
+mod stale_replayed_refs;
 mod sweep_build;
 mod sweep_build_outcome;
 mod sweep_pick;
@@ -25,6 +27,10 @@ mod joined_leftovers_tests;
 #[cfg(test)]
 mod leftover_branches_tests;
 #[cfg(test)]
+mod stale_replayed_refs_tests;
+#[cfg(test)]
+mod sweep_pick_replayed_tests;
+#[cfg(test)]
 mod sweep_pick_tests;
 #[cfg(test)]
 mod sweep_refs_op_tests;
@@ -38,6 +44,7 @@ pub use idle_folders::idle_folders;
 pub use joined_leftovers::joined_leftovers;
 pub use leftover::Leftover;
 pub use leftover_branches::leftover_branches;
+pub use stale_replayed_refs::stale_replayed_refs;
 pub use sweep_build::sweep_build;
 pub use sweep_build_outcome::SweepBuildOutcome;
 pub use sweep_pick::sweep_pick;

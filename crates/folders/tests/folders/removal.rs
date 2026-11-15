@@ -86,7 +86,7 @@ fn snapshot_raced_after_actual_worktree_removal_keeps_both_refs_and_sweep_finish
     assert_eq!(m.f.git.read_ref(BRANCH).unwrap(), Some(m.f.head.clone()));
     assert_eq!(m.f.git.read_ref(SNAP).unwrap(), Some(next));
     let start = records(&m.f).len();
-    let deleted = sweep(&m.f, &m.f.git, &[], &[]).unwrap();
+    let deleted = sweep(&m.f, &m.f.git, &[], &[], &[]).unwrap();
     assert_eq!(deleted, [BRANCH.to_string(), SNAP.to_string()]);
     assert_eq!(m.f.git.read_ref(BRANCH).unwrap(), None); assert_eq!(m.f.git.read_ref(SNAP).unwrap(), None);
     let ops = records(&m.f); assert_eq!(ops.len(), start + 2);

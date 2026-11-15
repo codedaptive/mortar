@@ -36,8 +36,8 @@ pub fn caller<T>(git: &Git, common: &Path, work: impl FnOnce() -> Result<T, Fold
         Err(other) => panic!("unexpected caller-lock failure: {other:?}"),
     }
 }
-pub fn sweep(f: &Fixture, git: &Git, extra: &[String], protected: &[ProtectedRef]) -> Result<Vec<String>, FolderError> {
-    caller(git, &f.common, || folders::sweep_refs(git, ACTOR, extra, protected))
+pub fn sweep(f: &Fixture, git: &Git, zones: &[String], extra: &[String], protected: &[ProtectedRef]) -> Result<Vec<String>, FolderError> {
+    caller(git, &f.common, || folders::sweep_refs(git, ACTOR, zones, extra, protected))
 }
 pub fn child(f: &Fixture, message: &str) -> Oid {
     let tree = String::from_utf8(run(&f.git, &["rev-parse", "HEAD^{tree}"])).unwrap();
