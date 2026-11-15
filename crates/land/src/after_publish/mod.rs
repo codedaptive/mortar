@@ -9,7 +9,9 @@ mod after_publish_error_display;
 mod after_publish_error_source;
 mod decide_zone_case;
 mod move_zone;
+mod read_replayed_counterpart;
 mod read_squash_of;
+mod replayed_counterpart;
 mod requests_to_rebase;
 mod squash_of_in;
 mod squash_of_read;
@@ -25,6 +27,8 @@ mod after_publish_error_source_tests;
 #[cfg(test)]
 mod decide_zone_case_tests;
 #[cfg(test)]
+mod replayed_counterpart_tests;
+#[cfg(test)]
 mod requests_to_rebase_tests;
 #[cfg(test)]
 mod squash_of_in_tests;
@@ -36,7 +40,9 @@ pub use zone_requests::ZoneRequests;
 
 pub(crate) use decide_zone_case::decide_zone_case;
 pub(crate) use move_zone::move_zone;
+pub(crate) use read_replayed_counterpart::read_replayed_counterpart;
 pub(crate) use read_squash_of::read_squash_of;
+pub(crate) use replayed_counterpart::replayed_counterpart;
 pub(crate) use requests_to_rebase::requests_to_rebase;
 pub(crate) use squash_of_in::squash_of_in;
 pub(crate) use squash_of_read::SquashOfRead;

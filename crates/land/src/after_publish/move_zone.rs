@@ -1,10 +1,11 @@
 //! move_zone: one zone after a publish, put on or replayed onto origin, or left in place when it conflicts.
 //! No unit test: it runs git and writes the op log (S-5); decide_zone_case_tests and requests_to_rebase_tests cover
-//! its decisions. Covered by tests/after_publish_zit (zone_moves.rs): every case moves its zones through it.
+//! its decisions. Covered by tests/after_publish_zit (zone_moves.rs): every case moves its zones through it; and
+//! (replayed_source.rs) the publishing zone whose squash source an earlier after_publish replayed.
 
 use crate::after_publish::{
-    decide_zone_case, read_squash_of, requests_to_rebase, zone_move_op, AfterPublishError, SquashOfRead, ZoneCase,
-    ZoneMove, ZoneRequests,
+    decide_zone_case, read_replayed_counterpart, read_squash_of, requests_to_rebase, zone_move_op, AfterPublishError,
+    SquashOfRead, ZoneCase, ZoneMove, ZoneRequests,
 };
 use crate::landing::landing_applied;
 use crate::squash::read_tip;
@@ -14,7 +15,9 @@ use oplog::{apply, new_op_id, unix_now};
 use std::path::Path;
 
 /// Reads the zone tip (a missing branch is Squash) and its merge base with `origin` (none: Unrelated); for the
-/// publishing zone also the squash's Mortar-Squash-Of on origin's line and whether the zone holds it. Then, by
+/// publishing zone also the squash's Mortar-Squash-Of on origin's line and the zone's commit standing for it: the
+/// commit itself when the tip holds it, else its replayed counterpart between the base and the tip, which an earlier
+/// after_publish made when it replayed this zone onto another zone's origin. Then, by
 /// decide_zone_case: Current moves nothing. Advance moves the zone branch to origin in one op. Replay replays the
 /// zone's commits after the case's base onto origin (join's replay, merge attributes read from origin): clean, one
 /// op moves the branch to the replayed tip; conflicted, nothing moves and the answer names the commit and files.
@@ -38,8 +41,11 @@ pub(crate) fn move_zone(
         true => match read_squash_of(git, origin, &tip, &zone.zone)? {
             None => SquashOfRead::Missing,
             Some(commit) => {
-                let in_zone = git.is_ancestor(&commit, &tip).map_err(AfterPublishError::Git)?;
-                SquashOfRead::Found { commit, in_zone }
+                let held = match git.is_ancestor(&commit, &tip).map_err(AfterPublishError::Git)? {
+                    true => Some(commit.clone()),
+                    false => read_replayed_counterpart(git, &commit, &base, &tip)?,
+                };
+                SquashOfRead::Found { commit, held }
             }
         },
     };

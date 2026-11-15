@@ -1,6 +1,7 @@
 //! decide_zone_case: each rule with literal ids, in the contract's order: Current, then the zone that did not
 //! publish (Advance, Replay from the base), then the publishing zone (NoSquashOf, SquashOfNotInZone, Advance,
-//! Replay from the squash-of).
+//! Replay from the squash-of), then the publishing zone holding a replayed counterpart of the squash-of (at the tip
+//! it advances, before the tip it replays from the counterpart, none is refused naming the original commit).
 
 use super::{decide_zone_case, SquashOfRead, ZoneCase};
 use gitio::Oid;
@@ -9,14 +10,15 @@ const TIP: &str = "1111111111111111111111111111111111111111";
 const BASE: &str = "2222222222222222222222222222222222222222";
 const ORIGIN: &str = "3333333333333333333333333333333333333333";
 const SQUASH_OF: &str = "4444444444444444444444444444444444444444";
+const COUNTERPART: &str = "5555555555555555555555555555555555555555";
 
 /// The one helper building values only a constructor makes (Oid::parse).
 fn oid(hex: &str) -> Oid {
     Oid::parse(hex).unwrap()
 }
 
-fn found(commit: &str, in_zone: bool) -> SquashOfRead {
-    SquashOfRead::Found { commit: oid(commit), in_zone }
+fn found(commit: &str, held: Option<&str>) -> SquashOfRead {
+    SquashOfRead::Found { commit: oid(commit), held: held.map(oid) }
 }
 
 #[test]
@@ -24,9 +26,10 @@ fn a_base_at_origin_is_current_for_every_zone_publishing_or_not() {
     let reads = [
         SquashOfRead::NotPublishing,
         SquashOfRead::Missing,
-        found(SQUASH_OF, true),
-        found(SQUASH_OF, false),
-        found(TIP, true),
+        found(SQUASH_OF, Some(SQUASH_OF)),
+        found(SQUASH_OF, None),
+        found(TIP, Some(TIP)),
+        found(SQUASH_OF, Some(COUNTERPART)),
     ];
     for read in &reads {
         assert_eq!(decide_zone_case(&oid(TIP), &oid(ORIGIN), &oid(ORIGIN), read), ZoneCase::Current, "{read:?}");
@@ -60,7 +63,7 @@ fn the_publishing_zone_with_no_squash_of_is_no_squash_of() {
 #[test]
 fn a_squash_of_outside_the_zone_is_refused_naming_it() {
     assert_eq!(
-        decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, false)),
+        decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, None)),
         ZoneCase::SquashOfNotInZone { squash_of: oid(SQUASH_OF) }
     );
 }
@@ -68,20 +71,41 @@ fn a_squash_of_outside_the_zone_is_refused_naming_it() {
 #[test]
 fn a_squash_of_naming_the_tip_outside_the_zone_is_still_refused() {
     assert_eq!(
-        decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(TIP, false)),
+        decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(TIP, None)),
         ZoneCase::SquashOfNotInZone { squash_of: oid(TIP) }
     );
 }
 
 #[test]
 fn the_publishing_zone_whose_tip_is_the_squash_of_advances() {
-    assert_eq!(decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(TIP, true)), ZoneCase::Advance);
+    assert_eq!(decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(TIP, Some(TIP))), ZoneCase::Advance);
 }
 
 #[test]
 fn the_publishing_zone_moved_since_the_squash_replays_from_the_squash_of_not_the_base() {
     assert_eq!(
-        decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, true)),
+        decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, Some(SQUASH_OF))),
         ZoneCase::Replay { base: oid(SQUASH_OF) }
+    );
+}
+
+#[test]
+fn the_publishing_zone_whose_tip_is_the_replayed_counterpart_advances() {
+    assert_eq!(decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, Some(TIP))), ZoneCase::Advance);
+}
+
+#[test]
+fn a_counterpart_before_the_tip_replays_from_the_counterpart_not_the_squash_of_nor_the_base() {
+    assert_eq!(
+        decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, Some(COUNTERPART))),
+        ZoneCase::Replay { base: oid(COUNTERPART) }
+    );
+}
+
+#[test]
+fn no_counterpart_is_refused_naming_the_original_commit() {
+    assert_eq!(
+        decide_zone_case(&oid(COUNTERPART), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, None)),
+        ZoneCase::SquashOfNotInZone { squash_of: oid(SQUASH_OF) }
     );
 }
