@@ -1,5 +1,7 @@
-//! WO-snapshot-10: saved_state read directly against real snapshot refs, and attempt 0 refused before any write.
-use crate::support::{run, write, Fixture};
+//! WO-snapshot-10 and 11: saved_state read directly against real snapshot refs, its tree checked against the tree
+//! each snapshot ref records, and attempt 0 refused before any write.
+use crate::support::{run, tree_names, write, Fixture};
+use gitio::Oid;
 use oplog::oplog_path;
 use snapshot::{saved_state, snapshot, RefusedFile, SavedState, SnapshotError};
 use std::{fs, path::PathBuf};
@@ -9,7 +11,9 @@ const CAP: u64 = 64;
 #[test]
 fn saved_state_tracks_the_snapshot_ref_and_lists_the_refused_new_file_without_moving_ref_or_log() {
     // Joins saved_state -> snapshot_ref_name -> folder_tree's real capped tree -> read_previous_snapshot of the ref
-    // snapshot wrote through oplog apply.
+    // snapshot wrote through oplog apply. Its tree is checked against the tree the snapshot ref's commit records,
+    // read through the test's own git: equal after a snapshot, still equal and without the over-cap file, different
+    // after a change, and equal again to the tree a fresh snapshot then records.
     let f = Fixture::new(&[]);
     let state = || {
         let ref_before = f.git.read_ref(&f.refname).unwrap();
@@ -19,14 +23,24 @@ fn saved_state_tracks_the_snapshot_ref_and_lists_the_refused_new_file_without_mo
         assert_eq!(fs::read(oplog_path(&f.common)).ok(), log_before);
         state
     };
-    assert_eq!(state(), SavedState { saved: false, refused: vec![] });
+    let ref_tree = || -> Oid { f.git.commit_info(&f.git.read_ref(&f.refname).unwrap().unwrap()).unwrap().tree };
+    let unsnapped = state();
     snapshot(&f.git, &f.repo.path, &f.target, &[], CAP).unwrap();
-    assert_eq!(state(), SavedState { saved: true, refused: vec![] });
+    let first_tree = ref_tree();
+    // The folder did not change between the two calls, so the snapshot recorded the tree saved_state built.
+    assert_eq!(unsnapped, SavedState { saved: false, tree: first_tree.clone(), refused: vec![] });
+    assert_eq!(state(), SavedState { saved: true, tree: first_tree.clone(), refused: vec![] });
     write(&f.repo.path, "over-cap.bin", &[b'x'; 100]);
     let refused = RefusedFile { path: PathBuf::from("over-cap.bin"), size: 100, cap: 64 };
-    assert_eq!(state(), SavedState { saved: true, refused: vec![refused.clone()] });
+    let capped = state();
+    assert_eq!(capped, SavedState { saved: true, tree: first_tree.clone(), refused: vec![refused.clone()] });
+    assert!(!tree_names(&f.git, &capped.tree).contains(&"over-cap.bin".to_owned()));
     write(&f.repo.path, "root.txt", b"changed\n");
-    assert_eq!(state(), SavedState { saved: false, refused: vec![refused] });
+    let changed = state();
+    assert_ne!(changed.tree, first_tree);
+    let outcome = snapshot(&f.git, &f.repo.path, &f.target, &[], CAP).unwrap();
+    assert_eq!(changed, SavedState { saved: false, tree: ref_tree(), refused: vec![refused] });
+    assert_eq!(changed.tree, outcome.tree);
 }
 
 #[test]
