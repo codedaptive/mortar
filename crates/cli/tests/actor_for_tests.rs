@@ -84,7 +84,7 @@ fn a_harness_verb_without_actor_is_usage() {
     let report = actor_for(init(), None, None).expect_err("usage");
     assert_eq!(report.exit as i32, 4);
     assert_eq!(report.verb, "init");
-    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: guard-hook, init, join, need, resolve, save, status".to_string()]);
+    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: guard-hook, init, join, log, need, resolve, restore, save, status".to_string()]);
     assert_eq!(report.next, init().usage);
 }
 

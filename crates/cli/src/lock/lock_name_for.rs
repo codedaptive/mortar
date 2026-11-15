@@ -6,12 +6,14 @@ use oplog::LockName;
 
 use crate::args::LockNeed;
 
-/// Join is `zone`'s join lock, Land the landing lock, Folders the folders lock; NoLock takes none (None).
+/// Join is `zone`'s join lock, Land the landing lock, Folders the folders lock; NoLock takes none (None), and so does
+/// FromRefs: that verb chooses its lock from the refs it names (restore_lock).
 pub fn lock_name_for(need: LockNeed, zone: &str) -> Option<LockName> {
     match need {
         LockNeed::NoLock => None,
         LockNeed::Join => Some(LockName::Join(zone.to_string())),
         LockNeed::Land => Some(LockName::Land),
         LockNeed::Folders => Some(LockName::Folders),
+        LockNeed::FromRefs => None,
     }
 }

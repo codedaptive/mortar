@@ -9,10 +9,12 @@ pub mod init;
 pub mod join;
 mod json;
 pub mod lock;
+pub mod log;
 pub mod need;
 pub mod opkey;
 pub mod report;
 pub mod resolve;
+pub mod restore;
 pub mod save;
 pub mod shell;
 pub mod status;
@@ -33,11 +35,16 @@ pub use crate::join::{
     snapshot_failure, AnswerPart, JoinOutcome, PendingMove, RequestRun,
 };
 pub use lock::{lock_name_for, lock_report, locked_act};
+pub use log::{log_filters, log_lines, log_report, matching_records, run_log};
 pub use need::{missing_path_report, need_error_report, need_report, read_need_path, run_need};
 pub use opkey::op_key;
 pub use report::{failure_report, prints_nothing, render_json, render_plain, ExitCode, OutValue, Report};
 pub use resolve::{
     resolve_move_refusal_report, resolve_refusal_report, resolve_report, run_resolve, ResolveOutcome,
+};
+pub use restore::{
+    folders_on_refs, folders_to_move, move_restored_folders, restore_error_report, restore_key, restore_lock,
+    restore_move_refusal_report, restore_moves, restore_refusal, restore_report, run_restore, FolderOnRef,
 };
 pub use save::{run_save, save_error_report, save_report, save_sentence};
 pub use shell::{load_config, missing_config_report, run, ShellContext};

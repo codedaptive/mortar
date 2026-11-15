@@ -12,6 +12,9 @@ snapshot = { path = "../snapshot" }
 join = { path = "../join" }
 land = { path = "../land" }
 
+[dev-dependencies]
+testkit = { path = "../testkit" }
+
 [[bin]]
 name = "mortar"
 path = "src/main.rs"

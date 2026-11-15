@@ -21,15 +21,17 @@ use crate::context::{actor_for, context_report, read_folder_context, repository_
 use crate::guard_hook::run_guard_hook;
 use crate::init::run_init;
 use crate::join::run_join;
+use crate::log::run_log;
 use crate::need::run_need;
 use crate::report::{failure_report, Report};
 use crate::resolve::run_resolve;
+use crate::restore::run_restore;
 use crate::save::run_save;
 use crate::status::run_status;
 
 /// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. Agent verbs
-/// read their folder first; every verb then gets its actor; verbs that need the config load it and the
-/// protected list. The verb runs with the context built.
+/// read their folder first; every verb then gets its actor (a read-only verb acts as nobody, ""); verbs that need
+/// the config load it and the protected list. The verb runs with the context built.
 pub fn run(argv: &[String], cwd: &Path) -> (Report, bool) {
     match parse_args(argv) {
         Err(error) => (usage_report(&error), error.json),
@@ -45,7 +47,7 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
     let verb = args.verb.name;
     let folder = match args.verb.kind {
         VerbKind::Agent => Some(read_folder_context(cwd).map_err(|error| context_report(verb, &error))?),
-        VerbKind::Harness | VerbKind::Hook => None,
+        VerbKind::Harness | VerbKind::Hook | VerbKind::ReadOnly => None,
     };
     let actor = actor_for(args.verb, folder.as_ref().map(|f| &f.record), args.actor.as_deref())?;
     let config = match (args.verb.needs_config, &folder) {
@@ -66,8 +68,10 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "guard-hook" => run_guard_hook(context, cwd),
         "init" => run_init(&context.args, cwd),
         "join" => run_join(context),
+        "log" => run_log(context, cwd),
         "need" => run_need(context),
         "resolve" => run_resolve(context),
+        "restore" => run_restore(context, cwd),
         "save" => run_save(context),
         "status" => run_status(context),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
