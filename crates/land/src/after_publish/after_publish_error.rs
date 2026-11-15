@@ -23,7 +23,7 @@ pub enum AfterPublishError {
     Unrelated { zone: String, origin: Oid, tip: Oid },
     /// No squash of the publishing zone on origin's line carries a Mortar-Squash-Of.
     NoSquashOf { zone: String },
-    /// The publishing zone's squash names a zone tip that the zone branch holds neither itself nor as a replayed
-    /// counterpart.
+    /// The publishing zone's squash names a zone tip that the zone branch holds neither itself nor as a recorded
+    /// replay of it (`refs/mortar/replayed/<zone>/<source>`).
     SquashOfNotInZone { zone: String, squash_of: Oid },
 }
