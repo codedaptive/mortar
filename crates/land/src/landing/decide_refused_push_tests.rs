@@ -37,7 +37,8 @@ fn remote_at_expected_returns_a_remote_missing_failure_unchanged() {
     let decided = decide_refused_push(Some(&oid(EXPECTED)), &oid(EXPECTED), &oid(NEW), failure);
     assert!(matches!(
         decided,
-        Err(PublishError::RemoteMissing { ref remote, ref refname }) if remote == "origin" && refname == "refs/heads/main"
+        Err(PublishError::RemoteMissing { ref remote, ref refname })
+            if remote == "origin" && refname == "refs/heads/main"
     ));
 }
 
