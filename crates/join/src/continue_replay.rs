@@ -29,11 +29,12 @@ use gitio::Oid;
 /// Checks the state's onto exists, then builds the resolved tree: the state's conflicted tree with each conflicted
 /// path taken from `caller_tree` (the folder's tree, which the caller passes), so edits outside the conflicted files
 /// are not part of it (S-50). Commits the resolved tree as the resolved commit and replays the state's remaining
-/// commits onto it, reading merge attributes from onto. Clean: rebase the request ref from the state's request tip
-/// to the last new commit. Conflicted: pause with a new state for the commit that did not apply, the same request
-/// ref, request tip and onto, and all_files the state's all_files with the new round's paths added. A failure
-/// building the resolved tree is mapped by tree_refusal (a refused conflicted path, or Git); any other failure is
-/// Replay.
+/// commits onto it, reading merge attributes from onto; a remaining commit that becomes empty is dropped
+/// (replay_commit). Clean: rebase the request ref from the state's request tip to the replay's tip (the resolved
+/// commit when every remaining commit dropped). Conflicted: pause with a new state for the commit that did not
+/// apply, the same request ref, request tip and onto, and all_files the state's all_files with the new round's paths
+/// added. A failure building the resolved tree is mapped by tree_refusal (a refused conflicted path, or Git); any
+/// other failure is Replay.
 /// Writes objects; moves no ref.
 pub(crate) fn continue_replay(
     git: &impl ReplayGit,
@@ -45,6 +46,6 @@ pub(crate) fn continue_replay(
         .tree_with_paths_typed(&state.tree, caller_tree, &state.files)
         .map_err(|error| tree_refusal(error, &state.files))?;
     let resolved = resolved_commit(git, state, &resolved_tree).map_err(JoinRunError::Replay)?;
-    let result = replay_commits(git, &state.onto, &resolved, &state.remaining).map_err(JoinRunError::Replay)?;
-    Ok(after_replay(&state.request_ref, &state.request_tip, &state.onto, &state.all_files, result))
+    let replayed = replay_commits(git, &state.onto, &resolved, &state.remaining).map_err(JoinRunError::Replay)?;
+    Ok(after_replay(&state.request_ref, &state.request_tip, &state.onto, &state.all_files, replayed.result))
 }

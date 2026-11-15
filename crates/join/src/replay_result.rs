@@ -6,7 +6,8 @@ use std::path::PathBuf;
 /// The replayed tip, or the state a conflicted replay stopped in (what a resolve needs to continue it).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ReplayResult {
-    /// Every commit applied; this is the new tip (onto itself when the range was empty). No ref has moved.
+    /// Every commit applied or was dropped as empty; this is the new tip (onto itself when the range was empty or
+    /// every commit dropped). No ref has moved.
     Clean(Oid),
     /// A commit did not apply cleanly; nothing after it was replayed and no ref has moved.
     Conflicted {

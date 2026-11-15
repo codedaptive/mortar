@@ -1,6 +1,6 @@
 //! classify_conflicted: a blob is written, no entry is absent, and a commit refusal naming the file is a gitlink,
-//! including for a quoted or spaced path. Every other refusal goes through gitio's From, so its cases are RITs
-//! owed to Nagatha (S-101, WO-join-3cr), not tested here.
+//! including for a quoted or spaced path. Every other refusal goes through gitio's From, so its cases are in
+//! tests/join_rit/classify.rs (S-101), except a commit naming another path, which resolve cannot reach (S-109).
 
 use crate::classify_conflicted::classify_conflicted;
 use crate::conflicted_entry::ConflictedEntry;

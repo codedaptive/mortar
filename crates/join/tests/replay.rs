@@ -137,6 +137,100 @@ fn missing_onto_is_typed_refusal_before_any_merge_replay_or_commit_on_both_paths
     }
 }
 
+// WO-join-8 (S-121 (1)): both paths agree on empty commits. git 2.56.0's replay drops a commit its onto already
+// holds and keeps a commit that was empty at its source; the commit-by-commit fallback must give the same chain.
+
+#[test]
+fn emptied_commit_drops_and_already_empty_source_commit_is_kept_on_both_paths() {
+    // Joins replay -> native replay or merge_tree/commit_tree -> one chain: C1 dropped, C2 kept empty, C3 on top.
+    for fallback in [false, true] {
+        let f = Fixture::new();
+        let base_tree = f.tree(&[("file", b"base\n")]);
+        let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
+        let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
+        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let emptied = f.commit(&onto_tree, &[base.clone()], "emptied by onto\n", &author("First", "1700000100 +0000"));
+        let empty_source = f.commit(&onto_tree, &[emptied], "empty at source\n", &author("Second", "1700000200 +0000"));
+        let third_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n"), ("t", b"topic\n")]);
+        let third = f.commit(&third_tree, &[empty_source], "real third\n", &author("Third", "1700000300 +0000"));
+        f.anchor(&onto, &third);
+        let before = f.state();
+        let Some((git, trace)) = f.runner(fallback) else { continue };
+        let tip = match replay(&git, &base, "refs/heads/topic", &onto).unwrap() {
+            ReplayResult::Clean(id) => id,
+            other => panic!("expected clean replay, fallback={fallback}: {other:?}"),
+        };
+        let tip_info = f.git.commit_info(&tip).unwrap();
+        assert_eq!(tip_info.message, "real third\n", "fallback={fallback}");
+        assert_eq!(tip_info.author, author("Third", "1700000300 +0000"), "fallback={fallback}");
+        assert_eq!(tip_info.tree, f.tree(&[("file", b"base\n"), ("u", b"shared\n"), ("t", b"topic\n")]), "fallback={fallback}");
+        assert_eq!(tip_info.parents.len(), 1, "fallback={fallback}");
+        let kept = f.git.commit_info(&tip_info.parents[0]).unwrap();
+        assert_eq!(kept.message, "empty at source\n", "fallback={fallback}");
+        assert_eq!(kept.author, author("Second", "1700000200 +0000"), "fallback={fallback}");
+        assert_eq!(kept.tree, f.tree(&[("file", b"base\n"), ("u", b"shared\n")]), "fallback={fallback}");
+        assert_eq!(kept.parents, vec![onto.clone()], "emptied commit must be dropped, fallback={fallback}");
+        f.assert_state(&before);
+        assert_path(&trace, fallback, false);
+    }
+}
+
+#[test]
+fn range_of_only_an_emptied_commit_replays_to_onto_on_both_paths() {
+    // Joins replay -> native replay's update to onto, or the fallback's drop of the one emptied commit.
+    for fallback in [false, true] {
+        let f = Fixture::new();
+        let base_tree = f.tree(&[("file", b"base\n")]);
+        let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
+        let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
+        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let emptied = f.commit(&onto_tree, &[base.clone()], "emptied by onto\n", &author("First", "1700000100 +0000"));
+        f.anchor(&onto, &emptied);
+        let before = f.state();
+        let Some((git, trace)) = f.runner(fallback) else { continue };
+        assert_eq!(replay(&git, &base, "refs/heads/topic", &onto).unwrap(), ReplayResult::Clean(onto.clone()), "fallback={fallback}");
+        f.assert_state(&before);
+        assert_route(&trace, fallback);
+    }
+}
+
+#[test]
+fn emptied_last_commit_leaves_the_replayed_previous_commit_as_tip_on_both_paths() {
+    // Joins replay -> native or fallback: a final commit onto already holds adds nothing to the chain.
+    for fallback in [false, true] {
+        let f = Fixture::new();
+        let base_tree = f.tree(&[("file", b"base\n")]);
+        let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
+        let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
+        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let first_tree = f.tree(&[("file", b"base\n"), ("t", b"topic\n")]);
+        let first = f.commit(&first_tree, &[base.clone()], "real first\n", &author("First", "1700000100 +0000"));
+        let last_tree = f.tree(&[("file", b"base\n"), ("t", b"topic\n"), ("u", b"shared\n")]);
+        let last = f.commit(&last_tree, &[first], "emptied last\n", &author("Second", "1700000200 +0000"));
+        f.anchor(&onto, &last);
+        let before = f.state();
+        let Some((git, trace)) = f.runner(fallback) else { continue };
+        let tip = match replay(&git, &base, "refs/heads/topic", &onto).unwrap() {
+            ReplayResult::Clean(id) => id,
+            other => panic!("expected clean replay, fallback={fallback}: {other:?}"),
+        };
+        let info = f.git.commit_info(&tip).unwrap();
+        assert_eq!(info.message, "real first\n", "emptied last commit must be dropped, fallback={fallback}");
+        assert_eq!(info.author, author("First", "1700000100 +0000"), "fallback={fallback}");
+        assert_eq!(info.parents, vec![onto.clone()], "fallback={fallback}");
+        assert_eq!(info.tree, f.tree(&[("file", b"base\n"), ("t", b"topic\n"), ("u", b"shared\n")]), "fallback={fallback}");
+        f.assert_state(&before);
+        assert_path(&trace, fallback, false);
+    }
+}
+
+/// The path taken, without requiring a commit-tree: a range whose every commit drops needs no new commit.
+fn assert_route(trace: &PathBuf, fallback: bool) {
+    let calls = fs::read_to_string(trace).unwrap();
+    assert_eq!(calls.lines().any(|line| line == "replay"), !fallback, "{calls}");
+    assert_eq!(calls.lines().any(|line| line == "merge-tree"), fallback, "{calls}");
+}
+
 struct Fixture { repo: TestRepo, git: Git }
 
 impl Fixture {
