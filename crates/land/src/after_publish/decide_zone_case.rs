@@ -18,7 +18,7 @@ pub(crate) fn decide_zone_case(tip: &Oid, base: &Oid, origin: &Oid, squash_of: &
         SquashOfRead::NotPublishing if tip == base => ZoneCase::Advance,
         SquashOfRead::NotPublishing => ZoneCase::Replay { base: base.clone() },
         SquashOfRead::Missing => ZoneCase::NoSquashOf,
-        SquashOfRead::Found { commit, held: None } => ZoneCase::SquashOfNotInZone { squash_of: commit.clone() },
+        SquashOfRead::Found { commit, held: None, .. } => ZoneCase::SquashOfNotInZone { squash_of: commit.clone() },
         SquashOfRead::Found { held: Some(held), .. } if held == tip => ZoneCase::Advance,
         SquashOfRead::Found { held: Some(held), .. } => ZoneCase::Replay { base: held.clone() },
     }

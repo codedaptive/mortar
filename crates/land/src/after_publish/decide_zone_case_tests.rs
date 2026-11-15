@@ -18,7 +18,7 @@ fn oid(hex: &str) -> Oid {
 }
 
 fn found(commit: &str, held: Option<&str>) -> SquashOfRead {
-    SquashOfRead::Found { commit: oid(commit), held: held.map(oid) }
+    SquashOfRead::Found { commit: oid(commit), held: held.map(oid), record: None }
 }
 
 #[test]

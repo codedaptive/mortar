@@ -1,11 +1,12 @@
 //! The after_publish ZITs' throwaway repositories: a local repository with a base commit on `main` and
 //! `integration`, and a bare remote `origin` (inside a second TestRepo's directory, removed with it) whose `main` is
 //! the base. Zone commits are made with plain git; the publish itself is land's own squash, land and publish, so
-//! after_publish reads the trailers squash wrote.
+//! after_publish reads the trailers squash wrote. made, land_and_publish and origin_untouched are the cases' shared
+//! steps for a kept squash published later.
 
 use gitio::{Git, Oid, RunOpts};
 use join::OpenRequest;
-use land::{land, publish, squash, LandAnswer, LandRefs, PublishAnswer, SquashAnswer, ZoneRequests};
+use land::{land, publish, squash, LandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer, ZoneRequests};
 use oplog::{read_op_log, OpRecord};
 use std::ffi::OsString;
 use std::path::PathBuf;
@@ -69,6 +70,29 @@ pub fn zone(name: &str, requests: Vec<OpenRequest>) -> ZoneRequests {
 /// An open request cut from `base`, its tip `tip`.
 pub fn request(name: &str, base: &Oid, tip: &Oid) -> OpenRequest {
     OpenRequest { name: name.to_string(), base: base.clone(), tip: tip.clone() }
+}
+
+/// The zone's squash, made with land's own squash.
+pub fn made(fx: &Fixture, zone: &str) -> Squash {
+    let SquashAnswer::Made(made) = squash(&fx.git, &refs(), zone, ACTOR).unwrap() else {
+        panic!("zone {zone} must squash");
+    };
+    made
+}
+
+/// The squash landed and published with land's own code; the origin publish answers.
+pub fn land_and_publish(fx: &Fixture, made: &Squash) -> Oid {
+    let LandAnswer::Landed { integration } = land(&fx.git, &refs(), made, ACTOR).unwrap() else {
+        panic!("the squash must land");
+    };
+    assert_eq!(publish(&fx.git, &refs(), ACTOR).unwrap(), PublishAnswer::Published { origin: integration.clone() });
+    integration
+}
+
+/// main and the remote's main are both `origin`.
+pub fn origin_untouched(fx: &Fixture, origin: &Oid) {
+    assert_eq!(fx.branch("main"), *origin);
+    assert_eq!(fx.remote_main(), Some(origin.clone()));
 }
 
 fn git_at(path: PathBuf) -> Git {

@@ -9,12 +9,11 @@
 //! empty is dropped), so the end state alone cannot show a wrong pick between two saves on every path; that case
 //! also asserts the replay's record `refs/mortar/replayed/<zone>/<source>`.
 
-use crate::fixture::{refs, zone, Fixture, ACTOR, B_FILES, PUBLISHED, PUBLISHED_FILES};
-use gitio::{Oid, RunOpts};
-use land::{
-    after_publish, land, publish, squash, AfterPublishError, LandAnswer, PublishAnswer, Squash, SquashAnswer,
-    ZoneMove,
+use crate::fixture::{
+    land_and_publish, made, origin_untouched, refs, zone, Fixture, ACTOR, B_FILES, PUBLISHED, PUBLISHED_FILES,
 };
+use gitio::{Oid, RunOpts};
+use land::{after_publish, AfterPublishError, Squash, ZoneMove};
 
 /// The subject every zone `land` commit in these cases carries.
 const SUBJECT: &str = "published work";
@@ -23,23 +22,6 @@ const X2_FILES: [(&str, &str); 3] = [("a.txt", "one\nTWO\nthree\n"), ("p.txt", "
 /// The re-save R on b's origin: the files of A1' (b.txt carried in by the replay) plus u.txt, work no squash holds.
 const RESAVE_FILES: [(&str, &str); 4] =
     [("a.txt", "one\nTWO\nthree\n"), ("b.txt", "b\n"), ("p.txt", "published\n"), ("u.txt", "unsquashed\n")];
-
-/// The zone's squash, made with land's own squash.
-fn made(fx: &Fixture, zone: &str) -> Squash {
-    let SquashAnswer::Made(made) = squash(&fx.git, &refs(), zone, ACTOR).unwrap() else {
-        panic!("zone {zone} must squash");
-    };
-    made
-}
-
-/// The squash landed and published with land's own code; the origin publish answers.
-fn land_and_publish(fx: &Fixture, made: &Squash) -> Oid {
-    let LandAnswer::Landed { integration } = land(&fx.git, &refs(), made, ACTOR).unwrap() else {
-        panic!("the squash must land");
-    };
-    assert_eq!(publish(&fx.git, &refs(), ACTOR).unwrap(), PublishAnswer::Published { origin: integration.clone() });
-    integration
-}
 
 /// Zone `land` at `tip` squashed and the squash kept, b published, and after_publish(b, [land]) checked to move
 /// zone `land` from `tip` to a replay on b's origin. Answers (land's kept squash, b's origin, the replayed tip).
@@ -54,12 +36,6 @@ fn replayed(fx: &Fixture, tip: &Oid) -> (Squash, Oid, Oid) {
     assert_eq!((name.as_str(), old, rebase), (PUBLISHED, tip, &vec![]));
     assert_eq!(fx.git.commit_info(new).unwrap().message, format!("{SUBJECT}\n"));
     (land_squash, b_origin, new.clone())
-}
-
-/// main and the remote's main are both `origin`.
-fn origin_untouched(fx: &Fixture, origin: &Oid) {
-    assert_eq!(fx.branch("main"), *origin);
-    assert_eq!(fx.remote_main(), Some(origin.clone()));
 }
 
 #[test]

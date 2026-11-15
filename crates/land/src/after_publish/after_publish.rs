@@ -1,7 +1,7 @@
 //! after_publish: every zone moved onto the origin a publish left (SPEC-land 05-after-publish.md, S-45, S-47).
 //! No unit test (S-5): it runs git and writes the op log through move_zone; decide_zone_case_tests,
-//! squash_of_in_tests, requests_to_rebase_tests, choose_held_tests and replayed_position_tests cover its
-//! decisions. Covered by tests/after_publish_zit:
+//! squash_of_in_tests, requests_to_rebase_tests, choose_held_tests, replayed_position_tests, consumed_record_tests,
+//! record_moves_tests and clean_replay_move_tests cover its decisions. Covered by tests/after_publish_zit:
 //! - zone_moves.rs: another_zone_is_replayed_onto_the_new_origin,
 //!   the_publishing_zone_with_no_later_joins_is_put_on_origin,
 //!   the_publishing_zone_with_a_later_join_is_replayed_onto_origin,
@@ -12,6 +12,9 @@
 //! - replay_provenance.rs: two_saves_with_the_same_metadata_record_the_replay_of_the_later_one_and_publish_it,
 //!   a_re_save_with_the_same_metadata_after_the_replay_is_refused_not_dropped and
 //!   the_publishing_zone_moves_when_its_squash_source_was_pruned.
+//! - record_consumed.rs: the_publish_that_consumes_the_record_deletes_it_and_undo_brings_it_back,
+//!   a_replayed_publish_deletes_the_record_too and a_repeat_after_the_consuming_publish_moves_nothing.
+//! - replay_drop.rs: a_zone_whose_replay_dropped_a_commit_owing_a_record_stays_put_and_moves_at_its_own_publish.
 
 use crate::after_publish::{move_zone, AfterPublishError, ZoneMove, ZoneRequests};
 use crate::squash::{read_tip, LandRefs};
@@ -20,10 +23,12 @@ use gitio::Git;
 /// Reads the origin tip `refs/heads/<origin_branch>` once, then moves the `published` zone (the one whose squash
 /// was just published) and each of `others` in order onto it, one ZoneMove each, the published zone first. The
 /// published zone with no join since its squash (or since the recorded replay of its squash's source) is put on
-/// origin; one with later joins has those replayed onto origin. Another zone has its own commits replayed onto
+/// origin; one with later joins has those replayed onto origin; either move deletes any replay record of its squash's
+/// source in the same op (S-118), unless the replay moves that record. Another zone has its own commits replayed onto
 /// origin, or is put on it when it has none. A zone already on origin answers Current, so a repeat is safe and moves
-/// nothing. A conflicted zone is left in place, listed with its files, and the others still move; an error stops the
-/// call, the zones before it already moved.
+/// nothing. A conflicted zone is left in place, listed with its files, and so is a zone whose replay dropped a commit
+/// owing a replay record, listed as ReplayDropped (S-120); the others still move; an error stops the call, the
+/// zones before it already moved.
 /// It takes no lock: the caller holds `land` and has run recover (S-16). The caller hands in each zone's open
 /// requests (S-45) and moves the request and zone folders itself (folders move_folder, S-47).
 pub fn after_publish(
