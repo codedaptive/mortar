@@ -1,23 +1,35 @@
 //! push_landing: publish's step 1, the leased push of the landed commit to the remote's origin branch, inside its
 //! own op's intent so MORTAR_OP rides on it and the guard's pre-push check finds the move listed (S-60).
-//! No unit test: it writes the op log, pushes and reads the remote; publish_push_op builds the intent it
-//! writes. Covered by the publish_zit cases 1 (publish moves remote and local: the done publish-push record) and
-//! 3 (kill between the steps: the push runs once), 5 (a push refused with the remote still at expected) and 6 (a
-//! remote moved while the push was refused).
+//! No sibling unit test (S-5): it writes the op log, pushes and reads the remote. Its decisions are push_refusal,
+//! decide_refused_push and push_intent_close (push_refusal_tests, decide_refused_push_tests,
+//! push_intent_close_tests); push_landed says whether the push landed; publish_push_op builds the intent it opens.
+//! Covered by tests/publish_zit: publishing.rs publish_moves_the_remote_then_the_local_origin_and_cleans_up,
+//! a_push_refused_with_the_remote_still_at_expected_is_push_refused_and_keeps_the_landing,
+//! a_remote_moved_while_the_push_was_refused_answers_origin_moved and
+//! an_open_push_intent_before_the_push_is_closed_failed_and_pushed_again (the second intent, closed done); kills.rs
+//! killed_between_the_steps_recovers_and_the_repeat_publishes_once.
 
-use crate::landing::{publish_push_op, remote_origin, LandingState, PublishError, PushResult};
+use crate::landing::{
+    decide_refused_push, publish_push_op, push_intent_close, push_landed, push_refusal, remote_origin, LandingState,
+    PublishError, PushResult,
+};
 use crate::squash::LandRefs;
-use gitio::{Git, PushLease, PushOutcome, PushRef, PushRefusal};
-use oplog::{append_op_record, close_record, intent_record, new_op_id, op_git, unix_now, OpPhase, OpRecord, OpResult};
+use gitio::{Git, Oid, PushLease, PushRef};
+use oplog::{close_intent, new_op_id, op_git, open_remote_intent, unix_now, RemoteIntentOutcome};
 use std::path::Path;
 
-/// Appends the intent publish_push_op builds from the state (expected = origin_at_start, new = integration), then
-/// pushes new onto the remote's `refs/heads/<origin_branch>` leased at expected, with op_git's git. Pushed or up to
-/// date: the intent is closed done (moved), and the answer is Pushed. Any refusal, or a git error (a guard's
-/// pre-push refusal arrives as one): the remote is read again, and what it holds decides. At new, the push landed:
-/// closed done (moved), Pushed. Otherwise the intent is closed failed (not moved, naming what the remote holds):
-/// still at expected is the error (PushRefused for a refusal, Git for a git error); anything else, absent included,
-/// answers Moved. An error appending, re-reading or closing is returned with the intent left as it stands.
+/// Opens the intent publish_push_op builds from the state (expected = origin_at_start, new = integration) with
+/// oplog's open_remote_intent, marked with `refs.remote`, then pushes new onto the remote's
+/// `refs/heads/<origin_branch>` leased at expected, with op_git's git. An intent for this move already open or done
+/// (publish settles open ones first, and a done push is followed by step 2, so neither is expected) is PushIntent
+/// naming that record, and nothing is pushed. Pushed or up to date: the answer is Pushed. Any refusal (push_refusal
+/// picks the first), or a git error (a guard's pre-push refusal arrives as one): the remote is read again, and
+/// decide_refused_push decides from what it holds, a remote at or past new (push_landed) counting as at new: at new,
+/// Pushed; at expected, the error (PushRefused for a refusal, Git for a git error); anything else, absent included,
+/// Moved. The intent is closed once, through close_intent with push_intent_close: done exactly when the push landed
+/// (pushed, or the remote at or past new). An error opening the intent is returned with nothing written; an error
+/// re-reading the remote, fetching it or closing the intent is returned with the intent left open: in flight
+/// (S-103), and the next publish's settle_push_intent closes it from the remote.
 pub(crate) fn push_landing(
     git: &Git,
     common: &Path,
@@ -26,46 +38,41 @@ pub(crate) fn push_landing(
     actor: &str,
 ) -> Result<PushResult, PublishError> {
     let expected = &state.origin_at_start;
+    let new = &state.integration;
     let refname = format!("refs/heads/{}", refs.origin_branch);
-    let op = publish_push_op(refs, expected, &state.integration, &state.change_id, new_op_id(), actor, unix_now());
-    let intent = intent_record(&op);
-    append_op_record(common, &intent).map_err(PublishError::Oplog)?;
-    let push_ref = PushRef {
-        refname: refname.clone(),
-        new: Some(state.integration.clone()),
-        lease: PushLease::At(expected.clone()),
-    };
-    let failure = match op_git(git, &op.op_id).push(&refs.remote, &[push_ref]) {
-        Ok(outcomes) => match outcomes.into_iter().find_map(refusal) {
-            None => return pushed(common, &intent),
-            Some(refusal) => PublishError::PushRefused { refname: refname.clone(), refusal },
+    let op = publish_push_op(refs, expected, new, &state.change_id, new_op_id(), actor, unix_now());
+    match open_remote_intent(git, common, &op, &refs.remote).map_err(PublishError::Oplog)? {
+        RemoteIntentOutcome::Opened(_) => {}
+        RemoteIntentOutcome::AlreadyOpen(found) | RemoteIntentOutcome::Repeated(found) => {
+            return Err(PublishError::PushIntent { op_id: found.record.op_id, phase: found.record.phase })
+        }
+    }
+    let push_ref = PushRef { refname: refname.clone(), new: Some(new.clone()), lease: PushLease::At(expected.clone()) };
+    let (remote, landed, decided) = match op_git(git, &op.op_id).push(&refs.remote, &[push_ref]) {
+        Ok(outcomes) => match push_refusal(outcomes) {
+            None => (Some(new.clone()), true, Ok(PushResult::Pushed)),
+            Some(refusal) => {
+                refused(git, refs, state, PublishError::PushRefused { refname: refname.clone(), refusal })?
+            }
         },
-        Err(error) => PublishError::Git(error),
+        Err(error) => refused(git, refs, state, PublishError::Git(error))?,
     };
+    close_intent(common, &op.op_id, push_intent_close(remote.as_ref(), landed, &refname)).map_err(PublishError::Oplog)?;
+    decided
+}
+
+/// The push did not go through as asked: the remote as read again, whether the push landed (push_landed), and what
+/// decide_refused_push makes of it, given new for a remote at or past new.
+fn refused(
+    git: &Git,
+    refs: &LandRefs,
+    state: &LandingState,
+    failure: PublishError,
+) -> Result<(Option<Oid>, bool, Result<PushResult, PublishError>), PublishError> {
+    let (expected, new) = (&state.origin_at_start, &state.integration);
     let remote = remote_origin(git, refs)?;
-    if remote.as_ref() == Some(&state.integration) {
-        return pushed(common, &intent);
-    }
-    let not_moved = OpResult::NotMoved { refs: vec![(refname, remote.clone())] };
-    append_op_record(common, &close_record(&intent, OpPhase::Failed, not_moved, unix_now()))
-        .map_err(PublishError::Oplog)?;
-    if remote.as_ref() == Some(expected) {
-        return Err(failure);
-    }
-    Ok(PushResult::Moved)
-}
-
-/// Closes the intent done (moved): the remote is at the landed commit.
-fn pushed(common: &Path, intent: &OpRecord) -> Result<PushResult, PublishError> {
-    let done = close_record(intent, OpPhase::Done, OpResult::Moved, unix_now());
-    append_op_record(common, &done).map_err(PublishError::Oplog)?;
-    Ok(PushResult::Pushed)
-}
-
-/// The refusal in one ref's push outcome; None when the ref was pushed or already up to date.
-fn refusal(outcome: PushOutcome) -> Option<PushRefusal> {
-    match outcome {
-        PushOutcome::Refused(refusal) => Some(refusal),
-        PushOutcome::Pushed | PushOutcome::UpToDate => None,
-    }
+    let landed = push_landed(git, refs, remote.as_ref(), expected, new)?;
+    let seen = if landed { Some(new) } else { remote.as_ref() };
+    let decided = decide_refused_push(seen, expected, new, failure);
+    Ok((remote, landed, decided))
 }

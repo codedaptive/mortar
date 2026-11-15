@@ -1,6 +1,9 @@
-//! guard: git hooks and the decision that only Mortar moves integration and origin (SPEC-land 06, WO-land-6).
+//! guard: installs and reads Mortar's git hooks and decides that only Mortar moves integration and origin
+//! (SPEC-land 06).
 
 mod classify_hook;
+mod decide_config_write;
+mod decide_hook_writes;
 mod guard_config_path;
 mod guard_config_text;
 mod guard_decide;
@@ -23,6 +26,10 @@ mod write_replacing;
 
 #[cfg(test)]
 mod classify_hook_tests;
+#[cfg(test)]
+mod decide_config_write_tests;
+#[cfg(test)]
+mod decide_hook_writes_tests;
 #[cfg(test)]
 mod guard_config_path_tests;
 #[cfg(test)]

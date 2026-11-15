@@ -1,5 +1,8 @@
-//! guard_install: put the guard's config and both hooks in place. It runs git and writes files, so it has no unit
-//! test; tests/guard_zit.rs covers it (fresh, repeat, foreign hooks, relative core.hooksPath, linked worktree).
+//! guard_install: put the guard's config and both hooks in place. It runs git and does file I/O, so it has no sibling
+//! unit test (S-5); its decisions are decide_hook_writes and decide_config_write, each with its _tests.
+//! tests/guard_zit.rs covers it: fresh_install_writes_config_and_hooks, repeat_install_changes_nothing,
+//! a_foreign_pre_push_is_refused_and_nothing_written, a_foreign_reference_transaction_is_refused_and_nothing_written,
+//! install_follows_a_relative_hooks_path and install_from_a_linked_worktree_covers_the_main_repo.
 
 use std::fs::{self, Permissions};
 use std::os::unix::fs::PermissionsExt;
@@ -7,14 +10,15 @@ use std::path::Path;
 
 use gitio::Git;
 
+use super::decide_config_write::decide_config_write;
+use super::decide_hook_writes::decide_hook_writes;
 use super::guard_config_path::guard_config_path;
 use super::guard_config_text::guard_config_text;
-use super::guard_hook_names::GUARD_HOOK_NAMES;
 use super::guard_hook_script::guard_hook_script;
 use super::read_hooks::read_hooks;
 use super::read_optional::read_optional;
 use super::write_replacing::write_replacing;
-use super::{GuardError, HookState};
+use super::GuardError;
 use crate::LandRefs;
 
 /// Hooks must run, so they are owner-writable and executable by all.
@@ -30,24 +34,20 @@ pub fn guard_install(git: &Git, refs: &LandRefs) -> Result<(), GuardError> {
     let hooks_dir = git.hooks_path().map_err(GuardError::Git)?;
     let common = git.common_dir().map_err(GuardError::Git)?;
     let hooks = read_hooks(&hooks_dir)?;
-    if let Some((path, _)) = hooks.iter().find(|(_, state)| *state == HookState::Foreign) {
-        return Err(GuardError::ForeignHook { path: path.clone() });
-    }
+    let writes = decide_hook_writes(&hooks)?;
     let config = guard_config_path(&common);
     let text = guard_config_text(refs);
-    if read_optional(&config)?.as_deref() != Some(text.as_bytes()) {
+    if decide_config_write(read_optional(&config)?.as_deref(), &text) {
         create_dir_all(&common.join("mortar"))?;
         write_replacing(&config, text.as_bytes(), None)?;
     }
     // core.hooksPath may name a folder that does not exist yet.
     create_dir_all(&hooks_dir)?;
-    for ((path, state), name) in hooks.iter().zip(GUARD_HOOK_NAMES) {
-        match state {
-            HookState::Missing => write_replacing(path, guard_hook_script(name).as_bytes(), Some(HOOK_MODE))?,
-            HookState::Mortar => fs::set_permissions(path, Permissions::from_mode(HOOK_MODE))
-                .map_err(|error| GuardError::Io { path: path.clone(), error })?,
-            // Refused above, before anything was written.
-            HookState::Foreign => {}
+    for (path, name) in writes {
+        match name {
+            Some(name) => write_replacing(&path, guard_hook_script(name).as_bytes(), Some(HOOK_MODE))?,
+            None => fs::set_permissions(&path, Permissions::from_mode(HOOK_MODE))
+                .map_err(|error| GuardError::Io { path, error })?,
         }
     }
     Ok(())

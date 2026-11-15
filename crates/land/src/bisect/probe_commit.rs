@@ -20,7 +20,8 @@ static NEXT_FOLDER: AtomicU64 = AtomicU64::new(0);
 ///
 /// The worktree is removed (forced) whenever it was added, also when filling it or running the command failed; when
 /// both the probe and the removal fail, the probe's error is returned. A worktree that could not be added is Git and
-/// nothing is removed. A command that could not be run is ProbeCouldNotRun: its verdict is unknown (S-78, #1146).
+/// nothing is removed. A command that could not be run is ProbeCouldNotRun: its verdict is unknown (S-78;
+/// tests/bisect_zit.rs a_command_that_cannot_start_stops_the_search).
 pub(crate) fn probe_commit(
     git: &Git,
     commit: &Oid,

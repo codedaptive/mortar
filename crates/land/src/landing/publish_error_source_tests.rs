@@ -1,9 +1,10 @@
-//! source(): the wrapped error for Squash, Land, Git, Oplog and State; none for the refusals publish makes itself.
+//! source(): the wrapped error for Squash, Land, Git, Oplog and State; none for the refusals publish makes itself
+//! (PushRefused, RemoteMissing, PushIntent).
 
 use super::{LandError, LandingStateError, PublishError};
 use crate::squash::SquashError;
 use gitio::{GitError, Oid, PushRefusal};
-use oplog::OplogError;
+use oplog::{OpPhase, OplogError};
 use std::error::Error;
 use std::path::PathBuf;
 
@@ -64,6 +65,7 @@ fn refusals_publish_makes_itself_have_no_source() {
     let refusals = [
         PublishError::PushRefused { refname: "refs/heads/main".to_string(), refusal: PushRefusal::StaleLease },
         PublishError::RemoteMissing { remote: "origin".to_string(), refname: "refs/heads/main".to_string() },
+        PublishError::PushIntent { op_id: "op-7".to_string(), phase: OpPhase::Done },
     ];
     for refusal in &refusals {
         assert!(refusal.source().is_none(), "{refusal:?}");

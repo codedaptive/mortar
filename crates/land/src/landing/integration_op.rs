@@ -10,7 +10,8 @@ use oplog::{ChangeId, Op, RefMove};
 /// Kind `kind` (`land`, `land-back-out`, `publish-push`, `publish-fetched`, `publish-origin` or `publish-squash`),
 /// one move of `refname` from `old` to `new`. The key is `<kind>:<ref>:<old>:<new>:<op_id>`: it carries the op id so
 /// each attempt is its own op, because a landing backed out and landed again must never be answered by the first
-/// one's done record. The reason names the change ID, the ref and both ids.
+/// one's done record. publish_push_op keeps this op's move and reason and replaces the key with its own, which has
+/// no op id. The reason names the change ID, the ref and both ids.
 // Eight arguments: each is one field of the op or of its key and reason, and squash_op's shape is kept.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn integration_op(
