@@ -7,9 +7,18 @@ fn verb(name: &str) -> &'static VerbSpec {
 }
 
 #[test]
-fn init_join_resolve_and_save_are_built_in_that_order() {
+fn built_verbs_are_listed_alphabetically() {
     let names: Vec<&str> = VERBS.iter().map(|verb| verb.name).collect();
-    assert_eq!(names, vec!["init", "join", "resolve", "save"]);
+    assert_eq!(names, vec!["guard-hook", "init", "join", "need", "resolve", "save", "status"]);
+}
+
+#[test]
+fn guard_hook_is_a_hook_verb_without_lock_or_config() {
+    let guard_hook = verb("guard-hook");
+    assert_eq!(guard_hook.kind, VerbKind::Hook);
+    assert_eq!(guard_hook.lock, LockNeed::NoLock);
+    assert!(!guard_hook.needs_config);
+    assert_eq!(guard_hook.usage, "mortar guard-hook (reference-transaction <state> | pre-push <remote> <url>)");
 }
 
 #[test]
@@ -47,4 +56,22 @@ fn save_is_an_agent_verb_under_the_join_lock_that_needs_the_config() {
     assert_eq!(save.lock, LockNeed::Join);
     assert!(save.needs_config);
     assert!(save.usage.starts_with("mortar save \"<sentence>\""));
+}
+
+#[test]
+fn need_is_an_agent_verb_under_the_join_lock_that_needs_the_config() {
+    let need = verb("need");
+    assert_eq!(need.kind, VerbKind::Agent);
+    assert_eq!(need.lock, LockNeed::Join);
+    assert!(need.needs_config);
+    assert_eq!(need.usage, "mortar need <path> [--key <key>] [--json]");
+}
+
+#[test]
+fn status_is_an_agent_verb_without_lock_that_needs_the_config() {
+    let status = verb("status");
+    assert_eq!(status.kind, VerbKind::Agent);
+    assert_eq!(status.lock, LockNeed::NoLock);
+    assert!(status.needs_config);
+    assert_eq!(status.usage, "mortar status [--json]");
 }

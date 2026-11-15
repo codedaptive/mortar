@@ -5,6 +5,13 @@ use super::{LockNeed, VerbKind, VerbSpec};
 /// In the order the usage error lists them.
 pub const VERBS: &[VerbSpec] = &[
     VerbSpec {
+        name: "guard-hook",
+        kind: VerbKind::Hook,
+        lock: LockNeed::NoLock,
+        needs_config: false,
+        usage: "mortar guard-hook (reference-transaction <state> | pre-push <remote> <url>)",
+    },
+    VerbSpec {
         name: "init",
         kind: VerbKind::Harness,
         lock: LockNeed::NoLock,
@@ -22,6 +29,13 @@ pub const VERBS: &[VerbSpec] = &[
         usage: "mortar join [--key <operation key>] [--json]",
     },
     VerbSpec {
+        name: "need",
+        kind: VerbKind::Agent,
+        lock: LockNeed::Join,
+        needs_config: true,
+        usage: "mortar need <path> [--key <key>] [--json]",
+    },
+    VerbSpec {
         name: "resolve",
         kind: VerbKind::Agent,
         lock: LockNeed::Join,
@@ -34,5 +48,12 @@ pub const VERBS: &[VerbSpec] = &[
         lock: LockNeed::Join,
         needs_config: true,
         usage: "mortar save \"<sentence>\" [--key <key>] [--json]",
+    },
+    VerbSpec {
+        name: "status",
+        kind: VerbKind::Agent,
+        lock: LockNeed::NoLock,
+        needs_config: true,
+        usage: "mortar status [--json]",
     },
 ];

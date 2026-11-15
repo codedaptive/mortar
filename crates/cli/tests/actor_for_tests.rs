@@ -1,4 +1,5 @@
-//! actor_for: agent verbs act as "<zone>/<request>" and refuse --actor; harness verbs require --actor.
+//! actor_for: agent verbs act as "<zone>/<request>" and refuse --actor; harness verbs require --actor; hook verbs
+//! refuse --actor. A hook verb acting as "git" is the ZUT in src/context/actor_for_tests.rs.
 //! ZIT (S-79 as replaced: the line is the file): it calls args/usage_report for real.
 
 use folders::{FolderKind, FolderRecord};
@@ -13,6 +14,18 @@ const AGENT: VerbSpec = VerbSpec {
     needs_config: true,
     usage: "mortar save [--json]",
 };
+
+const HOOK: VerbSpec = VerbSpec {
+    name: "guard-hook",
+    kind: VerbKind::Hook,
+    lock: LockNeed::NoLock,
+    needs_config: false,
+    usage: "mortar guard-hook <hook>",
+};
+
+fn init() -> &'static VerbSpec {
+    VERBS.iter().find(|verb| verb.name == "init").expect("init is in the table")
+}
 
 fn record(request: Option<&str>) -> FolderRecord {
     FolderRecord {
@@ -58,24 +71,33 @@ fn an_agent_verb_outside_a_request_folder_is_refused_naming_the_folder() {
 
 #[test]
 fn a_harness_verb_acts_as_actor() {
-    assert_eq!(actor_for(&VERBS[0], None, Some("harness-1")), Ok("harness-1".to_string()));
+    assert_eq!(actor_for(init(), None, Some("harness-1")), Ok("harness-1".to_string()));
 }
 
 #[test]
 fn a_harness_verb_ignores_the_record() {
-    assert_eq!(actor_for(&VERBS[0], Some(&record(Some("r"))), Some("h")), Ok("h".to_string()));
+    assert_eq!(actor_for(init(), Some(&record(Some("r"))), Some("h")), Ok("h".to_string()));
 }
 
 #[test]
 fn a_harness_verb_without_actor_is_usage() {
-    let report = actor_for(&VERBS[0], None, None).expect_err("usage");
+    let report = actor_for(init(), None, None).expect_err("usage");
     assert_eq!(report.exit as i32, 4);
     assert_eq!(report.verb, "init");
-    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: init, join, resolve, save".to_string()]);
-    assert_eq!(report.next, VERBS[0].usage);
+    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: guard-hook, init, join, need, resolve, save, status".to_string()]);
+    assert_eq!(report.next, init().usage);
 }
 
 #[test]
 fn a_harness_verb_with_an_empty_actor_is_usage() {
-    assert_eq!(actor_for(&VERBS[0], None, Some("")).expect_err("usage").exit, ExitCode::Usage);
+    assert_eq!(actor_for(init(), None, Some("")).expect_err("usage").exit, ExitCode::Usage);
+}
+
+#[test]
+fn a_hook_verb_refuses_actor_as_usage() {
+    let report = actor_for(&HOOK, None, Some("bob")).expect_err("usage");
+    assert_eq!(report.exit, ExitCode::Usage);
+    assert_eq!(report.verb, "guard-hook");
+    assert_eq!(report.lines[0], "hook verbs are run by git and take no --actor");
+    assert_eq!(report.next, "mortar guard-hook <hook>");
 }

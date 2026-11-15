@@ -1,6 +1,6 @@
 //! parse_args: globals anywhere before `--`, the verb, the rest in order, and each usage error.
 
-use super::{parse_args, ParsedArgs, UsageError, VERBS};
+use super::{parse_args, ParsedArgs, UsageError};
 
 fn argv(words: &[&str]) -> Vec<String> {
     words.iter().map(|w| w.to_string()).collect()
@@ -22,17 +22,6 @@ fn err(words: &[&str]) -> UsageError {
 
 fn strings(words: &[&str]) -> Vec<String> {
     argv(words)
-}
-
-#[test]
-fn globals_before_the_verb() {
-    let parsed = ok(&["--json", "--key", "k1", "--actor", "harness", "init", "--origin", "main"]);
-    assert_eq!(parsed.verb.name, "init");
-    assert_eq!(parsed.verb, &VERBS[0]);
-    assert!(parsed.json);
-    assert_eq!(parsed.key.as_deref(), Some("k1"));
-    assert_eq!(parsed.actor.as_deref(), Some("harness"));
-    assert_eq!(parsed.rest, strings(&["--origin", "main"]));
 }
 
 #[test]

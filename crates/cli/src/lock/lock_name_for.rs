@@ -1,6 +1,6 @@
 //! The oplog lock a verb takes before it moves a ref (S-16).
-//! Shell API: `mortar join` (run_join) and `mortar save` (run_save) call it, and so will each later verb that
-//! moves a ref.
+//! Shell API: `mortar join` (run_join), `mortar need` (run_need) and `mortar save` (run_save) call it, and so will
+//! each later verb that moves a ref.
 
 use oplog::LockName;
 

@@ -8,12 +8,13 @@
 //! object on one line and nothing else; run outside a git repository init is refused, exit 1; a non-UTF-8
 //! argument is exit 4; a held lock is exit 3 naming the holder and since, and recover runs before the act (with
 //! mortar join, the first ref-moving verb); an agent verb outside a Mortar folder is refused, exit 1 (with
-//! mortar join, the first agent verb).
+//! mortar join, the first agent verb); `mortar guard-hook` allowing a move prints nothing on stdout or stderr,
+//! exit 0, also with --json (S-111).
 
 use std::ffi::OsString;
 use std::io::Write;
 
-use cli::{failure_report, render_json, render_plain, run, usage_report, UsageError};
+use cli::{failure_report, prints_nothing, render_json, render_plain, run, usage_report, UsageError};
 
 fn main() {
     let words = std::env::args_os().skip(1).collect::<Vec<OsString>>();
@@ -28,9 +29,11 @@ fn main() {
         (Ok(_), Err(error)) => (failure_report("", &format!("cannot read the current directory: {error}")), json),
         (Ok(argv), Ok(cwd)) => run(&argv, &cwd),
     };
-    let text = if json { render_json(&report) } else { render_plain(&report) };
-    // Nothing is left to tell anyone when stdout itself cannot be written; the exit code still says the outcome.
-    let mut stdout = std::io::stdout().lock();
-    let _ = stdout.write_all(text.as_bytes()).and_then(|()| stdout.flush());
+    if !prints_nothing(&report) {
+        let text = if json { render_json(&report) } else { render_plain(&report) };
+        // Nothing is left to tell anyone when stdout itself cannot be written; the exit code still says the outcome.
+        let mut stdout = std::io::stdout().lock();
+        let _ = stdout.write_all(text.as_bytes()).and_then(|()| stdout.flush());
+    }
     std::process::exit(report.exit as i32);
 }
