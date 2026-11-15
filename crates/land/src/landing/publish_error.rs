@@ -1,11 +1,11 @@
 //! PublishError: why publish was refused. A bare type (S-7);
-//! publish_error_display_tests exercises the PushRefused and RemoteMissing texts, tests/publish_zit (state_display)
-//! the State text, publish_error_source_tests its source.
+//! publish_error_display_tests exercises the PushRefused, RemoteMissing and PushIntent texts, tests/publish_zit
+//! (state_display) the State text, publish_error_source_tests its source.
 
 use crate::landing::{LandError, LandingStateError};
 use crate::squash::SquashError;
 use gitio::{GitError, PushRefusal};
-use oplog::OplogError;
+use oplog::{OplogError, OpPhase};
 
 /// A publish refusal. Debug only: SquashError, LandError, OplogError and LandingStateError are neither Clone nor Eq.
 #[derive(Debug)]
@@ -25,4 +25,7 @@ pub enum PublishError {
     PushRefused { refname: String, refusal: PushRefusal },
     /// The remote has no origin branch to publish onto.
     RemoteMissing { remote: String, refname: String },
+    /// The push intent for this move was already in the log when publish opened it: open (`phase` Intent) or done
+    /// (Done), the record `op_id`. Nothing was pushed.
+    PushIntent { op_id: String, phase: OpPhase },
 }

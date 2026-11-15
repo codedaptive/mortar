@@ -1,6 +1,8 @@
 //! bisect: name the first failing landing between a passing commit and a failed one on origin (07-bisect.md).
-//! No unit test: it runs git and probes (S-5). tests/bisect_zit.rs covers it: a merge landing named through its
-//! squash's trailers (bisect_names_the_merge_landing_that_broke_the_script), a timed-out probe as a fail
+//! No unit test: it runs git and probes (S-5). Its refusals before any probe are decided by decide_bisect_range
+//! (decide_bisect_range_tests) and the first-parent check by on_first_parent_line (on_first_parent_line_tests).
+//! tests/bisect_zit.rs covers the run: a merge landing named through its squash's trailers
+//! (bisect_names_the_merge_landing_that_broke_the_script), a timed-out probe as a fail
 //! (a_timed_out_probe_counts_as_a_fail), a probe that cannot start (a_command_that_cannot_start_stops_the_search),
 //! last_pass off the line (a_last_pass_off_the_first_parent_line_is_refused), a failed commit off origin
 //! (a_failed_commit_off_origin_is_refused) and a landing without trailers
@@ -15,8 +17,8 @@ use crate::LandRefs;
 
 use super::probe_commit::probe_commit;
 use super::{
-    culprit_of_landing, on_first_parent_line, search_first_failing, BisectAnswer, BisectError, BisectReport,
-    BisectVerdict, Culprit, ProbeOutcome, TestCommand,
+    culprit_of_landing, decide_bisect_range, on_first_parent_line, search_first_failing, BisectAnswer, BisectError,
+    BisectReport, BisectVerdict, Culprit, ProbeOutcome, TestCommand,
 };
 
 /// The first commit after `last_pass` up to `failed` on origin's first-parent line that fails `test_command`, with
@@ -40,12 +42,7 @@ pub fn bisect(
         .read_ref(&origin_ref)
         .map_err(BisectError::Git)?
         .ok_or(BisectError::OriginMissing { refname: origin_ref })?;
-    if first_parent_line(git, failed, &tip)?.is_none() {
-        return Err(BisectError::NotOnOrigin { failed: failed.clone(), origin_branch: refs.origin_branch.clone() });
-    }
-    let Some(candidates) = first_parent_line(git, last_pass, failed)? else {
-        return Err(BisectError::OffTheLine { last_pass: last_pass.clone(), failed: failed.clone() });
-    };
+    let candidates = decide_bisect_range(refs, &tip, last_pass, failed, |base, tip| first_parent_line(git, base, tip))?;
     let mut probes = Vec::new();
     let verdict = search_first_failing(last_pass, &candidates, |commit| {
         let probe = probe_commit(git, commit, test_command, timeout)?;

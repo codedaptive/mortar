@@ -17,7 +17,7 @@ pub enum BisectError {
     /// `last_pass` is not on `failed`'s first-parent line, so the range names no landings (S-78).
     OffTheLine { last_pass: Oid, failed: Oid },
     /// The caller's command could not be run at `commit` (spawn, wait or stderr read failed): the suite's verdict
-    /// there is unknown, so bisect stops (S-78, #1146). `error` is the failure's text.
+    /// there is unknown, so bisect stops (S-78). `error` is the failure's text.
     ProbeCouldNotRun { commit: Oid, error: String },
     /// A git step failed.
     Git(GitError),

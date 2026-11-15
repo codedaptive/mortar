@@ -10,7 +10,9 @@ impl std::error::Error for PublishError {
             PublishError::Git(e) => Some(e),
             PublishError::Oplog(e) => Some(e),
             PublishError::State(e) => Some(e),
-            PublishError::PushRefused { .. } | PublishError::RemoteMissing { .. } => None,
+            PublishError::PushRefused { .. } | PublishError::RemoteMissing { .. } | PublishError::PushIntent { .. } => {
+                None
+            }
         }
     }
 }

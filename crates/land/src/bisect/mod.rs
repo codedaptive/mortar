@@ -3,7 +3,8 @@
 //! running the caller's command in a throwaway detached worktree; the reading of a landing's culprit (its
 //! commit, and the change ID and zone from its squash's trailers); and the pieces a bisect run is described by:
 //! the caller's test command, each probe and its outcome read from how the command ended, the check that the last
-//! passing commit is on the failed one's first-parent line, the report and its failures.
+//! passing commit is on the failed one's first-parent line, the choice between the range searched and the two
+//! refusals before any probe, the report and its failures.
 
 #[allow(clippy::module_inception)]
 mod bisect;
@@ -20,6 +21,7 @@ mod culprit_error;
 mod culprit_error_display;
 mod culprit_error_source;
 mod culprit_of_landing;
+mod decide_bisect_range;
 mod on_first_parent_line;
 mod probe;
 mod probe_commit;
@@ -40,6 +42,8 @@ mod culprit_error_source_tests;
 #[cfg(test)]
 mod culprit_of_landing_tests;
 #[cfg(test)]
+mod decide_bisect_range_tests;
+#[cfg(test)]
 mod on_first_parent_line_tests;
 #[cfg(test)]
 mod probe_outcome_of_tests;
@@ -55,6 +59,7 @@ pub use bisect_verdict::BisectVerdict;
 pub use culprit::Culprit;
 pub use culprit_error::CulpritError;
 pub use culprit_of_landing::culprit_of_landing;
+pub(crate) use decide_bisect_range::decide_bisect_range;
 pub(crate) use on_first_parent_line::on_first_parent_line;
 pub use probe::Probe;
 pub use probe_outcome::ProbeOutcome;

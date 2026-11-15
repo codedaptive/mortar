@@ -1,6 +1,6 @@
 //! restore_backup: a host's backup on the remote brought back into the local store (SPEC-land 08). The actor is
 //! forced by oplog's Op.actor (crates/oplog/src/store/op.rs): the op that creates the refs needs one; SPEC-land
-//! 08-backup.md names it in restore_backup's signature (#1384).
+//! 08-backup.md names it in restore_backup's signature.
 //! No unit test: it runs git and writes the op log (S-5); restored_after_fetch_tests, restore_op_tests and
 //! restore_applied_tests cover its decisions, and the backup integration tests (backup_zit) cover the run and
 //! restore_plan.

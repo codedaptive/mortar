@@ -23,6 +23,11 @@ impl fmt::Display for PublishError {
                 f,
                 "remote {remote} has no {refname} to publish onto; nothing was published"
             ),
+            PublishError::PushIntent { op_id, .. } => write!(
+                f,
+                "the push intent {op_id} for this move was already open or already done when publish opened it, so \
+                 nothing was pushed; next: check the remote's origin branch, then mortar publish"
+            ),
         }
     }
 }

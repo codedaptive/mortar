@@ -1,6 +1,6 @@
 //! guard_decide: every case as data. Guarded refs are refs/heads/main (origin) and refs/heads/integration on remote
 //! origin, whose push URLs are ORIGIN_SSH (the cases of push_url_cases also give ORIGIN_HTTPS); expected verdicts
-//! are literals from the WO-land-6 and WO-land-6b contracts.
+//! are literals from guard_decide's contract (SPEC-land 06, S-60, S-100).
 
 use gitio::Oid;
 use oplog::RefMove;

@@ -1,15 +1,20 @@
 //! The publish ZITs' throwaway repositories: a local repository with a base commit on `main` and `integration`, and
 //! a bare remote `origin` (inside a second TestRepo's directory, removed with it) whose `main` is the base. Trees,
-//! commits, squashes and the other clone's push are made with plain git, never with land's own code.
+//! commits, squashes and the other clone's push are made with plain git, never with land's own code. A push intent
+//! left open is opened by hand through oplog's open_remote_intent, and the push it stands for made with plain git.
 
 use gitio::{Git, Oid, RunOpts};
 use land::{land, LandAnswer, LandRefs, Squash};
-use oplog::ChangeId;
+use oplog::{
+    open_remote_intent, read_marked_log, ChangeId, MarkedRecord, Op, OpPhase, OpResult, RefMove, RemoteIntentOutcome,
+};
 use std::ffi::OsString;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use testkit::TestRepo;
 
+/// What someone else pushes on top of the squash: the squash's files plus o.txt.
+pub const PAST_SQUASH_FILES: [(&str, &str); 3] = [("a.txt", "base\n"), ("o.txt", "other\n"), ("s.txt", "squash\n")];
 /// The change ID of the squash in every case.
 pub const ID_A: &str = "klmnopqrstuvwxyzklmnopqrstuvwxyz";
 /// The committer date of the test's own Git.
@@ -24,6 +29,8 @@ pub const SQUASH_FILES: [(&str, &str); 2] = [("a.txt", "base\n"), ("s.txt", "squ
 pub const OTHER_FILES: [(&str, &str); 2] = [("a.txt", "base\n"), ("o.txt", "other\n")];
 /// The squash ref of the zone named in every squash's Mortar-Zone trailer.
 pub const SQUASH_REF: &str = "refs/mortar/squash/land";
+/// The op id of the push intent a case opens by hand; new_op_id never makes this form.
+pub const OPEN_PUSH_OP_ID: &str = "zit-open-push";
 
 pub struct Fixture {
     pub repo: TestRepo,
@@ -153,12 +160,18 @@ impl Fixture {
     /// Someone else: a second clone of the remote commits OTHER_FILES on the base and pushes it onto the remote's
     /// `branch`. Returns that commit, X.
     pub fn someone_else_pushes(&self, branch: &str) -> Oid {
+        self.someone_else_pushes_on(&self.base, &OTHER_FILES, branch)
+    }
+
+    /// Someone else: a second clone of the remote commits `files` on `parent` (already on the remote) and pushes it
+    /// onto the remote's `branch`. Returns that commit.
+    pub fn someone_else_pushes_on(&self, parent: &Oid, files: &[(&str, &str)], branch: &str) -> Oid {
         let clone = self.elsewhere.path.join("other");
         let bare = self.remote.repo.to_str().unwrap();
         run(&git_at(self.elsewhere.path.clone()), &["clone", "--quiet", bare, clone.to_str().unwrap()]);
         let other = git_at(clone);
-        let tree = tree(&other, &OTHER_FILES);
-        let moved = other.commit_tree(&tree, &[self.base.clone()], "other\n", None, None).unwrap();
+        let tree = tree(&other, files);
+        let moved = other.commit_tree(&tree, &[parent.clone()], "other\n", None, None).unwrap();
         run(&other, &["push", "origin", &format!("{moved}:refs/heads/{branch}")]);
         moved
     }
@@ -173,5 +186,49 @@ impl Fixture {
     /// The text of `<common>/mortar/landing.json`, or None when there is none.
     pub fn landing_json(&self) -> Option<String> {
         std::fs::read_to_string(self.common.join("mortar").join("landing.json")).ok()
+    }
+
+    /// Opens publish's push intent for the move of the remote's main from the base to `new`, marked with the remote
+    /// `origin`, as a publish killed after opening it leaves it.
+    pub fn open_push_intent(&self, new: &Oid) {
+        let op = Op {
+            op_id: OPEN_PUSH_OP_ID.to_string(),
+            // Duplicates publish_push_op's key form (pub(crate) in land): the key a later publish looks for.
+            key: format!("publish-push:origin:refs/heads/main:{}:{new}", self.base),
+            kind: "publish-push".to_string(),
+            actor: ACTOR.to_string(),
+            reason: "publish-push opened by the fixture".to_string(),
+            at: 946_684_800,
+            moves: vec![RefMove {
+                refname: "refs/heads/main".to_string(),
+                old: Some(self.base.clone()),
+                new: new.clone(),
+            }],
+        };
+        let outcome = open_remote_intent(&self.git, &self.common, &op, "origin").unwrap();
+        assert!(matches!(outcome, RemoteIntentOutcome::Opened(_)), "{outcome:?}");
+    }
+
+    /// Pushes `commit` from the local repository onto the remote's main with plain git, outside any op.
+    pub fn push_remote_main(&self, commit: &Oid) {
+        run(&self.git, &["push", "origin", &format!("{commit}:refs/heads/main")]);
+    }
+
+    /// The op log's publish-push records, in log order, with their remote marks.
+    pub fn push_records(&self) -> Vec<MarkedRecord> {
+        read_marked_log(&self.common)
+            .unwrap()
+            .records
+            .into_iter()
+            .filter(|marked| marked.record.kind == "publish-push")
+            .collect()
+    }
+
+    /// The op log's publish-push records in log order: phase, result and remote mark.
+    pub fn push_log(&self) -> Vec<(OpPhase, Option<OpResult>, Option<String>)> {
+        self.push_records()
+            .into_iter()
+            .map(|marked| (marked.record.phase, marked.record.result, marked.remote))
+            .collect()
     }
 }
