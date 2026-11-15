@@ -8,6 +8,10 @@ mod json;
 #[path = "../cli_rit/support.rs"]
 mod support;
 mod observe;
+mod need_fixture;
+mod cid;
+mod refs;
+mod guard_fixture;
 mod status;
 mod need;
 mod guard;

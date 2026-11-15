@@ -1,22 +1,7 @@
-use crate::{json::{check, Report}, observe::*, support::*};
+// The wrong-argument-count usage case is a cli ZIT in tests/run_need_tests.rs.
+use crate::{json::check, need_fixture::Need, observe::*, support::*};
 use oplog::{with_lock, KillPidProbe, LockName};
 use std::{fs, path::PathBuf};
-
-struct Need { f: Fixture, folder: PathBuf }
-impl Need {
-    fn new() -> Self {
-        let f = Fixture::new();
-        let folder = peer(&f, "need", &["src".into()]);
-        assert!(!folder.join("sub/keep").exists(), "need must really materialize a previously excluded path");
-        Self { f, folder }
-    }
-    fn report(&self, args: &[&str], exit: i32, outcome: &str) -> Report {
-        check(self.f.command(&self.folder, args).output().unwrap(), "need", exit, outcome)
-    }
-    fn paths(&self) -> Vec<String> {
-        folders::make::read_folder_record(&self.f.git.git_dir(&self.folder).unwrap()).unwrap().unwrap().needed_paths
-    }
-}
 
 #[test]
 fn rit_need_expands_real_cone_records_gap_and_repeats_once_with_status_next() {
@@ -49,15 +34,6 @@ fn rit_need_bad_or_absent_paths_refuse_before_record_cone_or_refs_change() {
         }
         assert_eq!(before(&n.f, &n.folder), old); assert_eq!(n.f.git.sparse_list(&n.folder).unwrap(), cone);
         assert!(!n.folder.join("sub/keep").exists()); assert!(!n.f.lock_path().exists());
-    }
-}
-
-#[test]
-fn rit_need_wrong_argument_count_is_usage_without_work() {
-    let n = Need::new(); let old = before(&n.f, &n.folder);
-    for args in [vec!["--json", "need"], vec!["--json", "need", "src", "sub"]] {
-        let report = n.report(&args, 4, "usage"); assert!(report.lines().contains("need takes one path"));
-        assert_eq!(before(&n.f, &n.folder), old);
     }
 }
 

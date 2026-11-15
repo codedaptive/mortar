@@ -1,14 +1,14 @@
 //! run_guard_hook: `mortar guard-hook <name>`, the verb the guard's git hooks run (SPEC-land 06).
-//! No unit test (S-104): every decision that reads the repository runs land, oplog and gitio for real, so its tests
-//! are RITs (S-101), owed to Nagatha. The unreadable-input refusal too comes after git and guard.json are read;
-//! guard_hook_report_tests covers how it renders and the RIT case below covers its being given.
-//! guard_hook_from_args_tests and guard_hook_report_tests cover the words it reads and the reports it gives. Her
-//! integration group is to cover,
-//! with the mortar binary installed as the hook (land::guard_install; mortar guard install once built, S-112) in a
-//! throwaway repository, git run with
+//! No unit test (S-104): every decision that reads the repository runs land, oplog and gitio for real.
+//! guard_hook_from_args_tests and guard_hook_report_tests cover the words it reads and the reports it gives;
+//! decide_with_intent_tests covers when the open intent is read.
+//! cli ZITs in tests/run_guard_hook_tests.rs (S-119): hook input on stdin that is not UTF-8 is refused (exit 1), with
+//! nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let through (exit 0,
+//! nothing printed) and a prepared one fails on the op log (exit 5).
+//! The RITs (S-101) in tests/operational_rit/guard.rs cover, with the mortar binary installed as the hook
+//! (land::guard_install; mortar guard install once built, S-112) in a throwaway repository, git run with
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1:
 //! - an allowed move prints nothing on stdout or stderr, exit 0, also with --json (S-111);
-//! - hook input on stdin that is not UTF-8 is refused (exit 1), with nothing moved;
 //! - update-ref, commit and push against integration and origin are refused, with nothing moved;
 //! - MORTAR_OP naming no open intent is refused;
 //! - apply_protected and publish's push pass;
@@ -22,10 +22,10 @@ use std::io::Read;
 use std::path::Path;
 
 use gitio::Git;
-use land::{guard_decide, read_guard_config, GuardError, GuardHook, GuardVerdict, LandRefs};
+use land::{read_guard_config, GuardError, GuardHook, GuardVerdict, LandRefs};
 use oplog::{open_intent, RefMove, MORTAR_OP_ENV};
 
-use super::{guard_hook_from_args, guard_hook_report};
+use super::{decide_with_intent, guard_hook_from_args, guard_hook_report};
 use crate::args::{usage_report, UsageError};
 use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
@@ -34,12 +34,13 @@ const VERB: &str = "guard-hook";
 const INSTALLER: &str = "the harness that installs the guard";
 
 /// Reads guard.json under the common dir of the repository at `cwd`; then the hook's words (after guard.json, because a
-/// pre-push needs guard.json's remote for its push URLs); then the hook's input from stdin; then the moves of the
-/// open intent MORTAR_OP names (None when it is unset or not unicode), and reports land::guard_decide's verdict
-/// (an allow's report is exit Done with nothing in it, and the binary prints none of it: S-111).
+/// pre-push needs guard.json's remote for its push URLs); then the hook's input from stdin; then, only when
+/// land::guard_decide reads this hook's input (decide_with_intent), the moves of the open intent MORTAR_OP names
+/// (None when it is unset or not unicode); and reports guard_decide's verdict (an allow's report is exit Done with
+/// nothing in it, and the binary prints none of it: S-111).
 /// A guard.json that is missing or is not a guard config, and input that cannot be read, are refused (exit 1): the
-/// guard cannot check the move, so it fails closed. Words it cannot read are usage (exit 4); git or the op log
-/// failing is failure_report (exit 5). Takes no lock and moves nothing.
+/// guard cannot check the move, so it fails closed. Words it cannot read are usage (exit 4); git failing, or the op
+/// log failing when it is read, is failure_report (exit 5). Takes no lock and moves nothing.
 pub fn run_guard_hook(context: &ShellContext, cwd: &Path) -> Report {
     decide(context, cwd).unwrap_or_else(|report| report)
 }
@@ -48,12 +49,8 @@ fn decide(context: &ShellContext, cwd: &Path) -> Result<Report, Report> {
     let git = Git::new(cwd);
     let common = git.common_dir().map_err(|error| failure_report(VERB, &error.to_string()))?;
     let refs = read_refs(&git, &common)?;
-    Ok(guard_hook_report(&guard_decide(
-        &hook(context, &git, &refs)?,
-        &read_input()?,
-        &refs,
-        open_moves(&common)?.as_deref(),
-    )))
+    decide_with_intent(&hook(context, &git, &refs)?, &read_input()?, &refs, || open_moves(&common))
+        .map(|verdict| guard_hook_report(&verdict))
 }
 
 /// The hook's words; words it cannot read are usage (exit 4), with the verb's usage line as next.

@@ -8,6 +8,7 @@ mod open_requests_for;
 mod overlaps_with;
 mod read_branch_tips;
 mod read_overlaps;
+mod read_progress;
 mod read_stalled_move;
 mod read_status;
 mod run_status;
@@ -15,6 +16,8 @@ mod status_fields;
 mod status_lines;
 mod status_next;
 mod status_outcome;
+mod status_phase;
+mod status_phase_from_status_state;
 mod status_report;
 mod status_state;
 
@@ -36,6 +39,8 @@ mod status_lines_tests;
 mod status_next_tests;
 #[cfg(test)]
 mod status_outcome_tests;
+#[cfg(test)]
+mod status_phase_from_status_state_tests;
 
 pub use is_joined::is_joined;
 pub use missing_branch_report::missing_branch_report;
@@ -44,6 +49,7 @@ pub use open_requests_for::open_requests_for;
 pub use overlaps_with::overlaps_with;
 pub use read_branch_tips::read_branch_tips;
 pub use read_overlaps::read_overlaps;
+pub use read_progress::read_progress;
 pub use read_stalled_move::read_stalled_move;
 pub use read_status::read_status;
 pub use run_status::run_status;
@@ -51,5 +57,6 @@ pub use status_fields::status_fields;
 pub use status_lines::status_lines;
 pub use status_next::status_next;
 pub use status_outcome::status_outcome;
+pub use status_phase::StatusPhase;
 pub use status_report::status_report;
 pub use status_state::StatusState;

@@ -1,4 +1,5 @@
-//! CLI restore's crash-repeat and unsaved-work outcomes. This is a ZIT (S-119); the crash-repeat case is red-first.
+//! CLI restore's crash-repeat, unsaved-work and repeat-after-a-later-restore outcomes. This is a ZIT (S-119); the
+//! crash-repeat and repeat-after-a-later-restore cases are red-first.
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -21,6 +22,7 @@ struct Fixture {
     common: PathBuf,
     request: PathBuf,
     checkpoint: String,
+    later: String,
     branch_at_checkpoint: Oid,
     snap_at_checkpoint: Oid,
     branch_saved: Oid,
@@ -71,11 +73,12 @@ impl Fixture {
         fs::write(request.join("src/file"), b"saved later\n").unwrap();
         let output = command(&repo.path, &request, &git).args(["save", "Later work"]).output().unwrap();
         assert!(output.status.success(), "later save: {output:?}");
+        let later = oplog::read_op_log(&common).unwrap().records.last().unwrap().op_id.clone();
         let branch_saved = git.read_ref(REQUEST).unwrap().unwrap();
         let snap_saved = git.read_ref(SNAP).unwrap().unwrap();
         assert_ne!(branch_at_checkpoint, branch_saved);
         assert_ne!(snap_at_checkpoint, snap_saved);
-        Self { repo, git, common, request, checkpoint, branch_at_checkpoint, snap_at_checkpoint, branch_saved, snap_saved }
+        Self { repo, git, common, request, checkpoint, later, branch_at_checkpoint, snap_at_checkpoint, branch_saved, snap_saved }
     }
 
     fn restore(&self) -> Output {
@@ -95,16 +98,17 @@ fn command(root: &Path, cwd: &Path, git: &Git) -> Command {
 #[test]
 fn repeat_after_ref_transaction_finishes_the_folder_move_once() {
     let fx = Fixture::new();
-    let shim = fx.repo.path.join("git-crash-boundary.sh");
+    let shim = fx.repo.path.join("git-crash'boundary.sh");
     let shimbin = fx.repo.path.join("shimbin");
     fs::create_dir(&shimbin).unwrap();
     write_git_kill_shim(&shim).unwrap();
-    let original_path = std::env::var("PATH").unwrap();
-    let script = format!("#!/bin/sh\nPATH='{}' exec '{}' \"$@\"\n", original_path, shim.display());
-    write_git_shim(&shimbin.join("git"), script.as_bytes()).unwrap();
+    // The wrapper's text holds no paths, so a quote in PATH, TMPDIR or the shim's name cannot break it; the
+    // values come by environment. Its PATH leaves out shimbin, so the kill shim's own `git` is the real one.
+    write_git_shim(&shimbin.join("git"), b"#!/bin/sh\nPATH=\"$MORTAR_TEST_GIT_PATH\" exec \"$MORTAR_TEST_GIT_SHIM\" \"$@\"\n").unwrap();
     let mut worker = test_child("restore_worker").unwrap();
     worker.env("MORTAR_TEST_ROOT", &fx.repo.path).env("MORTAR_TEST_REQUEST", &fx.request)
         .env("MORTAR_TEST_CHECKPOINT", &fx.checkpoint).env("MORTAR_TEST_SHIMBIN", &shimbin)
+        .env("MORTAR_TEST_GIT_PATH", std::env::var_os("PATH").unwrap()).env("MORTAR_TEST_GIT_SHIM", &shim)
         .env("MORTAR_TEST_CRASH", "after");
     let killed = run_with_kill_gate(&mut worker, &fx.repo.path).unwrap();
     assert_eq!(killed.status.signal(), Some(9), "worker: {killed:?}");
@@ -121,6 +125,35 @@ fn repeat_after_ref_transaction_finishes_the_folder_move_once() {
     assert_eq!(fs::read(fx.request.join("src/file")).unwrap(), b"checkpoint\n");
     let records = oplog::read_op_log(&fx.common).unwrap().records;
     assert_eq!(records.iter().filter(|r| r.kind == "restore" && r.key == key && r.phase == OpPhase::Done).count(), 1);
+}
+
+/// A finished restore repeated after a later restore moved the same ref on (S-113(3)) moves nothing: the folder and
+/// its refs stay at the later restore's value, no folder move is recorded, and the output says why.
+#[test]
+fn repeat_after_a_later_restore_leaves_the_folder_and_its_ref() {
+    let fx = Fixture::new();
+    let text = |o: &Output| format!("{}{}", String::from_utf8_lossy(&o.stdout), String::from_utf8_lossy(&o.stderr));
+    let first = fx.restore();
+    assert_eq!(first.status.code(), Some(0), "R1: {}", text(&first));
+    assert_eq!(fx.git.read_ref(REQUEST).unwrap(), Some(fx.branch_at_checkpoint.clone()));
+    assert_eq!(fs::read(fx.request.join("src/file")).unwrap(), b"checkpoint\n");
+    let later = command(&fx.repo.path, &fx.request, &fx.git)
+        .args(["--actor", "harness", "restore", &fx.later, REQUEST, SNAP]).output().unwrap();
+    assert_eq!(later.status.code(), Some(0), "R2: {}", text(&later));
+    assert_eq!(fx.git.read_ref(REQUEST).unwrap(), Some(fx.branch_saved.clone()));
+    assert_eq!(fx.git.read_ref(SNAP).unwrap(), Some(fx.snap_saved.clone()));
+    assert_eq!(fs::read(fx.request.join("src/file")).unwrap(), b"saved later\n");
+    let folder_moves = || oplog::read_op_log(&fx.common).unwrap().records.iter().filter(|r| r.kind == "folder-move").count();
+    let moves_before = folder_moves();
+    let repeated = fx.restore();
+    let out = text(&repeated);
+    assert_eq!(repeated.status.code(), Some(0), "repeat: {out}");
+    assert_eq!(fx.git.read_ref(REQUEST).unwrap(), Some(fx.branch_saved.clone()), "repeat: {out}");
+    assert_eq!(fx.git.read_ref(SNAP).unwrap(), Some(fx.snap_saved.clone()), "repeat: {out}");
+    assert_eq!(fs::read(fx.request.join("src/file")).unwrap(), b"saved later\n", "repeat: {out}");
+    assert_eq!(folder_moves(), moves_before, "repeat: {out}");
+    let path = fx.request.display().to_string();
+    assert!(out.lines().any(|l| l.contains(&path) && l.contains("stays") && l.contains("moved on")), "repeat: {out}");
 }
 
 #[test]
@@ -151,7 +184,7 @@ fn restore_worker() {
     mortar.args(["--actor", "harness", "restore", &checkpoint, REQUEST, SNAP]).env("PATH", path)
         .env("MORTAR_TEST_WORKER_PID", std::process::id().to_string())
         .env("MORTAR_TEST_CRASH", std::env::var_os("MORTAR_TEST_CRASH").unwrap());
-    for name in ["TESTKIT_GATE_RELEASE", "TESTKIT_GATE_ACK", "TESTKIT_GATE_ARMED"] {
+    for name in ["MORTAR_TEST_GIT_PATH", "MORTAR_TEST_GIT_SHIM", "TESTKIT_GATE_RELEASE", "TESTKIT_GATE_ACK", "TESTKIT_GATE_ARMED"] {
         mortar.env(name, std::env::var_os(name).unwrap());
     }
     panic!("exec mortar: {}", mortar.exec());

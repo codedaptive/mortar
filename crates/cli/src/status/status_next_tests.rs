@@ -1,4 +1,5 @@
-//! status_next: over the whole state table, the first of stalled, paused, unsaved, not joined decides the step.
+//! status_next: one state per StatusPhase phase gives its step;
+//! status_phase_from_status_state_tests holds the whole state table.
 
 use std::path::PathBuf;
 
@@ -37,58 +38,22 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
     }
 }
 
-/// Every row of the table as (stalled, paused, saved, joined, the answer the spec's order gives), written out.
-const TABLE: [(bool, bool, bool, bool, &str); 16] = [
-    (false, false, false, false, "mortar save \"<sentence>\""),
+/// One state per phase as (stalled, paused, saved, joined, the answer for that phase), written out.
+const ONE_PER_PHASE: [(bool, bool, bool, bool, &str); 5] = [
+    (true, true, false, false, "mortar join"),
+    (false, true, true, true, "mortar resolve"),
     (false, false, false, true, "mortar save \"<sentence>\""),
     (false, false, true, false, "mortar join"),
     (false, false, true, true, "wait for the zone's tests"),
-    (false, true, false, false, "mortar resolve"),
-    (false, true, false, true, "mortar resolve"),
-    (false, true, true, false, "mortar resolve"),
-    (false, true, true, true, "mortar resolve"),
-    (true, false, false, false, "mortar join"),
-    (true, false, false, true, "mortar join"),
-    (true, false, true, false, "mortar join"),
-    (true, false, true, true, "mortar join"),
-    (true, true, false, false, "mortar join"),
-    (true, true, false, true, "mortar join"),
-    (true, true, true, false, "mortar join"),
-    (true, true, true, true, "mortar join"),
 ];
 
 #[test]
-fn every_row_of_the_state_table_gives_the_first_that_holds() {
-    for (stalled, paused, saved, joined, answer) in TABLE {
+fn one_state_per_phase_gives_that_phases_answer() {
+    for (stalled, paused, saved, joined, answer) in ONE_PER_PHASE {
         assert_eq!(
             status_next(&state(stalled, paused, saved, joined)),
             answer,
             "stalled {stalled}, paused {paused}, saved {saved}, joined {joined}"
         );
     }
-}
-
-#[test]
-fn a_stalled_move_comes_before_a_paused_join_and_unsaved_work() {
-    assert_eq!(status_next(&state(true, true, false, false)), "mortar join");
-}
-
-#[test]
-fn a_paused_join_comes_before_unsaved_work() {
-    assert_eq!(status_next(&state(false, true, false, true)), "mortar resolve");
-}
-
-#[test]
-fn unsaved_work_is_saved_with_a_sentence() {
-    assert_eq!(status_next(&state(false, false, false, false)), "mortar save \"<sentence>\"");
-}
-
-#[test]
-fn saved_work_not_joined_is_joined() {
-    assert_eq!(status_next(&state(false, false, true, false)), "mortar join");
-}
-
-#[test]
-fn a_joined_request_waits_for_the_zones_tests() {
-    assert_eq!(status_next(&state(false, false, true, true)), "wait for the zone's tests");
 }

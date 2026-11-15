@@ -5,6 +5,7 @@ mod folder_on_ref;
 mod folders_on_refs;
 mod folders_to_move;
 mod move_restored_folders;
+mod ref_moved_on;
 mod restore_error_report;
 mod restore_key;
 mod restore_lock;
@@ -14,6 +15,8 @@ mod restore_refusal;
 mod restore_report;
 mod run_restore;
 
+#[cfg(test)]
+mod ref_moved_on_tests;
 #[cfg(test)]
 mod restore_error_report_tests;
 #[cfg(test)]
@@ -31,6 +34,7 @@ pub use folder_on_ref::FolderOnRef;
 pub use folders_on_refs::folders_on_refs;
 pub use folders_to_move::folders_to_move;
 pub use move_restored_folders::move_restored_folders;
+pub use ref_moved_on::ref_moved_on;
 pub use restore_error_report::restore_error_report;
 pub use restore_key::restore_key;
 pub use restore_lock::restore_lock;
