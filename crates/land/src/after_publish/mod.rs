@@ -7,11 +7,14 @@ mod after_publish;
 mod after_publish_error;
 mod after_publish_error_display;
 mod after_publish_error_source;
+mod choose_held;
 mod decide_zone_case;
 mod move_zone;
-mod read_replayed_counterpart;
+mod read_held;
+mod read_record_move;
 mod read_squash_of;
-mod replayed_counterpart;
+mod replay_record_ref;
+mod replayed_position;
 mod requests_to_rebase;
 mod squash_of_in;
 mod squash_of_read;
@@ -25,9 +28,13 @@ mod after_publish_error_display_tests;
 #[cfg(test)]
 mod after_publish_error_source_tests;
 #[cfg(test)]
+mod choose_held_tests;
+#[cfg(test)]
 mod decide_zone_case_tests;
 #[cfg(test)]
-mod replayed_counterpart_tests;
+mod replay_record_ref_tests;
+#[cfg(test)]
+mod replayed_position_tests;
 #[cfg(test)]
 mod requests_to_rebase_tests;
 #[cfg(test)]
@@ -38,11 +45,14 @@ pub use after_publish_error::AfterPublishError;
 pub use zone_move::ZoneMove;
 pub use zone_requests::ZoneRequests;
 
+pub(crate) use choose_held::choose_held;
 pub(crate) use decide_zone_case::decide_zone_case;
 pub(crate) use move_zone::move_zone;
-pub(crate) use read_replayed_counterpart::read_replayed_counterpart;
+pub(crate) use read_held::read_held;
+pub(crate) use read_record_move::read_record_move;
 pub(crate) use read_squash_of::read_squash_of;
-pub(crate) use replayed_counterpart::replayed_counterpart;
+pub(crate) use replay_record_ref::replay_record_ref;
+pub(crate) use replayed_position::replayed_position;
 pub(crate) use requests_to_rebase::requests_to_rebase;
 pub(crate) use squash_of_in::squash_of_in;
 pub(crate) use squash_of_read::SquashOfRead;

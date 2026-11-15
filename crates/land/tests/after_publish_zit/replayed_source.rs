@@ -1,8 +1,9 @@
 //! The publishing zone whose squash source an earlier after_publish replayed. Zone `land` is squashed at A1 and
 //! the squash kept; zone `b` is squashed, landed and published first, and after_publish(b, others=[land]) replays A1
 //! onto b's origin as A1'. The kept squash, still naming A1 in its Mortar-Squash-Of, then lands as a merge and
-//! publishes. after_publish(land) must take A1' as the zone's counterpart of A1: put the zone on origin when A1' is
-//! its tip, and replay only a request joined after A1' onto origin when there is one. Origin is never rewritten.
+//! publishes. after_publish(land) must take A1', the replay of A1 that after_publish(b) recorded, as the zone's
+//! counterpart of A1: put the zone on origin when A1' is its tip, and replay only a request joined after A1' onto
+//! origin when there is one. Origin is never rewritten.
 
 use crate::fixture::{refs, request, zone, Fixture, ACTOR, B_FILES, PUBLISHED, PUBLISHED_FILES};
 use gitio::Oid;

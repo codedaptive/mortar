@@ -1,7 +1,7 @@
 //! decide_zone_case: each rule with literal ids, in the contract's order: Current, then the zone that did not
 //! publish (Advance, Replay from the base), then the publishing zone (NoSquashOf, SquashOfNotInZone, Advance,
-//! Replay from the squash-of), then the publishing zone holding a replayed counterpart of the squash-of (at the tip
-//! it advances, before the tip it replays from the counterpart, none is refused naming the original commit).
+//! Replay from the squash-of), then the publishing zone holding a recorded replay of the squash-of (at the tip
+//! it advances, before the tip it replays from the replay, none is refused naming the original commit).
 
 use super::{decide_zone_case, SquashOfRead, ZoneCase};
 use gitio::Oid;
