@@ -1,5 +1,6 @@
 //! squash_of_in: the squash-of of this zone's squash; None for another zone's, for no Mortar-Zone and for no
-//! Mortar-Squash-Of. Keys are written as literal trailer text, as a squash commit carries them.
+//! Mortar-Squash-Of. Keys match in any ASCII case (lowercase, mixed); when Mortar-Zone or Mortar-Squash-Of
+//! repeats, the last pair counts (S-10). Keys are written as literal trailer text, as a squash commit carries them.
 
 use super::squash_of_in;
 
@@ -46,4 +47,46 @@ fn no_trailers_is_none() {
 fn a_zone_name_that_only_starts_the_same_is_another_zone() {
     let trailers = pairs(&[("Mortar-Zone", "landing"), ("Mortar-Squash-Of", SQUASH_OF)]);
     assert_eq!(squash_of_in(&trailers, "land"), None);
+}
+
+#[test]
+fn lowercase_keys_are_found() {
+    let trailers = pairs(&[("mortar-zone", "land"), ("mortar-squash-of", SQUASH_OF)]);
+    assert_eq!(squash_of_in(&trailers, "land"), Some(SQUASH_OF));
+}
+
+#[test]
+fn mixed_case_keys_are_found() {
+    let trailers = pairs(&[("MORTAR-ZONE", "land"), ("mortar-Squash-Of", SQUASH_OF)]);
+    assert_eq!(squash_of_in(&trailers, "land"), Some(SQUASH_OF));
+}
+
+#[test]
+fn a_later_zone_of_another_zone_wins_and_is_none() {
+    let trailers = pairs(&[
+        ("Mortar-Zone", "land"),
+        ("Mortar-Squash-Of", SQUASH_OF),
+        ("Mortar-Zone", "join"),
+    ]);
+    assert_eq!(squash_of_in(&trailers, "land"), None);
+}
+
+#[test]
+fn a_later_zone_of_this_zone_wins_and_names_the_squash_of() {
+    let trailers = pairs(&[
+        ("Mortar-Zone", "join"),
+        ("Mortar-Zone", "land"),
+        ("Mortar-Squash-Of", SQUASH_OF),
+    ]);
+    assert_eq!(squash_of_in(&trailers, "land"), Some(SQUASH_OF));
+}
+
+#[test]
+fn a_repeated_squash_of_gives_the_last_value() {
+    let trailers = pairs(&[
+        ("Mortar-Zone", "land"),
+        ("Mortar-Squash-Of", "1111111111111111111111111111111111111111"),
+        ("Mortar-Squash-Of", SQUASH_OF),
+    ]);
+    assert_eq!(squash_of_in(&trailers, "land"), Some(SQUASH_OF));
 }
