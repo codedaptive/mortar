@@ -1,4 +1,5 @@
 //! squash_message: the text of a squash commit's message, before its trailers.
+//! squash_message_requests reads its request lines back.
 
 use crate::squash::SquashRequest;
 

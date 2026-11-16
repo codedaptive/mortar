@@ -1,4 +1,5 @@
-//! SquashError as a std error: its source is the wrapped git, op log, trailer or change ID error.
+//! SquashError as a std error: its source is the wrapped git, op log, trailer or change ID error; the refusals
+//! squash and read_squash make themselves have none.
 
 use crate::squash::SquashError;
 
@@ -13,7 +14,10 @@ impl std::error::Error for SquashError {
             | SquashError::AttrSourceMissing { .. }
             | SquashError::Unrelated { .. }
             | SquashError::OpFailed(_)
-            | SquashError::OpRepeated(_) => None,
+            | SquashError::OpRepeated(_)
+            | SquashError::TrailerMissing { .. }
+            | SquashError::TrailerMalformed { .. }
+            | SquashError::RequestsMalformed { .. } => None,
         }
     }
 }
