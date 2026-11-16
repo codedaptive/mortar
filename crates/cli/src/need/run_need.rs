@@ -29,8 +29,8 @@ use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 use crate::status::{read_branch_tips, read_progress};
 
-/// Exactly one argument, else usage_report. An attempt folder is refused by attempt_refusal: attempt folders are
-/// refused until WO-cli-5 sets each verb's attempt rule. A missing folder or config is a failure here. Before any
+/// Exactly one argument, else usage_report. An attempt folder is refused by attempt_refusal (S-81(c), S-127): keep
+/// carries only the attempt's commits, not its needed paths. A missing folder or config is a failure here. Before any
 /// lock, so a refusal changes nothing: the path is checked (read_need_path), and so is what the next step reads that
 /// need's write cannot change: the record names a request, and the request and zone branches exist
 /// (read_branch_tips, missing_branch_report's refusal). Then, under `join-<zone>` from the verb table with recover

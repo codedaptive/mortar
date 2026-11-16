@@ -1,4 +1,5 @@
-//! run_save: `mortar save "<sentence>"`, the agent verb that commits its folder's files on the request's branch.
+//! run_save: `mortar save "<sentence>"`, the agent verb that commits its folder's files on the folder's branch
+//! (the request's branch, or attempt k's try branch).
 //! No unit test: it takes the lock, runs git, the formatter and the op log (S-79); save_sentence, snapshot_target_for,
 //! save_report, save_error_report, snapshot_settings_for and op_key are its decisions and have their tests.
 //! Nagatha's integration group is to cover, with the mortar binary as a child process in a request folder made by
