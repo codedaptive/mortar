@@ -15,8 +15,10 @@
 //! between. attempts_keep.rs and attempts_drop.rs cover keep of another attempt, and a drop, after remake_orphans
 //! finishing, and remove of the request folder then going ahead. attempts_remake_refusals.rs covers an orphan whose
 //! folder record is gone: NotAFolder naming it, with nothing changed.
-//! tests/folders/root_files.rs covers a cone holding top-level files: only its folders are applied again, and a cone
-//! of top-level files alone is Plan naming the folder, nothing changed.
+//! tests/folders/root_files.rs covers a record holding top-level files: a top-level file and a folder remake with
+//! nothing outside the cone deleted; top-level files alone remake with an empty cone and the top-level files alone
+//! checked out; an orphan whose folder is not sparse, with a cone of top-level files alone or holding a folder, fails
+//! as Git with nothing changed.
 
 use std::path::PathBuf;
 
@@ -25,7 +27,7 @@ use oplog::{read_mortar_trailers, write_mortar_trailers};
 
 use super::{orphan_attempts, remade_message, remade_trailers, remake_plan, Remake, Snap};
 use crate::make::{git_cone, make_branch, read_folder_record, refill_cone, FolderError};
-use crate::plan::{attempt_branch, request_branch, PlanError, TRYSNAP_REF_PREFIX};
+use crate::plan::{attempt_branch, request_branch, TRYSNAP_REF_PREFIX};
 
 /// Re-makes every orphan attempt folder of `request` in `zone` (orphan_attempts) and returns their folders in k order.
 /// The caller holds the lock and runs oplog::recover first (S-16, S-25); remake_orphans takes no lock itself. The names
@@ -34,20 +36,19 @@ use crate::plan::{attempt_branch, request_branch, PlanError, TRYSNAP_REF_PREFIX}
 /// orphan with no such ref, or whose T has no parent, is OrphanWithoutSnapshot for all of them before anything is
 /// touched (remake_plan); so is an orphan whose folder has no Mortar folder record (NotAFolder naming it), and a
 /// record whose cone is unusable (Plan, refill_cone). Each cone is the record's without its top-level files, read
-/// from the snapshot's tree since HEAD is unborn (git_cone, S-126); a cone left empty is Plan naming its folder, also
-/// before anything is touched: gitio refuses an empty sparse_add, and that error would otherwise come only after
-/// set_index had replaced the folder's index. Then, in k order: a new commit R holding T's tree with T's
-/// first parent P as its one parent, its message remade_message with remade_trailers drawn from P's trailers
-/// (unreadable ones count as none); T's author is R's author and committer, so no git identity is needed and R stays
-/// traceable to its snapshot. The folder's index is set to R's tree; set_index re-applies a sparse folder's own
-/// patterns, so its skip-worktree bits stay and paths outside them do not show as deleted (also for a cone of
-/// top-level files only). sparse_add then adds that filtered cone again: it finishes a need interrupted after its
-/// record was written (it adds the needed path to the patterns and writes its files), and on a folder whose fill
-/// stopped before its sparse paths were set (no patterns, so set_index left no skip-worktree bits) git refuses it and
-/// remake stops there, before the try branch op. Then one folder-branch op (make_branch) makes the try branch at R,
-/// which was absent. A kill before that op leaves the folder an orphan, and a repeat writes the same R again (every
-/// input is fixed, so its id is the same) and the op then makes the branch at it;
-/// after the op the attempt is ordinary, so a repeat does not meet it again.
+/// from the snapshot's tree since HEAD is unborn (git_cone, S-126). Every folder, whatever its cone, is checked, also
+/// before anything is touched, with a read-only sparse_list: a folder that is not sparse in cone mode is Git, so remake
+/// never leaves such a folder with a full index and its files missing. Then, in k order: a new commit R holding T's
+/// tree with T's first parent P as its one parent, its message remade_message with remade_trailers drawn from P's
+/// trailers (unreadable ones count as none); T's author is R's author and committer, so no git identity is needed and
+/// R stays traceable to its snapshot. The folder's index is set to R's tree; set_index re-applies the folder's own
+/// sparse patterns, so its skip-worktree bits stay, also for a cone of top-level files only, and it writes no file,
+/// so the folder's files are as they were (a top-level file missing from disk shows as deleted, for any cone). For a
+/// non-empty cone, sparse_add then adds it again: it finishes a need interrupted after its record was written (it adds
+/// the needed path to the patterns and writes its files). An empty cone has nothing to add. Then one folder-branch op
+/// (make_branch) makes the try branch at R, which was absent. A kill before that op leaves the folder an orphan, and a
+/// repeat writes the same R again (every input is fixed, so its id is the same) and the op then makes the branch at
+/// it; after the op the attempt is ordinary, so a repeat does not meet it again.
 pub fn remake_orphans(git: &Git, zone: &str, request: &str, actor: &str) -> Result<Vec<PathBuf>, FolderError> {
     request_branch(zone, request).map_err(FolderError::Plan)?;
     let refs = git
@@ -82,7 +83,9 @@ pub fn remake_orphans(git: &Git, zone: &str, request: &str, actor: &str) -> Resu
         let author = authors.iter().find(|(k, _)| *k == remake.k).map(|(_, author)| author);
         let tip = remade_commit(git, zone, request, remake, author)?;
         git.set_index(&remake.folder, &remake.tree).map_err(FolderError::Git)?;
-        git.sparse_add(&remake.folder, cone).map_err(FolderError::Git)?;
+        if !cone.is_empty() {
+            git.sparse_add(&remake.folder, cone).map_err(FolderError::Git)?;
+        }
         let branch = attempt_branch(zone, request, remake.k).map_err(FolderError::Plan)?;
         make_branch(git, actor, &common, &branch, &tip)?;
     }
@@ -90,24 +93,15 @@ pub fn remake_orphans(git: &Git, zone: &str, request: &str, actor: &str) -> Resu
 }
 
 /// The cone of `remake`'s folder, from its record (refill_cone) without its top-level files, read from the
-/// snapshot's tree (git_cone). A worktree with no record is NotAFolder; a cone left empty is Plan naming the folder,
-/// so that the folder's index is not replaced before gitio refuses the empty sparse_add.
+/// snapshot's tree (git_cone). A worktree with no record is NotAFolder. For every folder, sparse_list (its value
+/// unused) checks the folder is sparse in cone mode, so a folder that is not is Git before its index is replaced.
 fn folder_cone(git: &Git, remake: &Remake) -> Result<Vec<String>, FolderError> {
     let folder = &remake.folder;
     let record = read_folder_record(&git.git_dir(folder).map_err(FolderError::Git)?)?.ok_or_else(|| {
         FolderError::NotAFolder { path: folder.to_path_buf(), reason: "a worktree with no Mortar folder record".into() }
     })?;
-    let cone = git_cone(git, folder, &remake.tree, &refill_cone(&record)?)?;
-    if cone.is_empty() {
-        return Err(FolderError::Plan(PlanError {
-            reason: format!(
-                "attempt folder {} has only top-level files in its cone, which cannot be applied again before its try \
-                 branch exists; nothing changed",
-                folder.display()
-            ),
-        }));
-    }
-    Ok(cone)
+    git.sparse_list(folder).map_err(FolderError::Git)?;
+    git_cone(git, folder, &remake.tree, &refill_cone(&record)?)
 }
 
 /// Writes R for `remake`: its tree, its parent alone, the remade message with the trailers drawn from the parent's,
