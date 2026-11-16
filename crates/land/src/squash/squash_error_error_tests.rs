@@ -1,4 +1,5 @@
-//! source(): the wrapped error for Git, Oplog, Trailers and ChangeId; none for the refusals squash makes itself.
+//! source(): the wrapped error for Git, Oplog, Trailers and ChangeId; none for the refusals squash and
+//! read_squash make themselves.
 
 use super::SquashError;
 use gitio::{GitError, Oid};
@@ -65,7 +66,7 @@ fn change_id_source_is_the_inner_change_id_error() {
 }
 
 #[test]
-fn refusals_squash_makes_itself_have_no_source() {
+fn refusals_squash_and_read_squash_make_themselves_have_no_source() {
     let refusals = [
         SquashError::RefMissing { refname: "refs/heads/main".to_string() },
         SquashError::AttrSourceMissing { commit: oid("1111111111111111111111111111111111111111") },
@@ -75,6 +76,16 @@ fn refusals_squash_makes_itself_have_no_source() {
         },
         SquashError::OpFailed(record()),
         SquashError::OpRepeated(record()),
+        SquashError::TrailerMissing {
+            commit: oid("3333333333333333333333333333333333333333"),
+            trailer: "Mortar-Squash-Of".to_string(),
+        },
+        SquashError::TrailerMalformed {
+            commit: oid("3333333333333333333333333333333333333333"),
+            trailer: "Mortar-Change-Id".to_string(),
+            value: "abc".to_string(),
+        },
+        SquashError::RequestsMalformed { commit: oid("3333333333333333333333333333333333333333") },
     ];
     for refusal in &refusals {
         assert!(refusal.source().is_none(), "{refusal:?}");

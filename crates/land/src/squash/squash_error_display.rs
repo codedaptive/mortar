@@ -1,5 +1,5 @@
 //! Display for SquashError: each variant says why and names what it carries;
-//! the refusals squash makes itself also say what moved.
+//! the refusals squash makes itself also say what moved, and read_squash's say what to do.
 
 use crate::squash::SquashError;
 use std::fmt;
@@ -34,6 +34,22 @@ impl fmt::Display for SquashError {
                 f,
                 "op key {} is already done in the op log, so this squash moved nothing; run squash again",
                 record.key
+            ),
+            SquashError::TrailerMissing { commit, trailer } => write!(
+                f,
+                "commit {commit} has no {trailer} trailer, so it is not a squash mortar made; name the commit at \
+                 refs/mortar/squash/<zone>, or squash the zone again"
+            ),
+            SquashError::TrailerMalformed { commit, trailer, value } => write!(
+                f,
+                "commit {commit} has a malformed {trailer} trailer {value:?}, so it cannot be read as a squash; \
+                 squash the zone again to write a new squash commit"
+            ),
+            SquashError::RequestsMalformed { commit } => write!(
+                f,
+                "commit {commit}'s message does not list its requests as squash writes them (`<zone>: <n> \
+                 requests`, then one `- <request>: ...` line each); squash the zone again to write a new squash \
+                 commit"
             ),
         }
     }

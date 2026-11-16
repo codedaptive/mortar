@@ -5,7 +5,8 @@ use gitio::Oid;
 use oplog::ChangeId;
 
 /// The commit at `refs/mortar/squash/<zone>`, its change ID, the zone tip it squashes and the requests it
-/// squashes (their Mortar-Request values), in message order.
+/// squashes: the Mortar-Request values the squash message's request lines name, in message order (a squash
+/// carries no Mortar-Request trailer).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Squash {
     pub commit: Oid,
