@@ -80,7 +80,7 @@ fn an_argument_is_resolves_usage() {
             verb: "resolve".to_string(),
             exit: ExitCode::Usage,
             outcome: "usage".to_string(),
-            lines: vec!["resolve takes no arguments".to_string(), "verbs: guard-hook, init, join, log, need, resolve, restore, save, status".to_string()],
+            lines: vec!["resolve takes no arguments".to_string(), "verbs: back-out, folder, guard, guard-hook, init, join, log, need, publish, rereview, resolve, restore, save, squash, status".to_string()],
             owner: None,
             next: "mortar resolve [--key <operation key>] [--json]".to_string(),
             fields: Vec::new(),

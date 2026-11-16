@@ -1,7 +1,10 @@
 //! The op key a verb passes to the op log and the lock (spec: Operation key).
-//! save's key goes to the lock holder only (S-90).
-//! Shell API: `mortar join` (run_join), `mortar need` (run_need) and `mortar save` (run_save) call it, and so will
-//! each later verb that moves a ref.
+//! save's key goes to the lock holder only (S-90); so do guard's and the landing verbs' keys, since their land calls
+//! draw their own op keys (S-132).
+//! Shell API: `mortar folder` (run_folder's runners), `mortar join` (run_join), `mortar need` (run_need),
+//! `mortar save` (run_save), `mortar guard` (run_guard_install, run_guard_status), `mortar squash` (run_squash),
+//! `mortar rereview` (run_rereview), `mortar back-out` (run_back_out) and `mortar publish` (run_publish) call it,
+//! and so will each later verb that moves a ref.
 
 use std::path::Path;
 

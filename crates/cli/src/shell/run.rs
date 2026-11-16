@@ -16,17 +16,23 @@ use gitio::Git;
 
 use super::{load_config, ShellContext};
 use crate::args::{parse_args, usage_report, ParsedArgs, VerbKind};
+use crate::back_out::run_back_out;
 use crate::config::protected_refs;
 use crate::context::{actor_for, context_report, read_folder_context, repository_error, repository_report};
+use crate::folder::run_folder;
+use crate::guard::run_guard;
 use crate::guard_hook::run_guard_hook;
 use crate::init::run_init;
 use crate::join::run_join;
 use crate::log::run_log;
 use crate::need::run_need;
+use crate::publish::run_publish;
 use crate::report::{failure_report, Report};
+use crate::rereview::run_rereview;
 use crate::resolve::run_resolve;
 use crate::restore::run_restore;
 use crate::save::run_save;
+use crate::squash::run_squash;
 use crate::status::run_status;
 
 /// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. Agent verbs
@@ -65,14 +71,20 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
 
 fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
     match context.args.verb.name {
+        "back-out" => run_back_out(context, cwd),
+        "folder" => run_folder(context, cwd),
+        "guard" => run_guard(context, cwd),
         "guard-hook" => run_guard_hook(context, cwd),
         "init" => run_init(&context.args, cwd),
         "join" => run_join(context),
         "log" => run_log(context, cwd),
         "need" => run_need(context),
+        "publish" => run_publish(context, cwd),
+        "rereview" => run_rereview(context, cwd),
         "resolve" => run_resolve(context),
         "restore" => run_restore(context, cwd),
         "save" => run_save(context),
+        "squash" => run_squash(context, cwd),
         "status" => run_status(context),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
     }

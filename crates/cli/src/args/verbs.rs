@@ -5,6 +5,29 @@ use super::{LockNeed, VerbKind, VerbSpec};
 /// In the order the usage error lists them.
 pub const VERBS: &[VerbSpec] = &[
     VerbSpec {
+        name: "back-out",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Land,
+        needs_config: true,
+        usage: "mortar back-out --actor <name> [--key <operation key>] [--json]",
+    },
+    VerbSpec {
+        name: "folder",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Join,
+        needs_config: true,
+        usage: "mortar folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
+                <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key \
+                <operation key>] [--json]",
+    },
+    VerbSpec {
+        name: "guard",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Land,
+        needs_config: true,
+        usage: "mortar guard (install | status) --actor <name> [--key <operation key>] [--json]",
+    },
+    VerbSpec {
         name: "guard-hook",
         kind: VerbKind::Hook,
         lock: LockNeed::NoLock,
@@ -43,6 +66,20 @@ pub const VERBS: &[VerbSpec] = &[
         usage: "mortar need <path> [--key <key>] [--json]",
     },
     VerbSpec {
+        name: "publish",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Land,
+        needs_config: true,
+        usage: "mortar publish --actor <name> [--key <operation key>] [--json]",
+    },
+    VerbSpec {
+        name: "rereview",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Land,
+        needs_config: true,
+        usage: "mortar rereview <reviewed commit> <new commit> --actor <name> [--key <operation key>] [--json]",
+    },
+    VerbSpec {
         name: "resolve",
         kind: VerbKind::Agent,
         lock: LockNeed::Join,
@@ -62,6 +99,13 @@ pub const VERBS: &[VerbSpec] = &[
         lock: LockNeed::Join,
         needs_config: true,
         usage: "mortar save \"<sentence>\" [--key <key>] [--json]",
+    },
+    VerbSpec {
+        name: "squash",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Land,
+        needs_config: true,
+        usage: "mortar squash <zone> --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "status",

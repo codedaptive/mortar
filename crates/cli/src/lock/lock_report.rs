@@ -1,5 +1,5 @@
 //! The report of a verb whose lock could not be taken (S-71: busy is exit 3).
-//! Shell API with no caller but locked_act: the ref-moving verbs reach it through that.
+//! Shell API: locked_act, folder_error_report, move_refusal_report and need_error_report call it.
 
 use oplog::{LockError, LockRecord};
 

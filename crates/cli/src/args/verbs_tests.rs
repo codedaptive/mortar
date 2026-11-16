@@ -9,7 +9,87 @@ fn verb(name: &str) -> &'static VerbSpec {
 #[test]
 fn built_verbs_are_listed_alphabetically() {
     let names: Vec<&str> = VERBS.iter().map(|verb| verb.name).collect();
-    assert_eq!(names, vec!["guard-hook", "init", "join", "log", "need", "resolve", "restore", "save", "status"]);
+    assert_eq!(
+        names,
+        vec![
+            "back-out",
+            "folder",
+            "guard",
+            "guard-hook",
+            "init",
+            "join",
+            "log",
+            "need",
+            "publish",
+            "rereview",
+            "resolve",
+            "restore",
+            "save",
+            "squash",
+            "status"
+        ]
+    );
+}
+
+#[test]
+fn back_out_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let back_out = verb("back-out");
+    assert_eq!(back_out.kind, VerbKind::Harness);
+    assert_eq!(back_out.lock, LockNeed::Land);
+    assert!(back_out.needs_config);
+    assert_eq!(back_out.usage, "mortar back-out --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn publish_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let publish = verb("publish");
+    assert_eq!(publish.kind, VerbKind::Harness);
+    assert_eq!(publish.lock, LockNeed::Land);
+    assert!(publish.needs_config);
+    assert_eq!(publish.usage, "mortar publish --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn rereview_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let rereview = verb("rereview");
+    assert_eq!(rereview.kind, VerbKind::Harness);
+    assert_eq!(rereview.lock, LockNeed::Land);
+    assert!(rereview.needs_config);
+    assert_eq!(
+        rereview.usage,
+        "mortar rereview <reviewed commit> <new commit> --actor <name> [--key <operation key>] [--json]"
+    );
+}
+
+#[test]
+fn squash_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let squash = verb("squash");
+    assert_eq!(squash.kind, VerbKind::Harness);
+    assert_eq!(squash.lock, LockNeed::Land);
+    assert!(squash.needs_config);
+    assert_eq!(squash.usage, "mortar squash <zone> --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn guard_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let guard = verb("guard");
+    assert_eq!(guard.kind, VerbKind::Harness);
+    assert_eq!(guard.lock, LockNeed::Land);
+    assert!(guard.needs_config);
+    assert_eq!(guard.usage, "mortar guard (install | status) --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn folder_is_a_harness_verb_under_the_join_lock_that_needs_the_config() {
+    let folder = verb("folder");
+    assert_eq!(folder.kind, VerbKind::Harness);
+    assert_eq!(folder.lock, LockNeed::Join);
+    assert!(folder.needs_config);
+    assert_eq!(
+        folder.usage,
+        "mortar folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths <path>... | \
+         remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key <operation key>] [--json]"
+    );
 }
 
 #[test]
