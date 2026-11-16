@@ -1,4 +1,4 @@
-//! status_next: the one next step `mortar status` gives.
+//! status_next: the one next step `mortar status` gives in a request folder; an attempt folder's is attempt_next.
 
 use super::{StatusPhase, StatusState};
 

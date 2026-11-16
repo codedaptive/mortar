@@ -1,4 +1,5 @@
-//! read_branch_tips: where a request's branch and its zone's branch stand, for `mortar status` and `mortar need`.
+//! read_branch_tips: where a request's branch and its zone's branch stand, for `mortar need` (status reads them with
+//! read_tips).
 //! No unit test: it runs git (S-5, S-104); missing_branch_report_tests covers the refusal it gives. Nagatha's
 //! integration group is to cover, with the mortar binary as a child process in a request folder made by the landing
 //! verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
@@ -9,28 +10,15 @@
 //! - a missing request branch or a missing zone branch: status (and need) refuse with missing_branch_report's wording,
 //!   exit 1, nothing changed.
 
-use folders::plan::{request_branch, zone_branch};
+use folders::plan::request_branch;
 use gitio::{Git, Oid};
 
-use super::missing_branch_report;
+use super::read_tips;
 use crate::report::{failure_report, Report};
 
-/// The request branch's full name, its tip and the zone branch's tip. A missing branch is missing_branch_report
-/// for `verb`; a name the plan refuses or a git failure is failure_report. Reads only: it moves no ref.
+/// The request branch's full name, its tip and the zone branch's tip (read_tips of request_branch). A missing
+/// branch is missing_branch_report for `verb`; a name the plan refuses or a git failure is failure_report. Reads
+/// only: it moves no ref.
 pub fn read_branch_tips(git: &Git, zone: &str, request: &str, verb: &str) -> Result<(String, Oid, Oid), Report> {
-    let request_ref = format!(
-        "refs/heads/{}",
-        request_branch(zone, request).map_err(|error| failure_report(verb, &error.reason))?
-    );
-    let zone_ref = format!("refs/heads/{}", zone_branch(zone).map_err(|error| failure_report(verb, &error.reason))?);
-    let request_tip = tip(git, &request_ref, false, verb)?;
-    let zone_tip = tip(git, &zone_ref, true, verb)?;
-    Ok((request_ref, request_tip, zone_tip))
-}
-
-/// The tip of the full ref `refname`, or the refusal naming it when it is absent (`zone` says whose branch it is).
-fn tip(git: &Git, refname: &str, zone: bool, verb: &str) -> Result<Oid, Report> {
-    git.read_ref(refname)
-        .map_err(|error| failure_report(verb, &error.to_string()))?
-        .ok_or_else(|| missing_branch_report(verb, refname, zone))
+    read_tips(git, &request_branch(zone, request).map_err(|error| failure_report(verb, &error.reason))?, zone, verb)
 }

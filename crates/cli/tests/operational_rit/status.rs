@@ -3,7 +3,7 @@ use std::fs;
 
 #[test]
 fn rit_status_reads_clean_saved_unjoined_and_joined_tips_without_writing() {
-    // mortar status -> read_branch_tips/saved_state/ancestry -> literal next/fields, both branch states.
+    // mortar status -> read_tips/saved_state/ancestry -> literal next/fields, both branch states.
     let f = Fixture::new(); f.save_topic();
     let saved = status(&f, "saved");
     assert!(saved.flag("saved")); assert!(!saved.flag("joined")); assert!(!saved.flag("zone_moved"));
@@ -57,7 +57,7 @@ fn rit_status_reads_a_real_paused_join_commit_and_files_without_resolving_it() {
 
 #[test]
 fn rit_status_missing_request_or_zone_ref_refuses_without_mutation() {
-    // mortar status -> read_branch_tips -> real missing refs, not synthetic report values.
+    // mortar status -> read_tips -> real missing refs, not synthetic report values.
     for missing in [REQUEST, ZONE] {
         let f = Fixture::new(); f.save_topic(); raw(&f.git, &["update-ref", "-d", missing]);
         let old = before(&f, &f.request);
@@ -110,8 +110,9 @@ fn rit_status_corrupt_peer_record_fails_instead_of_claiming_no_overlap() {
 }
 
 #[test]
-fn rit_status_rejects_arguments_zone_and_attempt_folders_before_mutation() {
-    // Actual shell/actor/attempt decisions with real folder records, not status_report ZIT data.
+fn rit_status_rejects_arguments_and_zone_folders_and_reads_attempt_folders_before_mutation() {
+    // Actual shell/actor/attempt decisions with real folder records, not status_report ZIT data; a fresh attempt
+    // (no trysnap ref) reads as unsaved (S-127(1)).
     let f = Fixture::new(); let old = before(&f, &f.request);
     check(f.app(&["--json", "status", "unexpected"]), "status", 4, "usage");
     assert_eq!(before(&f, &f.request), old);
@@ -121,7 +122,7 @@ fn rit_status_rejects_arguments_zone_and_attempt_folders_before_mutation() {
     oplog::recover(&f.git, &f.common).unwrap();
     folders::make_attempts(&setup(&f.git, &attempts), "core", "task", &["src".into()], 1).unwrap();
     let attempt = attempts.join("try-1"); let old = before(&f, &attempt);
-    check(f.command(&attempt, &["--json", "status"]).output().unwrap(), "status", 1, "refused");
+    check(f.command(&attempt, &["--json", "status"]).output().unwrap(), "status", 0, "unsaved");
     assert_eq!(before(&f, &attempt), old);
 }
 

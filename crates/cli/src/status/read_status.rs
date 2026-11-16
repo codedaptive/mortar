@@ -1,4 +1,6 @@
-//! read_status: everything `mortar status` reports about a request folder, read without changing anything (S-85).
+//! read_status: everything `mortar status` reports about a request or attempt folder, read without changing anything
+//! (S-85). An attempt folder's progress is read from its own try branch and snapshot by read_progress; its
+//! overlaps stay the request's.
 //! Shell API: run_status calls it.
 //! No unit test: it runs git and reads the folder's files (S-5, S-104); status_next_tests, status_outcome_tests,
 //! status_lines_tests, status_fields_tests, is_joined_tests and move_stalled_tests cover the decisions made from
@@ -21,9 +23,9 @@ use crate::config::SnapshotSettings;
 use crate::context::FolderContext;
 use crate::report::{failure_report, Report};
 
-/// The state of `folder` for `actor`: read_progress's (the request and zone tips, saved_state with the config's
-/// excludes and cap as save snapshots it (`settings`), zone_moved, joined when the request tip is in the zone, the
-/// request has commits of its own and the folder's tree (saved_state's) equals the tip's tree, the paused join and
+/// The state of `folder` for `actor`: read_progress's (the folder's branch and zone tips, saved_state with the config's
+/// excludes and cap as save snapshots it (`settings`), zone_moved, joined when the branch tip is in the zone, the
+/// branch has commits of its own and the folder's tree (saved_state's) equals the tip's tree, the paused join and
 /// the stalled folder move); then the changed, untracked and conflicted paths; the overlaps (read_overlaps, against
 /// each request's fork point from the zone tip read_progress read, S-108); the record's gaps. A save error is
 /// save_error_report relabelled for `verb`; every other failure is failure_report. Reads only: no lock, no
