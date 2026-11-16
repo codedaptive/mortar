@@ -53,8 +53,17 @@ fn rit_need_live_join_and_folders_locks_refuse_without_changing_the_record() {
     }
 }
 
-// Orc#1653 explicitly defers the missing-zone refusal/invariance case until WO-cli-2g lands.
-// Its exact test and actual failure evidence are preserved in Nagatha's ledger/cli-rit-4-evidence/.
+#[test]
+fn rit_need_missing_zone_ref_refuses_without_expanding_the_cone_or_record() {
+    // read_branch_tips header: missing zone is a need refusal with nothing changed, not a partial successful need.
+    let n = Need::new(); raw(&n.f.git, &["update-ref", "-d", ZONE]);
+    let old = before(&n.f, &n.folder); let cone = n.f.git.sparse_list(&n.folder).unwrap();
+    let report = n.report(&["--json", "need", "sub"], 1, "refused");
+    assert_eq!(report.text("owner"), "the zone's coordinator");
+    assert_eq!(report.lines(), format!("the branch {ZONE} does not exist"));
+    assert_eq!(before(&n.f, &n.folder), old, "a missing prerequisite must not silently complete need");
+    assert_eq!(n.f.git.sparse_list(&n.folder).unwrap(), cone); assert!(!n.folder.join("sub/keep").exists());
+}
 
 #[test]
 fn rit_need_unborn_head_is_failure_without_record_or_cone_changes() {

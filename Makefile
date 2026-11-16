@@ -19,9 +19,18 @@ check:
 test:
 	@$(MAKE) --no-print-directory test-group GROUP=$(GROUP)
 
-# The Done list (mission), on throwaway repositories. Not written yet.
+# The Done list (mission), on throwaway repositories (S-123; the Designer's ACCEPT/00-index.md): builds mortar, runs
+# the cli package's ignored tests in the test target accept one at a time, and prints the report found at
+# $(ACCEPT_REPORT). That target is the acceptance drive the cli lane writes (ACCEPT-0, crates/cli/tests/accept);
+# until it exists cargo finds no target accept and this fails. ACCEPT_AGENT and ACCEPT_MOOT_COPY pass through from
+# the environment for the drive to read. Exits with cargo test's status.
+ACCEPT_REPORT ?= $(CURDIR)/target/accept/report.txt
 accept:
-	@echo "accept: not written yet (mission, Done)"; exit 1
+	$(CARGO) build -p cli --bin mortar
+	@mkdir -p "$(dir $(ACCEPT_REPORT))"; rm -f "$(ACCEPT_REPORT)"
+	@rc=0; ACCEPT_REPORT="$(ACCEPT_REPORT)" $(CARGO) test -p cli --test accept -- --ignored --test-threads=1 || rc=$$?; \
+	  if [ -f "$(ACCEPT_REPORT)" ]; then cat "$(ACCEPT_REPORT)"; else echo "accept: no report at $(ACCEPT_REPORT)"; fi; \
+	  exit $$rc
 
 ifeq ($(GROUP),unit)
 ZONE_TEST = $(CARGO) test --workspace --lib -- --skip integration::
