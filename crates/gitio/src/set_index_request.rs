@@ -7,8 +7,9 @@ use std::path::Path;
 
 /// `read-tree --end-of-options <tree>` run in `folder`: it replaces the folder's own index with `tree`, leaving the
 /// files and HEAD untouched (no `-m`, no `-u`), and the same tree twice gives the same index. Not read-only: it writes
-/// the index. No GIT_INDEX_FILE is set, so it is the folder's real index. In a sparse folder the skip-worktree bits are
-/// as git's read-tree gives them. An empty folder path, or one holding a NUL, is refused naming it.
+/// the index. No GIT_INDEX_FILE is set, so it is the folder's real index. The read-tree alone drops a sparse folder's
+/// skip-worktree bits; Git::set_index restores them with sparse_reapply_requests' run. An empty folder path, or one
+/// holding a NUL, is refused naming it.
 pub(crate) fn set_index_request(folder: &Path, tree: &Oid) -> Result<(Vec<OsString>, RunOpts), GitError> {
     usable_worktree_path(folder)?;
     let args = ["read-tree", "--end-of-options", tree.as_str()].map(OsString::from).to_vec();
