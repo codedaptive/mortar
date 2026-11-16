@@ -3,8 +3,9 @@
 //! (S-121 (2)), joined leftover request branches with their snapshot refs (S-52 (1)), and the caller's extra refs
 //! (S-53, S-54).
 //! No unit test: it runs git and appends to the op log (S-5); leftover_branches_tests, joined_leftovers_tests,
-//! extra_ref_verdict_tests, stale_replayed_refs_tests, sweep_pick_tests, sweep_pick_replayed_tests and
-//! tests/folders/attempt_plans.rs (closed_snap_refs) cover the choice, and sweep_refs_op_tests the op as data.
+//! extra_ref_verdict_tests, stale_replayed_refs_tests, tests/folders/sweep_pick.rs,
+//! tests/folders/sweep_pick_replayed.rs and tests/folders/attempt_plans.rs (closed_snap_refs) cover the choice, and
+//! sweep_refs_op_tests the op as data.
 //! tests/folders/attempts_sweep.rs covers, in a throwaway repository: a closed request's attempts' trysnap refs are
 //! deleted with its snapshot ref in one folder-sweep-refs op, and an open request's (its request branch or an
 //! attempt branch present) are kept; the trysnap refs drop_attempts and remove leave are deleted; with only a

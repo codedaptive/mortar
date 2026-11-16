@@ -14,7 +14,7 @@ pub(crate) fn orphan_error_text(paths: &[PathBuf], no_snapshot: bool) -> String 
         );
     }
     format!(
-        "attempt folders {folders} have lost their try branch; nothing changed; next step: remake_orphans (mortar \
-         runs it before keep and drop), then run the same command again"
+        "attempt folders {folders} have lost their try branch; nothing changed; next step: keeping or dropping \
+         re-makes each from its snapshot first, so have the harness run the same command again"
     )
 }

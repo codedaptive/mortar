@@ -1,34 +1,19 @@
-//! sweep_pick with replay-record refs (S-121 (2)): one of a zone not in the zone list comes after the closed
-//! snapshot refs and before the joined branches and the extras; a listed zone's is absent; one listed twice is
-//! picked once; a refused extra is ExtraRefRefused with nothing picked, even with a stale one present.
+//! Zone integration tests of sweep_pick, with closed_snap_refs, stale_replayed_refs and extra_ref_verdict used for
+//! real (S-79 as amended by #1264), with replay-record refs (S-121 (2)): one of a zone not in the zone list comes
+//! after the closed snapshot refs and before the joined branches and the extras; a listed zone's is absent; one
+//! listed twice is picked once; a refused extra is ExtraRefRefused with nothing picked, even with a stale one
+//! present.
 
-use gitio::Oid;
+use folders::sweep::{sweep_pick, Leftover};
+use folders::FolderError;
 
-use super::sweep_pick::sweep_pick;
-use super::Leftover;
-use crate::make::FolderError;
+use crate::ref_pairs::{oid, picked, refs, strings as zones};
 
 const A: &str = "0123456789abcdef0123456789abcdef01234567";
 const B: &str = "fedcba9876543210fedcba9876543210fedcba98";
 const C: &str = "1111111111111111111111111111111111111111";
 const D: &str = "2222222222222222222222222222222222222222";
 const E: &str = "3333333333333333333333333333333333333333";
-
-fn oid(hex: &str) -> Oid {
-    Oid::parse(hex).unwrap()
-}
-
-fn refs(names: &[(&str, &str)]) -> Vec<(Oid, String)> {
-    names.iter().map(|(hex, name)| (oid(hex), name.to_string())).collect()
-}
-
-fn picked(pairs: &[(&str, &str)]) -> Vec<(String, Oid)> {
-    pairs.iter().map(|(name, hex)| (name.to_string(), oid(hex))).collect()
-}
-
-fn zones(list: &[&str]) -> Vec<String> {
-    list.iter().map(|zone| zone.to_string()).collect()
-}
 
 #[test]
 fn a_stale_replayed_ref_comes_after_closed_snapshots_and_before_joined_and_extras() {

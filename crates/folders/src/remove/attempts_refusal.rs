@@ -18,7 +18,7 @@ use crate::make::FolderError;
 /// attempts_remaining counts them from the refs under `refs/heads/try/<zone>/<request>/` and the worktree list.
 /// Otherwise AttemptsRemain for `folder`, naming the branches by full name and the folders by path as display text;
 /// the next step is keep or drop_attempts; an attempt folder whose branch is gone is refused by both (OrphanAttempt)
-/// until remake_orphans, which the cli runs first, makes it ordinary, and with no snapshot to re-make it from it is
+/// until remake_orphans, which the caller runs first, makes it ordinary, and with no snapshot to re-make it from it is
 /// copied out and removed by hand. A git error listing refs or worktrees passes through as Git.
 pub(crate) fn attempts_refusal(git: &Git, folder: &Path, zone: &str, request: &str) -> Result<(), FolderError> {
     let try_refs = git

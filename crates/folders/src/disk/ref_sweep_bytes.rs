@@ -1,8 +1,10 @@
 //! How many refs sweep_refs would delete now, and the bytes only they hold, for the disk report's sweep figure.
 //! No unit test: it runs git (S-5); the whole choice of refs is sweep's own: joined_leftovers picks the contained
-//! branches and sweep_pick the refs, covered by joined_leftovers_tests, stale_replayed_refs_tests, sweep_pick_tests,
-//! sweep_pick_replayed_tests, leftover_branches_tests and extra_ref_verdict_tests, and by the closed_snap_refs cases
-//! in tests/folders/attempt_plans.rs. tests/folders/sweeps_replayed.rs covers the replay-record refs
+//! branches and sweep_pick the refs, covered by joined_leftovers_tests, stale_replayed_refs_tests,
+//! leftover_branches_tests, extra_ref_verdict_tests, tests/folders/sweep_pick.rs and
+//! tests/folders/sweep_pick_replayed.rs, and by the
+//! closed_snap_refs cases in tests/folders/attempt_plans.rs.
+//! tests/folders/sweeps_replayed.rs covers the replay-record refs
 //! (refs/mortar/replayed/<zone>/<source>, S-121 (2)): the disk report's sweep figure counts those of zones not in
 //! the zone list, and the count equals the refs sweep_refs deletes. The folders zone's other integration cases are
 //! not yet written; they are to cover, in a throwaway repository: a closed request's snapshot ref with objects of

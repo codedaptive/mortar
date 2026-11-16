@@ -1,26 +1,19 @@
-//! sweep_pick: a joined branch comes with its snapshot ref, or alone when it has none; closed
+//! Zone integration tests of sweep_pick, with closed_snap_refs, stale_replayed_refs and extra_ref_verdict used for
+//! real (S-79 as amended by #1264): a joined branch comes with its snapshot ref, or alone when it has none; closed
 //! snapshot refs, then joined branches, then accepted extras, in that order; a duplicate refname is dropped; a
 //! refused extra is ExtraRefRefused with nothing picked; a skipped extra is absent.
 
-use gitio::Oid;
 use oplog::ProtectedRef;
 
-use super::sweep_pick::sweep_pick;
-use super::Leftover;
-use crate::make::FolderError;
+use folders::sweep::{sweep_pick, Leftover};
+use folders::FolderError;
+
+use crate::ref_pairs::{oid, picked, refs, strings as names};
 
 const A: &str = "0123456789abcdef0123456789abcdef01234567";
 const B: &str = "fedcba9876543210fedcba9876543210fedcba98";
 const C: &str = "1111111111111111111111111111111111111111";
 const D: &str = "2222222222222222222222222222222222222222";
-
-fn oid(hex: &str) -> Oid {
-    Oid::parse(hex).unwrap()
-}
-
-fn refs(names: &[(&str, &str)]) -> Vec<(Oid, String)> {
-    names.iter().map(|(hex, name)| (oid(hex), name.to_string())).collect()
-}
 
 fn leftover(branch: &str, tip: &str, zone_tip: &str) -> Leftover {
     Leftover {
@@ -28,14 +21,6 @@ fn leftover(branch: &str, tip: &str, zone_tip: &str) -> Leftover {
         tip: oid(tip),
         zone_tip: oid(zone_tip),
     }
-}
-
-fn picked(pairs: &[(&str, &str)]) -> Vec<(String, Oid)> {
-    pairs.iter().map(|(name, hex)| (name.to_string(), oid(hex))).collect()
-}
-
-fn names(list: &[&str]) -> Vec<String> {
-    list.iter().map(|name| name.to_string()).collect()
 }
 
 #[test]

@@ -9,18 +9,14 @@ mod drop_plan {
 
     use std::path::PathBuf;
 
-    use gitio::Oid;
-
     use folders::attempts::{drop_plan, Attempt, Dropped};
     use folders::FolderError;
+
+    use crate::ref_pairs::oid;
 
     const A: &str = "1111111111111111111111111111111111111111";
     const B: &str = "2222222222222222222222222222222222222222";
     const C: &str = "3333333333333333333333333333333333333333";
-
-    fn oid(hex: &str) -> Oid {
-        Oid::parse(hex).unwrap()
-    }
 
     fn attempt(k: u32, hex: &str, folder: Option<&str>) -> Attempt {
         Attempt {
@@ -127,18 +123,14 @@ mod keep_plan {
 
     use std::path::PathBuf;
 
-    use gitio::Oid;
-
     use folders::attempts::{keep_plan, Attempt, Kept};
     use folders::FolderError;
+
+    use crate::ref_pairs::oid;
 
     const A: &str = "1111111111111111111111111111111111111111";
     const B: &str = "2222222222222222222222222222222222222222";
     const C: &str = "3333333333333333333333333333333333333333";
-
-    fn oid(hex: &str) -> Oid {
-        Oid::parse(hex).unwrap()
-    }
 
     fn attempt(k: u32, hex: &str, folder: Option<&str>) -> Attempt {
         Attempt {
@@ -493,21 +485,15 @@ mod attempts_of {
 
     use std::path::PathBuf;
 
-    use gitio::{Oid, Worktree};
+    use gitio::Worktree;
 
     use folders::attempts::{attempts_of, Attempt};
+
+    use crate::ref_pairs::{oid, refs};
 
     const A: &str = "0123456789abcdef0123456789abcdef01234567";
     const B: &str = "fedcba9876543210fedcba9876543210fedcba98";
     const C: &str = "1111111111111111111111111111111111111111";
-
-    fn oid(hex: &str) -> Oid {
-        Oid::parse(hex).unwrap()
-    }
-
-    fn refs(names: &[(&str, &str)]) -> Vec<(Oid, String)> {
-        names.iter().map(|(hex, name)| (oid(hex), name.to_string())).collect()
-    }
 
     fn worktree(path: &str, branch: Option<&str>) -> Worktree {
         Worktree {
@@ -602,16 +588,10 @@ mod closed_snap_refs {
 
     use folders::sweep::closed_snap_refs;
 
+    use crate::ref_pairs::{oid, refs};
+
     const A: &str = "0123456789abcdef0123456789abcdef01234567";
     const B: &str = "fedcba9876543210fedcba9876543210fedcba98";
-
-    fn oid(hex: &str) -> Oid {
-        Oid::parse(hex).unwrap()
-    }
-
-    fn refs(names: &[(&str, &str)]) -> Vec<(Oid, String)> {
-        names.iter().map(|(hex, name)| (oid(hex), name.to_string())).collect()
-    }
 
     #[test]
     fn an_open_request_is_kept() {

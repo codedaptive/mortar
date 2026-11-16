@@ -10,8 +10,8 @@ fn names_the_folder_every_attempt_and_the_next_step() {
     assert_eq!(
         attempts_remain_text(Path::new("/wt/WO-1"), &attempts),
         "/wt/WO-1 was not removed: attempts of its request remain: refs/heads/try/z/r/1, /wt/try-2; nothing \
-         changed; next step: keep one attempt or drop them all (drop_attempts); for an attempt folder that lost its \
-         branch, remake_orphans first (mortar runs it), and with no snapshot of it, copy out anything wanted and \
-         remove it by hand"
+         changed; next step: have the harness keep one attempt or drop them all; an attempt folder that lost its \
+         branch is re-made from its snapshot when the harness keeps or drops, and one with no snapshot: copy out \
+         anything wanted and remove it by hand"
     );
 }

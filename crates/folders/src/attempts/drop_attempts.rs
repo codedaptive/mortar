@@ -1,6 +1,6 @@
 //! Drops every attempt of a request: removes every attempt folder, then one folder-drop-attempts op deletes every
 //! attempt branch (S-82). An attempt folder whose branch is gone (an orphan) is OrphanAttempt before anything is
-//! touched; next step: remake_orphans, which the cli runs first (S-96 (2)).
+//! touched; next step: remake_orphans, which the caller runs first (S-96 (2)).
 //! The request branch does not move; the attempts' trysnap refs stay until sweep_refs takes them when the request
 //! closes.
 //! No unit test: it runs git and appends to the op log (S-5). request_branch_tests, unsaved_attempts_tests,
@@ -28,7 +28,7 @@ use crate::plan::request_branch;
 /// Drops every attempt of `request` in `zone` and returns the attempt numbers dropped, in k order. `saved` is the
 /// caller's is_saved per attempt, as (k, saved) (S-32). Before anything is touched: the names must make a request
 /// branch (Plan), no attempt folder may have lost its branch (OrphanAttempt naming them; next step: remake_orphans,
-/// which the cli runs), and every attempt, with a folder or not, must be saved (AttemptsUnsaved). No attempts and no
+/// which the caller runs), and every attempt, with a folder or not, must be saved (AttemptsUnsaved). No attempts and no
 /// orphan folders: Ok(empty), nothing removed and no op logged, which is also what a repeat after a completed drop
 /// finds. Then git removes each folder without force, so git itself refuses modified or untracked files (Git, the op
 /// not run). Then, when there is a branch to delete, the folder-drop-attempts op runs (see apply_drop); with none, no

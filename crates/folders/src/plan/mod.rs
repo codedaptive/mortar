@@ -8,6 +8,7 @@ mod below_floor;
 mod below_floor_display;
 mod branch_op;
 mod check_name;
+mod cone_folders;
 mod default_floor_bytes;
 mod df_free_disk;
 mod floor_check;
@@ -36,6 +37,8 @@ mod branch_op_tests;
 #[cfg(test)]
 mod check_name_tests;
 #[cfg(test)]
+mod cone_folders_tests;
+#[cfg(test)]
 mod floor_check_tests;
 #[cfg(test)]
 mod plan_error_display_tests;
@@ -56,6 +59,7 @@ pub use attempt_path::attempt_path;
 pub use below_floor::BelowFloor;
 pub use branch_op::branch_op;
 pub(crate) use check_name::check_name;
+pub(crate) use cone_folders::cone_folders;
 pub use default_floor_bytes::DEFAULT_FLOOR_BYTES;
 pub use df_free_disk::DfFreeDisk;
 pub use floor_check::floor_check;
