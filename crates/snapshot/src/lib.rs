@@ -87,6 +87,7 @@ pub use snapshot::snapshot;
 pub use snapshot_error::SnapshotError;
 pub use snapshot_formatted::snapshot_formatted;
 pub use snapshot_outcome::SnapshotOutcome;
+pub use snapshot_ref_name::snapshot_ref_name;
 pub use snapshot_target::SnapshotTarget;
 
 #[cfg(test)]
