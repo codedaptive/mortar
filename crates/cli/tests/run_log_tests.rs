@@ -1,6 +1,8 @@
 //! run_log: a filter word log does not know, a second --ref and a --ref without a value are each log's usage (exit
 //! 4, next log's usage line), returned before the op log or git is read. With one op in the log, plain log lists it
-//! with an empty "records" field, and --json puts the log's own line in "records", byte for byte.
+//! with an empty "records" field, and --json puts the log's own line in "records", byte for byte (S-114): for a
+//! line with no values and no remote mark, and for a done push line carrying values and a remote mark (S-103), so
+//! --json gives the values and the mark exactly as oplog wrote them.
 //! ZIT (S-79 as replaced: the line is the file): it calls log_filters and usage_report for real. The context is built
 //! by hand. For the usage cases cwd does not exist, so a run that read git would answer a refusal or failure, not
 //! exit 4. For the listing cases cwd is a throwaway repository (testkit's TestRepo, removed after the test): real git
@@ -64,17 +66,21 @@ fn a_ref_without_a_value_is_logs_usage() {
     assert_usage(&["--ref"], "--ref needs a value");
 }
 
+/// One done push carrying a folder_tree value and the remote mark "origin", in oplog's key order
+/// (encode_marked_record: the record, then "values", then "remote" last).
+const MARKED_OP: &str = r#"{"op_id":"op-2","key":"publish-k","kind":"push","actor":"core/fix-1","reason":"mortar publish","at":6,"phase":"done","moves":[{"ref":"refs/heads/main","old":"cccccccccccccccccccccccccccccccccccccccc","new":"dddddddddddddddddddddddddddddddddddddddd"}],"result":{"outcome":"moved"},"values":[{"name":"folder_tree","value":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}],"remote":"origin"}"#;
+
 static GIT_CONFIG: Once = Once::new();
 
-/// run_log in a throwaway repository whose op log holds the one line OP_1.
-fn log_of_one_op(json: bool) -> Report {
+/// run_log in a throwaway repository whose op log holds the one line `line`.
+fn log_of_one_op(line: &str, json: bool) -> Report {
     GIT_CONFIG.call_once(|| {
         std::env::set_var("GIT_CONFIG_GLOBAL", "/dev/null");
         std::env::set_var("GIT_CONFIG_NOSYSTEM", "1");
     });
     let repo = TestRepo::new().expect("a throwaway repository");
     fs::create_dir(repo.path.join(".git/mortar")).expect("the mortar folder");
-    fs::write(repo.path.join(".git/mortar/oplog.jsonl"), format!("{OP_1}\n")).expect("the op log");
+    fs::write(repo.path.join(".git/mortar/oplog.jsonl"), format!("{line}\n")).expect("the op log");
     let report = run_log(&context_with(&[], json), &repo.path);
     repo.close().expect("the repository is removed");
     report
@@ -82,7 +88,7 @@ fn log_of_one_op(json: bool) -> Report {
 
 #[test]
 fn plain_log_lists_the_op_with_no_records() {
-    let report = log_of_one_op(false);
+    let report = log_of_one_op(OP_1, false);
     assert_eq!(report.exit, ExitCode::Done);
     assert_eq!(report.outcome, "listed");
     assert_eq!(report.fields, vec![("records".to_string(), OutValue::Raw(Vec::new()))]);
@@ -97,8 +103,32 @@ fn plain_log_lists_the_op_with_no_records() {
 
 #[test]
 fn json_log_holds_the_logs_own_line() {
-    let report = log_of_one_op(true);
+    let report = log_of_one_op(OP_1, true);
     assert_eq!(report.exit, ExitCode::Done);
     assert_eq!(report.outcome, "listed");
     assert_eq!(report.fields, vec![("records".to_string(), OutValue::Raw(vec![OP_1.to_string()]))]);
+}
+
+#[test]
+fn plain_log_lists_a_marked_op_with_no_records() {
+    let report = log_of_one_op(MARKED_OP, false);
+    assert_eq!(report.exit, ExitCode::Done);
+    assert_eq!(report.outcome, "listed");
+    assert_eq!(report.fields, vec![("records".to_string(), OutValue::Raw(Vec::new()))]);
+    assert_eq!(
+        report.lines,
+        vec![
+            "op-2 done push by core/fix-1 at 6 key publish-k: mortar publish".to_string(),
+            "  refs/heads/main cccccccccccccccccccccccccccccccccccccccc -> dddddddddddddddddddddddddddddddddddddddd"
+                .to_string(),
+        ]
+    );
+}
+
+#[test]
+fn json_log_holds_a_marked_lines_values_and_remote() {
+    let report = log_of_one_op(MARKED_OP, true);
+    assert_eq!(report.exit, ExitCode::Done);
+    assert_eq!(report.outcome, "listed");
+    assert_eq!(report.fields, vec![("records".to_string(), OutValue::Raw(vec![MARKED_OP.to_string()]))]);
 }

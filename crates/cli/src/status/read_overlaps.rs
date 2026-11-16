@@ -12,7 +12,7 @@
 
 use std::path::PathBuf;
 
-use ::join::overlap;
+use ::join::overlap_for;
 use folders::make::read_folder_record;
 use folders::plan::{request_branch, snap_ref};
 use folders::FolderRecord;
@@ -24,8 +24,8 @@ use crate::report::{failure_report, Report};
 /// Every worktree but bare and prunable ones is read for its folder record (a worktree with none is not a Mortar
 /// folder and is skipped); each record of `zone` naming a request gets its request branch's tip and its snapshot
 /// ref's commit. open_requests_for picks the zone's open requests, each based at the merge base of its tip and
-/// `zone_tip` (S-108); join's overlap pairs them, and overlaps_with keeps the pairs naming `request`, as (the other
-/// request, the shared paths). A request sharing no commit with the zone tip is an error, never "no overlap". Any
+/// `zone_tip` (S-108); join's overlap_for gives the pairs holding `request`, and overlaps_with turns them into (the
+/// other request, the shared paths). A request sharing no commit with the zone tip is an error, never "no overlap". Any
 /// read failing is failure_report for `verb`. Reads only: no lock, no ref move (S-85).
 pub fn read_overlaps(
     git: &Git,
@@ -55,7 +55,7 @@ pub fn read_overlaps(
         Err(error) => Err(error.to_string()),
     };
     let open = open_requests_for(zone, &folders, fork_point).map_err(fail)?;
-    let pairs = overlap(git, &open).map_err(|error| fail(error.to_string()))?;
+    let pairs = overlap_for(git, &open, request).map_err(|error| fail(error.to_string()))?;
     Ok(overlaps_with(request, &pairs))
 }
 

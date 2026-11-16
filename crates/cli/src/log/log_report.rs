@@ -8,7 +8,7 @@ use crate::report::{ExitCode, OutValue, Report};
 /// Exit 0, outcome "listed" with log_lines and next the restore step with the --actor restore requires (S-112: a
 /// step the reader can run now); with no records, outcome "empty" and next the unfiltered log. The one --json field,
 /// "records", holds `encoded` unchanged: what the caller passes, which is empty unless --json, and then each record's
-/// line as oplog's encode_op_record encodes it (without values or a remote mark), in the order of `records` (S-114).
+/// own op log line, values and remote mark included, in the order of `records` (S-114).
 pub fn log_report(records: &[&OpRecord], encoded: Vec<String>) -> Report {
     let (outcome, next) = match records {
         [] => ("empty", "mortar log with no filter lists every op"),

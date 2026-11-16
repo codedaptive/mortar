@@ -1,7 +1,7 @@
 //! log_report: "listed" with the restore step, or "empty" with the unfiltered log as next; exit 0 either way; one
 //! "records" field holding the encoded lines it is given, unchanged and in order. ZUT: oplog's record types and
-//! gitio's Oid::parse are plain data; the encoded lines are literals. That run_log passes encode_op_record's lines
-//! for the ops it lists, byte for byte, is the integration test owed in run_log.rs's header.
+//! gitio's Oid::parse are plain data; the encoded lines are literals. That run_log passes each listed op's own log
+//! line, byte for byte, is the integration test owed in run_log.rs's header.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, RefMove};
