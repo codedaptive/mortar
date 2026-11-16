@@ -61,8 +61,10 @@ pub enum SnapshotError {
     /// record is that earlier done record. With a key made from a fresh op id this means an op id was reused.
     OpRepeated(oplog::OpRecord),
     /// Setting the folder's index failed; `commit` is the branch's commit (the new commit on a written save, HEAD on
-    /// an unchanged one). The files are untouched and the index is the old one. A save again finds the tree equal to
-    /// HEAD's and sets the index to it (S-41).
+    /// an unchanged one). The files are untouched. The index is the old one, unless gitio's set_index failed at its
+    /// sparse-checkout reapply, after read-tree had already set it: then it holds the commit's tree without its
+    /// skip-worktree bits (S-125). Either way a save again finds the tree equal to HEAD's and sets the index to it
+    /// (S-41).
     IndexNotSet { commit: Oid, error: gitio::GitError },
     /// A changed file's size could not be read, so the cap could not be checked; no commit was written.
     FileSize { path: PathBuf, error: std::io::Error },

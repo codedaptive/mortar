@@ -18,7 +18,7 @@
 //!   save_cases.rs::detached_and_unborn_heads_are_named_before_any_snapshot_commit_ref_or_op_is_written;
 //! - a branch moved under save gives BranchMoved:
 //!   tests/snapshot/save_race.rs::branch_moved_during_save_is_named_without_overwriting_foreign_head_index_work_or_caller_lock;
-//! - IndexNotSet after the branch moved leaves the files and the old index alone:
+//! - IndexNotSet from a locked index after the branch moved leaves the files and the old index alone:
 //!   save_cases.rs::real_index_lock_produces_index_not_set_after_logged_branch_move_without_touching_files_or_old_index;
 //! - the index step leaves a caller's GIT_INDEX_FILE untouched, after a written save in
 //!   save_cases.rs::save_on_zone_tip_draws_a_new_id_leaves_status_clean_and_next_save_reuses_the_requests_id and after

@@ -197,7 +197,7 @@ fn real_index_lock_produces_index_not_set_after_logged_branch_move_without_touch
     assert_eq!(records[3].result, Some(OpResult::Moved));
     assert_eq!(records[3].moves[0].new, saved);
     fs::remove_file(lock).unwrap();
-    // No retry/repair assertion here: that integration is deferred until WO-snapshot-3b (Orc #723).
+    // No retry/repair assertion here: the retry is in save_repair.rs.
 }
 
 fn seed_head(f: &Fixture, message: &str) -> Oid {

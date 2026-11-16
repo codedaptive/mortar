@@ -76,5 +76,5 @@ fn rit_branch_moved_formats_oplogs_stale_ref_and_actual_gitio_oid_with_the_branc
 fn rit_index_not_set_formats_commit_oid_and_gitio_error_with_the_exact_preservation_account() {
     let _repo = TestRepo::new().unwrap();
     assert_eq!(SnapshotError::IndexNotSet { commit: oid(), error: git_error() }.to_string(),
-        "the folder's index could not be set to commit abcdefabcdefabcdefabcdefabcdefabcdefabcd's tree: git read-tree HEAD: exit code 128: fatal: no; the files are untouched and the index is the old one");
+        "the folder's index could not be set to commit abcdefabcdefabcdefabcdefabcdefabcdefabcd's tree: git read-tree HEAD: exit code 128: fatal: no; the files are untouched and the index is the old one, or that tree without its skip-worktree bits if the sparse-checkout reapply failed");
 }
