@@ -19,5 +19,5 @@ pub(crate) fn replay_in(git: &impl ReplayGit, base: &Oid, tip: &str, onto: &Oid)
             return Ok(ReplayResult::Clean(new));
         }
     }
-    replay_fallback(git, base, &tip_oid, onto)
+    replay_fallback(git, base, &tip_oid, onto).map(|replayed| replayed.result)
 }

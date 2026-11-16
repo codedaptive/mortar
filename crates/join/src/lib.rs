@@ -29,13 +29,18 @@ mod join_run_error;
 mod join_run_error_display;
 mod join_state;
 mod join_state_path;
+mod map_steps;
+mod mapped_commit;
+mod mapped_replay;
 mod marked_file;
 mod marked_lines;
 mod op_applied;
 mod open_request;
 mod overlap;
+mod overlap_for;
 mod overlap_pair;
 mod pair_overlaps;
+mod pair_overlaps_for;
 mod pause;
 mod paused_join;
 mod paused_join_type;
@@ -50,6 +55,8 @@ mod replay_commits;
 mod replay_fallback;
 mod replay_git;
 mod replay_in;
+mod replay_mapped;
+mod replay_mapped_in;
 mod replay_result;
 mod resolve;
 mod resolve_step;
@@ -66,75 +73,25 @@ pub use join::join;
 pub use join_answer::JoinAnswer;
 pub use join_error::JoinError;
 pub use join_run_error::JoinRunError;
+pub use mapped_commit::MappedCommit;
+pub use mapped_replay::MappedReplay;
 pub use marked_file::MarkedFile;
 pub use open_request::OpenRequest;
 pub use overlap::overlap;
+pub use overlap_for::overlap_for;
 pub use overlap_pair::OverlapPair;
 pub use paused_join::paused_join;
 pub use paused_join_type::PausedJoin;
 pub use replay::replay;
+pub use replay_mapped::replay_mapped;
 pub use replay_result::ReplayResult;
 pub use resolve::resolve;
 
 #[cfg(test)]
-mod accumulate_paths_tests;
-#[cfg(test)]
-mod after_replay_tests;
-#[cfg(test)]
-mod check_onto_tests;
-#[cfg(test)]
-mod classify_conflicted_tests;
-#[cfg(test)]
-mod decide_join_tests;
-#[cfg(test)]
-mod decide_resolve_tests;
-#[cfg(test)]
-mod decode_join_state_tests;
-#[cfg(test)]
-mod encode_join_state_tests;
-#[cfg(test)]
 mod fake_call;
-#[cfg(test)]
-mod fast_forward_op_tests;
-#[cfg(test)]
-mod file_markers_tests;
-#[cfg(test)]
-mod folder_tree_values_tests;
-#[cfg(test)]
-mod join_answer_display_tests;
-#[cfg(test)]
-mod join_error_display_tests;
-#[cfg(test)]
-mod join_error_from_git_tests;
-#[cfg(test)]
-mod join_run_error_display_tests;
-#[cfg(test)]
-mod join_state_path_tests;
-#[cfg(test)]
-mod marked_lines_tests;
-#[cfg(test)]
-mod op_applied_tests;
-#[cfg(test)]
-mod pair_overlaps_tests;
-#[cfg(test)]
-mod read_git_replay_tests;
-#[cfg(test)]
-mod rebase_op_tests;
-#[cfg(test)]
-mod replay_commit_tests;
-#[cfg(test)]
-mod replay_commits_tests;
-#[cfg(test)]
-mod replay_fallback_tests;
 #[cfg(test)]
 mod replay_git_fake;
 #[cfg(test)]
 mod replay_git_fake_impl;
 #[cfg(test)]
-mod replay_in_tests;
-#[cfg(test)]
-mod resolved_commit_tests;
-#[cfg(test)]
-mod resolved_folder_tree_tests;
-#[cfg(test)]
-mod tree_refusal_tests;
+mod unit_tests;

@@ -14,12 +14,14 @@ const TIP: &str = "refs/heads/topic";
 const A: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const TREE_A: &str = "a111111111111111111111111111111111111111";
 const NEW: &str = "9999999999999999999999999999999999999999";
+const ONTO_TREE: &str = "0000000000000000000000000000000000000001";
 
 fn oid(hex: &str) -> Oid {
     Oid::parse(hex).unwrap()
 }
 
-/// onto present, the tip ref at TIP_OID, and a range of one commit A (parent BASE) whose merge is `merge`.
+/// onto present (tree ONTO_TREE, which no merge gives, so A never drops), the tip ref at TIP_OID, and a range of
+/// one commit A (parent BASE) whose merge is `merge`.
 fn fake(available: bool, merge: MergeTreeOutcome) -> ReplayGitFake {
     let mut git = ReplayGitFake {
         available: Some(available),
@@ -30,8 +32,14 @@ fn fake(available: bool, merge: MergeTreeOutcome) -> ReplayGitFake {
     };
     git.refs.insert(TIP.to_string(), oid(TIP_OID));
     let author = Person { name: "Bo".to_string(), email: "bo@example.com".to_string(), date: None };
-    let info = CommitInfo { tree: oid(TIP_OID), parents: vec![oid(BASE)], author, message: "a\n".to_string() };
-    git.commits.insert(oid(A), info);
+    let info = |tree: &str, message: &str| CommitInfo {
+        tree: oid(tree),
+        parents: vec![oid(BASE)],
+        author: author.clone(),
+        message: message.to_string(),
+    };
+    git.commits.insert(oid(A), info(TIP_OID, "a\n"));
+    git.commits.insert(oid(ONTO), info(ONTO_TREE, "onto\n"));
     git.merges.insert(oid(A), merge);
     git
 }
@@ -124,6 +132,7 @@ fn available_with_no_updates_runs_the_fallback_and_returns_its_tip() {
             FakeCall::RevList { base: oid(BASE), tip: oid(TIP_OID) },
             FakeCall::CommitInfo(oid(A)),
             FakeCall::MergeTree { attr_source: oid(ONTO), merge_base: Some(oid(BASE)), ours: oid(ONTO), theirs: oid(A) },
+            FakeCall::CommitInfo(oid(ONTO)),
             FakeCall::CommitTree {
                 tree: oid(TREE_A),
                 parents: vec![oid(ONTO)],

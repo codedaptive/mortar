@@ -1,6 +1,6 @@
 //! classify_conflicted: what a resolve's first run does with one conflicted path, from gitio's typed tree_entry
-//! answer for it. classify_conflicted_tests covers the rules that run no gitio code; the rest are RITs owed to
-//! Nagatha (S-101, WO-join-3cr).
+//! answer for it. classify_conflicted_tests covers the rules that run no gitio code; tests/join_rit/classify.rs
+//! the rest, except a commit refusal naming another path, which resolve cannot reach (S-101, S-109).
 
 use crate::conflicted_entry::ConflictedEntry;
 use gitio::{EntryKind, GitError, Oid, TreeEntryError};

@@ -1,6 +1,6 @@
 //! tree_refusal: resolve's refusal for a failed build of the resolved tree, chosen by gitio's typed
-//! TreeWithPathsError. tree_refusal_tests covers the rules that run no gitio code; the rest are RITs owed to
-//! Nagatha (S-101, WO-join-3cr).
+//! TreeWithPathsError. tree_refusal_tests covers the rules that run no gitio code; tests/join_rit/tree_refusals.rs
+//! the rest, except an overlap with neither path in `files`, which resolve cannot reach (S-101, S-109).
 
 use crate::JoinRunError;
 use gitio::{TreeWithPathsError, TreeWithPathsRefusal};
