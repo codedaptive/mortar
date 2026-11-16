@@ -14,6 +14,7 @@ mod restore_moves;
 mod restore_refusal;
 mod restore_report;
 mod run_restore;
+mod snapshot_value_to_check;
 
 #[cfg(test)]
 mod ref_moved_on_tests;
@@ -29,6 +30,8 @@ mod restore_move_refusal_report_tests;
 mod restore_refusal_tests;
 #[cfg(test)]
 mod restore_report_tests;
+#[cfg(test)]
+mod snapshot_value_to_check_tests;
 
 pub use folder_on_ref::FolderOnRef;
 pub use folders_on_refs::folders_on_refs;
@@ -43,3 +46,4 @@ pub use restore_moves::restore_moves;
 pub use restore_refusal::restore_refusal;
 pub use restore_report::restore_report;
 pub use run_restore::run_restore;
+pub use snapshot_value_to_check::snapshot_value_to_check;

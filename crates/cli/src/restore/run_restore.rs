@@ -12,8 +12,9 @@
 //! - mixed refs and an unknown ref are exit 4 before any lock;
 //! - a held lock is exit 3.
 //! The ZIT crates/cli/tests/run_restore_repeat_tests.rs covers an unsaved request folder refusing exit 1 with nothing
-//! moved, a kill between oplog::restore and the folder move finished by a plain repeat (Repeated, then the move), and
-//! a repeat after a later restore leaving the folder and its ref (S-113(3)).
+//! moved, a kill between oplog::restore and the folder move finished by a plain repeat (Repeated, then the move),
+//! such a repeat with work added after the kill refusing exit 1 with nothing moved (S-122(3)), and a repeat after a
+//! later restore leaving the folder and its ref (S-113(3)).
 
 use std::path::Path;
 
@@ -73,7 +74,8 @@ pub fn run_restore(context: &ShellContext, cwd: &Path) -> Report {
 
 /// 1. the folders on the refs (folders_on_refs); 2. the moves, and whether a done record with the key gave them
 /// (restore_moves); 3. which request and attempt folders need a move, which a repeat leaves alone because their ref
-/// has moved on since its done record, and, unless the moves are a repeat's, which are unsaved (folders_to_move);
+/// has moved on since its done record, and which are unsaved, checked on a repeat that moved the folder's snapshot
+/// ref against that ref's old value from the done record (S-122(3)) (folders_to_move);
 /// 4. restore_refusal, with nothing moved; 5. oplog::restore with the protected refs (a Failed outcome moves no
 /// folder); 6. the folders moved from the outcome record's moves (move_restored_folders); 7. restore_report, naming
 /// the folders left alone. Zone folders are listed only (S-115(1)).

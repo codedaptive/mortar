@@ -1,5 +1,6 @@
-//! CLI restore's crash-repeat, unsaved-work and repeat-after-a-later-restore outcomes. This is a ZIT (S-119); the
-//! crash-repeat and repeat-after-a-later-restore cases are red-first.
+//! CLI restore's crash-repeat, unsaved-work and repeat-after-a-later-restore outcomes, and a crash-repeat refusing
+//! work added after the kill (S-122(3)). This is a ZIT (S-119); the crash-repeat, repeat-after-a-later-restore and
+//! work-added-after-the-kill cases are red-first.
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -125,6 +126,53 @@ fn repeat_after_ref_transaction_finishes_the_folder_move_once() {
     assert_eq!(fs::read(fx.request.join("src/file")).unwrap(), b"checkpoint\n");
     let records = oplog::read_op_log(&fx.common).unwrap().records;
     assert_eq!(records.iter().filter(|r| r.kind == "restore" && r.key == key && r.phase == OpPhase::Done).count(), 1);
+}
+
+/// A crash-repeat whose folder gained work after the kill refuses and moves nothing (S-122(3)): before the folder
+/// move, the repeat makes S-113(2)'s saved check against the snapshot ref's old value, finds the new file unsaved,
+/// exits 1 with S-113(2)'s report, and leaves the refs, the folder and the folder-move count as they were.
+#[test]
+fn crash_repeat_with_work_added_after_the_kill_refuses_and_moves_nothing() {
+    let fx = Fixture::new();
+    let shim = fx.repo.path.join("git-crash'boundary.sh");
+    let shimbin = fx.repo.path.join("shimbin");
+    fs::create_dir(&shimbin).unwrap();
+    write_git_kill_shim(&shim).unwrap();
+    write_git_shim(&shimbin.join("git"), b"#!/bin/sh\nPATH=\"$MORTAR_TEST_GIT_PATH\" exec \"$MORTAR_TEST_GIT_SHIM\" \"$@\"\n").unwrap();
+    let mut worker = test_child("restore_worker").unwrap();
+    worker.env("MORTAR_TEST_ROOT", &fx.repo.path).env("MORTAR_TEST_REQUEST", &fx.request)
+        .env("MORTAR_TEST_CHECKPOINT", &fx.checkpoint).env("MORTAR_TEST_SHIMBIN", &shimbin)
+        .env("MORTAR_TEST_GIT_PATH", std::env::var_os("PATH").unwrap()).env("MORTAR_TEST_GIT_SHIM", &shim)
+        .env("MORTAR_TEST_CRASH", "after");
+    let killed = run_with_kill_gate(&mut worker, &fx.repo.path).unwrap();
+    assert_eq!(killed.status.signal(), Some(9), "worker: {killed:?}");
+    assert_eq!(fx.git.read_ref(REQUEST).unwrap(), Some(fx.branch_at_checkpoint.clone()));
+    assert_eq!(fx.git.read_ref(SNAP).unwrap(), Some(fx.snap_at_checkpoint.clone()));
+    assert_eq!(fs::read(fx.request.join("src/file")).unwrap(), b"saved later\n");
+    let records = oplog::read_op_log(&fx.common).unwrap().records;
+    let intent = records.iter().find(|r| r.kind == "restore" && r.phase == OpPhase::Intent).unwrap();
+    let key = intent.key.clone();
+    assert!(!records.iter().any(|r| r.key == key && r.phase == OpPhase::Done));
+    // A new file, not an edit to src/file: git's own folder move refuses to overwrite an edited tracked file, but
+    // carries an untracked one over silently, so only the saved check can stop this repeat.
+    fs::write(fx.request.join("src/added"), b"added after the kill\n").unwrap();
+    let folder_moves = || oplog::read_op_log(&fx.common).unwrap().records.iter().filter(|r| r.kind == "folder-move").count();
+    let moves_before = folder_moves();
+    let repeated = fx.restore();
+    let out = format!("{}{}", String::from_utf8_lossy(&repeated.stdout), String::from_utf8_lossy(&repeated.stderr));
+    assert_eq!(repeated.status.code(), Some(1), "repeat: {out}");
+    let path = fx.request.display().to_string();
+    assert!(out.lines().any(|l| l.contains(&path) && l.contains("holds work that is not saved")), "repeat: {out}");
+    assert!(out.contains("nothing was moved"), "repeat: {out}");
+    assert_eq!(fx.git.read_ref(REQUEST).unwrap(), Some(fx.branch_at_checkpoint.clone()), "repeat: {out}");
+    assert_eq!(fx.git.read_ref(SNAP).unwrap(), Some(fx.snap_at_checkpoint.clone()), "repeat: {out}");
+    assert_eq!(fs::read(fx.request.join("src/file")).unwrap(), b"saved later\n", "repeat: {out}");
+    assert_eq!(fs::read(fx.request.join("src/added")).unwrap(), b"added after the kill\n", "repeat: {out}");
+    assert_eq!(folder_moves(), moves_before, "repeat: {out}");
+    // The refusal returns before oplog::restore runs, so this Done can only be recover's finish of the killed
+    // intent: the repeat ran as a repeat, not as a first restore.
+    let records = oplog::read_op_log(&fx.common).unwrap().records;
+    assert_eq!(records.iter().filter(|r| r.kind == "restore" && r.key == key && r.phase == OpPhase::Done).count(), 1, "repeat: {out}");
 }
 
 /// A finished restore repeated after a later restore moved the same ref on (S-113(3)) moves nothing: the folder and
