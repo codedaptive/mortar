@@ -1,7 +1,8 @@
 //! decide_zone_case: each rule with literal ids, in the contract's order: Current, then the zone that did not
 //! publish (Advance, Replay from the base), then the publishing zone (NoSquashOf, SquashOfNotInZone, Advance,
 //! Replay from the squash-of), then the publishing zone holding a recorded replay of the squash-of (at the tip
-//! it advances, before the tip it replays from the replay, none is refused naming the original commit).
+//! it advances, before the tip it replays from the replay, none is refused naming the original commit), then a
+//! squash-of superseded by an earlier-published squash (Current).
 
 use super::{decide_zone_case, SquashOfRead, ZoneCase};
 use gitio::Oid;
@@ -18,7 +19,7 @@ fn oid(hex: &str) -> Oid {
 }
 
 fn found(commit: &str, held: Option<&str>) -> SquashOfRead {
-    SquashOfRead::Found { commit: oid(commit), held: held.map(oid), record: None }
+    SquashOfRead::Found { commit: oid(commit), held: held.map(oid) }
 }
 
 #[test]
@@ -108,4 +109,17 @@ fn no_counterpart_is_refused_naming_the_original_commit() {
         decide_zone_case(&oid(COUNTERPART), &oid(BASE), &oid(ORIGIN), &found(SQUASH_OF, None)),
         ZoneCase::SquashOfNotInZone { squash_of: oid(SQUASH_OF) }
     );
+}
+
+#[test]
+fn a_superseded_squash_of_is_current_where_it_would_otherwise_replay_or_advance() {
+    let read = SquashOfRead::Superseded { commit: oid(SQUASH_OF) };
+    assert_eq!(decide_zone_case(&oid(TIP), &oid(BASE), &oid(ORIGIN), &read), ZoneCase::Current);
+    assert_eq!(decide_zone_case(&oid(BASE), &oid(BASE), &oid(ORIGIN), &read), ZoneCase::Current);
+}
+
+#[test]
+fn a_superseded_squash_of_with_a_base_at_origin_is_current() {
+    let read = SquashOfRead::Superseded { commit: oid(TIP) };
+    assert_eq!(decide_zone_case(&oid(TIP), &oid(ORIGIN), &oid(ORIGIN), &read), ZoneCase::Current);
 }

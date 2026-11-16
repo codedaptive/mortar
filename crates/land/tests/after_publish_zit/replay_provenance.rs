@@ -5,9 +5,9 @@
 //! publishes. after_publish(land) must put the zone on origin when its tip is the replay of the squash source, also
 //! when an earlier commit carries the same metadata or the source object was pruned, and must refuse with
 //! SquashOfNotInZone, moving nothing, when the zone tip only shares the source's metadata.
-//! On git's replay path, re-replaying an already published change collapses to nothing (the commit that becomes
-//! empty is dropped), so the end state alone cannot show a wrong pick between two saves on every path; that case
-//! also asserts the replay's record `refs/mortar/replayed/<zone>/<source>`.
+//! A replay drops a commit that becomes empty, so re-replaying an already published change collapses to nothing
+//! and the end state alone cannot show a wrong pick between two saves; that case also asserts the replay's record
+//! `refs/mortar/replayed/<zone>/<source>`.
 
 use crate::fixture::{
     land_and_publish, made, origin_untouched, refs, zone, Fixture, ACTOR, B_FILES, PUBLISHED, PUBLISHED_FILES,

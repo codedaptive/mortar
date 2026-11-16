@@ -2,12 +2,17 @@
 //! `integration`, and a bare remote `origin` (inside a second TestRepo's directory, removed with it) whose `main` is
 //! the base. Zone commits are made with plain git; the publish itself is land's own squash, land and publish, so
 //! after_publish reads the trailers squash wrote. made, land_and_publish and origin_untouched are the cases' shared
-//! steps for a kept squash published later.
+//! steps for a kept squash published later; replayed, replayed_chain and superseded are the shared arrangements
+//! (zone `land` replayed onto b's origin at A1, or at A2 on A1, and an older squash landed after a newer one
+//! published); record_ref, deleted, zone_move and done_moves read and spell the op log's replay record moves.
 
 use gitio::{Git, Oid, RunOpts};
 use join::OpenRequest;
-use land::{land, publish, squash, LandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer, ZoneRequests};
-use oplog::{read_op_log, OpRecord};
+use land::{
+    after_publish, land, publish, squash, LandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer, ZoneMove,
+    ZoneRequests,
+};
+use oplog::{read_op_log, OpPhase, OpRecord, RefMove};
 use std::ffi::OsString;
 use std::path::PathBuf;
 use testkit::TestRepo;
@@ -24,6 +29,14 @@ pub const PUBLISHED_FILES: [(&str, &str); 2] = [("a.txt", "one\nTWO\nthree\n"), 
 pub const B_FILES: [(&str, &str); 2] = [("a.txt", "one\ntwo\nthree\n"), ("b.txt", "b\n")];
 /// Zone c's commit on the base: the same middle line of a.txt the published zone changed, changed otherwise.
 pub const C_FILES: [(&str, &str); 1] = [("a.txt", "one\ntwo-c\nthree\n")];
+/// A2 on A1 (PUBLISHED_FILES): A1's files plus q.txt.
+pub const A2_FILES: [(&str, &str); 3] =
+    [("a.txt", "one\nTWO\nthree\n"), ("p.txt", "published\n"), ("q.txt", "second\n")];
+/// A join on the replayed A1': the files of A1' (b.txt carried in by the replay) plus j.txt.
+pub const JOINED_FILES: [(&str, &str); 4] =
+    [("a.txt", "one\nTWO\nthree\n"), ("b.txt", "b\n"), ("j.txt", "joined\n"), ("p.txt", "published\n")];
+/// The all-zero id the op log writes as a deleted ref's new value (the fixture's repositories are SHA-1).
+const ZERO: &str = "0000000000000000000000000000000000000000";
 
 pub struct Fixture {
     /// The local repository's directory, removed when the fixture drops.
@@ -93,6 +106,109 @@ pub fn land_and_publish(fx: &Fixture, made: &Squash) -> Oid {
 pub fn origin_untouched(fx: &Fixture, origin: &Oid) {
     assert_eq!(fx.branch("main"), *origin);
     assert_eq!(fx.remote_main(), Some(origin.clone()));
+}
+
+/// The replay record of `commit` in zone `zone`.
+pub fn record_ref(zone: &str, commit: &Oid) -> String {
+    format!("refs/mortar/replayed/{zone}/{}", commit.as_str())
+}
+
+/// The op log's delete of `refname`, which held `old`.
+pub fn deleted(refname: &str, old: &Oid) -> RefMove {
+    RefMove { refname: refname.to_string(), old: Some(old.clone()), new: Oid::parse(ZERO).unwrap() }
+}
+
+/// The op log's move of `refname` from `old` to `new`, alone.
+pub fn zone_move(refname: &str, old: &Oid, new: &Oid) -> Vec<RefMove> {
+    vec![RefMove { refname: refname.to_string(), old: Some(old.clone()), new: new.clone() }]
+}
+
+/// The moves of the log's done after-publish records, in log order.
+pub fn done_moves(fx: &Fixture) -> Vec<Vec<RefMove>> {
+    let records = fx.after_publish_records().into_iter().filter(|record| record.phase == OpPhase::Done);
+    records.map(|record| record.moves).collect()
+}
+
+/// Zone `land` at A1 (PUBLISHED_FILES on the base) with its squash kept, zone `b` (B_FILES on the base) squashed,
+/// landed and published, then after_publish(b, others=[land]).
+pub struct Replayed {
+    pub a1: Oid,
+    /// Land's kept squash, its Mortar-Squash-Of A1.
+    pub land_squash: Squash,
+    pub b_origin: Oid,
+    /// The replay of A1 onto b's origin: zone `land`'s tip.
+    pub a1_replayed: Oid,
+}
+
+/// The kept-squash arrangement up to the replay, checked to move zone `land` from A1 to a commit on b's origin with
+/// no open request listed.
+pub fn replayed(fx: &Fixture) -> Replayed {
+    let a1 = fx.join_onto(PUBLISHED, &fx.base, &PUBLISHED_FILES, "published work");
+    fx.join_onto("b", &fx.base, &B_FILES, "b work");
+    let land_squash = made(fx, PUBLISHED);
+    let b_origin = land_and_publish(fx, &made(fx, "b"));
+    let moves = after_publish(&fx.git, &refs(), &zone("b", vec![]), &[zone(PUBLISHED, vec![])], ACTOR).unwrap();
+    let ZoneMove::Moved { zone: name, old, new: a1_replayed, rebase } = &moves[1] else {
+        panic!("zone land must be replayed onto b's origin: {moves:?}");
+    };
+    assert_eq!((name.as_str(), old, rebase), (PUBLISHED, &a1, &vec![]));
+    assert_eq!(fx.git.commit_info(a1_replayed).unwrap().parents, vec![b_origin.clone()]);
+    Replayed { a1_replayed: a1_replayed.clone(), a1, land_squash, b_origin }
+}
+
+/// Zone `land` at A2 on A1, its squashes already made, replayed onto b's origin by after_publish(b, others=[land]).
+pub struct ChainReplayed {
+    pub b_origin: Oid,
+    pub a1_replayed: Oid,
+    pub a2_replayed: Oid,
+}
+
+/// Zone `b` (B_FILES on the base) squashed, landed and published, then after_publish(b, others=[land]) with zone
+/// `land` at `a2` on `a1`: checked to put b on its origin and to replay A1 and A2 one for one onto it, each recorded
+/// at its replay record (S-121 W).
+pub fn replayed_chain(fx: &Fixture, a1: &Oid, a2: &Oid) -> ChainReplayed {
+    let b_tip = fx.join_onto("b", &fx.base, &B_FILES, "b work");
+    let b_origin = land_and_publish(fx, &made(fx, "b"));
+    let moves = after_publish(&fx.git, &refs(), &zone("b", vec![]), &[zone(PUBLISHED, vec![])], ACTOR).unwrap();
+    assert_eq!(moves[0], ZoneMove::Moved { zone: "b".to_string(), old: b_tip, new: b_origin.clone(), rebase: vec![] });
+    let ZoneMove::Moved { zone: name, old, new: a2_replayed, rebase } = &moves[1] else {
+        panic!("zone land must be replayed onto b's origin: {moves:?}");
+    };
+    assert_eq!((name.as_str(), old, rebase), (PUBLISHED, a2, &vec![]));
+    assert_eq!(fx.files(a2_replayed), ["a.txt", "b.txt", "p.txt", "q.txt"]);
+    let a1_replayed = fx.git.commit_info(a2_replayed).unwrap().parents[0].clone();
+    assert_eq!(fx.git.commit_info(&a1_replayed).unwrap().parents, vec![b_origin.clone()]);
+    assert_eq!(fx.files(&a1_replayed), ["a.txt", "b.txt", "p.txt"]);
+    assert_eq!(fx.git.read_ref(&record_ref(PUBLISHED, a1)).unwrap(), Some(a1_replayed.clone()));
+    assert_eq!(fx.git.read_ref(&record_ref(PUBLISHED, a2)).unwrap(), Some(a2_replayed.clone()));
+    ChainReplayed { b_origin, a1_replayed, a2_replayed: a2_replayed.clone() }
+}
+
+/// An older squash S1 landed after a newer S2 of the same zone published.
+pub struct Superseded {
+    pub a1: Oid,
+    pub a2: Oid,
+    /// S2's publish, where after_publish(land) put zone `land`.
+    pub s2_origin: Oid,
+    /// S1's publish: the merge [S2's origin, S1].
+    pub origin: Oid,
+}
+
+/// S1 made at A1 (PUBLISHED_FILES on the base) and kept; A2 (A2_FILES) on A1; S2 made at A2, replacing the squash
+/// ref; S2 landed and published and after_publish(land) checked to put the zone on S2's origin; then S1 landed, as
+/// a merge, and published. after_publish(land) for S1's publish is the caller's.
+pub fn superseded(fx: &Fixture) -> Superseded {
+    let a1 = fx.join_onto(PUBLISHED, &fx.base, &PUBLISHED_FILES, "published work");
+    let s1 = made(fx, PUBLISHED);
+    let a2 = fx.join_onto(PUBLISHED, &a1, &A2_FILES, "second work");
+    let s2_origin = land_and_publish(fx, &made(fx, PUBLISHED));
+    let moves = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![]), &[], ACTOR).unwrap();
+    let advanced =
+        ZoneMove::Moved { zone: PUBLISHED.to_string(), old: a2.clone(), new: s2_origin.clone(), rebase: vec![] };
+    assert_eq!(moves, vec![advanced]);
+    let origin = land_and_publish(fx, &s1);
+    assert_eq!(fx.git.commit_info(&origin).unwrap().parents, vec![s2_origin.clone(), s1.commit.clone()]);
+    Superseded { a1, a2, s2_origin, origin }
 }
 
 fn git_at(path: PathBuf) -> Git {
