@@ -1,4 +1,5 @@
-//! snapshot_ref_name: the ref a request's or an attempt's snapshots live on.
+//! snapshot_ref_name: the ref a request's or an attempt's snapshots live on. The crate exports it so a caller
+//! (such as the cli) can name a target's snapshot ref through it instead of copying the rule.
 
 use crate::{SnapshotError, SnapshotTarget};
 
@@ -8,7 +9,7 @@ use crate::{SnapshotError, SnapshotTarget};
 /// field and its value, since folders numbers attempts from 1 (S-83). Other ref-name checks are left to oplog apply
 /// (S-14): before it writes its intent, its check_ref_names refuses with BadMove a name that is empty, holds a NUL
 /// or is not under refs/ (check_ref_moves), then one that git check-ref-format refuses.
-pub(crate) fn snapshot_ref_name(target: &SnapshotTarget) -> Result<String, SnapshotError> {
+pub fn snapshot_ref_name(target: &SnapshotTarget) -> Result<String, SnapshotError> {
     for (field, text) in [("zone", &target.zone), ("request", &target.request)] {
         if text.is_empty() || text.contains('/') {
             return Err(SnapshotError::BadTarget {
