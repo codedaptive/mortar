@@ -1,4 +1,4 @@
-//! WO-orc-gitio-it-4, S-33: Git::set_index joins real read-tree/index semantics without checking files out.
+//! WO-orc-gitio-it-4, S-33 and S-125: Git::set_index sets a folder's index to a tree without touching files or HEAD, keeping sparse folders' skip-worktree bits.
 use crate::fixture::{commit, repo, set_ref, tree};
 use crate::support::GitRepo;
 use gitio::{Git, Oid, RunOpts};
@@ -66,39 +66,100 @@ fn set_index_unknown_and_blob_objects_return_git_error_without_changing_index_fi
 }
 
 #[test]
-fn set_index_sparse_flags_match_independent_read_tree_and_neither_worktree_is_filled_or_overwritten() {
-    // Joins sparse_set -> set_index -> ls-files skip-worktree flags against a separate real-git oracle worktree.
+fn set_index_save_in_a_sparse_folder_leaves_status_clean_and_the_folder_removes_without_force() {
+    // Joins sparse_set -> HEAD moved to a save -> set_index(save tree) -> git status -> worktree_remove(no force).
     let (r, head) = checked_out(&[("root.txt", b"root\n"), ("keep/file", b"base\n"), ("outside/file", b"hidden\n")]);
     let caller_index = fs::read(index_path(&r.git)).unwrap();
-    let actual_path = r.path.join("actual sparse");
-    let oracle_path = r.path.join("oracle sparse");
-    for folder in [&actual_path, &oracle_path] {
-        r.git.worktree_add(folder, &head, None).unwrap();
-        r.git.sparse_set(folder, &["keep".into()]).unwrap();
-        assert!(!folder.join("outside").exists());
-        fs::write(folder.join("keep/file"), b"dirty sparse work\n").unwrap();
-    }
-    let actual = Git { repo: actual_path.clone(), ..r.git.clone() };
-    let oracle = Git { repo: oracle_path.clone(), ..r.git.clone() };
-    let flags_before = actual.run(&["ls-files", "-t", "-z"], &RunOpts::default()).unwrap().stdout;
-    assert_eq!(flags_before, b"H keep/file\0S outside/file\0H root.txt\0", "the fixture must really be sparse");
+    let (folder, linked) = sparse_folder(&r, &head);
+    let saved_tree = tree(&r.git, &[("root.txt", b"root\n"), ("keep/file", b"saved work\n"), ("outside/file", b"hidden\n")]);
+    let saved = commit(&r.git, &saved_tree, &[head], "save\n");
+    set_ref(&linked, "HEAD", &saved);
+    fs::write(folder.join("keep/file"), b"saved work\n").unwrap();
+    r.git.set_index(&folder, &saved_tree).unwrap();
+    assert_eq!(flags(&linked), b"H keep/file\0S outside/file\0H root.txt\0", "out-of-cone paths keep S");
+    assert_eq!(linked.run(&["status", "--porcelain"], &RunOpts::default()).unwrap().stdout, b"", "a save is clean");
+    assert_eq!(fs::read(folder.join("keep/file")).unwrap(), b"saved work\n");
+    assert_eq!(fs::read(folder.join("root.txt")).unwrap(), b"root\n");
+    assert!(!folder.join("outside").exists());
+    assert_eq!(linked.rev_parse("HEAD").unwrap(), Some(saved));
+    assert_eq!(fs::read(index_path(&r.git)).unwrap(), caller_index);
+    r.git.worktree_remove(&folder, false).unwrap();
+    assert!(!folder.exists());
+}
+
+#[test]
+fn set_index_sparse_tree_adding_paths_marks_out_of_cone_skip_worktree_keeps_files_and_repeat_is_a_no_op() {
+    // Joins sparse_set -> set_index(tree adding in- and out-of-cone paths) -> ls-files -t, write-tree, files, HEAD.
+    let (r, head) = checked_out(&[("root.txt", b"root\n"), ("keep/file", b"base\n"), ("outside/file", b"hidden\n")]);
+    let caller_index = fs::read(index_path(&r.git)).unwrap();
+    let (folder, linked) = sparse_folder(&r, &head);
+    fs::write(folder.join("keep/file"), b"dirty sparse work\n").unwrap();
+    fs::write(folder.join("keep/untracked"), b"local only\n").unwrap();
     let wanted = tree(&r.git, &[
         ("root.txt", b"new root index\n"), ("keep/file", b"new index\n"), ("keep/new", b"new in-cone\n"),
-        ("outside/file", b"new hidden index\n"), ("outside/new", b"new out-of-cone\n"),
+        ("outside/file", b"new hidden index\n"), ("outside/new", b"new out-of-cone\n"), ("fresh/file", b"new dir\n"),
     ]);
-    oracle.run(&["read-tree", "--end-of-options", wanted.as_str()], &RunOpts::default()).unwrap();
-    r.git.set_index(&actual_path, &wanted).unwrap();
-    let expected_flags = oracle.run(&["ls-files", "-t", "-z"], &RunOpts::default()).unwrap().stdout;
-    assert_eq!(actual.run(&["ls-files", "-t", "-z"], &RunOpts::default()).unwrap().stdout, expected_flags);
-    for git in [&actual, &oracle] {
-        assert_eq!(index_tree(git), wanted);
-        assert_eq!(git.rev_parse("HEAD").unwrap(), Some(head.clone()));
-        assert_eq!(fs::read(git.repo.join("keep/file")).unwrap(), b"dirty sparse work\n");
-        assert_eq!(fs::read(git.repo.join("root.txt")).unwrap(), b"root\n");
-        assert!(!git.repo.join("keep/new").exists());
-        assert!(!git.repo.join("outside").exists());
-    }
+    r.git.set_index(&folder, &wanted).unwrap();
+    let expected: &[u8] = b"S fresh/file\0H keep/file\0H keep/new\0S outside/file\0S outside/new\0H root.txt\0";
+    assert_eq!(flags(&linked), expected, "every out-of-cone path, old or new, is S");
+    assert_eq!(index_tree(&linked), wanted);
+    assert_eq!(fs::read(folder.join("keep/file")).unwrap(), b"dirty sparse work\n");
+    assert_eq!(fs::read(folder.join("keep/untracked")).unwrap(), b"local only\n");
+    assert_eq!(fs::read(folder.join("root.txt")).unwrap(), b"root\n");
+    assert!(!folder.join("keep/new").exists());
+    assert!(!folder.join("outside").exists());
+    assert!(!folder.join("fresh").exists());
+    assert_eq!(linked.rev_parse("HEAD").unwrap(), Some(head));
     assert_eq!(fs::read(index_path(&r.git)).unwrap(), caller_index);
+    let linked_index = fs::read(index_path(&linked)).unwrap();
+    r.git.set_index(&folder, &wanted).unwrap();
+    assert_eq!(fs::read(index_path(&linked)).unwrap(), linked_index, "same-tree repeat must not change the index");
+    assert_eq!(flags(&linked), expected);
+    assert_eq!(fs::read(folder.join("keep/file")).unwrap(), b"dirty sparse work\n");
+}
+
+#[test]
+fn set_index_leaves_an_out_of_cone_file_present_on_disk_tracked_and_unchanged() {
+    // Joins sparse_set -> a file written outside the cone -> set_index -> ls-files -t and the file's bytes.
+    let (r, head) = checked_out(&[
+        ("root.txt", b"root\n"), ("keep/file", b"base\n"), ("outside/file", b"hidden\n"), ("outside/other", b"other\n"),
+    ]);
+    let (folder, linked) = sparse_folder(&r, &head);
+    fs::create_dir(folder.join("outside")).unwrap();
+    fs::write(folder.join("outside/file"), b"present out of cone\n").unwrap();
+    let wanted = tree(&r.git, &[
+        ("root.txt", b"root\n"), ("keep/file", b"new index\n"), ("outside/file", b"hidden\n"), ("outside/other", b"other\n"),
+    ]);
+    r.git.set_index(&folder, &wanted).unwrap();
+    assert_eq!(flags(&linked), b"H keep/file\0H outside/file\0S outside/other\0H root.txt\0");
+    assert_eq!(fs::read(folder.join("outside/file")).unwrap(), b"present out of cone\n");
+    assert!(!folder.join("outside/other").exists());
+    assert_eq!(fs::read(folder.join("keep/file")).unwrap(), b"base\n");
+    assert_eq!(fs::read(folder.join("root.txt")).unwrap(), b"root\n");
+    assert_eq!(linked.rev_parse("HEAD").unwrap(), Some(head));
+}
+
+#[test]
+fn set_index_keeps_an_out_of_cone_file_on_disk_whose_bytes_equal_the_trees_blob() {
+    // Joins sparse_set -> an out-of-cone file matching the tree, freshly stat'ed -> set_index -> ls-files -t and bytes.
+    let (r, head) = checked_out(&[
+        ("root.txt", b"root\n"), ("keep/file", b"base\n"), ("outside/file", b"hidden\n"), ("outside/other", b"other\n"),
+    ]);
+    let (folder, linked) = sparse_folder(&r, &head);
+    fs::create_dir(folder.join("outside")).unwrap();
+    fs::write(folder.join("outside/file"), b"hidden\n").unwrap();
+    // Git clears the S bit of a tracked file present on disk, and status then writes its fresh stat to the index, so
+    // only set_index's own steps decide whether it survives.
+    linked.run(&["status", "--porcelain"], &RunOpts::default()).unwrap();
+    let wanted = tree(&r.git, &[
+        ("root.txt", b"root\n"), ("keep/file", b"new index\n"), ("outside/file", b"hidden\n"), ("outside/other", b"other\n"),
+    ]);
+    r.git.set_index(&folder, &wanted).unwrap();
+    assert_eq!(fs::read(folder.join("outside/file")).unwrap(), b"hidden\n", "a working file is never deleted");
+    assert_eq!(flags(&linked), b"H keep/file\0H outside/file\0S outside/other\0H root.txt\0");
+    assert!(!folder.join("outside/other").exists());
+    assert_eq!(fs::read(folder.join("keep/file")).unwrap(), b"base\n");
+    assert_eq!(linked.rev_parse("HEAD").unwrap(), Some(head));
 }
 
 #[test]
@@ -128,6 +189,21 @@ fn checked_out(files: &[(&str, &[u8])]) -> (GitRepo, Oid) {
     set_ref(&r.git, "refs/heads/main", &head);
     r.git.run(&["checkout", "--force", "main"], &RunOpts::default()).unwrap();
     (r, head)
+}
+
+/// A linked worktree on `head` made cone-sparse on `keep`, checked to really be sparse before the test acts.
+fn sparse_folder(r: &GitRepo, head: &Oid) -> (PathBuf, Git) {
+    let folder = r.path.join("sparse folder");
+    r.git.worktree_add(&folder, head, None).unwrap();
+    r.git.sparse_set(&folder, &["keep".into()]).unwrap();
+    let linked = Git { repo: folder.clone(), ..r.git.clone() };
+    assert!(!folder.join("outside").exists());
+    assert!(flags(&linked).starts_with(b"H keep/file\0S outside/file\0"), "the fixture must really be sparse");
+    (folder, linked)
+}
+
+fn flags(git: &Git) -> Vec<u8> {
+    git.run(&["ls-files", "-t", "-z"], &RunOpts::default()).unwrap().stdout
 }
 
 fn index_tree(git: &Git) -> Oid {

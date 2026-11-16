@@ -135,6 +135,7 @@ mod read_replay;
 mod read_replay_probe;
 mod read_rev_parse;
 mod read_show_ref;
+mod read_sparse_flag;
 mod read_sparse_list;
 mod read_status_paths;
 mod read_symbolic_ref;
@@ -156,6 +157,7 @@ mod settle;
 mod snapshot_tree_requests;
 mod sparse_add_request;
 mod sparse_list_request;
+mod sparse_reapply_requests;
 mod sparse_set_requests;
 mod spawn_refusal;
 mod status_paths;
@@ -370,6 +372,8 @@ mod read_rev_parse_tests;
 #[cfg(test)]
 mod read_show_ref_tests;
 #[cfg(test)]
+mod read_sparse_flag_tests;
+#[cfg(test)]
 mod read_sparse_list_tests;
 #[cfg(test)]
 mod read_status_paths_tests;
@@ -405,6 +409,8 @@ mod snapshot_tree_requests_tests;
 mod sparse_add_request_tests;
 #[cfg(test)]
 mod sparse_list_request_tests;
+#[cfg(test)]
+mod sparse_reapply_requests_tests;
 #[cfg(test)]
 mod sparse_set_requests_tests;
 #[cfg(test)]
