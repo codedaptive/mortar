@@ -14,10 +14,10 @@ mod unmarked_log_tests;
 
 pub use append_marked_record::append_marked_record;
 pub use decode_marked_log::decode_marked_log;
+pub use encode_marked_record::encode_marked_record;
 pub use marked_log::MarkedLog;
 pub use marked_record::MarkedRecord;
 pub use read_marked_log::read_marked_log;
 
 pub(crate) use decode_marked_line::decode_marked_line;
-pub(crate) use encode_marked_record::encode_marked_record;
 pub(crate) use unmarked_log::unmarked_log;

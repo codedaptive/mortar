@@ -1,6 +1,7 @@
 //! Undo and restore: reversing the last done op on some refs, or setting refs to their values as of an op, each as one new op through apply_protected.
 
 mod caller_op;
+mod check_restore_ref_names;
 mod find_undo_target;
 mod last_mover;
 mod name_moves;
@@ -15,6 +16,8 @@ mod zero_oid_like;
 
 #[cfg(test)]
 mod caller_op_tests;
+#[cfg(test)]
+mod check_restore_ref_names_tests;
 #[cfg(test)]
 mod find_undo_target_tests;
 #[cfg(test)]
@@ -33,6 +36,7 @@ mod value_as_of_op_tests;
 mod zero_oid_like_tests;
 
 pub use caller_op::caller_op;
+pub use check_restore_ref_names::check_restore_ref_names;
 pub use find_undo_target::find_undo_target;
 pub use last_mover::last_mover;
 pub use op_caller::OpCaller;

@@ -1,5 +1,5 @@
 //! Which records a history query keeps.
-//! A bare type; filter_history_tests exercises each variant.
+//! A bare type; filter_history_tests and history_matches_tests exercise each variant.
 
 /// One criterion on an op log record.
 #[derive(Debug, Clone, PartialEq, Eq)]

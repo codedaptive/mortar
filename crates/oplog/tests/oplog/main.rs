@@ -16,6 +16,7 @@ mod with_lock;
 mod undo_restore;
 mod recovery;
 mod ref_names;
+mod restore_ref_names;
 mod recoverable;
 mod refined_recovery;
 mod remote_close;

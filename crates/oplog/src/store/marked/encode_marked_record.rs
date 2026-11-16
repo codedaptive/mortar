@@ -1,11 +1,12 @@
 //! A record, its values and its remote mark as one op log line.
 //! Its decisions are proved through append_marked_record by crates/oplog/tests/oplog/marked_lines.rs.
+//! Public so the cli's `mortar log --json` can encode records with their values and remote mark through it.
 
 use crate::store::{encode_valued_record, write_json_string, OpRecord};
 
 /// encode_valued_record(r, values) unchanged when `remote` is None, so no `remote` key is written.
 /// Otherwise that line with one more member last, before its closing '}': `"remote":"<name>"`, escaped.
-pub(crate) fn encode_marked_record(
+pub fn encode_marked_record(
     r: &OpRecord,
     values: &[(String, String)],
     remote: Option<&str>,
