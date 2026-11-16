@@ -1,14 +1,18 @@
 //! The cases of SPEC-land 05-after-publish.md §Tests, and a repeat: after land's own squash, land and publish of
 //! zone `land`, another zone is replayed onto the new origin with its open requests listed to rebase; the publishing
 //! zone with no join since its squash is put on origin, and one with a later join has only that join replayed onto
-//! origin; a zone whose commit conflicts with the published squash is left in place and listed with its file while
-//! another zone in the same call still moves; a repeat answers Current for every zone and writes no op. Every case
+//! origin; the replayed zone's op also writes the replay record of each commit it replayed; a zone whose commit
+//! conflicts with the published squash is left in place and listed with its file while another zone in the same
+//! call still moves; a repeat answers Current for every zone and writes no op. Every case
 //! checks that origin, local and remote, is where publish left it.
 
-use crate::fixture::{refs, request, zone, Fixture, ACTOR, B_FILES, C_FILES, PUBLISHED, PUBLISHED_FILES};
+use crate::fixture::{
+    done_moves, record_ref, refs, request, zone, zone_move, Fixture, ACTOR, B_FILES, C_FILES, PUBLISHED,
+    PUBLISHED_FILES,
+};
 use gitio::Oid;
 use land::{after_publish, ZoneMove};
-use oplog::{OpPhase, RefMove};
+use oplog::RefMove;
 use std::path::PathBuf;
 
 /// The published zone's later join: PUBLISHED_FILES plus later.txt.
@@ -19,16 +23,6 @@ const LATER_FILES: [(&str, &str); 3] =
 fn origin_unchanged(fx: &Fixture, origin: &Oid) {
     assert_eq!(fx.branch("main"), *origin);
     assert_eq!(fx.remote_main(), Some(origin.clone()));
-}
-
-/// The moves of the log's done after-publish records, in log order.
-fn done_moves(fx: &Fixture) -> Vec<Vec<RefMove>> {
-    let records = fx.after_publish_records().into_iter().filter(|record| record.phase == OpPhase::Done);
-    records.map(|record| record.moves).collect()
-}
-
-fn zone_move(refname: &str, old: &Oid, new: &Oid) -> Vec<RefMove> {
-    vec![RefMove { refname: refname.to_string(), old: Some(old.clone()), new: new.clone() }]
 }
 
 #[test]
@@ -49,10 +43,10 @@ fn another_zone_is_replayed_onto_the_new_origin() {
     assert_eq!(fx.files(new), ["a.txt", "b.txt", "p.txt"]);
     assert_eq!(fx.file(new, "b.txt"), "b\n");
     assert_eq!(fx.file(new, "a.txt"), "one\nTWO\nthree\n");
-    assert_eq!(
-        done_moves(&fx),
-        vec![zone_move("refs/heads/zone/land", &published_tip, &origin), zone_move("refs/heads/zone/b", &b_tip, new)]
-    );
+    // Zone b's op moves the zone, then writes the replay record of its one replayed commit, absent before (S-121 W).
+    let b_record = RefMove { refname: record_ref("b", &b_tip), old: None, new: new.clone() };
+    let b_moves = [zone_move("refs/heads/zone/b", &b_tip, new), vec![b_record]].concat();
+    assert_eq!(done_moves(&fx), vec![zone_move("refs/heads/zone/land", &published_tip, &origin), b_moves]);
     origin_unchanged(&fx, &origin);
 }
 

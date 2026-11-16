@@ -2,12 +2,13 @@
 
 use oplog::RefMove;
 
-/// `consumed` (the consumed record's delete), then `carried` (a replay record the replay moved), skipping None.
-/// When both name one ref, only `carried`: a queued squash still names that source, so its record is still needed,
-/// and git refuses two moves of one ref in one update.
-pub(crate) fn record_moves(consumed: Option<RefMove>, carried: Option<RefMove>) -> Vec<RefMove> {
-    match (consumed, carried) {
-        (Some(consumed), Some(carried)) if consumed.refname == carried.refname => vec![carried],
-        (consumed, carried) => consumed.into_iter().chain(carried).collect(),
-    }
+/// `deletes` (published_records: the records at or behind the published source), then `writes` (replay_records: the
+/// records a clean replay writes and carries), each in its own order. A delete whose ref a write also moves is left
+/// out: the write wins, because the replay just made that record name the zone commit standing for its source, and
+/// git refuses two moves of one ref in one update.
+pub(crate) fn record_moves(deletes: Vec<RefMove>, writes: Vec<RefMove>) -> Vec<RefMove> {
+    let mut moves: Vec<RefMove> =
+        deletes.into_iter().filter(|delete| !writes.iter().any(|write| write.refname == delete.refname)).collect();
+    moves.extend(writes);
+    moves
 }
