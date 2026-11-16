@@ -1,13 +1,14 @@
 //! matching_records: every filter must keep a record (AND), log order kept, no filter keeps all. ZUT: oplog's
-//! OpRecord, RefMove and HistoryFilter and gitio's Oid::parse are used as plain data.
+//! MarkedRecord, OpRecord, RefMove and HistoryFilter and gitio's Oid::parse are used as plain data; oplog's
+//! history_matches is simple enough to use directly.
 
 use gitio::Oid;
-use oplog::{HistoryFilter, OpPhase, OpRecord, RefMove};
+use oplog::{HistoryFilter, MarkedRecord, OpPhase, OpRecord, RefMove};
 
 use super::matching_records;
 
-fn record(op_id: &str, key: &str, actor: &str, refs: &[&str]) -> OpRecord {
-    OpRecord {
+fn record(op_id: &str, key: &str, actor: &str, refs: &[&str]) -> MarkedRecord {
+    let record = OpRecord {
         op_id: op_id.to_string(),
         key: key.to_string(),
         kind: "save".to_string(),
@@ -24,10 +25,11 @@ fn record(op_id: &str, key: &str, actor: &str, refs: &[&str]) -> OpRecord {
             })
             .collect(),
         result: None,
-    }
+    };
+    MarkedRecord { record, values: Vec::new(), remote: None }
 }
 
-fn log() -> Vec<OpRecord> {
+fn log() -> Vec<MarkedRecord> {
     vec![
         record("op-1", "k-1", "bob", &["refs/heads/zone/core"]),
         record("op-2", "k-2", "ann", &["refs/heads/zone/core", "refs/heads/req/core/a"]),
@@ -36,8 +38,8 @@ fn log() -> Vec<OpRecord> {
     ]
 }
 
-fn ids(records: &[&OpRecord]) -> Vec<String> {
-    records.iter().map(|record| record.op_id.clone()).collect()
+fn ids(records: &[&MarkedRecord]) -> Vec<String> {
+    records.iter().map(|marked| marked.record.op_id.clone()).collect()
 }
 
 fn ref_filter(refname: &str) -> HistoryFilter {

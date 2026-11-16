@@ -1,12 +1,13 @@
-//! The "records" lines of `mortar log`.
+//! The "records" lines of `mortar log`: each record's own op log line.
 
-use oplog::{encode_op_record, OpRecord};
+use oplog::{encode_marked_record, MarkedRecord};
 
-/// With `json`, each record's line as oplog's encode_op_record encodes it (the record alone, without values or a
-/// remote mark), in the order given; without it, no lines, since the plain report never prints its fields (S-114).
-pub fn encoded_records(records: &[&OpRecord], json: bool) -> Vec<String> {
+/// With `json`, each record's line as oplog's encode_marked_record encodes it (the record, its values and its
+/// remote mark, as the log holds it), in the order given; without it, no lines, since the plain report never prints
+/// its fields (S-114).
+pub fn encoded_records(records: &[&MarkedRecord], json: bool) -> Vec<String> {
     if !json {
         return Vec::new();
     }
-    records.iter().map(|record| encode_op_record(record)).collect()
+    records.iter().map(|m| encode_marked_record(&m.record, &m.values, m.remote.as_deref())).collect()
 }
