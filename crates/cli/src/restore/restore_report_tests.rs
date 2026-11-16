@@ -1,5 +1,6 @@
-//! restore_report: what a done, repeated and failed restore say, with the folders moved, already in place and the
-//! zone folders left where they were (S-113, S-115(1)).
+//! restore_report: what a done, repeated and failed restore say, with the folders moved, already in place, left
+//! alone because their ref has moved on since the record's op, and the zone folders left where they were (S-113,
+//! S-115(1)).
 
 use std::path::PathBuf;
 
@@ -62,7 +63,14 @@ const MOVE_SNAP: &str = "refs/mortar/snap/core/a absent -> deleted";
 #[test]
 fn a_done_restore_lists_moves_folders_and_zone_folders() {
     let outcome = ApplyOutcome::Done(record(OpPhase::Done, two_moves(), Some(OpResult::Moved)));
-    let report = restore_report(&outcome, "op-1", &[PathBuf::from("/w/a")], &[PathBuf::from("/w/b")], &[zone_folder()]);
+    let report = restore_report(
+        &outcome,
+        "op-1",
+        &[PathBuf::from("/w/a")],
+        &[PathBuf::from("/w/b")],
+        &[PathBuf::from("/w/c")],
+        &[zone_folder()],
+    );
     assert_eq!(
         report,
         Report {
@@ -74,6 +82,7 @@ fn a_done_restore_lists_moves_folders_and_zone_folders() {
                 MOVE_SNAP.to_string(),
                 "moved the folder /w/a to its ref's restored value".to_string(),
                 "the folder /w/b already stands at its ref's restored value".to_string(),
+                "the folder /w/c stays: its ref has moved on since op op-new".to_string(),
                 "the zone folder /w/core stands on refs/heads/zone/core; its files stay where they were".to_string(),
             ],
             owner: None,
@@ -83,6 +92,7 @@ fn a_done_restore_lists_moves_folders_and_zone_folders() {
                 ("key".to_string(), OutValue::Text("restore-1".to_string())),
                 ("moves".to_string(), texts(&[MOVE_A, MOVE_SNAP])),
                 ("folders_moved".to_string(), texts(&["/w/a"])),
+                ("folders_left".to_string(), texts(&["/w/c"])),
                 ("zone_folders".to_string(), texts(&["/w/core"])),
             ],
         }
@@ -92,7 +102,7 @@ fn a_done_restore_lists_moves_folders_and_zone_folders() {
 #[test]
 fn a_repeat_is_already_done_with_the_records_moves() {
     let outcome = ApplyOutcome::Repeated(record(OpPhase::Done, two_moves(), Some(OpResult::Moved)));
-    let report = restore_report(&outcome, "op-1", &[], &[], &[]);
+    let report = restore_report(&outcome, "op-1", &[], &[], &[], &[]);
     assert_eq!(report.exit, ExitCode::Done);
     assert_eq!(report.outcome, "already-done");
     assert_eq!(report.lines, vec![MOVE_A.to_string(), MOVE_SNAP.to_string()]);
@@ -100,9 +110,26 @@ fn a_repeat_is_already_done_with_the_records_moves() {
 }
 
 #[test]
+fn a_repeat_names_each_folder_left_alone_because_its_ref_moved_on() {
+    let outcome = ApplyOutcome::Repeated(record(OpPhase::Done, two_moves(), Some(OpResult::Moved)));
+    let report = restore_report(&outcome, "op-1", &[], &[], &[PathBuf::from("/w/a")], &[]);
+    assert_eq!(report.exit, ExitCode::Done);
+    assert_eq!(report.outcome, "already-done");
+    assert_eq!(
+        report.lines,
+        vec![
+            MOVE_A.to_string(),
+            MOVE_SNAP.to_string(),
+            "the folder /w/a stays: its ref has moved on since op op-new".to_string(),
+        ]
+    );
+    assert_eq!(report.fields[4], ("folders_left".to_string(), texts(&["/w/a"])));
+}
+
+#[test]
 fn a_restore_with_no_moves_says_every_ref_already_holds_its_value() {
     let outcome = ApplyOutcome::Done(record(OpPhase::Done, Vec::new(), Some(OpResult::Moved)));
-    let report = restore_report(&outcome, "op-1", &[], &[], &[]);
+    let report = restore_report(&outcome, "op-1", &[], &[], &[], &[]);
     assert_eq!(report.lines, vec!["every ref already holds its value as of op op-1".to_string()]);
     assert_eq!(report.fields[2], ("moves".to_string(), texts(&[])));
 }
@@ -111,7 +138,7 @@ fn a_restore_with_no_moves_says_every_ref_already_holds_its_value() {
 fn a_failed_restore_names_the_stale_ref_and_points_at_its_log() {
     let stale = OpResult::Stale { refname: "refs/mortar/snap/core/a".to_string(), actual: Some(oid('d')) };
     let outcome = ApplyOutcome::Failed(record(OpPhase::Failed, two_moves(), Some(stale)));
-    let report = restore_report(&outcome, "op-1", &[], &[], &[zone_folder()]);
+    let report = restore_report(&outcome, "op-1", &[], &[], &[], &[zone_folder()]);
     assert_eq!(report.exit, ExitCode::Refused);
     assert_eq!(report.outcome, "not-moved");
     assert_eq!(
@@ -131,7 +158,7 @@ fn a_failed_restore_not_moved_names_its_first_ref() {
     let not_moved =
         OpResult::NotMoved { refs: vec![("refs/heads/req/core/a".to_string(), None), ("refs/x".to_string(), None)] };
     let outcome = ApplyOutcome::Failed(record(OpPhase::Failed, two_moves(), Some(not_moved)));
-    let report = restore_report(&outcome, "op-1", &[], &[], &[]);
+    let report = restore_report(&outcome, "op-1", &[], &[], &[], &[]);
     assert_eq!(
         report.lines,
         vec!["refs/heads/req/core/a was not where it was read (it holds nothing), so nothing moved"]

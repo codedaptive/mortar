@@ -1,4 +1,5 @@
-//! status_outcome: over the whole state table, the first of stalled, paused, unsaved, not joined names the outcome.
+//! status_outcome: one state per StatusPhase phase names its word;
+//! status_phase_from_status_state_tests holds the whole state table.
 
 use std::path::PathBuf;
 
@@ -37,50 +38,22 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
     }
 }
 
-/// Every row of the table as (stalled, paused, saved, joined, the answer the spec's order gives), written out.
-const TABLE: [(bool, bool, bool, bool, &str); 16] = [
-    (false, false, false, false, "unsaved"),
+/// One state per phase as (stalled, paused, saved, joined, the answer for that phase), written out.
+const ONE_PER_PHASE: [(bool, bool, bool, bool, &str); 5] = [
+    (true, true, false, false, "stalled"),
+    (false, true, true, true, "paused"),
     (false, false, false, true, "unsaved"),
     (false, false, true, false, "saved"),
     (false, false, true, true, "joined"),
-    (false, true, false, false, "paused"),
-    (false, true, false, true, "paused"),
-    (false, true, true, false, "paused"),
-    (false, true, true, true, "paused"),
-    (true, false, false, false, "stalled"),
-    (true, false, false, true, "stalled"),
-    (true, false, true, false, "stalled"),
-    (true, false, true, true, "stalled"),
-    (true, true, false, false, "stalled"),
-    (true, true, false, true, "stalled"),
-    (true, true, true, false, "stalled"),
-    (true, true, true, true, "stalled"),
 ];
 
 #[test]
-fn every_row_of_the_state_table_gives_the_first_that_holds() {
-    for (stalled, paused, saved, joined, answer) in TABLE {
+fn one_state_per_phase_gives_that_phases_answer() {
+    for (stalled, paused, saved, joined, answer) in ONE_PER_PHASE {
         assert_eq!(
             status_outcome(&state(stalled, paused, saved, joined)),
             answer,
             "stalled {stalled}, paused {paused}, saved {saved}, joined {joined}"
         );
     }
-}
-
-#[test]
-fn a_stalled_move_comes_before_a_paused_join_and_unsaved_work() {
-    assert_eq!(status_outcome(&state(true, true, false, false)), "stalled");
-}
-
-#[test]
-fn a_paused_join_comes_before_unsaved_work() {
-    assert_eq!(status_outcome(&state(false, true, false, true)), "paused");
-}
-
-#[test]
-fn unsaved_saved_and_joined_follow_in_order() {
-    assert_eq!(status_outcome(&state(false, false, false, true)), "unsaved");
-    assert_eq!(status_outcome(&state(false, false, true, false)), "saved");
-    assert_eq!(status_outcome(&state(false, false, true, true)), "joined");
 }

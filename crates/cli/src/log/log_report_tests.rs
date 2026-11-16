@@ -1,7 +1,7 @@
 //! log_report: "listed" with the restore step, or "empty" with the unfiltered log as next; exit 0 either way; one
 //! "records" field holding the encoded lines it is given, unchanged and in order. ZUT: oplog's record types and
-//! gitio's Oid::parse are plain data; the encoded lines are literals. That run_log passes oplog's own lines is the
-//! RIT owed Nagatha named in run_log.rs ("--json records equal oplog's lines").
+//! gitio's Oid::parse are plain data; the encoded lines are literals. That run_log passes encode_op_record's lines
+//! for the ops it lists, byte for byte, is the integration test owed in run_log.rs's header.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, RefMove};
@@ -52,7 +52,10 @@ fn records_are_listed_with_the_restore_step_next() {
     assert_eq!(report.exit, ExitCode::Done);
     assert_eq!(report.outcome, "listed");
     assert_eq!(report.owner, None);
-    assert_eq!(report.next, "mortar restore <op id> <ref>... sets refs back as of one of these ops");
+    assert_eq!(
+        report.next,
+        "mortar restore <op id> <full ref name>... --actor <name> sets refs back as of one of these ops"
+    );
     assert_eq!(report.lines.len(), 4);
     assert_eq!(report.lines[0], "op-1 intent save by core/fix-1 at 5 key k: mortar save");
     assert_eq!(report.lines[2], "op-2 intent save by core/fix-1 at 5 key k: mortar save");

@@ -6,7 +6,8 @@
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip.
 //! The ZIT crates/cli/tests/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder move
-//! finished by a plain repeat (Repeated, then the move).
+//! finished by a plain repeat (Repeated, then the move), and a repeat after a later restore leaving the folder and
+//! its ref.
 
 use std::path::PathBuf;
 
@@ -18,10 +19,12 @@ use super::{restore_move_refusal_report, FolderOnRef};
 use crate::report::Report;
 
 /// Moves each folder in `needing` (restored as of op `op_id`) from its ref's old value to its new one as `record`
-/// (the restore's done record, fresh or Repeated) moved the ref, so a repeat moves from the right tip. The folders
-/// were checked saved before the restore (on a repeat, by the first attempt), so move_folder is told saved. A folder
-/// whose ref the record does not move stays. The first move refused stops the rest: restore_move_refusal_report, naming the folders already moved.
-/// Answers the folders moved.
+/// (the restore's done record, fresh or Repeated) moved the ref, so a repeat moves from the right tip. `needing` never
+/// holds a folder whose ref has moved on since a repeated record (folders_to_move leaves those, ref_moved_on), so a
+/// repeat moves only a folder whose ref still holds the record's new value (S-113(3)). The folders were checked saved
+/// before the restore (on a repeat, by the first attempt), so move_folder is told saved. A folder whose ref the record
+/// does not move stays. The first move refused stops the rest: restore_move_refusal_report, naming the folders
+/// already moved. Answers the folders moved.
 pub fn move_restored_folders(
     git: &Git,
     needing: &[&FolderOnRef],

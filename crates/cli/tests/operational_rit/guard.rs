@@ -1,64 +1,8 @@
-use crate::{json::check, support::*};
-use gitio::{Git, Oid};
-use land::{LandAnswer, LandRefs, PublishAnswer, Squash};
+// The not-UTF-8 hook input case is a cli ZIT in tests/run_guard_hook_tests.rs.
+use crate::{cid::CID, guard_fixture::Guard, json::check, refs::refs};
+use land::{LandAnswer, PublishAnswer, Squash};
 use oplog::{KillPidProbe, LockName, Op, OpPhase, ProtectedRef, RefMove};
-use std::{fs, io::Write, os::unix::fs::symlink, path::PathBuf, process::{Command, Output, Stdio}};
-
-const CID: &str = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk";
-struct Guard { f: Fixture, new: Oid, origin: PathBuf, other: PathBuf }
-impl Guard {
-    fn new() -> Self {
-        let mut f = Fixture::new();
-        let new = f.commit(&f.base, &[("src/file", b"guarded published work\n")],
-            &format!("guard fixture\n\nMortar-Change-Id: {CID}\nMortar-Zone: core\n"));
-        let origin = f.root.join("origin.git"); let other = f.root.join("other.git");
-        for path in [&origin, &other] {
-            raw(&f.git, &["init", "--bare", "--initial-branch=main", path.to_str().unwrap()]);
-            raw(&f.git, &["push", path.to_str().unwrap(), &format!("{}:refs/heads/main", f.base)]);
-        }
-        raw(&f.git, &["remote", "add", "origin", origin.to_str().unwrap()]);
-        raw(&f.git, &["remote", "add", "other", other.to_str().unwrap()]);
-        raw(&f.git, &["update-ref", "refs/heads/integration", f.base.as_str()]);
-        let bin = f.root.join("hook-bin"); fs::create_dir(&bin).unwrap();
-        symlink(env!("CARGO_BIN_EXE_mortar"), bin.join("mortar")).unwrap();
-        f.git.env.push(("PATH".into(), shim_path(&bin)));
-        f.git.program = actual_git();
-        // S-112: actual product installer and its untouched executable hook scripts, not a fake hook.
-        land::guard_install(&f.git, &refs()).unwrap();
-        Self { f, new, origin, other }
-    }
-    fn command(&self, args: &[&str]) -> Command {
-        let mut cmd = Command::new(actual_git());
-        cmd.arg("-C").arg(&self.f.git.repo).args(args).env_clear().envs(self.f.git.env.iter().cloned())
-            .env("HOME", &self.f.root).env("TMPDIR", &self.f.root).stdin(Stdio::null())
-            .stdout(Stdio::piped()).stderr(Stdio::piped());
-        cmd
-    }
-    fn output(&self, args: &[&str]) -> Output { self.command(args).output().unwrap() }
-    fn remote(&self, other: bool) -> Option<Oid> {
-        let git = Git { repo: if other { self.other.clone() } else { self.origin.clone() }, ..self.f.git.clone() };
-        git.read_ref("refs/heads/main").unwrap()
-    }
-    fn branches(&self) -> Vec<u8> { raw(&self.f.git, &["for-each-ref", "--format=%(refname) %(objectname)"]) }
-    fn hook(&self, words: &[&str], input: &[u8]) -> Output {
-        let mut cmd = Command::new(env!("CARGO_BIN_EXE_mortar"));
-        cmd.current_dir(&self.f.git.repo).args(words).env_clear().envs(self.f.git.env.iter().cloned())
-            .env("HOME", &self.f.root).env("TMPDIR", &self.f.root).stdin(Stdio::piped())
-            .stdout(Stdio::piped()).stderr(Stdio::piped());
-        let mut child = cmd.spawn().unwrap(); child.stdin.take().unwrap().write_all(input).unwrap();
-        child.wait_with_output().unwrap()
-    }
-    fn no_move(&self, before: &[u8], output: Output, reason: &str) {
-        assert!(!output.status.success(), "guard must refuse: {output:?}");
-        // Git forwards pre-push's report on stdout, but transaction-hook reports may be in stderr.
-        let text = format!("{}{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
-        assert!(text.contains(reason), "{output:?}");
-        assert_eq!(self.branches(), before); assert_eq!(self.remote(false), Some(self.f.base.clone()));
-    }
-}
-fn refs() -> LandRefs {
-    LandRefs { origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into() }
-}
+use std::fs;
 
 #[test]
 fn rit_guard_installed_hook_allows_unguarded_ref_without_stdout_or_stderr() {
@@ -83,16 +27,6 @@ fn rit_guard_allow_is_silent_in_plain_and_json_without_actor_or_folder() {
     let actor = check(g.hook(&["--json", "guard-hook", "--actor", "intruder", "reference-transaction", "prepared"], b""),
         "guard-hook", 4, "usage");
     assert!(actor.lines().contains("take no --actor"));
-}
-
-#[test]
-fn rit_guard_invalid_utf8_input_refuses_without_moving_any_ref() {
-    let g = Guard::new(); let before = g.branches();
-    let report = check(g.hook(&["--json", "guard-hook", "reference-transaction", "prepared"], b"\xff"),
-        "guard-hook", 1, "refused");
-    assert!(report.lines().contains("the guard cannot read the hook's input"));
-    assert!(report.lines().contains("it is not UTF-8")); assert_eq!(report.text("owner"), "the harness that installs the guard");
-    assert_eq!(g.branches(), before);
 }
 
 #[test]

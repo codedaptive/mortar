@@ -12,13 +12,16 @@ use crate::report::{is_zero_oid, ExitCode, OutValue, Report};
 /// "mortar log --key <key>". Failed is exit 1 "not-moved": a ref was not where it was read and nothing moved; next
 /// "mortar log --ref <that ref>". Lines: each move of the record, "<ref> <old|absent> -> <new|deleted>" (or "every
 /// ref already holds its value as of op <op_id>" when there is none; for Failed, the ref that stood in the way
-/// instead); each folder `moved`; each folder already `in_place`; each zone folder, whose files stay (S-115(1)).
-/// Fields: op_id, key, moves, folders_moved and zone_folders.
+/// instead); each folder `moved`; each folder already `in_place`; each folder `left_alone` because its ref has moved
+/// on since the record's op (a repeat never reapplies its move after a later mover, S-113(3)), "the folder <path>
+/// stays: its ref has moved on since op <record op id>"; each zone folder, whose files stay (S-115(1)).
+/// Fields: op_id, key, moves, folders_moved, folders_left and zone_folders.
 pub fn restore_report(
     outcome: &ApplyOutcome,
     op_id: &str,
     moved: &[PathBuf],
     in_place: &[PathBuf],
+    left_alone: &[PathBuf],
     zone_folders: &[FolderOnRef],
 ) -> Report {
     let (record, exit, word) = match outcome {
@@ -36,6 +39,9 @@ pub fn restore_report(
     lines.extend(
         in_place.iter().map(|path| format!("the folder {} already stands at its ref's restored value", path.display())),
     );
+    lines.extend(left_alone.iter().map(|path| {
+        format!("the folder {} stays: its ref has moved on since op {}", path.display(), record.op_id)
+    }));
     lines.extend(zone_folders.iter().map(|folder| {
         let path = folder.path.display();
         format!("the zone folder {path} stands on {}; its files stay where they were", folder.refname)
@@ -56,6 +62,7 @@ pub fn restore_report(
             ("key".to_string(), OutValue::Text(record.key.clone())),
             ("moves".to_string(), OutValue::Texts(moves)),
             ("folders_moved".to_string(), OutValue::Texts(moved.iter().map(|p| p.display().to_string()).collect())),
+            ("folders_left".to_string(), OutValue::Texts(left_alone.iter().map(|p| p.display().to_string()).collect())),
             (
                 "zone_folders".to_string(),
                 OutValue::Texts(zone_folders.iter().map(|f| f.path.display().to_string()).collect()),
