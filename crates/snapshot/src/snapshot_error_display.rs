@@ -38,7 +38,8 @@ impl fmt::Display for SnapshotError {
             SnapshotError::IndexNotSet { commit, error } => write!(
                 f,
                 "the folder's index could not be set to commit {commit}'s tree: {error}; \
-                 the files are untouched and the index is the old one"
+                 the files are untouched and the index is the old one, or that tree without its skip-worktree bits \
+                 if the sparse-checkout reapply failed"
             ),
             SnapshotError::FileSize { path, error } => write!(
                 f,
