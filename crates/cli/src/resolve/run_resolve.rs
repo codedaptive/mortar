@@ -1,10 +1,11 @@
-//! `mortar resolve`: finishes a folder move a kill left, snapshots the folder, resolves the join paused in it and
-//! moves the folder after the rebase that completes it, all under the zone's join lock after recover (S-50, S-64,
-//! S-86, S-87, S-88); in an attempt folder it runs nothing (S-91).
+//! `mortar resolve`: finishes a folder move a kill or a refused move left (a rebase's or an undo's, S-143),
+//! snapshots the folder, resolves the join paused in it and moves the folder after the rebase that completes it, all
+//! under the zone's join lock after recover (S-50, S-64, S-86, S-87, S-88); in an attempt folder it runs nothing
+//! (S-91).
 //! No unit test: it runs git and the op log, and takes a real lock (S-5); the tests in crates/cli/tests
 //! (request_run_for_tests, resolve_report_tests, resolve_refusal_report_tests, resolve_move_refusal_report_tests and
 //! run_resolve_tests, which covers an attempt folder and an argument, both returning before any lock or git run) cover
-//! its decisions and reports, and finish_pending_move's header lists the cases of a move a kill left. Nagatha's
+//! its decisions and reports, and finish_pending_move's header lists the cases of a move left pending. Nagatha's
 //! integration group is to cover, with the mortar binary as a child process in a throwaway repository and a request
 //! folder: no paused join is exit 0 nothing-to-resolve; the first run writes the files and lists skipped and gitlinks,
 //! exit 2; a next run with markers is exit 2 naming files and lines; a next run resolved and clean is Rebased, exit 0,

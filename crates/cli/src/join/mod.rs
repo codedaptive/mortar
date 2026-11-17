@@ -1,5 +1,5 @@
-//! `mortar join` (S-72, S-86): the pending folder move detector and its finish, the run's setup, the save's
-//! inputs, the reports and their parts, and the runner.
+//! `mortar join` (S-72, S-86): the pending folder move detector (a rebase's or an undo's, S-143) and its finish,
+//! the run's setup, the save's inputs, the reports and their parts, and the runner.
 
 mod answer_part;
 mod answer_part_value;
@@ -11,6 +11,7 @@ mod join_outcome;
 mod join_refusal_report;
 mod join_report;
 mod join_save_subject;
+mod move_cause;
 mod move_refusal_report;
 mod pending_move;
 mod read_pending_move;
@@ -41,6 +42,7 @@ pub use join_outcome::JoinOutcome;
 pub use join_refusal_report::join_refusal_report;
 pub use join_report::join_report;
 pub use join_save_subject::join_save_subject;
+pub use move_cause::MoveCause;
 pub use move_refusal_report::move_refusal_report;
 pub use pending_move::PendingMove;
 pub use read_pending_move::read_pending_move;

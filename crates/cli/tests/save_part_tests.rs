@@ -7,7 +7,7 @@ use gitio::Oid;
 use oplog::ChangeId;
 use snapshot::{RefusedFile, SaveOutcome};
 
-use cli::{save_part, OutValue, PendingMove};
+use cli::{save_part, MoveCause, OutValue, PendingMove};
 
 const COMMIT: &str = "4444444444444444444444444444444444444444";
 const TREE: &str = "5555555555555555555555555555555555555555";
@@ -93,6 +93,7 @@ fn a_finished_move_comes_first() {
         new: oid(NEW),
         op_id: "op-rebase".to_string(),
         folder_tree: None,
+        cause: MoveCause::Rebase,
     };
     let (lines, fields) = save_part(&unwritten(), Some(&moved));
     assert_eq!(

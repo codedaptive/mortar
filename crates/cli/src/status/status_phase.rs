@@ -4,7 +4,7 @@
 /// The one phase a request folder is in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StatusPhase {
-    /// A folder move a kill left undone.
+    /// A folder move a kill or a refused move left undone.
     Stalled,
     /// A join stopped on a conflict.
     Paused,

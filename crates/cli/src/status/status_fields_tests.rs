@@ -7,7 +7,7 @@ use gitio::{Oid, StatusPaths};
 use snapshot::RefusedFile;
 
 use super::{status_fields, StatusState};
-use crate::join::PendingMove;
+use crate::join::{MoveCause, PendingMove};
 use crate::report::OutValue;
 
 fn paths(names: &[&str]) -> Vec<PathBuf> {
@@ -116,6 +116,7 @@ fn a_full_state_fills_every_member() {
             new: oid("2222222222222222222222222222222222222222"),
             op_id: "op-1".to_string(),
             folder_tree: None,
+            cause: MoveCause::Rebase,
         }),
         overlaps: vec![
             ("fix-3".to_string(), paths(&["z.rs", "b.rs"])),

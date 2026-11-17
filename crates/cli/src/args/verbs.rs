@@ -2,7 +2,7 @@
 
 use super::{
     LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, DISK_SPEC, OVERLAP_SPEC,
-    RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC,
+    RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC,
 };
 
 /// In the order the usage error lists them.
@@ -132,6 +132,7 @@ pub const VERBS: &[VerbSpec] = &[
         usage: "mortar status [--json]",
     },
     SWEEP_SPEC,
+    UNDO_SPEC,
     VerbSpec {
         name: "would-merge",
         kind: VerbKind::Harness,

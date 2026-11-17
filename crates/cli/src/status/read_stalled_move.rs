@@ -1,10 +1,13 @@
-//! read_stalled_move: the folder move a kill left undone, if any, read without finishing it (S-85, S-97, S-116).
+//! read_stalled_move: the folder move a kill or a refused move left undone, if any, read without finishing it (S-85,
+//! S-97, S-116, S-143).
 //! No unit test: it reads the op log and runs git (S-5, S-104); find_pending_move_tests and move_stalled_tests cover
 //! its decisions. Nagatha's integration group is to cover, with the mortar binary as a child process in a request
 //! folder made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a kill after join's rebase op and before the folder move: status reports the stall (the request ref, the new
 //!   tip and the folder's old tip) and gives next mortar join; after the move status reports no stall (S-97);
+//! - an undo of a join rebase whose folder move was refused: status reports the undo's stall (the request ref back at
+//!   the tip before the rebase, the folder at the rebased tip) and gives next mortar undo (S-143);
 //! - a kill after join's rebase op and after the folder move's set_index(folder_tree), before the move itself: status
 //!   reports the stall (S-87, S-88, S-116);
 //! - a finished move followed by a staged edit is not reported as a stall (next mortar save) (S-116);

@@ -36,6 +36,7 @@ fn built_verbs_are_listed_alphabetically() {
             "squash",
             "status",
             "sweep",
+            "undo",
             "would-merge"
         ]
     );
@@ -227,6 +228,15 @@ fn need_is_an_agent_verb_under_the_join_lock_that_needs_the_config() {
     assert_eq!(need.lock, LockNeed::Join);
     assert!(need.needs_config);
     assert_eq!(need.usage, "mortar need <path> [--key <key>] [--json]");
+}
+
+#[test]
+fn undo_is_an_agent_verb_under_the_join_lock_that_needs_the_config() {
+    let undo = verb("undo");
+    assert_eq!(undo.kind, VerbKind::Agent);
+    assert_eq!(undo.lock, LockNeed::Join);
+    assert!(undo.needs_config);
+    assert_eq!(undo.usage, "mortar undo [--key <key>] [--json]");
 }
 
 #[test]

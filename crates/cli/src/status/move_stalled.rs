@@ -1,4 +1,5 @@
-//! move_stalled: whether a pending folder move is one a kill left undone (S-85, S-97, S-116).
+//! move_stalled: whether a pending folder move is one a kill or a refused move left undone (S-85, S-97, S-116,
+//! S-143).
 
 use gitio::Oid;
 
