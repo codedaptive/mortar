@@ -4,7 +4,7 @@
 //! with rereview's usage line as next.
 //! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
 //! landing. The squashes are made in setup through land::squash under the land lock.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119):
+//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - RereviewError::Git and RereviewError::Trailers texts (git or the trailers must fail);
 //! - RereviewError::NoParent: a root commit;

@@ -4,7 +4,7 @@
 //! than the config is not-installed naming both.
 //! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119):
+//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - GuardError::Git: the cli's own words, never gitio's Display text;
