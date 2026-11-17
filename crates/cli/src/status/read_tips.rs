@@ -1,6 +1,6 @@
 //! read_tips: where a folder's branch and its zone's branch stand, for `mr status` and `mr need`.
-//! No unit test: it runs git (S-5, S-104); missing_branch_report_tests covers the refusal it gives, and the ZIT
-//! crates/cli/tests/status_attempt_folder_tests.rs reads an attempt's try branch with it.
+//! No unit test: it runs git (S-5, S-104); missing_branch_report_tests covers the refusal it gives, and the RIT
+//! crates/cli/tests/cli_rit/status_attempt_folder_tests.rs (S-135, S-136) reads an attempt's try branch with it.
 
 use folders::plan::zone_branch;
 use gitio::{Git, Oid};

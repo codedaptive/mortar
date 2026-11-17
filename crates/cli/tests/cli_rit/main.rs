@@ -31,3 +31,22 @@ mod rit11;
 mod rit12;
 mod guard_symref;
 mod restore_git_errors;
+#[allow(dead_code)]
+#[path = "../operational_rit/observe.rs"]
+mod observe;
+#[allow(dead_code)]
+#[path = "../operational_rit/need_fixture.rs"]
+mod need_fixture;
+#[allow(dead_code)]
+#[path = "../operational_rit/cid.rs"]
+mod cid;
+#[allow(dead_code)]
+#[path = "../operational_rit/refs.rs"]
+mod refs;
+#[allow(dead_code)]
+#[path = "../operational_rit/guard_fixture.rs"]
+mod guard_fixture;
+mod status_joined_tests;
+mod run_need_tests;
+mod run_guard_hook_tests;
+mod status_attempt_folder_tests;

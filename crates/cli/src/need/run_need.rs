@@ -1,8 +1,8 @@
 //! run_need: `mr need <path> [--key <key>] [--json]`, the agent verb that adds a path to its folder's cone.
 //! No unit test: it takes the lock, runs git, the op log and folders::need (S-5, S-104); need_report_tests,
-//! missing_path_report_tests, need_error_report_tests and need_with_next_tests cover what it reports. The ZIT
-//! crates/cli/tests/run_need_tests.rs covers, with the mortar binary in a throwaway repository: a wrong argument count
-//! is usage without work; a missing zone branch refuses before writing
+//! missing_path_report_tests, need_error_report_tests and need_with_next_tests cover what it reports. The RIT
+//! crates/cli/tests/cli_rit/run_need_tests.rs (S-135, S-136) covers, with the mortar binary in a throwaway repository:
+//! a wrong argument count is usage without work; a missing zone branch refuses before writing
 //! (need_with_a_missing_zone_branch_refuses_before_writing); an unreadable record of another folder does not change a
 //! completed need (need_does_not_read_other_folders_for_its_next_step). Nagatha's integration group is to cover, with
 //! the mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository
