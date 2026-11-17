@@ -1,6 +1,7 @@
 //! choose_undo over histories given as data: the last done op of the folder's actor, kind not "snapshot", that moved
 //! any of the folder's own refs or the zone branch, and what undo does with it (S-73; S-142 items 1-3).
 
+use ::join::JOIN_STATE;
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, OpResult, RefMove, ValuedRecord};
 
@@ -122,6 +123,53 @@ fn a_join_rebase_with_a_folder_tree_is_a_resolve() {
     resolve.values = vec![("folder_tree".to_string(), "4b825dc642cb6eb9a060e54bf8d69288fbee4904".to_string())];
     let records = [done("op-1", "save", &[REQ]), resolve];
     assert_eq!(choose(&records), UndoChoice::Resolved { op_id: "op-2".to_string() });
+}
+
+#[test]
+fn a_join_rebase_with_a_join_state_restores_the_paused_join() {
+    let mut resolve = done("op-2", "join-rebase", &[REQ]);
+    resolve.values = vec![(JOIN_STATE.to_string(), "{}".to_string())];
+    let records = [done("op-1", "save", &[REQ]), resolve];
+    assert_eq!(choose(&records), UndoChoice::Step { index: 1, step: UndoStep::RestoreJoin });
+}
+
+#[test]
+fn a_join_rebase_with_a_join_state_and_a_folder_tree_restores_the_paused_join() {
+    let mut resolve = done("op-2", "join-rebase", &[REQ]);
+    resolve.values = vec![
+        ("folder_tree".to_string(), "4b825dc642cb6eb9a060e54bf8d69288fbee4904".to_string()),
+        (JOIN_STATE.to_string(), "{}".to_string()),
+    ];
+    let records = [done("op-1", "save", &[REQ]), resolve];
+    assert_eq!(choose(&records), UndoChoice::Step { index: 1, step: UndoStep::RestoreJoin });
+}
+
+#[test]
+fn an_undo_of_a_resolve_step_is_already_undone_with_the_restore_step() {
+    let mut resolve = done("op-1", "join-rebase", &[REQ]);
+    resolve.values = vec![(JOIN_STATE.to_string(), "{}".to_string())];
+    let records = [resolve, undo_op("op-2", "undo of join-rebase op op-1")];
+    assert_eq!(
+        choose(&records),
+        UndoChoice::AlreadyUndone {
+            undo_op: "op-2".to_string(),
+            reversed_op: "op-1".to_string(),
+            step: UndoStep::RestoreJoin,
+        }
+    );
+}
+
+#[test]
+fn an_undo_of_a_join_rebase_missing_from_the_log_is_already_undone_with_the_folder_step() {
+    let records = [done("op-1", "save", &[REQ]), undo_op("op-2", "undo of join-rebase op op-9")];
+    assert_eq!(
+        choose(&records),
+        UndoChoice::AlreadyUndone {
+            undo_op: "op-2".to_string(),
+            reversed_op: "op-9".to_string(),
+            step: UndoStep::MoveFolder,
+        }
+    );
 }
 
 #[test]

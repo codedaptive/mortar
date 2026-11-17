@@ -36,7 +36,7 @@ fn a_later_real_logged_actor_move_is_named_without_undoing_that_actors_work() {
 }
 
 #[test]
-fn resolve_undo_refusal_precedes_finishing_its_real_pending_folder_move_and_changes_nothing() {
+fn resolve_undo_finishes_its_real_pending_folder_move_first_and_a_refused_move_undoes_nothing() {
     let w = World::new(); w.s.f.save_topic();
     let zone = w.s.f.commit(&w.s.f.base, &[("src/file", b"zone conflict\n"), ("sub/keep", b"zone changed keep\n")], "zone conflict\n");
     raw(&w.s.f.git, &["update-ref", ZONE, zone.as_str()]);
@@ -46,12 +46,17 @@ fn resolve_undo_refusal_precedes_finishing_its_real_pending_folder_move_and_chan
     assert!(!w.s.f.local().git_dir(&w.s.f.request).unwrap().join("mortar-join.json").exists());
     let pending = cli::read_pending_move(&w.s.f.git, &w.s.f.common, REQUEST, "undo").unwrap().unwrap();
     assert!(pending.folder_tree.is_some());
-    // If undo finishes first, it snapshots again or hits this obstruction instead of giving the resolve refusal.
-    let before = observe(&w); let r = ours(&w, &["undo"], 1, "refused");
-    assert_eq!(r.strings("lines"), &[format!("op {} resolved a join, and undo cannot put the paused join back", target.op_id), "nothing was changed".into()]);
-    assert_eq!(r.text("next"), "change the files, mr save, then mr join");
-    assert_eq!(observe(&w), before); assert!(done(&w, "undo").is_empty());
+    // S-143 (5) 4: undo finishes the resolve's pending folder move before oplog undo; sub/keep stands in its way.
+    let (snap_before, before) = (ref_at(&w, SNAP), observe(&w)); let r = ours(&w, &["undo"], 1, "refused");
+    assert_eq!(r.strings("lines"), &["the folder could not move; these files stand in the way:", "  sub/keep", "the request branch already stands at the new tip; the next mr join, mr resolve, mr save or mr undo finishes the move first"]);
+    assert_eq!(r.text("owner"), "this request's folder"); assert_eq!(r.text("next"), "move those files out of the way, then mr join");
+    assert!(done(&w, "undo").is_empty()); let new_tip = &target.moves.iter().find(|m| m.refname == REQUEST).unwrap().new;
+    assert_eq!(ref_at(&w, REQUEST).as_ref(), Some(new_tip));
+    assert!(!w.s.f.local().git_dir(&w.s.f.request).unwrap().join("mortar-join.json").exists());
     assert_eq!(fs::read(w.s.f.request.join("sub/keep")).unwrap(), b"owner obstruction\n");
+    // decide_snapshot writes no commit for an unchanged tree: the snapshot resolve took is kept, the ref unchanged.
+    let snap = ref_at(&w, SNAP).unwrap(); assert_eq!(Some(snap.clone()), snap_before);
+    assert_eq!(w.s.f.blob(&snap, "sub/keep"), b"owner obstruction\n"); assert_eq!(observe(&w), before);
 }
 
 #[test]

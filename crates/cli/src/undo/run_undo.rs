@@ -1,8 +1,9 @@
-//! run_undo: `mr undo [--key <key>] [--json]`, the agent verb that undoes its folder's own last step: a save or
-//! a join's rebase (S-73, S-142, S-143).
+//! run_undo: `mr undo [--key <key>] [--json]`, the agent verb that undoes its folder's own last step: a save, a
+//! join's rebase or a resolve's final rebase, whose paused join it puts back (S-73, S-142, S-143, S-148, S-155).
 //! No unit test (S-104): it takes the lock, snapshots, runs git and the op log; own_refs, choose_undo, undo_refusal,
-//! later_op_refusal, undo_caller, undo_report, already_undone_report, nothing_to_undo_report, failed_undo_report and
-//! undo_error_report are its decisions and have their tests.
+//! later_op_refusal, undo_caller, undo_report, already_undone_report, nothing_to_undo_report, failed_undo_report,
+//! undo_error_report, restore_check_report, restore_failed_report and with_restored are its decisions and have their
+//! tests.
 //! Nagatha's integration group (RITs) is to cover, with the mortar binary as a child process in a request folder
 //! made by the landing verbs in a throwaway repository:
 //! - save then undo keeps the files and shows them unsaved (the index at the branch's restored tree);
@@ -11,36 +12,48 @@
 //! - undo of a joined request (the zone branch moved) is refused, exit 1;
 //! - a ref moved since by another actor is refused, exit 1, naming the op and the actor;
 //! - nothing to undo is exit 0, its next as status would give;
-//! - undo of a resolve step is refused, exit 1, nothing changed;
+//! - undo of a resolve step restores the paused join: status shows the join paused, next mr resolve, and mr resolve
+//!   then answers with the same folder_tree; a repeat answers already-done naming the undo op;
+//! - each pre-check refusal is exit 1 with nothing moved: another paused join's mortar-join.json present
+//!   (StatePresent), and a mortar-join.json that does not decode (StateCorrupt), the file kept;
+//! - undo of a resolve recorded without its paused join (no join_state value) is refused, exit 1, nothing changed;
+//! - `mr log --json` shows the join_state value on the resolve op's line;
+//! - a resolve undo whose own folder move is pending with a file in the way is the move refusal, exit 1, the
+//!   snapshot kept and no undo op (cli_rit/rit11/refusals.rs covers it);
 //! - the snapshot taken first is restorable with mr restore;
 //! - a repeat after a kill answers already-done, finishing the folder step the kill left;
 //! - a held join-<zone> lock is exit 3 naming the holder;
 //! - in attempt folder k, only attempt k's own save is undone, never the request's, and the reverse.
 
 use folders::FolderKind;
-use oplog::{read_valued_log, undo, ApplyOutcome, KillPidProbe, OpRecord, ValuedRecord};
-use snapshot::snapshot;
+use oplog::{read_valued_log, KillPidProbe, ValuedRecord};
 
+use super::folder_step::folder_step;
+use super::reverse_and_step::reverse_and_step;
+use super::set_index_to_branch::set_index_to_branch;
 use super::{
-    already_undone_report, choose_undo, failed_undo_report, later_op_refusal, nothing_to_undo_report, own_refs,
-    undo_caller, undo_error_report, undo_refusal, undo_report, UndoChoice, UndoStep,
+    already_undone_report, choose_undo, nothing_to_undo_report, own_refs, restore_check_report, undo_error_report,
+    undo_refusal, with_restored, UndoChoice, UndoStep,
 };
 use crate::args::no_arguments_report;
 use crate::join::{finish_pending_move, RequestRun};
 use crate::lock::locked_act;
 use crate::report::{failure_report, Report};
-use crate::save::{save_run_for, snapshot_error_report};
+use crate::save::save_run_for;
 use crate::shell::ShellContext;
 use crate::status::{attempt_next, read_status, status_next};
+use crate::undo_reason::done_record;
 
 const VERB: &str = "undo";
 
 /// Any argument is no_arguments_report's usage report. The run is save_run_for's for undo (the folder's own branch,
 /// its snapshot target, the lock join-<zone> and the key, which names the lock's holder only; oplog gets
 /// "undo:<op id>", S-142 (3)). Under the lock, with recover run first (S-16): choose_undo over the op log (a read
-/// only); a refusal or nothing to undo changes nothing, a pending move left as it is (S-143). Otherwise the
-/// pending move is finished first (S-143), then the step is undone (undo_step), or, already undone, the folder step
-/// is made again: SetIndex re-sets the index to the branch's tree; MoveFolder needs nothing more.
+/// only); a refusal or nothing to undo changes nothing, a pending move left as it is (S-143). For a RestoreJoin step,
+/// join's check_restore_join_state then runs (a read only), and its refusal is restore_check_report with nothing
+/// moved (S-148). Otherwise the pending move is finished first (S-143), then the step is undone (reverse_and_step);
+/// a refusal after the move is finished and the snapshot taken (a later op, a ref moved during the call) keeps the
+/// snapshot. Already undone, the folder step is made again (already_undone).
 pub fn run_undo(context: &ShellContext) -> Report {
     let args = &context.args;
     if let Some(usage) = no_arguments_report(VERB, &args.rest, args.json) {
@@ -62,74 +75,48 @@ pub fn run_undo(context: &ShellContext) -> Report {
                 undo_refusal(&choice).ok_or_else(|| failure_report(VERB, "a refused choice gave no refusal"))
             }
             UndoChoice::Step { index, step } => {
+                if step == UndoStep::RestoreJoin {
+                    ::join::check_restore_join_state(&run.git, &run.folder.toplevel, &records[index])
+                        .map_err(|error| restore_check_report(&error))?;
+                }
                 finish_pending_move(&run, VERB)?;
-                undo_step(context, &run, &records, index, step)
+                reverse_and_step(context, &run, &records, index, step)
             }
             UndoChoice::AlreadyUndone { undo_op, reversed_op, step } => {
-                finish_pending_move(&run, VERB)?;
-                match step {
-                    UndoStep::SetIndex => set_index_to_branch(&run)?,
-                    UndoStep::MoveFolder => {}
-                }
-                Ok(already_undone_report(&undo_op, &reversed_op, step))
+                already_undone(&run, &records, &undo_op, &reversed_op, step)
             }
         }
     })
     .unwrap_or_else(|report| report)
 }
 
-/// Snapshots the folder first (a SnapshotError is snapshot_error_report relabelled undo), checks that the op at
-/// `index` is still the last on its refs (later_op_refusal), undoes it through oplog on exactly its refs, then makes
-/// the folder step: SetIndex sets the index to the tree of the commit the branch now holds; MoveFolder finishes the
-/// undo's own folder move (a refused move is that report and stays pending). Repeated is already-done, the folder
-/// step made again; Failed, a ref moved during the call outside mortar, is refused naming it.
-fn undo_step(
-    context: &ShellContext,
+/// The pending move finished, then the folder step made again: SetIndex re-sets the index to the branch's tree;
+/// MoveFolder needs nothing more; RestoreJoin reads the reversed op's Done record and runs folder_step, which puts
+/// the paused join back and then sets the index (a record missing from the log is failure_report). The report is
+/// already_undone_report, with_restored when a restore ran.
+fn already_undone(
     run: &RequestRun,
     records: &[ValuedRecord],
-    index: usize,
+    undo_op: &str,
+    reversed_op: &str,
     step: UndoStep,
 ) -> Result<Report, Report> {
-    let (excludes, cap) = (&run.settings.excludes, run.settings.cap_bytes);
-    let kept = snapshot(&run.git, &run.folder.toplevel, &run.target, excludes, cap)
-        .map_err(|error| Report { verb: VERB.to_string(), ..snapshot_error_report(&error) })?;
-    let plain: Vec<OpRecord> = records.iter().map(|valued| valued.record.clone()).collect();
-    let target = &plain[index];
-    let scope: Vec<String> = target.moves.iter().map(|one| one.refname.clone()).collect();
-    if let Some(refusal) = later_op_refusal(&plain, index, &scope) {
-        return Err(refusal);
-    }
-    let caller = undo_caller(target, &context.actor);
-    let outcome = undo(&run.git, &run.folder.common, &scope, &caller, &context.protected)
-        .map_err(|error| undo_error_report(&error))?;
-    match outcome {
-        ApplyOutcome::Done(done) => {
-            folder_step(run, step)?;
-            Ok(undo_report(target, &done.op_id, &kept.commit, step))
+    finish_pending_move(run, VERB)?;
+    let restored = match step {
+        UndoStep::SetIndex => set_index_to_branch(run).map(|()| None)?,
+        UndoStep::MoveFolder => None,
+        UndoStep::RestoreJoin => {
+            let Some(target) = done_record(records, reversed_op) else {
+                let why = format!(
+                    "op {reversed_op}, which undo op {undo_op} reversed, is not in the op log, so the paused join \
+                     cannot be read"
+                );
+                return Err(failure_report(VERB, &why));
+            };
+            folder_step(run, step, target, undo_op)?
         }
-        ApplyOutcome::Repeated(done) => {
-            folder_step(run, step)?;
-            Ok(already_undone_report(&done.op_id, &target.op_id, step))
-        }
-        ApplyOutcome::Failed(failed) => Err(failed_undo_report(&target.op_id, &failed)),
-    }
-}
-
-fn folder_step(run: &RequestRun, step: UndoStep) -> Result<(), Report> {
-    match step {
-        UndoStep::SetIndex => set_index_to_branch(run),
-        UndoStep::MoveFolder => finish_pending_move(run, VERB).map(|_| ()),
-    }
-}
-
-/// The folder's index set to the tree of the commit its branch holds; its files and HEAD untouched.
-fn set_index_to_branch(run: &RequestRun) -> Result<(), Report> {
-    let failed = |_| failure_report(VERB, "git failed while setting the folder's index to its branch's tree");
-    let Some(commit) = run.git.read_ref(&run.request_ref).map_err(failed)? else {
-        return Err(failure_report(VERB, &format!("{} is gone, so the folder's index was not set", run.request_ref)));
     };
-    let tree = run.git.commit_info(&commit).map_err(failed)?.tree;
-    run.git.set_index(&run.folder.toplevel, &tree).map_err(failed)
+    Ok(restored.iter().fold(already_undone_report(undo_op, reversed_op, step), with_restored))
 }
 
 /// What status would give as next for this folder (attempt_next in an attempt folder); "mr status" when it

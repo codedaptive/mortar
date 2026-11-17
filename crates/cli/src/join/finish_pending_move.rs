@@ -1,5 +1,6 @@
-//! Finishes the folder move of a request's last join rebase (S-86) or of an undo that put a rebased branch back
-//! (S-143), if one is pending: a kill or a refused move left it, or it is done and repeats as a no-op.
+//! Finishes the folder move of a request's last join rebase (S-86) or of an undo of a plain join rebase that put the
+//! rebased branch back (S-143), if one is pending: a kill or a refused move left it, or it is done and repeats as a
+//! no-op. An undo of a resolve step is no pending move: undo set the index itself and kept the files (S-148).
 //! Shell API: run_join, run_resolve, run_save and run_undo call it.
 //! It passes the op's recorded folder_tree as move_folder's index_tree, None for a plain join's rebase and for an
 //! undo's move (S-87(3), S-89).
@@ -11,8 +12,9 @@
 //! in the way of the pending move is exit 1 listing the paths, and once moved aside the next join finishes it; with
 //! no move pending it moves nothing; a resolve whose folder move is refused (an edit on a path the zone changed), the
 //! files put back to the folder's version, then mr join finishes the move from the op's folder_tree; a kill
-//! after resolve's final op and before the folder move is finished by the next join; an undo of a join rebase whose
-//! folder move was refused is finished by the next save, undo or join, the folder back at the tip before the rebase.
+//! after resolve's final op and before the folder move is finished by the next join; an undo of a plain join rebase
+//! whose folder move was refused is finished by the next save, undo or join, the folder back at the tip before the
+//! rebase; after an undo of a resolve step the next save, join or resolve moves no folder files.
 
 use folders::move_folder;
 use snapshot::snapshot;
