@@ -42,7 +42,7 @@ fn remote_missing_names_the_remote_and_the_ref() {
 #[test]
 fn push_intent_names_the_record_and_says_what_to_do_whether_open_or_done() {
     let text = "the push intent op-7 for this move was already open or already done when publish opened it, so \
-                nothing was pushed; next: check the remote's origin branch, then mortar publish";
+                nothing was pushed; next: check the remote's origin branch, then mr publish";
     for phase in [OpPhase::Intent, OpPhase::Done] {
         assert_eq!(PublishError::PushIntent { op_id: "op-7".to_string(), phase }.to_string(), text);
     }
