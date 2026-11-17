@@ -10,6 +10,7 @@ mod json;
 mod locks;
 mod marked_lines;
 mod open_intent_moves;
+mod open_marked_intents;
 mod protection;
 mod takeover_guards;
 mod with_lock;

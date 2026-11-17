@@ -1,7 +1,8 @@
-//! open_marked_intents: the open intents of a marked log, whole and in log order, remote-marked ones included.
+//! Joins open_marked_intents -> open_intents_in on marked logs built from real MarkedRecord values: the open
+//! intents of a marked log come back whole and in log order, remote-marked ones included; intents closed by a
+//! later Done or Failed record are left out.
 
-use super::open_marked_intents;
-use crate::store::{MarkedRecord, OpPhase, OpRecord, OpResult};
+use oplog::{open_marked_intents, MarkedRecord, OpPhase, OpRecord, OpResult};
 
 fn marked(op_id: &str, phase: OpPhase, remote: Option<&str>) -> MarkedRecord {
     let result = match phase {

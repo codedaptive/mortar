@@ -1,5 +1,5 @@
 //! Recovery: settling each open intent from the refs' actual values, the guard hook's open-intent lookup, and
-//! open_marked_intents, the walk status reads a marked log's open intents with, settling none.
+//! open_marked_intents, the walk for status to read a marked log's open intents with, settling none.
 //! Recovery leaves an intent marked with a remote open; close_intent closes one for the caller that knows
 //! its outcome.
 
@@ -25,8 +25,6 @@ mod decide_recovery_tests;
 mod open_intents_in_tests;
 #[cfg(test)]
 mod open_intents_tests;
-#[cfg(test)]
-mod open_marked_intents_tests;
 #[cfg(test)]
 mod recovery_close_tests;
 #[cfg(test)]
