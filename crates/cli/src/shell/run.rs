@@ -15,6 +15,7 @@ use std::path::Path;
 use gitio::Git;
 
 use super::{load_config, ShellContext};
+use crate::after_publish::run_after_publish;
 use crate::args::{parse_args, usage_report, ParsedArgs, VerbKind};
 use crate::back_out::run_back_out;
 use crate::backup::{run_backup, run_restore_backup};
@@ -75,6 +76,7 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
 
 fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
     match context.args.verb.name {
+        "after-publish" => run_after_publish(context, cwd),
         "back-out" => run_back_out(context, cwd),
         "backup" => run_backup(context, cwd),
         "bisect" => run_bisect(context, cwd),

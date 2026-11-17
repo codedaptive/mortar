@@ -1,5 +1,6 @@
 //! The command line: the verb table, the global flags, and the usage report for a line that cannot be read.
 
+mod after_publish_spec;
 mod backup_spec;
 mod bisect_spec;
 mod find_verb;
@@ -23,6 +24,7 @@ mod parse_args_tests;
 #[cfg(test)]
 mod verbs_tests;
 
+pub use after_publish_spec::AFTER_PUBLISH_SPEC;
 pub use backup_spec::BACKUP_SPEC;
 pub use bisect_spec::BISECT_SPEC;
 pub use find_verb::find_verb;
