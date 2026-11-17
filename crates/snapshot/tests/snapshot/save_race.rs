@@ -11,7 +11,7 @@ fn branch_moved_during_save_is_named_without_overwriting_foreign_head_index_work
     // Joins save's captured HEAD -> actual foreign apply -> branch expected-old refusal and durable failed record.
     let f = Fixture::new(&[]);
     let tree = Oid::parse(std::str::from_utf8(&run(&f.git, &["rev-parse", "HEAD^{tree}"])).unwrap().trim_end()).unwrap();
-    let foreign = f.git.commit_tree(&tree, &[f.head.clone()], "foreign branch commit\n", None, None).unwrap();
+    let foreign = f.git.commit_tree(&tree, std::slice::from_ref(&f.head), "foreign branch commit\n", None, None).unwrap();
     write(&f.repo.path, "root.txt", b"our unsaved branch candidate\n");
     let index = fs::read(f.common.join("index")).unwrap();
     let lock = fs::read(&f.lock.path).unwrap();
