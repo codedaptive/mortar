@@ -41,7 +41,7 @@ fn files_in_the_way_are_listed_and_the_next_join_finishes() {
                 "the folder could not move; these files stand in the way:".to_string(),
                 "  src/a.rs".to_string(),
                 "  b.txt".to_string(),
-                "the request branch already stands at the new tip; the next mr join finishes the move".to_string(),
+                "the request branch already stands at the new tip; the next mr join, mr resolve, mr save or mr undo finishes the move first".to_string(),
             ],
             owner: Some("this request's folder".to_string()),
             next: "move those files out of the way, then mr join".to_string(),

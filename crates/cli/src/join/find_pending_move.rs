@@ -1,14 +1,15 @@
 //! The detector of the folder move of a request's last mover, which a kill or a refused move may have left undone:
-//! a join rebase's (S-86) or an undo's that put a rebased branch back (S-143). join, resolve, save and undo finish
-//! the move; status only reports it, and only while the folder's index is not at the new tip (read_stalled_move,
-//! S-85, S-97).
+//! a join rebase's (S-86) or an undo's that put a plain join rebase back (S-143). An undo of a resolve's final join
+//! step (S-142 (1)) is none: undo puts the paused join back and sets the index itself, keeping the folder's files
+//! (S-148). join, resolve, save and undo finish the move; status only reports it, and only while the folder's index
+//! is not at the new tip (read_stalled_move, S-85, S-97).
 
 use ::join::FOLDER_TREE;
 use gitio::Oid;
 use oplog::{OpPhase, ValuedRecord};
 
 use super::{MoveCause, PendingMove};
-use crate::undo_reason::reversed_op;
+use crate::undo_reason::{done_record, is_resolve_step, reversed_op};
 
 /// The last Done record in `records` (log order) holding a move of `request_ref` that changes it decides. Intent
 /// and Failed records moved nothing and are skipped; recover has settled open intents before this is read, and status,
@@ -19,11 +20,15 @@ use crate::undo_reason::reversed_op;
 ///   that new tip, cause Rebase, with folder_tree the tree in that record's first value pair named FOLDER_TREE. No
 ///   such pair, or a value that is not an Oid, is folder_tree None: then move_folder makes the plain move, which git
 ///   refuses rather than overwrite anything, so nothing is lost (S-87(4));
-/// - an "undo" whose reason reversed_op reads as an undo of a "join-rebase" op: the move from the rebased tip back
-///   to the tip before the rebase, cause Undo, folder_tree None.
+/// - an "undo" whose reason reversed_op reads as an undo of a "join-rebase" op that was not a resolve step: the move
+///   from the rebased tip back to the tip before the rebase, cause Undo, folder_tree None. The reversed op is a
+///   resolve step when its done_record is_resolve_step; then the undo is None, since undo itself put the paused join
+///   back and set the index to the branch's tree, keeping the folder's files. A reversed op with no Done record in
+///   `records` counts as a plain rebase.
 ///
-/// The values of any other record, and of an undo, are never read. Any other last mover (a save, a folder move, an
-/// undo of another kind or with a reason it cannot read) or a branch elsewhere or absent is None.
+/// The values of an undo, and of any record other than these two kinds and the reversed op, are never read. Any
+/// other last mover (a save, a folder move, an undo of another kind or with a reason it cannot read) or a branch
+/// elsewhere or absent is None.
 ///
 /// After the folder move has finished this still answers Some, because move_folder logs no op when the branch
 /// already stands at the new tip; finishing it again is a no-op (S-49; git's two-tree move keeps an index already
@@ -50,7 +55,7 @@ pub fn find_pending_move(records: &[ValuedRecord], request_ref: &str, branch_at:
                 .find(|(name, _)| name == FOLDER_TREE)
                 .and_then(|(_, hex)| Oid::parse(hex).ok()),
         ),
-        "undo" if reversed_op(&record.reason).is_some_and(|(kind, _)| kind == "join-rebase") => (MoveCause::Undo, None),
+        "undo" if undoes_plain_rebase(records, &record.reason) => (MoveCause::Undo, None),
         _ => return None,
     };
     Some(PendingMove {
@@ -60,5 +65,12 @@ pub fn find_pending_move(records: &[ValuedRecord], request_ref: &str, branch_at:
         op_id: record.op_id.clone(),
         folder_tree,
         cause,
+    })
+}
+
+/// Whether `reason` reads as an undo of a "join-rebase" op whose Done record in `records`, if any, is no resolve step.
+fn undoes_plain_rebase(records: &[ValuedRecord], reason: &str) -> bool {
+    reversed_op(reason).is_some_and(|(kind, op_id)| {
+        kind == "join-rebase" && !done_record(records, &op_id).is_some_and(is_resolve_step)
     })
 }

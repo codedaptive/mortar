@@ -10,8 +10,10 @@
 //! - a join rebase killed after its update-ref and before its Done record (testkit kill shim,
 //!   MORTAR_TEST_CRASH=after): status exits 0 with the stall and next mr join, stalled_from/stalled_to the op's
 //!   old/new; refs, index and op log unchanged by status; mr join then finishes the move;
-//! - an undo of a join rebase whose folder move was refused: status reports the undo's stall (the request ref back at
-//!   the tip before the rebase, the folder at the rebased tip) and gives next mr undo (S-143);
+//! - an undo of a plain join rebase whose folder move was refused: status reports the undo's stall (the request ref
+//!   back at the tip before the rebase, the folder at the rebased tip) and gives next mr undo (S-143);
+//! - after mr undo of a resolve's final join step (S-136 (2), S-148): status reports no stall, shows the paused join
+//!   and gives next mr resolve; the next save, join or resolve moves no folder files;
 //! - a kill after join's rebase op and after the folder move's set_index(folder_tree), before the move itself: status
 //!   reports the stall (S-87, S-88, S-116);
 //! - a finished move followed by a staged edit is not reported as a stall (next mr save) (S-116);

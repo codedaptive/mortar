@@ -11,11 +11,12 @@ const VERB: &str = "join";
 const OWNER: &str = "this request's folder";
 
 /// `before` (what the join already did) comes first. Files in the way (MoveRefused) are exit 1 "refused": they
-/// are listed, and the next join finishes the move once they are out of the way, since the request branch already
-/// stands at the new tip. A branch at neither tip (BranchElsewhere) is exit 1 "refused" with folder_error_why's line.
-/// Any other variant folder_refusal refuses is exit 1 "refused" with folder_error_why's lines and folder_refusal's
-/// next. The rest (Lock, Git, Oplog, DiskProbe, and Io, which folder_refusal makes a failure) are fallback_report's
-/// report with `before` ahead of its lines. Every refusal is owned by this request's folder.
+/// are listed, and once they are out of the way the next join, resolve, save or undo finishes the move first, since
+/// the request branch already stands at the new tip (S-143). A branch at neither tip (BranchElsewhere) is exit 1
+/// "refused" with folder_error_why's line. Any other variant folder_refusal refuses is exit 1 "refused" with
+/// folder_error_why's lines and folder_refusal's next. The rest (Lock, Git, Oplog, DiskProbe, and Io, which
+/// folder_refusal makes a failure) are fallback_report's report with `before` ahead of its lines. Every refusal is
+/// owned by this request's folder.
 pub fn move_refusal_report(error: &FolderError, before: Vec<String>) -> Report {
     let mut lines = before;
     let next = match error {
@@ -23,7 +24,9 @@ pub fn move_refusal_report(error: &FolderError, before: Vec<String>) -> Report {
             lines.push("the folder could not move; these files stand in the way:".to_string());
             lines.extend(paths.iter().map(|path| format!("  {}", path.display())));
             lines.push(
-                "the request branch already stands at the new tip; the next mr join finishes the move".to_string(),
+                "the request branch already stands at the new tip; the next mr join, mr resolve, mr save or mr undo \
+                 finishes the move first"
+                    .to_string(),
             );
             "move those files out of the way, then mr join".to_string()
         }

@@ -35,22 +35,15 @@ pub fn guard_commit(world: &World, checks: &mut Checks, number: u8, branch: &str
 }
 
 /// `git worktree add --force <root>/checkout-<branch> <branch>` in the working repository; --force because work has
-/// main checked out, which git otherwise will not check out twice. When git fails, a failed set-up line, then the
-/// same with the hooks off (`-c core.hooksPath=<root>/no-hooks`, a folder that does not exist) on a line of its own,
-/// so the commit can still be checked: the checkout is the set-up, the commit is the check.
+/// main checked out, which git otherwise will not check out twice. It runs with the guard on, which lets it through:
+/// the checkout's reference-transaction line leaves `refs/heads/<branch>` at the same value (S-153). One set-up line;
+/// when git fails, that line fails and no checkout is returned: the checkout is the set-up, the commit is the check.
 fn checkout(world: &World, checks: &mut Checks, number: u8, branch: &str) -> Result<PathBuf, String> {
     let path = world.root.join(format!("checkout-{branch}"));
     let text = path.to_string_lossy().into_owned();
     let add = ["worktree", "add", "--force", text.as_str(), branch];
     let did = format!("set-up for {number}: git worktree add --force <root>/checkout-{branch} {branch}");
     if added(world, checks, &did, &add) {
-        return Ok(path);
-    }
-    let hooks = format!("core.hooksPath={}", world.root.join("no-hooks").display());
-    let mut retry = vec!["-c", hooks.as_str()];
-    retry.extend(add);
-    let did = format!("{did}, with the hooks off (after the failure)");
-    if added(world, checks, &did, &retry) {
         return Ok(path);
     }
     Err(format!("no checkout of {branch} could be made"))

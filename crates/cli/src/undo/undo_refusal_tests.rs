@@ -1,6 +1,6 @@
-//! undo_refusal: a completed join, a resolve and an op that is not a step of this folder are refused (exit 1) with
-//! nothing changed and a next in words an agent can follow; nothing, a step and an already-undone op are not refused
-//! (S-73; S-142 item 1).
+//! undo_refusal: a completed join, a resolve recorded without its paused join and an op that is not a step of this
+//! folder are refused (exit 1) with nothing changed and a next in words an agent can follow; nothing, a step and an
+//! already-undone op are not refused (S-73; S-142 item 1; S-148).
 
 use super::{undo_refusal, UndoChoice, UndoStep};
 use crate::report::{ExitCode, Report};
@@ -55,11 +55,14 @@ fn a_completed_join_is_refused_to_the_zones_coordinator() {
 }
 
 #[test]
-fn a_resolve_is_refused_with_the_way_forward_in_words() {
+fn a_resolve_recorded_without_its_paused_join_is_refused_with_the_way_forward_in_words() {
     assert_eq!(
         undo_refusal(&resolved()),
         refused(
-            &["op op-8 resolved a join, and undo cannot put the paused join back", NOTHING_CHANGED],
+            &[
+                "op op-8 resolved a join before mortar recorded the paused join, so undo cannot put it back",
+                NOTHING_CHANGED,
+            ],
             None,
             "change the files, mr save, then mr join",
         )
@@ -98,6 +101,12 @@ fn nothing_a_step_and_an_already_undone_op_are_not_refused() {
         UndoChoice::Nothing,
         UndoChoice::Step { index: 3, step: UndoStep::SetIndex },
         UndoChoice::Step { index: 0, step: UndoStep::MoveFolder },
+        UndoChoice::Step { index: 1, step: UndoStep::RestoreJoin },
+        UndoChoice::AlreadyUndone {
+            undo_op: "op-4".to_string(),
+            reversed_op: "op-3".to_string(),
+            step: UndoStep::RestoreJoin,
+        },
         UndoChoice::AlreadyUndone {
             undo_op: "op-2".to_string(),
             reversed_op: "op-1".to_string(),
