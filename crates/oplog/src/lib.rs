@@ -24,8 +24,8 @@ pub use locks::{
     KillPidProbe, LockError, LockName, LockRecord, LockStaleness, PidProbe,
 };
 pub use recover::{
-    close_intent, decide_recovery, open_intent, open_intent_moves, open_intents, recover, recovery_close,
-    recovery_close_valued, IntentClose, RecoveryDecision,
+    close_intent, decide_recovery, open_intent, open_intent_moves, open_intents, open_marked_intents, recover,
+    recovery_close, recovery_close_valued, IntentClose, RecoveryDecision,
 };
 pub use store::{
     append_marked_record, append_op_record, append_valued_record, close_record, decode_marked_log,
