@@ -18,3 +18,10 @@ testkit = { path = "../testkit" }
 [[bin]]
 name = "mortar"
 path = "src/main.rs"
+
+# Both bins (`mortar`, src/main.rs, and `mr`, src/bin/mr.rs) call cli::main_entry, so the binary answers alike
+# under either name (S-133). The proof that both names answer alike runs the built binaries, which is validation
+# under rules/global.md rule 11, so it is Orc's to write.
+[[bin]]
+name = "mr"
+path = "src/bin/mr.rs"

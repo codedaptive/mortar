@@ -1,5 +1,5 @@
-//! cli: the shell of the `mortar` binary: arguments, the per-repository config, the folder and lock a verb
-//! runs with, the op key, the verbs, and the report every verb prints.
+//! cli: the shell of the binary (named both `mortar` and `mr`): its entry, arguments, the per-repository config,
+//! the folder and lock a verb runs with, the op key, the verbs, and the report every verb prints.
 
 pub mod after_publish;
 pub mod args;
@@ -9,6 +9,7 @@ pub mod bisect;
 pub mod config;
 pub mod context;
 pub mod disk;
+pub mod entry;
 pub mod folder;
 pub mod guard;
 pub mod guard_hook;
@@ -62,6 +63,7 @@ pub use config::{
 };
 pub use context::{actor_for, context_report, read_folder_context, ContextError, FolderContext};
 pub use disk::{disk_report, run_disk};
+pub use entry::main_entry;
 pub use folder::{
     attempt_saved, attempts_made_report, attempts_saved, dropped_report, folder_error_report, folder_error_why,
     folder_kind_text, folder_made_report, folder_refusal, folder_removed_report, folder_setup_for, kept_report,
