@@ -259,8 +259,10 @@ fn no_arm_prints_an_inner_errors_text_or_oplogs_display() {
             "fix the op's moves and run again",
             "move it only to a commit that has",
             "check the ref names with mortar log",
+            "check the ref names with mr log",
             "undo op op-9 first",
             "find the op id with mortar log",
+            "find the op id with mr log",
             "name only refs mortar has moved",
             "find the intent line",
         ] {
