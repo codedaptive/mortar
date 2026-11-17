@@ -23,6 +23,7 @@
 //! - the index step leaves a caller's GIT_INDEX_FILE untouched, after a written save in
 //!   save_cases.rs::save_on_zone_tip_draws_a_new_id_leaves_status_clean_and_next_save_reuses_the_requests_id and after
 //!   an unchanged one in save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement.
+//!
 //! Not yet covered by an integration test: IndexNotSet from an unchanged save, and OpRepeated or ChangeId through save.
 
 use crate::real_index_git::real_index_git;

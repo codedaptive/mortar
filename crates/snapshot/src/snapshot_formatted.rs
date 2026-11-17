@@ -19,6 +19,7 @@
 //!   unchanged one (caps.rs::refused_only_change_is_saved_and_unchanged_outcome_still_reports_the_refusal);
 //! - an attempt target's trysnap ref is written, through snapshot, apart from the request's ref:
 //!   tests/snapshot/attempts.rs::attempts_have_independent_snapshot_chains_and_saved_reads_only_the_selected_ref.
+//!
 //! The formatter cases are run_formatter's header's: tests/snapshot/formatter.rs, formatter_paths.rs,
 //! formatter_timeout.rs and formatter_group.rs (the S-37 process-group cases) cover them.
 

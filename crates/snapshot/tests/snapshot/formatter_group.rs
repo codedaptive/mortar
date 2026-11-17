@@ -67,7 +67,7 @@ fn hang_guard_marks_its_intervention_and_unblocks_a_fifo_without_a_formatter_kil
     // Joins the failure-only guard -> real FIFO wakeup -> observable marker, so the guard is not an untested escape.
     let f = Fixture::new(&[]);
     let fifo = f.common.join("guard-self-check");
-    make_fifos(&[fifo.clone()]);
+    make_fifos(std::slice::from_ref(&fifo));
     // Hold a reader before the immediate guard fires, so its message remains observable regardless of scheduling.
     let reader = OpenOptions::new().read(true).write(true).open(&fifo).unwrap();
     let fired = f.common.join("guard-self-check-fired");

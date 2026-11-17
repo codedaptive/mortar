@@ -12,7 +12,7 @@ fn foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or
     // an uncooperative writer; snapshot must not take the caller's lock or overwrite the foreign ref.
     let f = Fixture::new(&[]);
     let first = snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap();
-    let foreign = f.git.commit_tree(&first.tree, &[f.head.clone()], "foreign save\n", None, None).unwrap();
+    let foreign = f.git.commit_tree(&first.tree, std::slice::from_ref(&f.head), "foreign save\n", None, None).unwrap();
     write(&f.repo.path, "root.txt", b"snapshot change that must remain on disk\n");
     let index_before = fs::read(f.common.join("index")).unwrap();
     let lock_before = fs::read(&f.lock.path).unwrap();

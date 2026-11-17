@@ -86,9 +86,9 @@ fn op_repeated_names_the_key_and_the_op() {
 
 #[test]
 fn file_size_names_the_path_and_shows_the_io_error() {
-    let inner = || std::io::Error::new(std::io::ErrorKind::Other, "too many links");
+    let inner = || std::io::Error::other("too many links");
     let e = SnapshotError::FileSize { path: PathBuf::from("src/a.rs"), error: inner() };
-    let expected = format!("the size of src/a.rs could not be read: {}; no commit was written", inner().to_string());
+    let expected = format!("the size of src/a.rs could not be read: {}; no commit was written", inner());
     assert_eq!(e.to_string(), expected);
 }
 
