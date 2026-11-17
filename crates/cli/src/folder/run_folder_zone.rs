@@ -3,17 +3,22 @@
 //! folder_made_report_tests cover its decisions. The RIT crates/cli/tests/cli_rit/run_folder_zone_tests.rs covers it through
 //! the binary: a sparse folder holding the zone's paths and root files, recorded as a zone folder, and its repeat;
 //! --start making a new zone branch by an op of the actor; a --start that names no commit refused, nothing made.
+//! With no --start, a missing zone branch is started at the origin branch tip (S-149; default_zone_start_tests covers
+//! the decision).
 //! RITs left for Nagatha (cross-zone, listed only, not written): a folders lock held by a live pid, exit 3; free disk
 //! under the floor, exit 1 with the cli's facts; the zone branch checked out elsewhere or a different folder at the
 //! path, the cli's why and next.
+//! RITs left for Nagatha (listed only, not written): a bare folder zone on a missing zone branch made at the origin
+//! branch tip; the same with no origin branch either, refused with a next naming --start.
 
 use std::path::Path;
 
 use folders::make_zone_folder;
-use gitio::Git;
+use folders::plan::zone_branch;
+use gitio::{Git, Oid};
 use oplog::{KillPidProbe, LockName};
 
-use super::{folder_error_report, folder_made_report, folder_setup_for};
+use super::{default_zone_start, folder_error_report, folder_made_report, folder_setup_for};
 use crate::config::Config;
 use crate::context::{repository_error, repository_report};
 use crate::lock::locked_act;
@@ -24,8 +29,10 @@ use crate::shell::ShellContext;
 const VERB: &str = "folder";
 
 /// `path` is taken from `cwd` when relative. `start` is resolved to a commit before any lock (none: exit 1, nothing
-/// made). Under join-<zone> after recover (locked_act), keyed by --key or op_key("folder-zone", the folder): folders'
-/// make_zone_folder with `paths` (the zone's paths and root files) and the setup folder_setup_for gives for the actor.
+/// made). With no `start` and no zone branch, the start is the tip of `config.origin_branch`; with no origin branch
+/// either, there is none and make_zone_folder's refusal stands. Under join-<zone> after recover (locked_act), keyed by
+/// --key or op_key("folder-zone", the folder): folders' make_zone_folder with `paths` (the zone's paths and root
+/// files) and the setup folder_setup_for gives for the actor.
 pub fn run_folder_zone(
     context: &ShellContext,
     config: &Config,
@@ -41,7 +48,10 @@ pub fn run_folder_zone(
         Err(error) => return repository_report(VERB, &repository_error(cwd, error)),
     };
     let start = match start.map(|rev| (rev, git.rev_parse(rev))) {
-        None => None,
+        None => match origin_start(&git, zone, &config.origin_branch) {
+            Ok(commit) => commit,
+            Err(report) => return report,
+        },
         Some((_, Ok(Some(commit)))) => Some(commit),
         Some((rev, Ok(None))) => return no_commit(rev),
         Some((_, Err(error))) => return failure_report(VERB, &error.to_string()),
@@ -56,6 +66,15 @@ pub fn run_folder_zone(
         Ok(folder_made_report("zone", &path, &record))
     })
     .unwrap_or_else(|report| report)
+}
+
+/// The commit a bare `mr folder zone` starts `zone`'s branch at: the origin branch tip when the zone branch is
+/// missing (default_zone_start), else None. A zone name zone_branch rejects gives None, for make_zone_folder to refuse.
+fn origin_start(git: &Git, zone: &str, origin_branch: &str) -> Result<Option<Oid>, Report> {
+    let failure = |error: gitio::GitError| failure_report(VERB, &error.to_string());
+    let Ok(branch) = zone_branch(zone) else { return Ok(None) };
+    let exists = git.read_ref(&format!("refs/heads/{branch}")).map_err(failure)?.is_some();
+    default_zone_start(None, exists, origin_branch).map_or(Ok(None), |rev| git.rev_parse(&rev).map_err(failure))
 }
 
 /// Exit 1 "refused": `rev` names no commit in the repository; nothing was made.

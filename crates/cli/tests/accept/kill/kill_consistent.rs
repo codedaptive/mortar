@@ -8,9 +8,9 @@ use crate::report::Checks;
 use crate::stage::{git_out, Reply};
 use crate::world::World;
 
-/// The five items, one line each: `git fsck` exits 0 printing nothing; no lock held (consistent_locks); every folder
-/// in `folders` at its branch and clean (consistent_folders); no open intent in the op log; and `repeat`, the
-/// case's command once more, exits 0 with every ref of the working repository where it was.
+/// The five items, one line each: `git fsck` exits 0 printing nothing; no lock held (consistent_locks); every
+/// request and attempt folder in `folders` at its branch and clean (consistent_folders); no open intent in the op
+/// log; and `repeat`, the case's command once more, exits 0 with every ref of the working repository where it was.
 pub fn kill_consistent(
     world: &World,
     checks: &mut Checks,

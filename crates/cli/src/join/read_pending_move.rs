@@ -1,6 +1,6 @@
 //! Reads the op log with each record's values and the request branch, and asks find_pending_move whether a folder
 //! move is pending, a join rebase's (S-86) or an undo's (S-143), and from which recorded folder_tree (S-89(2)).
-//! finish_pending_move (join, resolve, save, undo) and read_stalled_move (status, S-85) call it.
+//! finish_pending_move (join, resolve, save, undo) calls it, after recover has settled open intents.
 //! No unit test: it reads the op log file and runs git (S-5); find_pending_move_tests covers the decision.
 //! Nagatha's integration group is to cover, in a throwaway repository with a request folder: a join-rebase op
 //! done and the folder still at the old tip gives the move from the op's old tip to its new; after the folder

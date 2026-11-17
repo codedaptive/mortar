@@ -28,18 +28,11 @@ pub fn stage_new(world: &World, checks: &mut Checks) -> Option<Stage> {
     Some(Stage { zone_a: zone_a?, zone_b: zone_b? })
 }
 
-/// `mr folder zone <zone> <root>/zone-<zone>` as the spec writes it. Init makes no zone branch, so when that is
-/// refused the line fails and the folder is made again with `--start main` (the zone branch cut from origin's
-/// commit), on a line of its own, so the later checks can still run.
+/// `mr folder zone <zone> <root>/zone-<zone>` as the spec writes it, one check line; the folder when it was made.
+/// Init makes no zone branch: folder zone starts it at the origin branch's tip (S-149).
 fn zone_folder(world: &World, checks: &mut Checks, zone: &str) -> Option<PathBuf> {
     let path = world.root.join(format!("zone-{zone}"));
-    let text = path.to_string_lossy().into_owned();
-    let made = harness_mr(world, &["folder", "zone", zone, &text]);
+    let made = harness_mr(world, &["folder", "zone", zone, &path.to_string_lossy()]);
     let did = format!("set-up: mr folder zone {zone} <root>/zone-{zone} --actor accept");
-    if checks.check(&did, made.is(0, "made"), &made.saw) {
-        return Some(path);
-    }
-    let started = harness_mr(world, &["folder", "zone", zone, &text, "--start", "main"]);
-    let did = format!("set-up: mr folder zone {zone} <root>/zone-{zone} --start main --actor accept (after the refusal)");
-    checks.check(&did, started.is(0, "made"), &started.saw).then_some(path)
+    checks.check(&did, made.is(0, "made"), &made.saw).then_some(path)
 }

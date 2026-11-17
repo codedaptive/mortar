@@ -17,7 +17,6 @@ pub const KILL_CASES: [(&str, &[&str]); 5] = [
     (
         "2.",
         &[
-            "the zone branch moved",
             "mr join in r2 (a rebase), killed after its ref transaction: the op log's open intent is that join",
             "the request ref moved",
             "mr status in r2 reports the stalled move, next: mr join",

@@ -17,6 +17,7 @@ mod read_progress;
 mod read_stalled_move;
 mod read_status;
 mod read_tips;
+mod recovered_records;
 mod run_status;
 mod status_fields;
 mod status_lines;
@@ -48,6 +49,8 @@ mod overlaps_with_tests;
 #[cfg(test)]
 mod progress_branch_tests;
 #[cfg(test)]
+mod recovered_records_tests;
+#[cfg(test)]
 mod status_fields_tests;
 #[cfg(test)]
 mod status_lines_tests;
@@ -74,6 +77,7 @@ pub use read_progress::read_progress;
 pub use read_stalled_move::read_stalled_move;
 pub use read_status::read_status;
 pub use read_tips::read_tips;
+pub use recovered_records::recovered_records;
 pub use run_status::run_status;
 pub use status_fields::status_fields;
 pub use status_lines::status_lines;
