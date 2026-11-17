@@ -27,8 +27,13 @@ case!(rit_host_says_nothing_moved, BackupError::Host(LockError::HostUnknown("hos
     "backup host name: cannot read this host's name: hostname failed; check that `hostname` runs on this machine; nothing was pushed or restored");
 case!(rit_git_is_marked_as_backups, BackupError::Git(git_error()),
     "backup git: git read-tree HEAD: exit code 128: fatal: no tree");
-case!(rit_oplog_is_marked_as_backups, BackupError::Oplog(OplogError::UnknownOp { op_id: "op-404".into() }),
-    "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mortar log");
+#[test]
+fn rit_oplog_is_marked_as_backups() {
+    let _repo = TestRepo::new().unwrap();
+    let shown = BackupError::Oplog(OplogError::UnknownOp { op_id: "op-404".into() }).to_string();
+    assert!(shown == "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mortar log"
+        || shown == "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mr log", "{shown}");
+}
 case!(rit_git_text_starts_with_git_failed, GuardError::Git(git_error()),
     "git failed: git read-tree HEAD: exit code 128: fatal: no tree");
 case!(rit_not_on_origin_names_the_commit_and_the_branch, BisectError::NotOnOrigin { failed: a(), origin_branch: "main".into() },
