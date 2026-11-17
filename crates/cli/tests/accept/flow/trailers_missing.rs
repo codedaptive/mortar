@@ -11,7 +11,7 @@ pub fn trailers_missing(trailers: &str, request: &str, zone: &str) -> Vec<String
             .filter_map(|line| line.split_once(':'))
             .filter(|(name, _)| name.trim().eq_ignore_ascii_case(key))
             .map(|(_, value)| value.trim())
-            .last()
+            .next_back()
     };
     let mut missing = Vec::new();
     if value("Mortar-Change-Id").is_none_or(str::is_empty) {
