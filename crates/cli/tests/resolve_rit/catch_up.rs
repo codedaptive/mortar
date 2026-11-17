@@ -11,6 +11,8 @@ fn rit_killed_resolve_after_final_done_op_and_removed_state_is_finished_from_fol
     f.write("src/file", b"chosen resolution\n");
     let expected_tree = tree(f, &r.old, &[("src/file", b"chosen resolution\n")], &[], &[]);
     let index_before = raw(&f.local(), &["ls-files", "--stage", "-z"]);
+    let state_before = fs::read_to_string(&r.state).unwrap();
+    let state_before = state_before.strip_suffix('\n').expect("state file's trailing newline").to_string();
     let dir = f.common.join("resolve-git-shim"); fs::create_dir(&dir).unwrap();
     let event = f.common.join("resolve-before-move"); let release = f.common.join("resolve-release");
     let guard = GateGuard::new(vec![event.clone(), release.clone()]);
@@ -43,7 +45,10 @@ exec "$MORTAR_RIT_REAL_GIT" "$@"
     assert_one_rebase(f, &r.old, &new);
     let valued = oplog::read_valued_log(&f.common).unwrap();
     let done = valued.records.iter().find(|v| v.record.kind == "join-rebase" && v.record.phase == OpPhase::Done).unwrap();
-    assert_eq!(done.values, vec![("folder_tree".to_string(), expected_tree.as_str().to_string())]);
+    let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
+    // Until WO-join-9 lands, accept only its exact new shape or the exact existing shape (Orc #2426).
+    assert!(done.values == vec![folder_value.clone()]
+        || done.values == vec![folder_value, ("join_state".to_string(), state_before)], "unexpected values: {:?}", done.values);
     assert_eq!(oplog::open_intent(&f.common, &done.record.op_id).unwrap(), None);
     let snap = f.git.read_ref(SNAP).unwrap().unwrap();
     assert_eq!(f.blob(&snap, "src/file"), b"chosen resolution\n");
