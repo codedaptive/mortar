@@ -8,6 +8,7 @@ mod support;
 mod trailers;
 mod owed_displays;
 mod guard_codec;
+mod guard_installation;
 mod owed_ops;
 mod state_codec;
 mod after_publish_displays;
