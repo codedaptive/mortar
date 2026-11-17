@@ -24,6 +24,10 @@ use crate::save::snapshot_target_for;
 
 const VERB: &str = "restore";
 
+/// folders_to_move's answer: the folders needing a move, the paths already in place, the unsaved paths, the paths
+/// left alone.
+type FoldersToMove<'a> = (Vec<&'a FolderOnRef>, Vec<PathBuf>, Vec<PathBuf>, Vec<PathBuf>);
+
 /// For each request or attempt folder in `folders` whose ref has a move in `moves` (zone folders are never checked,
 /// S-115(1)), its ref is read once. When `repeated` is true (the moves are a done record's, from restore_moves) and
 /// the ref no longer holds the move's new value (ref_moved_on), a later mover has moved it on: the folder is left
@@ -44,7 +48,7 @@ pub fn folders_to_move<'a>(
     repeated: bool,
     settings: &SnapshotSettings,
     actor: &str,
-) -> Result<(Vec<&'a FolderOnRef>, Vec<PathBuf>, Vec<PathBuf>, Vec<PathBuf>), Report> {
+) -> Result<FoldersToMove<'a>, Report> {
     let fail = |what: String| failure_report(VERB, &what);
     let (mut needing, mut in_place, mut unsaved, mut left_alone) = (Vec::new(), Vec::new(), Vec::new(), Vec::new());
     for folder in folders.iter().filter(|folder| folder.record.kind != FolderKind::Zone) {

@@ -5,7 +5,7 @@
 //! with its backticked command as `mr` (S-133), so join's rename lands before or after the cli's.
 //! ZIT (S-79 as replaced: the line is the file): it calls join_refusal_report for real.
 
-use std::io::{Error, ErrorKind};
+use std::io::Error;
 use std::path::PathBuf;
 
 use ::join::{JoinRunError, MarkedFile};
@@ -220,7 +220,7 @@ fn a_missing_request_is_joins_refusal_under_resolve() {
 
 #[test]
 fn an_unreadable_state_is_joins_failure_under_resolve() {
-    let error = JoinRunError::StateRead { path: PathBuf::from(STATE), source: Error::new(ErrorKind::Other, "denied") };
+    let error = JoinRunError::StateRead { path: PathBuf::from(STATE), source: Error::other("denied") };
     assert_eq!(
         resolve_refusal_report(&error),
         Report {

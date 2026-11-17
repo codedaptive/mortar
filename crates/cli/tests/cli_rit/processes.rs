@@ -24,7 +24,7 @@ fn rit_configured_formatter_runs_once_before_save_or_join_and_its_bytes_enter_th
 
 #[test]
 fn rit_fifo_formatter_timeout_is_reported_and_save_still_commits_work_then_reaps_formatter() {
-    let f = Fixture::new(); let fifo = f.common.join("formatter-blocked"); make_fifos(&[fifo.clone()]);
+    let f = Fixture::new(); let fifo = f.common.join("formatter-blocked"); make_fifos(std::slice::from_ref(&fifo));
     let fired = f.common.join("timeout-guard-fired"); let _guard = FifoGuard::new(vec![fifo.clone()], fired.clone());
     let pid_file = f.common.join("formatter.pid"); let _cleanup = StopPid(pid_file.clone()); let program = f.common.join("timeout.sh");
     script(&program, b"#!/bin/sh\nset -eu\nprintf '%s' \"$$\" >\"$1\"\nprintf 'blocked formatter\\n' >&2\nexec /bin/cat \"$2\"\n");
@@ -102,7 +102,8 @@ impl FifoGuard {
 }
 impl Drop for FifoGuard { fn drop(&mut self) {
     for path in &self.fifos { release_fifo(path, b"STOP\n"); }
-    if let Some(send) = self.cancel.take() { let _ = send.send(()); } if let Some(job) = self.thread.take() { let _ = job.join(); }
+    if let Some(send) = self.cancel.take() { let _ = send.send(()); }
+    if let Some(job) = self.thread.take() { let _ = job.join(); }
 } }
 struct Process(Child);
 impl Drop for Process { fn drop(&mut self) { if self.0.try_wait().ok().flatten().is_none() { let _ = self.0.kill(); } let _ = self.0.wait(); } }

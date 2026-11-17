@@ -1,5 +1,6 @@
 //! file_has_marker: whether a file's bytes carry a marker (S-147: is the first `mr` on PATH a copy of Mortar). It
-//! reads the file and never runs it. S-104: it reads the file system; its tests make their own files.
+//! reads the file and never runs it. No sibling test (S-104): it reads the file system. The ZIT
+//! crates/cli/tests/file_has_marker_tests.rs covers it on files it makes itself.
 
 use std::fs::{self, File};
 use std::io::Read;

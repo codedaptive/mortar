@@ -12,7 +12,7 @@
 //! - snapshot in an attempt folder moves its trysnap ref, not the request's snap ref;
 //! - any argument is exit 4; without a config, exit 1; run outside a Mortar folder, exit 1;
 //! - a join-<zone> lock held by a live pid is exit 3.
-//! ACCEPT-5 (05-disk.md): snapshot's run in a request folder after a small edit, reached through this verb.
+//!   ACCEPT-5 (05-disk.md): snapshot's run in a request folder after a small edit, reached through this verb.
 
 use std::path::Path;
 

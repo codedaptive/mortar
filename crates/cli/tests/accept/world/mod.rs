@@ -1,5 +1,5 @@
-//! A step's throwaway repositories, their bin folder of `mr` and `mortar`, and the runners for git, `mr` and a
-//! killed program inside them.
+//! A step's throwaway repositories, their PATH (cargo's build output folder holding `mr` and `mortar` first), and
+//! the runners for git, `mr` and a killed program inside them.
 
 mod crash;
 mod crash_as_str;
@@ -13,7 +13,7 @@ mod scratch_drop;
 mod scratch_new;
 mod scratch_path;
 mod world;
-mod world_bin_dir;
+mod world_bin_path;
 mod world_close;
 mod world_command;
 mod world_env;
@@ -29,7 +29,7 @@ mod ran_from_error_tests;
 #[cfg(test)]
 mod ran_seen_tests;
 #[cfg(test)]
-mod world_bin_dir_tests;
+mod world_bin_path_tests;
 #[cfg(test)]
 mod world_env_tests;
 
@@ -37,5 +37,5 @@ pub use crash::Crash;
 pub use ran::Ran;
 pub use scratch::Scratch;
 pub use world::World;
-pub use world_bin_dir::world_bin_dir;
+pub use world_bin_path::world_bin_path;
 pub use world_env::world_env;

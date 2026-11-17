@@ -13,8 +13,8 @@ use super::{Crash, Ran, World};
 static NEXT: AtomicU32 = AtomicU32::new(0);
 
 /// Puts the kill shim in front of real git. The wrapper holds no paths (they come by environment, so a quote in
-/// one cannot break it), and its PATH is the world's (`mr`, `mortar`, then the drive's PATH), which holds no git
-/// shim, so the kill shim's own `git` is real git.
+/// one cannot break it), and its PATH is the world's (cargo's build output folder holding `mr` and `mortar`, then
+/// the drive's PATH), which holds no git shim, so the kill shim's own `git` is real git.
 const WRAPPER: &[u8] = b"#!/bin/sh\nPATH=\"$ACCEPT_REAL_PATH\" exec \"$ACCEPT_KILL_SHIM\" \"$@\"\n";
 
 /// `sh` names itself the worker, then execs the program: the exec keeps the pid, so the worker pid is the

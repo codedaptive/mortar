@@ -1,5 +1,5 @@
-//! Where the built `mortar` binary is. Covered by the shell step (steps/shell.rs): world_bin_dir links it into the
-//! bin folder first on every child's PATH, where the guard hooks Mortar installs find it by name.
+//! Where the built `mortar` binary is. Covered by the shell step (steps/shell.rs): world_bin_path checks it is in
+//! the folder of the built `mr`, first on every child's PATH, where the guard hooks Mortar installs find it by name.
 
 use std::path::Path;
 

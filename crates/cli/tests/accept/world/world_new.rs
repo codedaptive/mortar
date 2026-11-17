@@ -7,21 +7,20 @@ use std::io;
 use std::path::Path;
 use std::process::{Command, Stdio};
 
-use super::{world_bin_dir, world_env, Scratch, World};
+use super::{world_bin_path, world_env, Scratch, World};
 
 impl World {
-    /// In a fresh scratch folder: `bin` (world_bin_dir), first on `path`, the PATH of every git this runs;
-    /// `work` (`git init -b main`) with Cargo.toml, src/a/a.txt and src/b/b.txt in one commit; `origin.git`, a bare
-    /// repository pushed `main` from work and named `origin` there; `integration` branched from main in work;
+    /// `path` (world_bin_path): cargo's build output folder holding `mr` and `mortar`, then the drive's PATH; it is
+    /// the PATH of every git this runs; a `mortar` built outside that folder is an error. In a fresh scratch
+    /// folder: `work` (`git init -b main`) with Cargo.toml, src/a/a.txt and src/b/b.txt in one commit; `origin.git`,
+    /// a bare repository pushed `main` from work and named `origin` there; `integration` branched from main in work;
     /// `other`, a clone of origin. `base` is that one commit. An error names the git command that failed and its
     /// stderr.
     pub fn new() -> io::Result<World> {
         let scratch = Scratch::new()?;
         let root = scratch.path().to_path_buf();
         let drive_path = std::env::var_os("PATH").unwrap_or_default();
-        let bin = world_bin_dir(&root)?;
-        let path = std::env::join_paths(std::iter::once(bin).chain(std::env::split_paths(&drive_path)))
-            .map_err(io::Error::other)?;
+        let path = world_bin_path(World::mr_bin(), World::mortar_bin(), &drive_path).map_err(io::Error::other)?;
         let (work, origin, other) = (root.join("work"), root.join("origin.git"), root.join("other"));
         let (work_text, origin_text, other_text) = (text(&work)?, text(&origin)?, text(&other)?);
         let git = |cwd: &Path, args: &[&str]| setup_git(&root, &path, cwd, args);

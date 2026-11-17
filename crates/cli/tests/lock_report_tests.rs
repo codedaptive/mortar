@@ -83,7 +83,7 @@ fn a_bad_zone_name_is_refused() {
 fn a_file_system_error_is_a_failure() {
     let error = LockError::Io {
         path: PathBuf::from("/r/.git/mortar/locks"),
-        source: std::io::Error::new(std::io::ErrorKind::Other, "disk full"),
+        source: std::io::Error::other("disk full"),
         removed_guards: Vec::new(),
     };
     let report = lock_report("join", &error);

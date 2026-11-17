@@ -73,7 +73,7 @@ impl Fixture {
             self.git.run(&["update-index", "--add", "--cacheinfo", "100644", id.as_str(), path], &opts).unwrap();
         }
         let tree = oid(&self.git.run(&["write-tree"], &opts).unwrap().stdout);
-        self.git.commit_tree(&tree, &[parent.clone()], message, None, None).unwrap()
+        self.git.commit_tree(&tree, std::slice::from_ref(parent), message, None, None).unwrap()
     }
     pub fn pending_rebase(&self) -> (Oid, Oid, Oid) {
         let old = self.save_topic(); let zone = self.advance_zone(false);
