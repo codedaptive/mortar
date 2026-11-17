@@ -41,6 +41,7 @@ use crate::save::{run_save, run_snapshot};
 use crate::squash::run_squash;
 use crate::status::run_status;
 use crate::sweep::run_sweep;
+use crate::undo::run_undo;
 use crate::would_merge::run_would_merge;
 
 /// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. Agent verbs
@@ -103,6 +104,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "squash" => run_squash(context, cwd),
         "status" => run_status(context),
         "sweep" => run_sweep(context, cwd),
+        "undo" => run_undo(context),
         "would-merge" => run_would_merge(context, cwd),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
     }

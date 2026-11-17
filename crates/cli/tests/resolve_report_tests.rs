@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use ::join::JoinAnswer;
 use gitio::Oid;
 
-use cli::{resolve_report, ExitCode, OutValue, PendingMove, Report, ResolveOutcome};
+use cli::{resolve_report, ExitCode, MoveCause, OutValue, PendingMove, Report, ResolveOutcome};
 
 const ONE: &str = "1111111111111111111111111111111111111111";
 const TWO: &str = "2222222222222222222222222222222222222222";
@@ -96,6 +96,7 @@ fn a_rebase_reports_as_join_does_with_the_snapshot_after_a_finished_move() {
         new: oid(NEW),
         op_id: "op-1".to_string(),
         folder_tree: None,
+        cause: MoveCause::Rebase,
     };
     let answer = JoinAnswer::Rebased {
         request_ref: REQUEST_REF.to_string(),

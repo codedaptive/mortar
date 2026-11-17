@@ -1,5 +1,5 @@
 //! status_lines: one fact per line in the spec's order; empty parts add no line, except the paths, which say there
-//! are none.
+//! are none. A stalled move's line says whether a rebase or an undo left it (S-143).
 
 use std::path::PathBuf;
 
@@ -8,7 +8,7 @@ use gitio::{Oid, StatusPaths};
 use snapshot::RefusedFile;
 
 use super::{status_lines, StatusState};
-use crate::join::PendingMove;
+use crate::join::{MoveCause, PendingMove};
 
 fn paths(names: &[&str]) -> Vec<PathBuf> {
     names.iter().map(PathBuf::from).collect()
@@ -98,6 +98,7 @@ fn paused_stalled_overlaps_and_gaps_follow_in_order() {
         new: oid("2222222222222222222222222222222222222222"),
         op_id: "op-1".to_string(),
         folder_tree: None,
+        cause: MoveCause::Rebase,
     });
     state.overlaps = vec![("fix-2".to_string(), paths(&["x.rs"])), ("fix-9".to_string(), paths(&["p", "q"]))];
     state.gaps = vec!["docs/a.txt".to_string(), "tools".to_string()];
@@ -110,6 +111,26 @@ fn paused_stalled_overlaps_and_gaps_follow_in_order() {
             "overlaps with fix-2: x.rs",
             "overlaps with fix-9: p, q",
             "gaps (needed outside the work order): docs/a.txt, tools",
+        ]
+    );
+}
+
+#[test]
+fn a_move_an_undo_left_stalled_says_the_undo_put_the_branch_back() {
+    let mut state = bare();
+    state.stalled = Some(PendingMove {
+        request_ref: "refs/heads/req/core/fix-1".to_string(),
+        old: oid("2222222222222222222222222222222222222222"),
+        new: oid("1111111111111111111111111111111111111111"),
+        op_id: "op-undo".to_string(),
+        folder_tree: None,
+        cause: MoveCause::Undo,
+    });
+    assert_eq!(
+        status_lines(&state)[4..].to_vec(),
+        vec![
+            "an undo's folder move is stalled: the undo put refs/heads/req/core/fix-1 back at \
+             1111111111111111111111111111111111111111, the folder at 2222222222222222222222222222222222222222"
         ]
     );
 }

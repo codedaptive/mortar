@@ -33,6 +33,8 @@ pub mod shell;
 pub mod squash;
 pub mod status;
 pub mod sweep;
+pub mod undo;
+pub mod undo_reason;
 pub mod upkeep;
 pub mod would_merge;
 
@@ -44,7 +46,7 @@ pub use after_publish::{
 pub use args::{
     find_verb, no_arguments_report, parse_args, usage_report, LockNeed, ParsedArgs, UsageError, VerbKind, VerbSpec,
     AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, DISK_SPEC, OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC,
-    SWEEP_SPEC, VERBS,
+    SWEEP_SPEC, UNDO_SPEC, VERBS,
 };
 pub use back_out::{back_out_report, run_back_out};
 pub use backup::{
@@ -81,7 +83,7 @@ pub use integration_folder::{
 pub use crate::join::{
     answer_part, attempt_refusal, find_pending_move, finish_pending_move, finished_move_part, join_refusal_report,
     join_report, join_save_subject, move_refusal_report, read_pending_move, request_run_for, run_join, save_part,
-    snapshot_failure, AnswerPart, JoinOutcome, PendingMove, RequestRun,
+    snapshot_failure, AnswerPart, JoinOutcome, MoveCause, PendingMove, RequestRun,
 };
 pub use crate::land::{land_report, parse_land_args, run_land};
 pub use landing::{
@@ -104,8 +106,8 @@ pub use restore::{
     restore_move_refusal_report, restore_moves, restore_refusal, restore_report, run_restore, FolderOnRef,
 };
 pub use save::{
-    run_save, run_snapshot, save_error_report, save_report, save_sentence, snapshot_error_report, snapshot_report,
-    zone_folder_refusal,
+    run_save, run_snapshot, save_error_report, save_report, save_run_for, save_sentence, snapshot_error_report,
+    snapshot_report, zone_folder_refusal,
 };
 pub use shell::{load_config, missing_config_report, run, ShellContext};
 pub use squash::{parse_squash_args, run_squash, squash_report};
@@ -115,5 +117,10 @@ pub use status::{
     StatusState,
 };
 pub use sweep::{parse_sweep_args, run_sweep, sweep_build_failure_report, sweep_report, SweepArgs};
+pub use undo::{
+    already_undone_report, choose_undo, failed_undo_report, later_op_refusal, nothing_to_undo_report, own_refs,
+    run_undo, undo_caller, undo_error_report, undo_refusal, undo_report, UndoChoice, UndoStep,
+};
+pub use undo_reason::{reversed_op, undo_reason};
 pub use upkeep::{config_zones, folders_error_report, no_zones_report};
 pub use would_merge::{parse_would_merge_args, run_would_merge, would_merge_report};

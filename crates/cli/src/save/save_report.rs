@@ -1,14 +1,18 @@
-//! save_report: the report of a save that ran (S-71: exit 0, written or not).
+//! save_report: the report of a save that ran (S-71: exit 0, written or not), with the pending folder move it
+//! finished first, if any (S-143).
 
 use snapshot::{FormatterResult, FormatterRun, SaveOutcome};
 
+use crate::join::{finished_move_part, PendingMove};
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Done, next `mortar join`. Written: "saved", naming the commit and its change ID; not written: "unchanged",
-/// naming HEAD. Then one line per file the size cap refused, then, when the formatter did not end Formatted, how
-/// it ended (the files were saved as they are). Fields: commit, written, change_id (Null when None), refused (the
-/// paths) and cap (the first refused file's cap, Null when none was refused).
-pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>) -> Report {
+/// Done, next `mortar join`. Lines: first finished_move_part's for `finished` (the move's line, none without a
+/// move); then, written: "saved", naming the commit and its change ID; not written: "unchanged", naming HEAD. Then
+/// one line per file the size cap refused, then, when the formatter did not end Formatted, how it ended (the files
+/// were saved as they are). Fields: finished_move_part's (finished_move_from and finished_move_to, Null without a
+/// move), then commit, written, change_id (Null when None), refused (the paths) and cap (the first refused file's
+/// cap, Null when none was refused).
+pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>, finished: Option<&PendingMove>) -> Report {
     let change_id = outcome.change_id.as_ref().map(ToString::to_string);
     let (word, first) = if outcome.written {
         (
@@ -25,7 +29,8 @@ pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>) -> R
             format!("nothing changed since the last save; no commit written (HEAD is {})", outcome.commit),
         )
     };
-    let mut lines = vec![first];
+    let (mut lines, mut fields) = finished_move_part(finished);
+    lines.push(first);
     lines.extend(outcome.refused.iter().map(|file| {
         format!(
             "not saved: {} is {} bytes, over the size cap of {} bytes",
@@ -35,6 +40,16 @@ pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>) -> R
         )
     }));
     lines.extend(formatted.map(formatter_lines).unwrap_or_default());
+    fields.extend([
+        ("commit".to_string(), OutValue::Text(outcome.commit.to_string())),
+        ("written".to_string(), OutValue::Bool(outcome.written)),
+        ("change_id".to_string(), change_id.map_or(OutValue::Null, OutValue::Text)),
+        (
+            "refused".to_string(),
+            OutValue::Texts(outcome.refused.iter().map(|file| file.path.display().to_string()).collect()),
+        ),
+        ("cap".to_string(), outcome.refused.first().map_or(OutValue::Null, |file| OutValue::Number(file.cap))),
+    ]);
     Report {
         verb: "save".to_string(),
         exit: ExitCode::Done,
@@ -42,16 +57,7 @@ pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>) -> R
         lines,
         owner: None,
         next: "mortar join".to_string(),
-        fields: vec![
-            ("commit".to_string(), OutValue::Text(outcome.commit.to_string())),
-            ("written".to_string(), OutValue::Bool(outcome.written)),
-            ("change_id".to_string(), change_id.map_or(OutValue::Null, OutValue::Text)),
-            (
-                "refused".to_string(),
-                OutValue::Texts(outcome.refused.iter().map(|file| file.path.display().to_string()).collect()),
-            ),
-            ("cap".to_string(), outcome.refused.first().map_or(OutValue::Null, |file| OutValue::Number(file.cap))),
-        ],
+        fields,
     }
 }
 

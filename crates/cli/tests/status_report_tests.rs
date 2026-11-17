@@ -9,7 +9,7 @@ use ::join::PausedJoin;
 use gitio::{Oid, StatusPaths};
 use snapshot::RefusedFile;
 
-use cli::{render_json, render_plain, status_report, ExitCode, OutValue, PendingMove, Report, StatusState};
+use cli::{render_json, render_plain, status_report, ExitCode, MoveCause, OutValue, PendingMove, Report, StatusState};
 
 const OLD: &str = "1111111111111111111111111111111111111111";
 const NEW: &str = "2222222222222222222222222222222222222222";
@@ -71,6 +71,7 @@ fn full() -> StatusState {
             new: oid(NEW),
             op_id: "op-7".to_string(),
             folder_tree: None,
+            cause: MoveCause::Rebase,
         }),
         overlaps: vec![
             ("fix-2".to_string(), paths(&["src/b.rs"])),

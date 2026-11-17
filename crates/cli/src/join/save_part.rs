@@ -1,12 +1,12 @@
-//! The lines and --json fields of a join report that say what was saved and the last rebase's folder move, finished
-//! or found already done.
+//! The lines and --json fields of a join report that say what was saved and the pending folder move (the last
+//! rebase's or an undo's), finished or found already done.
 
 use snapshot::SaveOutcome;
 
 use super::{finished_move_part, PendingMove};
 use crate::report::OutValue;
 
-/// Lines: finished_move_part's (the last rebase's folder move, finished or found already done, S-86), then the
+/// Lines: finished_move_part's (the pending folder move, finished or found already done, S-86, S-143), then the
 /// saved commit and its change ID (or "no unsaved work"), then each file the size cap left out.
 /// Fields in order: finished_move_part's (finished_move_from, finished_move_to), saved_commit, saved_written,
 /// change_id (Null when nothing was written), refused (the paths).

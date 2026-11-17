@@ -7,7 +7,7 @@ use ::join::PausedJoin;
 use gitio::{Oid, StatusPaths};
 
 use super::{attempt_next, StatusState};
-use crate::join::PendingMove;
+use crate::join::{MoveCause, PendingMove};
 
 fn oid(hex: &str) -> Oid {
     Oid::parse(hex).unwrap()
@@ -32,6 +32,7 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
             new: oid("2222222222222222222222222222222222222222"),
             op_id: "op-1".to_string(),
             folder_tree: None,
+            cause: MoveCause::Rebase,
         }),
         overlaps: Vec::new(),
         gaps: Vec::new(),

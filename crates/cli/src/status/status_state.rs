@@ -13,8 +13,8 @@ use crate::join::PendingMove;
 /// The folder's `zone` and `request` names; its changed, untracked and conflicted `paths`; whether everything is
 /// `saved` and the new files the size cap `refused`; whether the zone has commits the request has not taken in
 /// (`zone_moved`) and whether the request is `joined` to the zone; the join `paused` on a conflict, if any; the
-/// folder move a kill left `stalled` (S-85, S-97), if any; the other open requests it `overlaps` with, each with
-/// the shared paths (S-45); and the needed paths outside the work order (`gaps`).
+/// folder move a kill or a refused move left `stalled` (S-85, S-97, S-143), if any; the other open requests it
+/// `overlaps` with, each with the shared paths (S-45); and the needed paths outside the work order (`gaps`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StatusState {
     pub zone: String,

@@ -3,12 +3,14 @@
 use std::path::PathBuf;
 
 use super::StatusState;
+use crate::join::MoveCause;
 
 /// Where the folder stands, one fact per line: the request and its zone; the changed, untracked and conflicted
 /// paths (one line per non-empty list, or one line saying there are none); whether everything is saved, then each
 /// file the size cap refused in save's wording; whether the zone has commits this request has not taken in, then
-/// whether the request is joined; a paused join with its conflicted files; a stalled folder move (S-85); each
-/// overlapping request with the shared paths (S-45); and the gaps. Ids are written by `as_str`.
+/// whether the request is joined; a paused join with its conflicted files; a stalled folder move (S-85), worded for
+/// the rebase or the undo that left it (S-143); each overlapping request with the shared paths (S-45); and the gaps.
+/// Ids are written by `as_str`.
 pub fn status_lines(state: &StatusState) -> Vec<String> {
     let mut lines = vec![format!("request {} in zone {}", state.request, state.zone)];
     let path_lines: Vec<String> = [
@@ -48,12 +50,15 @@ pub fn status_lines(state: &StatusState) -> Vec<String> {
         )
     }));
     lines.extend(state.stalled.iter().map(|stalled| {
-        format!(
-            "a folder move is stalled: {} stands at {}, the folder at {}",
-            stalled.request_ref,
-            stalled.new.as_str(),
-            stalled.old.as_str()
-        )
+        let (request_ref, new, old) = (&stalled.request_ref, stalled.new.as_str(), stalled.old.as_str());
+        match stalled.cause {
+            MoveCause::Rebase => {
+                format!("a folder move is stalled: {request_ref} stands at {new}, the folder at {old}")
+            }
+            MoveCause::Undo => format!(
+                "an undo's folder move is stalled: the undo put {request_ref} back at {new}, the folder at {old}"
+            ),
+        }
     }));
     lines.extend(state.overlaps.iter().map(|(other, paths)| format!("overlaps with {other}: {}", joined(paths))));
     if !state.gaps.is_empty() {
