@@ -4,8 +4,13 @@
 //! `make accept` runs them. The unit tests of the drive's own pure pieces (no process, file, environment variable,
 //! clock or repository) are not ignored, so zone runs pick them up (rule 11).
 
+mod agent;
+mod flow;
+mod guard;
 mod json;
+mod kill;
 mod report;
+mod stage;
 mod steps;
 mod world;
 
