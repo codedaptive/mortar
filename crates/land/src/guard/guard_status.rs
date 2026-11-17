@@ -1,6 +1,6 @@
 //! guard_status: whether the guard is installed, read without writing. It runs git and reads files, so it has no
-//! unit test (S-5). No test of it is in land today: its tests are owed to Nagatha as RITs (cases 1, 2, 5-7 and 9-11
-//! in ledger/reports/WO-land-guard-symref-for-nagatha.md).
+//! unit test (S-5). tests/land_rit/guard_installation.rs compares its whole GuardState after installs, for an
+//! untouched repo, and for a foreign pre-push.
 
 use gitio::Git;
 
