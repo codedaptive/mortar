@@ -1,4 +1,4 @@
-//! Twelve owed guard codec seams, through PUBLIC guard_install/read_guard_config and real persisted bytes.
+//! Twelve guard codec RITs through public guard_install/read_guard_config and real persisted bytes.
 //! Land -> Oplog JSON strings; the private parser/encoder are neither copied nor included.
 use gitio::Git;
 use land::{GuardError, LandRefs};

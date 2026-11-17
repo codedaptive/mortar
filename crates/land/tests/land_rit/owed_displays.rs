@@ -1,4 +1,4 @@
-//! The27 owed Display seams: real Land -> Gitio/Oplog formatting, with independent literal expectations.
+//! Land -> Gitio/Oplog Display seams, with independent literal expectations.
 //! Durations below are static values being formatted, not measurements or timeout executions.
 use gitio::{GitError, Oid};
 use land::{BackupError, BisectAnswer, BisectError, BisectReport, Culprit, CulpritError, GuardError,

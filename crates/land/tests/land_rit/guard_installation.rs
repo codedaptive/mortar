@@ -1,5 +1,5 @@
 //! Land -> Gitio RITs joining guard_install, guard_status and read_guard_config on disposable TestRepos.
-//! The eleven guard_zit cases listed in WO-land-guard-symref-for-nagatha keep their literal byte/state oracles.
+//! guard_installation.rs holds eleven real-repository guard cases with literal byte/state oracles.
 //! Every setup and public-API Git call isolates global/system config; TestRepo removes its repository on drop.
 
 use std::ffi::OsString;

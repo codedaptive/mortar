@@ -1,4 +1,4 @@
-//! S-136/S-152: real installed Land hooks -> Cargo's CLI run_guard_hook -> Land guard_decide and Gitio.
+//! S-136/S-152/S-153: installed Land hooks -> Cargo's CLI run_guard_hook -> Land guard_decide and Gitio.
 //! A disposable TestRepo owns the main and linked worktree; real Git supplies symbolic reference transactions.
 //! The binary's own folder is first on PATH. No intent, prebuilt executable, fake hook or synthetic hook input.
 
@@ -61,4 +61,36 @@ fn installed_guard_allows_real_worktree_and_head_symrefs_but_refuses_an_unintend
         "wrong refusal: {refused:?}");
     assert_eq!(git(&root, &["rev-parse", "refs/heads/integration"]), old);
     assert_eq!(git(&root, &["rev-parse", &branch]), new);
+}
+
+#[test]
+fn installed_guard_allows_no_move_checkouts_of_both_guarded_branches_but_refuses_real_commits() {
+    let repo = TestRepo::new().unwrap(); let root = repo.path.canonicalize().unwrap();
+    assert_eq!(git(&root, &["symbolic-ref", "HEAD"]), "refs/heads/main");
+    git(&root, &["commit", "--allow-empty", "-m", "first"]);
+    let old = git(&root, &["rev-parse", "HEAD"]);
+    git(&root, &["branch", "integration"]);
+    git(&root, &["commit", "--allow-empty", "-m", "second"]);
+    let new = git(&root, &["rev-parse", "HEAD"]); assert_ne!(old, new);
+    let refs = LandRefs { origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into() };
+    let gitio = Git { program: "git".into(), repo: root.clone(), env: env() };
+    land::guard_install(&gitio, &refs).unwrap();
+
+    let integration = root.join("wi");
+    git(&root, &["worktree", "add", "--force", integration.to_str().unwrap(), "integration"]);
+    assert!(integration.is_dir()); assert_eq!(git(&integration, &["rev-parse", "HEAD"]), old);
+    assert_eq!(git(&root, &["rev-parse", "refs/heads/integration"]), old);
+    let main = root.join("wm");
+    git(&root, &["worktree", "add", "--force", main.to_str().unwrap(), "main"]);
+    assert!(main.is_dir()); assert_eq!(git(&main, &["rev-parse", "HEAD"]), new);
+    assert_eq!(git(&root, &["rev-parse", "refs/heads/main"]), new);
+
+    for (folder, reference, tip) in [(&integration, "refs/heads/integration", &old), (&main, "refs/heads/main", &new)] {
+        let refused = output(folder, &["commit", "--allow-empty", "-m", "third"]);
+        assert!(!refused.status.success(), "unintended commit on {reference}: {refused:?}");
+        assert!(String::from_utf8_lossy(&refused.stderr).contains(&format!("only Mortar moves {reference}")),
+            "wrong refusal on {reference}: {refused:?}");
+        assert_eq!(git(&root, &["rev-parse", reference]), *tip);
+        assert_eq!(git(folder, &["rev-parse", "HEAD"]), *tip);
+    }
 }
