@@ -26,7 +26,7 @@ fn sweep_deletes_extra_closed_snapshot_and_removed_zone_replay_refs_in_one_actor
     assert!(done.moves.iter().all(|m| m.old == Some(w.s.f.base.clone()) && m.new.as_str() == "0000000000000000000000000000000000000000"));
     assert_eq!((w.folder_state(&w.s.f.request), w.folder_state(&w.s.f.zone), w.folder_state(&w.b)), files);
     assert_eq!(w.s.remote_refs(), remote); assert!(!w.s.f.common.join("mortar/locks/folders.lock").exists());
-    let mut config = w.s.f.config.clone(); config.zones.remove("b"); w.s.f.configure(&config);
+    let mut config = w.s.f.init_args.clone(); config.zones.remove("b"); w.s.f.configure(&config);
     let r = app(&w, &["sweep"], 0, "swept"); assert_eq!(r.strings("deleted"), &[b]);
     assert_eq!(ref_at(&w, core), Some(w.s.f.base.clone())); assert_eq!(ref_at(&w, b), None);
     let before = observe(&w); let r = app(&w, &["sweep"], 0, "nothing-to-sweep");

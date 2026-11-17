@@ -44,8 +44,8 @@ fn resolve_undo_finishes_its_real_pending_folder_move_first_and_a_refused_move_u
     w.s.f.write("src/file", b"chosen resolution\n"); w.s.f.write("sub/keep", b"owner obstruction\n");
     ours(&w, &["resolve"], 1, "refused"); let target = done(&w, "join-rebase").pop().unwrap();
     assert!(!w.s.f.local().git_dir(&w.s.f.request).unwrap().join("mortar-join.json").exists());
-    let pending = cli::read_pending_move(&w.s.f.git, &w.s.f.common, REQUEST, "undo").unwrap().unwrap();
-    assert!(pending.folder_tree.is_some());
+    let pending = w.s.f.status(); assert_eq!(pending.text("stalled_to"), w.s.f.head().as_str());
+    assert!(w.s.f.last_move().values.iter().any(|(key, _)| key == "folder_tree"));
     // S-143 (5) 4: undo finishes the resolve's pending folder move before oplog undo; sub/keep stands in its way.
     let (snap_before, before) = (ref_at(&w, SNAP), observe(&w)); let r = ours(&w, &["undo"], 1, "refused");
     assert_eq!(r.strings("lines"), &["the folder could not move; these files stand in the way:", "  sub/keep", "the request branch already stands at the new tip; the next mr join, mr resolve, mr save or mr undo finishes the move first"]);

@@ -1,5 +1,5 @@
 use crate::support::*;
-use cli::FormatterConfig;
+use crate::support::FormatterConfig;
 use oplog::{KillPidProbe, PidProbe};
 use std::{fs::{self, File, OpenOptions}, io::{BufRead, BufReader, Write}, os::unix::process::ExitStatusExt,
     path::{Path, PathBuf}, process::{Child, Command}, sync::mpsc, thread, time::Duration};
@@ -9,7 +9,7 @@ fn rit_configured_formatter_runs_once_before_save_or_join_and_its_bytes_enter_th
     for verb in ["save", "join"] {
         let f = Fixture::new(); let program = f.common.join("formatter.sh"); let trace = f.common.join("formatter.trace");
         script(&program, b"#!/bin/sh\nset -eu\ntrace=$1; shift\ntest \"$1\" = --; shift\nprintf 'run\\n' >>\"$trace\"\npwd >\"$trace.cwd\"\nprintf '%s\\0' \"$@\" >\"$trace.args\"\nfor path in \"$@\"; do printf 'formatted child output\\n' >\"$path\"; done\n");
-        let mut config = f.config.clone(); config.formatter = Some(FormatterConfig { command: vec![program.to_str().unwrap().into(), trace.to_str().unwrap().into(), "--".into()], timeout_seconds: 60 }); f.configure(&config);
+        let mut config = f.init_args.clone(); config.formatter = Some(FormatterConfig { command: vec![program.to_str().unwrap().into(), trace.to_str().unwrap().into(), "--".into()], timeout_seconds: 60 }); f.configure(&config);
         f.write("src/file", b"unformatted input\n");
         let args = if verb == "save" { vec!["--json", "save", "Save formatted work"] } else { vec!["--json", "join"] };
         f.report(&args, verb, 0, if verb == "save" { "saved" } else { "joined" });
@@ -28,7 +28,7 @@ fn rit_fifo_formatter_timeout_is_reported_and_save_still_commits_work_then_reaps
     let fired = f.common.join("timeout-guard-fired"); let _guard = FifoGuard::new(vec![fifo.clone()], fired.clone());
     let pid_file = f.common.join("formatter.pid"); let _cleanup = StopPid(pid_file.clone()); let program = f.common.join("timeout.sh");
     script(&program, b"#!/bin/sh\nset -eu\nprintf '%s' \"$$\" >\"$1\"\nprintf 'blocked formatter\\n' >&2\nexec /bin/cat \"$2\"\n");
-    let mut config = f.config.clone(); config.formatter = Some(FormatterConfig {
+    let mut config = f.init_args.clone(); config.formatter = Some(FormatterConfig {
         command: vec![program.to_str().unwrap().into(), pid_file.to_str().unwrap().into(), fifo.to_str().unwrap().into()], timeout_seconds: 2 }); f.configure(&config);
     f.write("src/file", b"work saved after timeout\n");
     let report = f.report(&["--json", "save", "Save despite formatter timeout"], "save", 0, "saved");

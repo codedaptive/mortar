@@ -20,14 +20,14 @@ fn absent_zone_folder_still_lists_open_requests_using_their_actual_snapshot_tips
     raw(&w.git(&w.b), &["read-tree", "-m", "-u", w.s.f.base.as_str(), old.as_str()]);
     w.folder_at(&w.b, &old, &[("src/r3", b"joined three\n")]);
     raw(&w.s.f.git, &["worktree", "remove", w.b.to_str().unwrap()]); assert!(!w.b.exists());
-    let before_read = w.store(); let named = cli::read_named_zones(&w.s.f.git, &["b".into()]).unwrap();
-    assert_eq!(named.len(), 1); assert!(named[0].folder.is_none());
-    let requests = &named[0].requests;
-    assert_eq!(requests.len(), 3);
-    let plain_request = requests.iter().find(|r| r.name == "plain").unwrap();
-    assert_eq!(plain_request.tip, old); assert_eq!(plain_request.base, old);
-    let snap_request = requests.iter().find(|r| r.name == "unsaved").unwrap();
-    assert_eq!(snap_request.tip, snapshot.commit); assert_eq!(snap_request.base, old); assert_eq!(w.store(), before_read);
+    let before_read = w.store();
+    assert_eq!(raw(&w.s.f.git, &["for-each-ref", "--format=%(refname)", "refs/heads/req/b/"]),
+        b"refs/heads/req/b/plain\nrefs/heads/req/b/r3\nrefs/heads/req/b/unsaved\n");
+    assert_eq!(w.s.f.git.read_ref("refs/heads/req/b/plain").unwrap(), Some(old.clone()));
+    assert_eq!(w.s.f.git.read_ref("refs/mortar/snap/b/unsaved").unwrap(), Some(snapshot.commit.clone()));
+    assert_eq!(w.s.f.git.commit_info(&snapshot.commit).unwrap().parents.first(), Some(&old));
+    let read = w.s.app(&["overlap", "b"], 0, "no-overlap");
+    assert!(read.strings("pairs").is_empty()); assert_eq!(w.store(), before_read);
     w.core(&[("src/file", b"published\n")]); let (_, origin) = w.publish();
     let request_states = (w.folder_state(&plain), w.folder_state(&unsaved));
     let report = w.after(0, "after-published");

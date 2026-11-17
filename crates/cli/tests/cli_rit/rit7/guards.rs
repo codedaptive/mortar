@@ -30,7 +30,7 @@ fn all_three_verbs_refuse_a_real_live_land_lock_and_name_its_holder_without_runn
 
 #[test]
 fn all_three_verbs_without_config_refuse_before_work_and_point_to_the_built_init_command() {
-    let s = Harness::new(); let config = cli::config_path(&s.f.common);
+    let s = Harness::new(); let config = s.f.common.join("mortar/config.json");
     fs::rename(&config, config.with_extension("saved")).unwrap(); let before = s.observe();
     for verb in ["bisect", "backup", "restore-backup"] {
         let r = s.app(&words(&s, verb), 1, "no-config");

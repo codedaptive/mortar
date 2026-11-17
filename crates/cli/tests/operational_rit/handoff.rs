@@ -68,9 +68,10 @@ exec "$MORTAR_RIT_REAL_GIT" "$@"
 
 #[test]
 fn rit_status_unmerged_real_index_is_conflicted_not_a_stalled_move() {
-    // read_pending_move really answers; actual Gitio index_tree must classify copied unmerged entries.
-    let f = Fixture::new(); f.pending_rebase();
-    assert!(cli::read_pending_move(&f.git, &f.common, REQUEST, "status").unwrap().is_some());
+    // Status first exposes a real stall; actual Gitio index_tree must then classify copied unmerged entries.
+    let f = Fixture::new(); let (old, new, _) = f.pending_rebase();
+    let pending = status(&f, "stalled");
+    assert_eq!(pending.text("stalled_from"), old.as_str()); assert_eq!(pending.text("stalled_to"), new.as_str());
     let mut ids = Vec::new();
     for bytes in [b"base\n".as_slice(), b"ours\n", b"theirs\n"] {
         ids.push(oid(&f.git.run(&["hash-object", "-w", "--stdin"], &RunOpts {

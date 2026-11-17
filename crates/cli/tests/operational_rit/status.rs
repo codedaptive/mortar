@@ -19,7 +19,7 @@ fn rit_status_reads_clean_saved_unjoined_and_joined_tips_without_writing() {
 fn rit_status_unsaved_tracked_edit_and_new_cap_refusal_name_actual_bytes() {
     // mortar status -> Snapshot saved_state/cap + Gitio paths, no snapshot/save operation.
     let f = Fixture::new(); f.save_topic();
-    let mut config = f.config.clone(); config.cap_bytes = 3; f.configure(&config);
+    let mut config = f.init_args.clone(); config.cap_bytes = 3; f.configure(&config);
     f.write("src/file", b"tracked work not yet saved\n"); f.write("src/large", b"1234567");
     let report = status(&f, "unsaved");
     assert!(!report.flag("saved")); assert_eq!(report.text("next"), "mr save \"<sentence>\"");

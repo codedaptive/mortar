@@ -1,5 +1,12 @@
 use crate::json::{check, Report};
-use cli::{Config, ZoneConfig};
+#[path = "fixture_config.rs"] mod fixture_config;
+#[path = "fixture_formatter.rs"] mod fixture_formatter;
+#[path = "fixture_zone.rs"] mod fixture_zone;
+#[path = "write_fixture_config.rs"] mod write_fixture_config;
+pub use fixture_config::FixtureConfig as Config;
+pub use fixture_formatter::FixtureFormatter as FormatterConfig;
+pub use fixture_zone::FixtureZone as ZoneConfig;
+pub use write_fixture_config::write_fixture_config;
 use folders::{DfFreeDisk, FolderSetup, SweepEstimate};
 use gitio::{Git, Oid, RunOpts};
 use oplog::{with_lock, HeldLockError, KillPidProbe, LockName};
@@ -11,7 +18,7 @@ pub const SNAP: &str = "refs/mortar/snap/core/task";
 
 pub struct Fixture {
     pub root: PathBuf, pub git: Git, pub common: PathBuf, pub request: PathBuf, pub zone: PathBuf,
-    pub base: Oid, pub config: Config, _owned: OwnDir,
+    pub base: Oid, pub init_args: Config, _owned: OwnDir,
 }
 impl Fixture {
     pub fn new() -> Self {
@@ -37,8 +44,8 @@ impl Fixture {
         let config = Config { origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into(),
             zones: BTreeMap::from([("core".into(), ZoneConfig { paths })]), root_files: vec!["root.txt".into()],
             build_dirs: vec!["d/".into()], cap_bytes: snapshot::DEFAULT_SIZE_CAP, floor_bytes: 0, formatter: None };
-        cli::write_config(&common, &config).unwrap();
-        Self { root, git, common, request, zone, base, config, _owned: owned }
+        write_fixture_config(&git.repo, &config).unwrap();
+        Self { root, git, common, request, zone, base, init_args: config, _owned: owned }
     }
     pub fn command(&self, cwd: &Path, args: &[&str]) -> Command {
         let mut c = Command::new(env!("CARGO_BIN_EXE_mortar"));
@@ -49,7 +56,15 @@ impl Fixture {
     }
     pub fn app(&self, args: &[&str]) -> Output { self.command(&self.request, args).output().unwrap() }
     pub fn report(&self, args: &[&str], verb: &str, exit: i32, outcome: &str) -> Report { check(self.app(args), verb, exit, outcome) }
-    pub fn configure(&self, config: &Config) { cli::write_config(&self.common, config).unwrap(); }
+    pub fn configure(&self, config: &Config) { write_fixture_config(&self.git.repo, config).unwrap(); }
+    /// Read the binary's status; each caller pins the relevant public fields and keeps its raw-state oracle.
+    pub fn status(&self) -> Report { crate::json::read(self.app(&["--json", "status"]), "status", 0) }
+    /// Audit the last real Done record moving this fixture's request, without cli's pending-move detector.
+    pub fn last_move(&self) -> oplog::ValuedRecord {
+        oplog::read_valued_log(&self.common).unwrap().records.into_iter().rev().find(|r| {
+            r.record.phase == oplog::OpPhase::Done && r.record.moves.iter().any(|m| m.refname == REQUEST)
+        }).expect("a real request move in this fixture")
+    }
     pub fn local(&self) -> Git { Git { repo: self.request.clone(), ..self.git.clone() } }
     pub fn head(&self) -> Oid { self.git.read_ref(REQUEST).unwrap().unwrap() }
     pub fn records(&self) -> Vec<oplog::OpRecord> { oplog::read_op_log(&self.common).unwrap().records }

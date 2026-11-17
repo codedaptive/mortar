@@ -14,6 +14,12 @@ impl Report {
     pub fn lines(&self) -> String { self.strings("lines").join("\n") }
 }
 pub fn check(output: Output, verb: &str, exit: i32, outcome: &str) -> Report {
+    let report = read(output, verb, exit);
+    assert_eq!(report.text("outcome"), outcome);
+    report
+}
+/// The same strict envelope parser when a case asserts status fields rather than a fixed status outcome.
+pub fn read(output: Output, verb: &str, exit: i32) -> Report {
     assert_eq!(output.status.code(), Some(exit), "{output:?}");
     assert!(output.stderr.is_empty(), "unexpected stderr: {}", String::from_utf8_lossy(&output.stderr));
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
@@ -30,7 +36,7 @@ pub fn check(output: Output, verb: &str, exit: i32, outcome: &str) -> Report {
     assert_eq!(at, text.len(), "trailing stdout after the JSON object");
     let report = Report(fields);
     assert_eq!(report.text("verb"), verb); assert_eq!(report.number("exit"), exit as u64);
-    assert_eq!(report.flag("ok"), exit == 0); assert_eq!(report.text("outcome"), outcome);
+    assert_eq!(report.flag("ok"), exit == 0);
     report
 }
 fn string(text: &str, at: &mut usize) -> String {

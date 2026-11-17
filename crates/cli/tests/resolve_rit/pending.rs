@@ -1,4 +1,4 @@
-//! CLI read_pending_move -> real Oplog plain/valued compatibility, Git refs and Folders movement.
+//! Binary status/join -> real Oplog plain/valued compatibility, Git refs and Folders movement.
 use crate::support::*;
 
 #[test]
@@ -9,10 +9,13 @@ fn rit_plain_join_rebase_reads_no_folder_tree_without_mutation_before_and_after_
     assert_eq!(rebase.len(), 2);
     assert!(rebase.iter().all(|v| v.values.is_empty()));
     let before = f.observe();
-    let pending = cli::read_pending_move(&f.git, &f.common, REQUEST, "join").unwrap().unwrap();
-    assert_eq!(pending.request_ref, REQUEST);
-    assert_eq!((&pending.old, &pending.new, &pending.folder_tree), (&old, &new, &None));
-    assert_eq!(pending.op_id, rebase[1].record.op_id);
+    let pending = f.last_move();
+    let movement = pending.record.moves.iter().find(|m| m.refname == REQUEST).unwrap();
+    assert_eq!(movement.old.as_ref(), Some(&old)); assert_eq!(movement.new, new);
+    assert_eq!(pending.record.op_id, rebase[1].record.op_id); assert!(pending.values.is_empty());
+    let status = f.status();
+    assert_eq!(status.text("stalled_from"), old.as_str()); assert_eq!(status.text("stalled_to"), new.as_str());
+    assert_eq!(status.text("next"), "mr join");
     assert_eq!(f.observe(), before);
     assert!(!f.request.join("src/upstream").exists());
 
@@ -23,6 +26,7 @@ fn rit_plain_join_rebase_reads_no_folder_tree_without_mutation_before_and_after_
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(new.clone()));
     assert_eq!(f.blob(&new, "src/upstream"), b"upstream work\n");
     let after = f.observe();
-    assert_eq!(cli::read_pending_move(&f.git, &f.common, REQUEST, "join").unwrap(), Some(pending));
+    assert_eq!(f.last_move(), pending);
+    let status = f.status(); assert!(status.is_null("stalled_from") && status.is_null("stalled_to"));
     assert_eq!(f.observe(), after); assert!(!f.lock_path().exists());
 }

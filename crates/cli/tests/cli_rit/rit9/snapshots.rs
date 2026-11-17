@@ -9,8 +9,8 @@ fn sparse_request_snapshot_formats_keeps_omitted_paths_excludes_builds_caps_new_
     let w = World::new(); let path = w.s.f.root.join("sparse");
     app(&w, &["folder", "request", "core", "sparse", path.to_str().unwrap(), "--paths", "src"], 0, "made");
     assert!(!path.join("sub").exists());
-    let mut config = w.s.f.config.clone(); config.build_dirs = vec!["target/".into()]; config.cap_bytes = 8;
-    config.formatter = Some(cli::FormatterConfig {
+    let mut config = w.s.f.init_args.clone(); config.build_dirs = vec!["target/".into()]; config.cap_bytes = 8;
+    config.formatter = Some(crate::support::FormatterConfig {
         command: vec!["/bin/sh".into(), "-c".into(), "printf 'formatted\\n' > src/file".into()], timeout_seconds: 30,
     });
     w.s.f.configure(&config); write(&path, "src/file", b"raw\n"); write(&path, "src/large", b"123456789");

@@ -31,7 +31,7 @@ fn snapshot_and_sweep_respect_the_actual_join_and_folders_locks_with_exact_holde
 fn all_four_verbs_without_config_refuse_before_any_work_and_name_init() {
     let w = World::new(); w.s.f.write("src/file", b"not snapshotted\n");
     raw(&w.s.f.git, &["update-ref", "refs/t3/eligible", w.s.f.base.as_str()]);
-    let config = cli::config_path(&w.s.f.common); fs::rename(&config, config.with_extension("held")).unwrap();
+    let config = w.s.f.common.join("mortar/config.json"); fs::rename(&config, config.with_extension("held")).unwrap();
     let before = observe(&w);
     for words in [vec!["snapshot"], vec!["overlap", "core"], vec!["disk"], vec!["sweep", "--ref", "refs/t3/eligible"]] {
         let r = run(&w, &w.s.f.request, &words, 1, "no-config");
@@ -46,7 +46,7 @@ fn disk_and_sweep_with_no_configured_zones_refuse_before_reading_corrupt_folders
     raw(&w.s.f.git, &["update-ref", "refs/t3/eligible", w.s.f.base.as_str()]);
     write(&w.s.f.request, "target/out", b"must remain");
     let dir = w.s.f.git.git_dir(&w.b).unwrap(); fs::write(folders::record::record_path(&dir), b"corrupt record\n").unwrap();
-    let mut config = w.s.f.config.clone(); config.zones.clear(); w.s.f.configure(&config); let before = observe(&w);
+    let mut config = w.s.f.init_args.clone(); config.zones.clear(); w.s.f.configure(&config); let before = observe(&w);
     for words in [vec!["disk"], vec!["sweep", "--ref", "refs/t3/eligible", "--idle-days", "0"]] {
         let r = app(&w, &words, 1, "refused");
         assert_eq!(r.strings("lines"), &["the config names no zone", "with no zone listed, a sweep would delete every zone's replay records (refs/mortar/replayed/); nothing was read or deleted"]);
