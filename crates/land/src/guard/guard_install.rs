@@ -1,6 +1,7 @@
 //! guard_install: put the guard's config and both hooks in place. It runs git and does file I/O, so it has no sibling
 //! unit test (S-5); its decisions are decide_hook_writes and decide_config_write, each with its _tests.
-//! No test of it is in land today: its tests are owed to Nagatha as RITs (cases 1-6 and 9-11 in
+//! tests/land_rit/guard_codec.rs installs on fresh repos, asserts guard.json's bytes and reinstalls over Mortar's own
+//! hooks; it asserts no hook file, mode or foreign refusal, which are owed to Nagatha as RITs (cases 1-6 and 9-11 in
 //! ledger/reports/WO-land-guard-symref-for-nagatha.md).
 
 use std::fs::{self, Permissions};

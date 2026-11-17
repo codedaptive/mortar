@@ -1,6 +1,7 @@
 //! read_hooks: each guard hook's path and state in one hooks folder. It reads files, so it has no unit test (S-5).
-//! No test of it is in land today: its tests are owed to Nagatha as RITs, through guard_install and guard_status
-//! (missing, Mortar's and foreign hooks; cases 1-7 and 9-11 in ledger/reports/WO-land-guard-symref-for-nagatha.md).
+//! tests/land_rit/guard_codec.rs runs it through guard_install but asserts no hook. Owed to Nagatha as RITs, through
+//! guard_install and guard_status (missing, Mortar's and foreign hooks; cases 1-7 and 9-11 in
+//! ledger/reports/WO-land-guard-symref-for-nagatha.md).
 
 use std::path::{Path, PathBuf};
 

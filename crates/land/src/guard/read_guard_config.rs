@@ -1,5 +1,8 @@
 //! read_guard_config: the branches the guard protects, as guard.json names them. It runs git and reads a file, so
-//! it has no unit test (S-5). No test of it is in land today: its tests are owed to Nagatha as RITs (case 8 in
+//! it has no unit test (S-5). tests/land_rit/guard_codec.rs reads present files and reaches these BadConfig refusals,
+//! each naming the path, and no others: a missing, repeated or unknown key; a key that is not a string; no ':' after
+//! a key; a value that is not a string, has no closing quote or holds a raw control char; no ',' or '}' after a
+//! member; text after the object. Owed to Nagatha as a RIT: a missing guard.json giving Ok(None) (case 8 in
 //! ledger/reports/WO-land-guard-symref-for-nagatha.md).
 
 use gitio::Git;
