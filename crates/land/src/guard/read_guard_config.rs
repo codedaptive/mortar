@@ -1,6 +1,6 @@
 //! read_guard_config: the branches the guard protects, as guard.json names them. It runs git and reads a file, so
-//! it has no unit test (S-5); tests/guard_zit.rs covers it (read_guard_config_missing_or_bad, and every
-//! guard_status case).
+//! it has no unit test (S-5). No test of it is in land today: its tests are owed to Nagatha as RITs (case 8 in
+//! ledger/reports/WO-land-guard-symref-for-nagatha.md).
 
 use gitio::Git;
 

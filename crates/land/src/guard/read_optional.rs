@@ -1,6 +1,6 @@
-//! read_optional: a file's bytes, or None when it is not there. It only does I/O, so it has no unit test (S-5);
-//! tests/guard_zit.rs covers a file present and absent (every guard_status and read_guard_config case); no test
-//! reaches the Io arm.
+//! read_optional: a file's bytes, or None when it is not there. It only does I/O, so it has no unit test (S-5).
+//! No test of it is in land today: a file present and absent are owed to Nagatha as RITs, through guard_status and
+//! read_guard_config (cases 1-8 in ledger/reports/WO-land-guard-symref-for-nagatha.md); no test reaches the Io arm.
 
 use std::fs;
 use std::io::ErrorKind;

@@ -1,7 +1,6 @@
 //! guard_status: whether the guard is installed, read without writing. It runs git and reads files, so it has no
-//! unit test (S-5); tests/guard_zit.rs covers it: status_of_an_untouched_repo_and_of_a_foreign_hook,
-//! fresh_install_writes_config_and_hooks, repeat_install_changes_nothing, install_follows_a_relative_hooks_path and
-//! install_from_a_linked_worktree_covers_the_main_repo.
+//! unit test (S-5). No test of it is in land today: its tests are owed to Nagatha as RITs (cases 1, 2, 5-7 and 9-11
+//! in ledger/reports/WO-land-guard-symref-for-nagatha.md).
 
 use gitio::Git;
 

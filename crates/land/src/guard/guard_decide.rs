@@ -12,8 +12,10 @@ const NEXT: &str = "bring your work in with `mr join`, or ask for a landing";
 /// Decides one hook run from its stdin `input`. `op_moves` is the moves of the open intent MORTAR_OP names, None
 /// when MORTAR_OP is unset or names no open intent: the env var alone never allows anything, since anyone can set
 /// it (S-60). A move of `refs/heads/<origin_branch>` or `refs/heads/<integration_branch>` is allowed only when the
-/// intent lists that ref with the same old and new; every other readable line is allowed, and a line the guard cannot
-/// read is refused. The first line refused decides.
+/// intent lists that ref with the same old and new. A symbolic value (`ref:<target>`, as git 2.45+ writes it) as old
+/// or new is refused on those two refs whatever the intent lists, since an intent's moves hold oids only, and allowed
+/// on any other ref. Every other readable line is allowed, and a line the guard cannot read is refused. The first line
+/// refused decides.
 ///
 /// A pre-push is read only when it is to the guarded remote `refs.remote` (S-100): its first argument is that name,
 /// or its URL is exactly one of the push URLs the caller read for it (text compared as is: no folding of case,
@@ -46,18 +48,41 @@ pub fn guard_decide(hook: &GuardHook, input: &str, refs: &LandRefs, op_moves: Op
     }
 }
 
-/// A reference-transaction line, `<old> SP <new> SP <refname>`: the refusal's why, or None when it may pass.
+/// A reference-transaction line, `<old> SP <new> SP <refname>`, each of old and new an oid or a symbolic value: the
+/// refusal's why, or None when it may pass.
 fn transaction_refusal(line: &str, guarded: &[String], moves: &[RefMove]) -> Option<String> {
     let Some([old, new, refname]) = read_line(line) else {
         return Some(unreadable("reference-transaction", line));
     };
-    let (Ok(old), Ok(new)) = (Oid::parse(old), Oid::parse(new)) else {
+    let (Some(old), Some(new)) = (read_value(old), read_value(new)) else {
         return Some(unreadable("reference-transaction", line));
     };
-    if !guarded.iter().any(|g| g == refname) || intended(moves, refname, old, new) {
+    if !guarded.iter().any(|g| g == refname) {
         return None;
     }
-    Some(format!("only Mortar moves {refname}"))
+    let refused = Some(format!("only Mortar moves {refname}"));
+    let (Value::Oid(old), Value::Oid(new)) = (old, new) else {
+        return refused;
+    };
+    if intended(moves, refname, old, new) {
+        return None;
+    }
+    refused
+}
+
+/// One side of a reference-transaction line.
+enum Value {
+    Oid(Oid),
+    /// `ref:<target>`; the target is not kept, since no intent can list a symbolic move.
+    Symbolic,
+}
+
+/// An oid, or `ref:` with a non-empty target; anything else is unreadable.
+fn read_value(field: &str) -> Option<Value> {
+    match field.strip_prefix("ref:") {
+        Some(target) => (!target.is_empty()).then_some(Value::Symbolic),
+        None => Oid::parse(field).ok().map(Value::Oid),
+    }
 }
 
 /// A pre-push line, `<local ref> SP <local oid> SP <remote ref> SP <remote oid>`; the remote ref is the one moved,
