@@ -45,7 +45,7 @@ impl fmt::Display for OplogError {
                     )?;
                 }
                 f.write_str(
-                    " nothing was changed; find who moved them with mortar log --ref <ref>, then close the op \
+                    " nothing was changed; find who moved them with mr log --ref <ref>, then close the op \
                      by hand with a done or failed record in the op log, since recover refuses every command \
                      until it is closed",
                 )
@@ -78,7 +78,7 @@ impl fmt::Display for OplogError {
             }
             OplogError::NothingToUndo { refs } => write!(
                 f,
-                "nothing to undo: no done op in the op log moved {}; check the ref names with mortar log \
+                "nothing to undo: no done op in the op log moved {}; check the ref names with mr log \
                  --ref <ref>",
                 refs.join(", ")
             ),
@@ -108,7 +108,7 @@ impl fmt::Display for OplogError {
             }
             OplogError::UnknownOp { op_id } => write!(
                 f,
-                "cannot restore: op {op_id} is not in the op log; find the op id with mortar log"
+                "cannot restore: op {op_id} is not in the op log; find the op id with mr log"
             ),
             OplogError::ValueUnknown { op_id, refname } => write!(
                 f,

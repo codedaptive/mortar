@@ -106,7 +106,7 @@ fn mixed_refusal_text_names_the_op_the_ref_and_what_to_do() {
         "op op-7 (key land:zone-a) is open and its refs are neither all at their new values nor all at \
          their old ones: refs/heads/landing planned aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -> \
          bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, now absent; nothing was changed; find who moved them \
-         with mortar log --ref <ref>, then close the op by hand with a done or failed record in the op log, \
+         with mr log --ref <ref>, then close the op by hand with a done or failed record in the op log, \
          since recover refuses every command until it is closed"
     );
 }
