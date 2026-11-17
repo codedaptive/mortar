@@ -1,7 +1,7 @@
 //! JoinRunError: why a join, a resolve or a restore of a paused join was refused. A declaration only;
 //! join_run_error_display_tests and join_run_error_display_restore_tests exercise each variant's text.
 //! There is no Lock variant: join, resolve and restore_join_state take no lock; their caller holds join-<zone>
-//! (S-47, S-16). oplog's errors are carried as they are, so no Clone or Eq is asked of them.
+//! (S-16). oplog's errors are carried as they are, so no Clone or Eq is asked of them.
 
 use crate::{JoinError, MarkedFile};
 use gitio::{GitError, Oid};

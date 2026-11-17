@@ -43,7 +43,7 @@ fn restore_after_killed_resolve_and_real_undo_overwrites_only_that_resolves_fini
     assert_eq!(r.assert_rebased(r.resolve().unwrap()), to);
     let records = oplog::read_op_log(&r.common()).unwrap().records;
     // Recovering the dead worker's caller lock also logs exactly one takeover, before closing the resolve.
-    let phases: Vec<_> = records.iter().map(|v| (v.kind.as_str(), v.phase.clone())).collect();
+    let phases: Vec<_> = records.iter().map(|v| (v.kind.as_str(), v.phase)).collect();
     assert_eq!(phases, vec![
         ("join-rebase", OpPhase::Intent), ("lock-takeover", OpPhase::Intent), ("lock-takeover", OpPhase::Done),
         ("join-rebase", OpPhase::Done), ("undo", OpPhase::Intent), ("undo", OpPhase::Done),
