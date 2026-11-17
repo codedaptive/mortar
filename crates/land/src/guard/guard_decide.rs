@@ -6,8 +6,8 @@ use oplog::RefMove;
 use super::{GuardHook, GuardVerdict};
 use crate::LandRefs;
 
-const OWNER: &str = "the landing surface: mortar land and mortar publish";
-const NEXT: &str = "bring your work in with `mortar join`, or ask for a landing";
+const OWNER: &str = "the landing surface: mr land and mr publish";
+const NEXT: &str = "bring your work in with `mr join`, or ask for a landing";
 
 /// Decides one hook run from its stdin `input`. `op_moves` is the moves of the open intent MORTAR_OP names, None
 /// when MORTAR_OP is unset or names no open intent: the env var alone never allows anything, since anyone can set

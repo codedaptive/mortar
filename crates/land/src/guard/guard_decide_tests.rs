@@ -20,8 +20,8 @@ const ORIGIN_SSH: &str = "git@example.com:team/app.git";
 const ORIGIN_HTTPS: &str = "https://example.com/team/app.git";
 const FORK_URL: &str = "git@example.com:me/app.git";
 
-const OWNER: &str = "the landing surface: mortar land and mortar publish";
-const NEXT: &str = "bring your work in with `mortar join`, or ask for a landing";
+const OWNER: &str = "the landing surface: mr land and mr publish";
+const NEXT: &str = "bring your work in with `mr join`, or ask for a landing";
 
 fn refs() -> LandRefs {
     LandRefs { origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into() }
