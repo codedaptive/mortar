@@ -9,6 +9,7 @@ mod dropped_report;
 mod folder_command;
 mod folder_error_report;
 mod folder_error_why;
+mod folder_kind_text;
 mod folder_made_report;
 mod folder_refusal;
 mod folder_removed_report;
@@ -38,6 +39,8 @@ mod dropped_report_tests;
 #[cfg(test)]
 mod folder_error_why_tests;
 #[cfg(test)]
+mod folder_kind_text_tests;
+#[cfg(test)]
 mod folder_made_report_tests;
 #[cfg(test)]
 mod folder_refusal_tests;
@@ -66,6 +69,7 @@ pub use dropped_report::dropped_report;
 pub use folder_command::FolderCommand;
 pub use folder_error_report::folder_error_report;
 pub use folder_error_why::folder_error_why;
+pub use folder_kind_text::folder_kind_text;
 pub use folder_made_report::folder_made_report;
 pub use folder_refusal::folder_refusal;
 pub use folder_removed_report::folder_removed_report;

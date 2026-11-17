@@ -4,8 +4,10 @@
 
 use std::path::PathBuf;
 
-use folders::{FolderError, FolderKind, FolderRecord};
+use folders::FolderError;
 use gitio::Oid;
+
+use super::folder_kind_text;
 
 /// The lines for every variant folder_refusal answers for; none for Lock, Git, Oplog and DiskProbe, which are
 /// reported as every cli verb reports them. Paths, branches, refs, k, the cap and refused files come from the
@@ -26,7 +28,7 @@ pub fn folder_error_why(error: &FolderError) -> Vec<String> {
             below.free, below.floor
         )],
         FolderError::DifferentFolder { path, existing } => {
-            vec![format!("{} is already {}, not the folder asked for", path.display(), kind_text(existing))]
+            vec![format!("{} is already {}, not the folder asked for", path.display(), folder_kind_text(existing))]
         }
         FolderError::NotAFolder { path, reason } => {
             vec![format!("{} is in the way and is not a Mortar folder: {reason}", path.display())]
@@ -127,15 +129,4 @@ fn joined(paths: &[PathBuf]) -> String {
 
 fn at_text(at: Option<&Oid>) -> &str {
     at.map_or("no commit", Oid::as_str)
-}
-
-/// "the zone folder of zone <z>", "the request folder of request <r> in zone <z>" or "attempt folder <k> of request
-/// <r> in zone <z>".
-fn kind_text(record: &FolderRecord) -> String {
-    let (zone, request) = (&record.zone, record.request.as_deref().unwrap_or("(none)"));
-    match record.kind {
-        FolderKind::Zone => format!("the zone folder of zone {zone}"),
-        FolderKind::Request => format!("the request folder of request {request} in zone {zone}"),
-        FolderKind::Attempt(k) => format!("attempt folder {k} of request {request} in zone {zone}"),
-    }
 }

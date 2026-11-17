@@ -1,19 +1,34 @@
-//! mortar save: the verb's runner, the sentence it takes (S-41), the snapshot target its folder saves to (S-69),
-//! the report of a save, and the report of a save that did not happen.
+//! mortar save and mortar snapshot: save's runner, the sentence it takes (S-41), the snapshot target a folder saves
+//! to (S-69, shared by both verbs), the report of a save and of a save that did not happen; snapshot's runner, the
+//! report of a snapshot, of a snapshot that did not happen and of one run in a zone folder.
 
 mod run_save;
+mod run_snapshot;
 mod save_error_report;
 mod save_report;
 mod save_sentence;
+mod snapshot_error_report;
+mod snapshot_report;
 mod snapshot_target_for;
+mod zone_folder_refusal;
 
 #[cfg(test)]
 mod save_report_tests;
 #[cfg(test)]
+mod snapshot_error_report_tests;
+#[cfg(test)]
+mod snapshot_report_tests;
+#[cfg(test)]
 mod snapshot_target_for_tests;
+#[cfg(test)]
+mod zone_folder_refusal_tests;
 
 pub use run_save::run_save;
+pub use run_snapshot::run_snapshot;
 pub use save_error_report::save_error_report;
 pub use save_report::save_report;
 pub use save_sentence::save_sentence;
+pub use snapshot_error_report::snapshot_error_report;
+pub use snapshot_report::snapshot_report;
 pub use snapshot_target_for::snapshot_target_for;
+pub use zone_folder_refusal::zone_folder_refusal;
