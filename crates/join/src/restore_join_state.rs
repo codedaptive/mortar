@@ -21,7 +21,9 @@
 //!   and resolve again finishes
 //!   (restore_after_killed_resolve_and_real_undo_overwrites_only_that_resolves_finished_state).
 //!
-//! RIT owed: a check_restore_join_state that answered Ok, then oplog undo of the op, then restore: Restored.
+//! and tests/join_rit/precheck.rs covers
+//! - a check_restore_join_state that answered Ok, then oplog undo of the op, then restore: Restored
+//!   (precheck_then_real_undo_and_restore_recreates_the_exact_pause_and_resolves_the_same_tree).
 
 use crate::decide_restore::decide_restore;
 use crate::join_state_path::join_state_path;
@@ -36,8 +38,9 @@ use std::path::Path;
 
 /// Writes mortar-join.json in `folder`'s git dir with the state `op`, a resolve's final join-rebase op as read back
 /// from the op log, recorded under JOIN_STATE: the state that file held before that resolve's final run. The cli's
-/// order (S-142(1), S-148): check_restore_join_state, then undo the op's ref move through oplog, then this, then
-/// `mr resolve` continues the join; a repeat of either answers done (AlreadyRestored here). The op must be one
+/// order (S-142(1), S-143 (4), S-148, S-155): check_restore_join_state, then finish the pending folder move (which
+/// snapshots the folder first), then undo the op's ref move through oplog, then this, then `mr resolve` continues
+/// the join; a repeat of the undo or of this restore answers done (AlreadyRestored here). The op must be one
 /// (NotAResolveOp) and its state must decode and match it (RecordedStateCorrupt); the request ref must be back at the
 /// state's request tip (RestoreStale); a state file holding another paused join is kept (StatePresent), and one
 /// holding the undone resolve's own finished state is overwritten (restore_state_step says why). A state file that
