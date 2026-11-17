@@ -62,6 +62,8 @@ fn rit_real_attempt_folders_refuse_join_and_resolve_before_held_lock_recovery_or
 fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_local_work() {
     let r = Paused::new(true); r.first(); let f = &r.f;
     f.write("src/file", b"chosen resolution\n"); f.write("sub/keep", b"local obstruction must survive\n");
+    let state_before = fs::read_to_string(&r.state).unwrap();
+    let state_before = state_before.strip_suffix('\n').expect("state file's trailing newline").to_string();
     let report = f.report(&["--json", "resolve"], "resolve", 1, "refused"); let new = f.head();
     assert_ne!(new, r.old); assert_eq!(report.text("owner"), "this request's folder");
     assert!(report.lines().contains("edits on paths the zone changed stand in the way"));
@@ -85,8 +87,12 @@ fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_loca
     assert_eq!((pending.old, pending.new, pending.folder_tree), (r.old.clone(), new.clone(), Some(expected_tree.clone())));
     assert_eq!(f.observe(), before_read, "reading the valued log must not write or move anything");
     let valued = oplog::read_valued_log(&f.common).unwrap();
+    let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
+    // Until WO-join-9 lands, accept only its exact new shape or the exact existing shape (Orc #2426).
     for record in valued.records.iter().filter(|v| v.record.kind == "join-rebase") {
-        assert_eq!(record.values, vec![("folder_tree".to_string(), expected_tree.as_str().to_string())]);
+        assert!(record.values == vec![folder_value.clone()]
+            || record.values == vec![folder_value.clone(), ("join_state".to_string(), state_before.clone())],
+            "unexpected values: {:?}", record.values);
     }
 
     // Follow the refusal's actual next step, leaving the chosen resolution intact.
