@@ -1,7 +1,6 @@
 //! Test conversions shared by the crate's src tests: hex to Oid, (hex, refname) pairs to the (Oid, refname) list
 //! git's ref listing gives, (refname, hex) pairs to the (refname, Oid) list a sweep picks, and &str lists to owned
-//! strings. tests/folders/ref_pairs/ holds the same four for the integration target, which cannot reach this
-//! cfg(test) module.
+//! strings.
 
 mod oid;
 mod refs;

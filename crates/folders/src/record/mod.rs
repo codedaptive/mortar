@@ -22,7 +22,7 @@ mod record_error_display_tests;
 mod record_path_tests;
 
 pub use decode_folder_record::decode_folder_record;
-pub use encode_folder_record::encode_folder_record;
+pub(crate) use encode_folder_record::encode_folder_record;
 pub use folder_kind::FolderKind;
 pub use folder_record::FolderRecord;
 pub use record_error::RecordError;

@@ -1,5 +1,5 @@
 //! What dropping a request's attempts does, as drop_plan plans it.
-//! A bare type; drop_op_tests and tests/folders/attempt_plans.rs exercise it.
+//! A bare type; drop_op_tests and drop_plan_tests exercise it.
 
 use std::path::PathBuf;
 

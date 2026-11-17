@@ -4,9 +4,7 @@
 //! WO-folders-6c, S-69, S-82, S-93; attempts_remake, attempts_remake_refusals and the orphan cases: WO-folders-6d,
 //! S-96 (2), S-98.
 //! root_files: WO-folders-sparse-files, S-126.
-//! Real gitio worktrees, oplog transactions/locks and OS disk queries in disposable TestRepo fixtures; attempt_plans,
-//! sweep_pick and sweep_pick_replayed alone build plain values and need no repository (ref_pairs holds their shared
-//! conversions).
+//! Real gitio worktrees, oplog transactions/locks and OS disk queries in disposable TestRepo fixtures.
 #[path = "../support/mod.rs"]
 mod support;
 mod make;
@@ -21,11 +19,7 @@ mod maintenance_support;
 mod removal;
 mod sweeps;
 mod sweeps_replayed;
-mod sweep_pick_replayed;
-mod sweep_pick;
-mod ref_pairs;
 mod disk_cases;
-mod attempt_plans;
 mod attempt_support;
 mod attempts_make;
 mod attempts_keep;

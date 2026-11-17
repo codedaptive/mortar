@@ -32,9 +32,19 @@ mod unsaved_attempts;
 #[cfg(test)]
 mod attempt_refs_left_tests;
 #[cfg(test)]
+mod attempts_of_tests;
+#[cfg(test)]
+mod attempts_remaining_tests;
+#[cfg(test)]
 mod drop_op_tests;
 #[cfg(test)]
+mod drop_plan_tests;
+#[cfg(test)]
 mod keep_op_tests;
+#[cfg(test)]
+mod keep_plan_tests;
+#[cfg(test)]
+mod orphan_attempts_tests;
 #[cfg(test)]
 mod plan_attempts_tests;
 #[cfg(test)]
@@ -50,24 +60,24 @@ mod unsaved_attempts_tests;
 
 pub use attempt::Attempt;
 pub use attempts_of::attempts_of;
-pub use attempts_remaining::attempts_remaining;
+pub(crate) use attempts_remaining::attempts_remaining;
 pub use drop_attempts::drop_attempts;
-pub use drop_op::drop_op;
-pub use drop_plan::drop_plan;
-pub use dropped::Dropped;
+pub(crate) use drop_op::drop_op;
+pub(crate) use drop_plan::drop_plan;
+pub(crate) use dropped::Dropped;
 pub use keep::keep;
-pub use keep_op::keep_op;
-pub use keep_plan::keep_plan;
-pub use kept::Kept;
+pub(crate) use keep_op::keep_op;
+pub(crate) use keep_plan::keep_plan;
+pub(crate) use kept::Kept;
 pub use make_attempts::make_attempts;
-pub use orphan_attempts::orphan_attempts;
-pub use plan_attempts::plan_attempts;
-pub use planned_attempt::PlannedAttempt;
-pub use remade_message::remade_message;
-pub use remade_trailers::remade_trailers;
-pub use remake::Remake;
+pub(crate) use orphan_attempts::orphan_attempts;
+pub(crate) use plan_attempts::plan_attempts;
+pub(crate) use planned_attempt::PlannedAttempt;
+pub(crate) use remade_message::remade_message;
+pub(crate) use remade_trailers::remade_trailers;
+pub(crate) use remake::Remake;
 pub use remake_orphans::remake_orphans;
-pub use remake_plan::remake_plan;
-pub use request_held::request_held;
-pub use snap::Snap;
+pub(crate) use remake_plan::remake_plan;
+pub(crate) use request_held::request_held;
+pub(crate) use snap::Snap;
 pub(crate) use unsaved_attempts::unsaved_attempts;

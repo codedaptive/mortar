@@ -25,6 +25,6 @@ mod step_refusal_tests;
 mod unsaved_refusal_tests;
 
 pub use remove::remove;
-pub use remove_op::remove_op;
+pub(crate) use remove_op::remove_op;
 pub(crate) use remove_step::RemoveStep;
 pub(crate) use repeat_step::RepeatStep;

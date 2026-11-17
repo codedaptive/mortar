@@ -25,6 +25,6 @@ pub(crate) use measure_folder::measure_folder;
 pub(crate) use measure_tree::measure_tree;
 pub(crate) use mortar_folders::mortar_folders;
 pub(crate) use ref_sweep_bytes::ref_sweep_bytes;
-pub use refs_by_namespace::refs_by_namespace;
-pub use sweep_figure::sweep_figure;
+pub(crate) use refs_by_namespace::refs_by_namespace;
+pub(crate) use sweep_figure::sweep_figure;
 pub(crate) use tree_size::TreeSize;

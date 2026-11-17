@@ -2,8 +2,8 @@
 //! attempt's tip and deletes every attempt branch (S-69, S-93). An attempt folder whose branch is gone (an orphan) is
 //! OrphanAttempt before anything is touched; next step: remake_orphans, which the caller runs first (S-96 (2)).
 //! No unit test: it runs git and appends to the op log (S-5). request_branch_tests, attempt_branch_tests,
-//! request_held_tests, keep_op_tests, ref_moved_from_tests, attempt_refs_left_tests and tests/folders/attempt_plans.rs
-//! (attempts_of and orphan_attempts among them) cover its decisions.
+//! request_held_tests, keep_op_tests, ref_moved_from_tests, attempt_refs_left_tests, keep_plan_tests,
+//! attempts_of_tests and orphan_attempts_tests cover its decisions.
 //! A kill between the removals and the op leaves the remaining folders and every branch; a repeat given the same saved
 //! list finds them and finishes. tests/folders/attempts_keep.rs covers, in a throwaway repository: keep(2) of 3 with
 //! every dropped attempt saved leaves the request branch at try-2's tip, all three try folders and branches gone, and

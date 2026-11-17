@@ -4,8 +4,8 @@
 //! The request branch does not move; the attempts' trysnap refs stay until sweep_refs takes them when the request
 //! closes.
 //! No unit test: it runs git and appends to the op log (S-5). request_branch_tests, unsaved_attempts_tests,
-//! drop_op_tests, ref_moved_from_tests, attempt_refs_left_tests and tests/folders/attempt_plans.rs (attempts_of and
-//! orphan_attempts among them) cover its decisions. A kill between the removals and the op leaves the remaining
+//! drop_op_tests, ref_moved_from_tests, attempt_refs_left_tests, drop_plan_tests, attempts_of_tests and
+//! orphan_attempts_tests cover its decisions. A kill between the removals and the op leaves the remaining
 //! folders and every branch; a repeat given the same saved list finds them and finishes.
 //! tests/folders/attempts_drop.rs covers, in a throwaway repository: a drop of 3 saved attempts removes all three
 //! folders and branches in one folder-drop-attempts op, with the request branch unmoved and the trysnap refs left; an

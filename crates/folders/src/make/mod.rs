@@ -62,9 +62,9 @@ mod skip_refill_tests;
 #[cfg(test)]
 mod zone_start_for_tests;
 
-pub use branch_holder::branch_holder;
+pub(crate) use branch_holder::branch_holder;
 pub(crate) use branch_step::BranchStep;
-pub use existing_folder::existing_folder;
+pub(crate) use existing_folder::existing_folder;
 pub use folder_error::FolderError;
 pub use folder_setup::FolderSetup;
 pub(crate) use git_cone::git_cone;
@@ -75,8 +75,8 @@ pub use make_zone_folder::make_zone_folder;
 pub use read_folder_record::read_folder_record;
 pub(crate) use ref_moved_from::ref_moved_from;
 pub(crate) use refill_cone::refill_cone;
-pub use repeat::Repeat;
-pub use repeat_decision::repeat_decision;
+pub(crate) use repeat::Repeat;
+pub(crate) use repeat_decision::repeat_decision;
 pub(crate) use with_folders_lock::with_folders_lock;
-pub use write_folder_record::write_folder_record;
+pub(crate) use write_folder_record::write_folder_record;
 pub(crate) use zone_start::ZoneStart;

@@ -1,5 +1,5 @@
 //! A request branch left behind with no folder, and its zone's tip.
-//! A bare type; leftover_branches_tests and tests/folders/sweep_pick.rs exercise it.
+//! A bare type; leftover_branches_tests and sweep_pick_tests exercise it.
 
 use gitio::Oid;
 

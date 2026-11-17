@@ -1,6 +1,4 @@
 //! A request's attempt folders whose attempt branch is gone (S-69, S-82).
-//! Its tests are zone integration tests in tests/folders/attempt_plans.rs: it uses plan/attempt_number.rs for real
-//! (#1264).
 
 use std::path::PathBuf;
 

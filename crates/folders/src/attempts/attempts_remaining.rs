@@ -1,5 +1,4 @@
 //! What of a request's attempts is left: its attempt branches and attempt folders, as remove reads them (S-82).
-//! Its tests are zone integration tests in tests/folders/attempt_plans.rs: it uses orphan_attempts for real (#1264).
 
 use gitio::{Oid, Worktree};
 

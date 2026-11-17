@@ -1,8 +1,8 @@
 //! Re-makes a request's orphan attempt folders (their try branch gone) from their trysnap refs, so keep and
 //! drop_attempts meet ordinary attempts (S-96 (2), S-98).
 //! No unit test: it runs git and appends to the op log (S-5). remake_plan_tests, remade_message_tests,
-//! remade_trailers_tests, refill_cone_tests, branch_step_after_tests and tests/folders/attempt_plans.rs
-//! (orphan_attempts) cover its decisions. tests/folders/attempts_remake.rs covers, in a throwaway repository: an
+//! remade_trailers_tests, refill_cone_tests, branch_step_after_tests and orphan_attempts_tests
+//! cover its decisions. tests/folders/attempts_remake.rs covers, in a throwaway repository: an
 //! orphan with a trysnap ref gets its try branch at a new commit holding the snapshot's tree, with the snapshot's
 //! first parent as its one parent, the message `<request>: attempt <k> re-made from its snapshot`, the parent's
 //! change ID, request and zone trailers when the parent carries them for this request and zone (none otherwise), and

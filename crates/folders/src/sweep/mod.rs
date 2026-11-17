@@ -19,6 +19,8 @@ mod sweep_refs;
 mod sweep_refs_op;
 
 #[cfg(test)]
+mod closed_snap_refs_tests;
+#[cfg(test)]
 mod extra_ref_verdict_tests;
 #[cfg(test)]
 mod idle_folders_tests;
@@ -29,20 +31,22 @@ mod leftover_branches_tests;
 #[cfg(test)]
 mod stale_replayed_refs_tests;
 #[cfg(test)]
+mod sweep_pick_tests;
+#[cfg(test)]
 mod sweep_refs_op_tests;
 
-pub use closed_snap_refs::closed_snap_refs;
+pub(crate) use closed_snap_refs::closed_snap_refs;
 pub use default_build_dir::DEFAULT_BUILD_DIR;
-pub use extra_ref::ExtraRef;
-pub use extra_ref_verdict::extra_ref_verdict;
-pub use folder_age::FolderAge;
-pub use idle_folders::idle_folders;
-pub use joined_leftovers::joined_leftovers;
-pub use leftover::Leftover;
-pub use leftover_branches::leftover_branches;
-pub use stale_replayed_refs::stale_replayed_refs;
+pub(crate) use extra_ref::ExtraRef;
+pub(crate) use extra_ref_verdict::extra_ref_verdict;
+pub(crate) use folder_age::FolderAge;
+pub(crate) use idle_folders::idle_folders;
+pub(crate) use joined_leftovers::joined_leftovers;
+pub(crate) use leftover::Leftover;
+pub(crate) use leftover_branches::leftover_branches;
+pub(crate) use stale_replayed_refs::stale_replayed_refs;
 pub use sweep_build::sweep_build;
 pub use sweep_build_outcome::SweepBuildOutcome;
-pub use sweep_pick::sweep_pick;
+pub(crate) use sweep_pick::sweep_pick;
 pub use sweep_refs::sweep_refs;
-pub use sweep_refs_op::sweep_refs_op;
+pub(crate) use sweep_refs_op::sweep_refs_op;
