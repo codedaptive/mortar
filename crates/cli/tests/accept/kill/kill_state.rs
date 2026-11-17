@@ -3,7 +3,8 @@
 use std::path::PathBuf;
 
 /// The request folders r1 and r2 (zone a, each with a saved edit, neither joined) and r3 (zone b, saved and
-/// joined), and every folder the step made, zone folders first, for the consistency check.
+/// joined), and `folders`, those request folders, for the consistency check (no zone folder: one moves only after
+/// publish, S-115 (1), S-140, S-150).
 #[derive(Debug, Default)]
 pub struct KillState {
     pub r1: PathBuf,

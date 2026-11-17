@@ -1,13 +1,13 @@
-//! 03's "every folder's HEAD and index match its branch": no half-merged folder. Real processes: kill_consistent.rs
-//! reads every folder after every case on every drive.
+//! 03's "every request and attempt folder's HEAD and index match its branch": no half-merged folder. Real
+//! processes: kill_consistent.rs reads those folders after every case on every drive.
 
 use std::path::{Path, PathBuf};
 
 use crate::stage::git_out;
 use crate::world::World;
 
-/// Whether every folder holds HEAD on a branch, HEAD at that branch's tip, and a clean `git status --porcelain`
-/// (index and files at HEAD), and what each one showed.
+/// Whether every folder in `folders` (the request and attempt folders) holds HEAD on a branch, HEAD at that
+/// branch's tip, and a clean `git status --porcelain` (index and files at HEAD), and what each one showed.
 pub fn consistent_folders(world: &World, folders: &[PathBuf]) -> (bool, String) {
     let seen: Vec<(bool, String)> = folders.iter().map(|folder| one(world, folder)).collect();
     let ok = seen.iter().all(|(ok, _)| *ok);

@@ -4,7 +4,7 @@
 pub const CONSISTENT_ITEMS: [&str; 5] = [
     "consistent: git fsck clean",
     "consistent: no lock left held",
-    "consistent: every folder's HEAD and index match its branch",
+    "consistent: every request and attempt folder's HEAD and index match its branch",
     "consistent: no open intent left in the op log",
     "consistent: repeating the finished command once more moves nothing",
 ];

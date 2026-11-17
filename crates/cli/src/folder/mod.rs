@@ -5,6 +5,7 @@ mod attempt_saved;
 mod attempts_dir;
 mod attempts_made_report;
 mod attempts_saved;
+mod default_zone_start;
 mod dropped_report;
 mod folder_command;
 mod folder_error_report;
@@ -34,6 +35,8 @@ mod attempt_saved_tests;
 mod attempts_dir_tests;
 #[cfg(test)]
 mod attempts_made_report_tests;
+#[cfg(test)]
+mod default_zone_start_tests;
 #[cfg(test)]
 mod dropped_report_tests;
 #[cfg(test)]
@@ -65,6 +68,7 @@ pub use attempt_saved::attempt_saved;
 pub use attempts_dir::attempts_dir;
 pub use attempts_made_report::attempts_made_report;
 pub use attempts_saved::attempts_saved;
+pub use default_zone_start::default_zone_start;
 pub use dropped_report::dropped_report;
 pub use folder_command::FolderCommand;
 pub use folder_error_report::folder_error_report;

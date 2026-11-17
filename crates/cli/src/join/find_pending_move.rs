@@ -11,7 +11,8 @@ use super::{MoveCause, PendingMove};
 use crate::undo_reason::reversed_op;
 
 /// The last Done record in `records` (log order) holding a move of `request_ref` that changes it decides. Intent
-/// and Failed records moved nothing and are skipped; recover has settled open intents before this is read.
+/// and Failed records moved nothing and are skipped; recover has settled open intents before this is read, and status,
+/// which runs no recover, gives it the log settled in memory by recovered_records, writing nothing.
 /// Some only when that move has an old tip and its new tip is `branch_at`, where the request branch stands, and the
 /// record is one of two kinds:
 /// - a "join-rebase" (the op kind join's rebase and resolve's final join step write): the move from that old tip to
