@@ -42,7 +42,7 @@ fn earlier_round_path_becoming_a_folder_refuses_the_final_handoff_and_keeps_the_
         ("outside", b"old outside\n"), ("one", b"unrelated local edit\n"), ("two", b"two\n")]);
     let before = r.f.state(); let state = r.state_text(); let log = r.log();
     assert!(state.contains("\"files\":[\"second\"],\"all_files\":[\"conflict\",\"second\"]"));
-    assert!(matches!(r.resolve(&caller_tree), Err(JoinRunError::ConflictedPathIsFolder { path }) if path == PathBuf::from(&r.path)));
+    assert!(matches!(r.resolve(&caller_tree), Err(JoinRunError::ConflictedPathIsFolder { path }) if path == std::path::Path::new(&r.path)));
     r.f.assert_state(&before); assert_eq!(r.state_text(), state); assert_eq!(r.log(), log);
     assert_eq!(fs::read(r.f.repo.path.join(&r.path).join("child")).unwrap(), b"earlier path is now a folder\n");
     // The implementation may already have written an unreferenced resolved commit before building the handoff.
@@ -82,7 +82,7 @@ fn ready() -> Ready {
     // Literal, independent tree oracle: old request tip except BOTH resolved paths, not just current second.
     let folder_tree = r.f.tree(&[(&r.path, b"first resolution\n"), ("outside", b"old outside\n"), ("second", b"final second resolution\n"), ("one", b"one\n"), ("two", b"two\n")]);
     let resolved_tree = r.f.tree(&[(&r.path, b"first resolution\n"), ("outside", b"advanced zone work\n"), ("second", b"zone second\n")]);
-    let resolved = r.f.commit(&resolved_tree, &[r.zone.clone()], "conflicted message\n", &author("Zoë", "1700000100 -0530"));
+    let resolved = r.f.commit(&resolved_tree, std::slice::from_ref(&r.zone), "conflicted message\n", &author("Zoë", "1700000100 -0530"));
     let one_tree = r.f.tree(&[(&r.path, b"first resolution\n"), ("outside", b"advanced zone work\n"), ("second", b"zone second\n"), ("one", b"one\n")]);
     let one = r.f.commit(&one_tree, &[resolved], "one message\n", &author("One", "1700000200 +0000"));
     let final_tree = r.f.tree(&[(&r.path, b"first resolution\n"), ("outside", b"advanced zone work\n"), ("second", b"final second resolution\n"), ("one", b"one\n"), ("two", b"two\n")]);

@@ -1,4 +1,4 @@
-//! folder_tree_values: the values a resolve's final join-rebase op records (S-89).
+//! folder_tree_values: the folder_tree value, one of the values a resolve's final join-rebase op records (S-89).
 
 use crate::folder_tree_name::FOLDER_TREE;
 use gitio::Oid;

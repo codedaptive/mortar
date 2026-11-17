@@ -99,10 +99,12 @@ fn a_completed_resolve_records_folder_tree_on_its_final_op() {
     let caller_tree = f.tree(&[(P, b"resolved\n"), ("keep", b"caller edit outside the conflict\n")]);
     assert!(matches!(f.resolve(&caller_tree), JoinAnswer::FilesWritten { .. }));
     fs::write(f.repo.path.join(P), b"resolved\n").unwrap();
+    let state = fs::read_to_string(f.repo.path.join(".git/mortar-join.json")).unwrap();
+    let state = state.strip_suffix('\n').unwrap_or(&state).to_string();
     let JoinAnswer::Rebased { folder_tree: Some(t), .. } = f.resolve(&caller_tree) else { panic!("expected Rebased with a folder_tree") };
     // S-87: the old request tip's tree with P taken from the caller's tree; the caller's edit to keep stays out.
     assert_eq!(t, f.tree(&[(P, b"resolved\n"), ("keep", b"keep\n")]));
-    let values = vec![("folder_tree".to_string(), t.to_string())];
+    let values = vec![("folder_tree".to_string(), t.to_string()), ("join_state".to_string(), state)];
     assert_eq!(f.rebase_records(), vec![(OpPhase::Intent, values.clone()), (OpPhase::Done, values)]);
 }
 

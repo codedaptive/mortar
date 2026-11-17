@@ -80,11 +80,14 @@ fn path(body: &str, at: usize) -> Result<(PathBuf, usize), String> {
     Ok((PathBuf::from(text), next))
 }
 
+/// Reads one item at a byte offset: the value and the offset after it.
+type ItemReader<T> = fn(&str, usize) -> Result<(T, usize), String>;
+
 /// `[]`, or `[` then items separated by `,` then `]`, each item read by `item`.
 fn array<T>(
     body: &str,
     at: usize,
-    item: fn(&str, usize) -> Result<(T, usize), String>,
+    item: ItemReader<T>,
 ) -> Result<(Vec<T>, usize), String> {
     let mut at = literal(body, at, "[")?;
     let mut items = Vec::new();

@@ -11,9 +11,9 @@ fn every_same_path_pair_names_the_requests_and_exact_paths_independent_of_input_
     // Public overlap -> changed_files: three real forks share two paths, not their private additions.
     let f = Fixture::new();
     let base = commit(&f, &[("a/b", b"base\n"), ("a-b", b"base\n")], &[], "base\n");
-    let alpha = commit(&f, &[("a/b", b"alpha\n"), ("a-b", b"alpha\n"), ("alpha-only", b"one\n")], &[base.clone()], "alpha\n");
-    let middle = commit(&f, &[("a/b", b"middle\n"), ("a-b", b"middle\n"), ("middle-only", b"two\n")], &[base.clone()], "middle\n");
-    let zeta = commit(&f, &[("a/b", b"zeta\n"), ("a-b", b"zeta\n"), ("zeta-only", b"three\n")], &[base.clone()], "zeta\n");
+    let alpha = commit(&f, &[("a/b", b"alpha\n"), ("a-b", b"alpha\n"), ("alpha-only", b"one\n")], std::slice::from_ref(&base), "alpha\n");
+    let middle = commit(&f, &[("a/b", b"middle\n"), ("a-b", b"middle\n"), ("middle-only", b"two\n")], std::slice::from_ref(&base), "middle\n");
+    let zeta = commit(&f, &[("a/b", b"zeta\n"), ("a-b", b"zeta\n"), ("zeta-only", b"three\n")], std::slice::from_ref(&base), "zeta\n");
     f.anchor(&base, &alpha);
     let mut requests = vec![request("zeta", &base, &zeta), request("alpha", &base, &alpha), request("middle", &base, &middle)];
     // Literals come from the fixture edits, not changed_files or the overlap answer.
@@ -34,9 +34,9 @@ fn disjoint_requests_use_each_callers_base_and_empty_or_unchanged_requests_add_n
     // Public overlap -> real per-request ranges; using the first base for both would falsely share left.
     let f = Fixture::new();
     let base_a = commit(&f, &[("left", b"zero\n"), ("right", b"zero\n")], &[], "base a\n");
-    let base_b = commit(&f, &[("left", b"upstream\n"), ("right", b"zero\n")], &[base_a.clone()], "base b\n");
-    let left = commit(&f, &[("left", b"request\n"), ("right", b"zero\n")], &[base_a.clone()], "left\n");
-    let right = commit(&f, &[("left", b"upstream\n"), ("right", b"request\n")], &[base_b.clone()], "right\n");
+    let base_b = commit(&f, &[("left", b"upstream\n"), ("right", b"zero\n")], std::slice::from_ref(&base_a), "base b\n");
+    let left = commit(&f, &[("left", b"request\n"), ("right", b"zero\n")], std::slice::from_ref(&base_a), "left\n");
+    let right = commit(&f, &[("left", b"upstream\n"), ("right", b"request\n")], std::slice::from_ref(&base_b), "right\n");
     f.anchor(&base_b, &left);
     let before = observe(&f);
     assert!(overlap(&f.git, &[]).unwrap().is_empty());
@@ -53,11 +53,11 @@ fn supplied_snapshot_commit_finds_unsaved_overlap_while_request_branch_tip_does_
     // Caller gitio::snapshot_tree -> real snapshot commit -> overlap; join must not rediscover a branch tip.
     let f = Fixture::new();
     let base = commit(&f, &[("shared", b"base\n")], &[], "base\n");
-    let other = commit(&f, &[("shared", b"other request\n")], &[base.clone()], "other\n");
+    let other = commit(&f, &[("shared", b"other request\n")], std::slice::from_ref(&base), "other\n");
     f.anchor(&base, &base); // Both actual branch tips deliberately precede the unsaved edit.
     fs::write(f.repo.path.join("shared"), b"unsaved snapshot bytes\n").unwrap();
     let tree = f.git.snapshot_tree(&base, &[]).unwrap();
-    let snapshot = f.commit(&tree, &[base.clone()], "caller snapshot\n", &author("Snapshot", "1700000100 +0000"));
+    let snapshot = f.commit(&tree, std::slice::from_ref(&base), "caller snapshot\n", &author("Snapshot", "1700000100 +0000"));
     assert_eq!(f.blob(&snapshot, "shared"), b"unsaved snapshot bytes\n");
     assert_eq!(f.run(&["rev-parse", "refs/heads/topic"]), format!("{base}\n").as_bytes());
     let before = observe(&f);
@@ -75,9 +75,9 @@ fn a_real_rename_overlaps_both_its_old_and_new_path_including_spaces_and_newline
     let old = "old\nname";
     let new = "new name";
     let base = commit(&f, &[(old, b"rename payload\n")], &[], "base\n");
-    let renamed = commit(&f, &[(new, b"rename payload\n")], &[base.clone()], "rename\n");
-    let edit_old = commit(&f, &[(old, b"edited original\n")], &[base.clone()], "old user\n");
-    let add_new = commit(&f, &[(old, b"rename payload\n"), (new, b"added independently\n")], &[base.clone()], "new user\n");
+    let renamed = commit(&f, &[(new, b"rename payload\n")], std::slice::from_ref(&base), "rename\n");
+    let edit_old = commit(&f, &[(old, b"edited original\n")], std::slice::from_ref(&base), "old user\n");
+    let add_new = commit(&f, &[(old, b"rename payload\n"), (new, b"added independently\n")], std::slice::from_ref(&base), "new user\n");
     f.anchor(&base, &renamed);
     assert_eq!(f.run(&["diff", "--name-status", "-z", "-M", base.as_str(), renamed.as_str()]), b"R100\0old\nname\0new name\0");
     let before = observe(&f);
@@ -92,8 +92,8 @@ fn overlap_and_repeat_preserve_all_refs_dirty_index_work_files_and_repository_fi
     // Public overlap -> read-only Git diff; exact recursive bytes also catch created objects, logs or state files.
     let f = Fixture::new();
     let base = commit(&f, &[("shared", b"base\n")], &[], "base\n");
-    let left = commit(&f, &[("shared", b"left\n")], &[base.clone()], "left\n");
-    let right = commit(&f, &[("shared", b"right\n")], &[base.clone()], "right\n");
+    let left = commit(&f, &[("shared", b"left\n")], std::slice::from_ref(&base), "left\n");
+    let right = commit(&f, &[("shared", b"right\n")], std::slice::from_ref(&base), "right\n");
     f.anchor(&base, &left);
     fs::write(f.repo.path.join("shared"), b"staged bytes\n").unwrap();
     f.run(&["add", "--", "shared"]);
@@ -115,8 +115,8 @@ fn missing_base_and_missing_tip_are_typed_git_refusals_not_partial_overlap_answe
     // Public overlap -> changed_files -> real failing git diff, with exact failed range and no mutation.
     let f = Fixture::new();
     let base = commit(&f, &[("shared", b"base\n")], &[], "base\n");
-    let left = commit(&f, &[("shared", b"left\n")], &[base.clone()], "left\n");
-    let right = commit(&f, &[("shared", b"right\n")], &[base.clone()], "right\n");
+    let left = commit(&f, &[("shared", b"left\n")], std::slice::from_ref(&base), "left\n");
+    let right = commit(&f, &[("shared", b"right\n")], std::slice::from_ref(&base), "right\n");
     f.anchor(&base, &left);
     let missing = Oid::parse("0000000000000000000000000000000000000000").unwrap();
     assert!(f.git.run(&["cat-file", "-e", missing.as_str()], &gitio::RunOpts::default()).unwrap_err().code.is_some_and(|code| code != 0));

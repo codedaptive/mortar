@@ -17,13 +17,13 @@ pub enum JoinAnswer {
     /// from a plain join, and the caller moves the folder from `from`.
     Rebased { request_ref: String, from: Oid, to: Oid, folder_tree: Option<Oid> },
     /// A replayed commit did not apply; no ref moved. `files` are the conflicted paths and `state` is the
-    /// mortar-join.json that `mortar resolve` continues from.
+    /// mortar-join.json that `mr resolve` continues from.
     Conflicted { commit: Oid, files: Vec<PathBuf>, state: PathBuf },
     /// A resolve's first run wrote the conflicted versions of `files`, markers included, from commit `commit`'s
     /// conflict into the folder; no ref moved. `skipped` are conflicted paths the conflicted tree has no version of (a
     /// rename/rename conflict, S-50), so nothing was written for them. `gitlinks` are conflicted paths that are
     /// submodules, so no file was written for them either; their next step is to populate each one in the folder and
     /// check out the commit it should have there, then resolve again (an empty submodule folder is recorded as the
-    /// request tip's commit; S-64). The next step is to edit the files written, then run `mortar resolve` again.
+    /// request tip's commit; S-64). The next step is to edit the files written, then run `mr resolve` again.
     FilesWritten { commit: Oid, files: Vec<PathBuf>, skipped: Vec<PathBuf>, gitlinks: Vec<PathBuf> },
 }

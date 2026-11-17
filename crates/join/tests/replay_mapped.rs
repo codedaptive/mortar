@@ -12,11 +12,11 @@ fn clean_range_of_two_maps_each_commit_to_its_replayed_commit_and_the_last_to_th
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
         let first_message = "first change\n\nMortar-Change-Id: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nMortar-Zone: topic\n";
-        let first = f.commit(&f.tree(&[("file", b"topic\n")]), &[base.clone()], first_message, &author("Zoë Ångström", "1700000100 -0530"));
+        let first = f.commit(&f.tree(&[("file", b"topic\n")]), std::slice::from_ref(&base), first_message, &author("Zoë Ångström", "1700000100 -0530"));
         let second_tree = f.tree(&[("file", b"topic\n"), ("second", b"second payload\n")]);
-        let second = f.commit(&second_tree, &[first.clone()], "second change\n", &author("Second", "1700000200 +0930"));
+        let second = f.commit(&second_tree, std::slice::from_ref(&first), "second change\n", &author("Second", "1700000200 +0930"));
         let onto_tree = f.tree(&[("file", b"base\n"), ("upstream", b"upstream payload\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000300 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000300 +0000"));
         f.anchor(&onto, &second);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -48,10 +48,10 @@ fn emptied_first_commit_maps_to_onto_and_the_next_commit_sits_on_onto() {
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
         let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
-        let emptied = f.commit(&onto_tree, &[base.clone()], "emptied first\n", &author("First", "1700000100 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
+        let emptied = f.commit(&onto_tree, std::slice::from_ref(&base), "emptied first\n", &author("First", "1700000100 +0000"));
         let real_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n"), ("t", b"topic\n")]);
-        let real = f.commit(&real_tree, &[emptied.clone()], "real second\n", &author("Second", "1700000200 +0000"));
+        let real = f.commit(&real_tree, std::slice::from_ref(&emptied), "real second\n", &author("Second", "1700000200 +0000"));
         f.anchor(&onto, &real);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -73,11 +73,11 @@ fn emptied_middle_commit_maps_to_the_previous_replayed_commit() {
     for fallback in [false, true] {
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
-        let onto = f.commit(&f.tree(&[("file", b"base\n"), ("u", b"shared\n")]), &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
-        let one = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n")]), &[base.clone()], "real first\n", &author("First", "1700000100 +0000"));
-        let two = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n"), ("u", b"shared\n")]), &[one.clone()], "emptied middle\n", &author("Second", "1700000200 +0000"));
+        let onto = f.commit(&f.tree(&[("file", b"base\n"), ("u", b"shared\n")]), std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
+        let one = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n")]), std::slice::from_ref(&base), "real first\n", &author("First", "1700000100 +0000"));
+        let two = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n"), ("u", b"shared\n")]), std::slice::from_ref(&one), "emptied middle\n", &author("Second", "1700000200 +0000"));
         let three_tree = f.tree(&[("file", b"base\n"), ("t", b"one\n"), ("u", b"shared\n"), ("v", b"three\n")]);
-        let three = f.commit(&three_tree, &[two.clone()], "real third\n", &author("Third", "1700000300 +0000"));
+        let three = f.commit(&three_tree, std::slice::from_ref(&two), "real third\n", &author("Third", "1700000300 +0000"));
         f.anchor(&onto, &three);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -106,9 +106,9 @@ fn emptied_last_commit_maps_to_the_previous_replayed_commit_which_is_the_tip() {
     for fallback in [false, true] {
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
-        let onto = f.commit(&f.tree(&[("file", b"base\n"), ("u", b"shared\n")]), &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
-        let one = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n")]), &[base.clone()], "real first\n", &author("First", "1700000100 +0000"));
-        let two = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n"), ("u", b"shared\n")]), &[one.clone()], "emptied last\n", &author("Second", "1700000200 +0000"));
+        let onto = f.commit(&f.tree(&[("file", b"base\n"), ("u", b"shared\n")]), std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
+        let one = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n")]), std::slice::from_ref(&base), "real first\n", &author("First", "1700000100 +0000"));
+        let two = f.commit(&f.tree(&[("file", b"base\n"), ("t", b"one\n"), ("u", b"shared\n")]), std::slice::from_ref(&one), "emptied last\n", &author("Second", "1700000200 +0000"));
         f.anchor(&onto, &two);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -131,9 +131,9 @@ fn every_commit_dropped_is_clean_onto_and_every_entry_maps_to_onto() {
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
         let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n"), ("v", b"also shared\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
-        let one = f.commit(&f.tree(&[("file", b"base\n"), ("u", b"shared\n")]), &[base.clone()], "emptied one\n", &author("First", "1700000100 +0000"));
-        let two = f.commit(&onto_tree, &[one.clone()], "emptied two\n", &author("Second", "1700000200 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
+        let one = f.commit(&f.tree(&[("file", b"base\n"), ("u", b"shared\n")]), std::slice::from_ref(&base), "emptied one\n", &author("First", "1700000100 +0000"));
+        let two = f.commit(&onto_tree, std::slice::from_ref(&one), "emptied two\n", &author("Second", "1700000200 +0000"));
         f.anchor(&onto, &two);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -150,10 +150,10 @@ fn already_empty_source_commit_is_kept_as_a_new_commit_with_its_parents_tree() {
     for fallback in [false, true] {
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
-        let onto = f.commit(&f.tree(&[("file", b"base\n"), ("upstream", b"up\n")]), &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let onto = f.commit(&f.tree(&[("file", b"base\n"), ("upstream", b"up\n")]), std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
         let topic_tree = f.tree(&[("file", b"topic\n")]);
-        let one = f.commit(&topic_tree, &[base.clone()], "real first\n", &author("First", "1700000100 +0000"));
-        let two = f.commit(&topic_tree, &[one.clone()], "empty at source\n", &author("Second", "1700000200 +0000"));
+        let one = f.commit(&topic_tree, std::slice::from_ref(&base), "real first\n", &author("First", "1700000100 +0000"));
+        let two = f.commit(&topic_tree, std::slice::from_ref(&one), "empty at source\n", &author("Second", "1700000200 +0000"));
         f.anchor(&onto, &two);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -182,7 +182,7 @@ fn empty_range_is_clean_onto_with_no_entries() {
     for fallback in [false, true] {
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
-        let onto = f.commit(&f.tree(&[("file", b"onto\n")]), &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let onto = f.commit(&f.tree(&[("file", b"onto\n")]), std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
         f.anchor(&onto, &base);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -200,12 +200,12 @@ fn conflict_at_the_second_of_three_maps_only_the_first_and_matches_replays_confl
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("log.txt", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
         let first_tree = f.tree(&[("log.txt", b"base\n"), ("clean", b"first replayed\n")]);
-        let first = f.commit(&first_tree, &[base.clone()], "clean first\n", &author("First", "1700000100 +0000"));
+        let first = f.commit(&first_tree, std::slice::from_ref(&base), "clean first\n", &author("First", "1700000100 +0000"));
         let bad_tree = f.tree(&[("log.txt", b"topic\n"), ("clean", b"first replayed\n")]);
-        let bad = f.commit(&bad_tree, &[first.clone()], "conflict second\n", &author("Second", "1700000200 +0000"));
+        let bad = f.commit(&bad_tree, std::slice::from_ref(&first), "conflict second\n", &author("Second", "1700000200 +0000"));
         let last_tree = f.tree(&[("log.txt", b"topic\n"), ("clean", b"first replayed\n"), ("later", b"must wait\n")]);
-        let last = f.commit(&last_tree, &[bad.clone()], "remaining third\n", &author("Third", "1700000300 +0000"));
-        let onto = f.commit(&f.tree(&[("log.txt", b"onto\n")]), &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let last = f.commit(&last_tree, std::slice::from_ref(&bad), "remaining third\n", &author("Third", "1700000300 +0000"));
+        let onto = f.commit(&f.tree(&[("log.txt", b"onto\n")]), std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
         f.anchor(&onto, &last);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -246,13 +246,13 @@ fn replay_and_replay_mapped_give_the_same_chain_of_trees_messages_and_authors() 
         let f = Fixture::new();
         let base = f.commit(&f.tree(&[("file", b"base\n")]), &[], "base\n", &author("Base", "1700000000 +0000"));
         let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000500 +0000"));
-        let one = f.commit(&onto_tree, &[base.clone()], "emptied one\n", &author("First", "1700000100 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000500 +0000"));
+        let one = f.commit(&onto_tree, std::slice::from_ref(&base), "emptied one\n", &author("First", "1700000100 +0000"));
         let two_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n"), ("t", b"two\n")]);
-        let two = f.commit(&two_tree, &[one.clone()], "real two\n", &author("Second", "1700000200 -0530"));
-        let three = f.commit(&two_tree, &[two.clone()], "empty three\n", &author("Third", "1700000300 +0000"));
+        let two = f.commit(&two_tree, std::slice::from_ref(&one), "real two\n", &author("Second", "1700000200 -0530"));
+        let three = f.commit(&two_tree, std::slice::from_ref(&two), "empty three\n", &author("Third", "1700000300 +0000"));
         let four_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n"), ("t", b"two\n"), ("w", b"four\n")]);
-        let four = f.commit(&four_tree, &[three.clone()], "real four\n\nMortar-Request: request-1\n", &author("Fourth", "1700000400 +0930"));
+        let four = f.commit(&four_tree, std::slice::from_ref(&three), "real four\n\nMortar-Request: request-1\n", &author("Fourth", "1700000400 +0930"));
         f.anchor(&onto, &four);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };

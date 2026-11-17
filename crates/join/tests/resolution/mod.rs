@@ -19,19 +19,19 @@ impl Paused {
         let base_tree = f.tree(&[(path, b"base\n"), ("outside", b"old outside\n"), ("second", b"base second\n")]);
         let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
         let bad_tree = f.tree(&[(path, b"request\n"), ("outside", b"old outside\n"), ("second", b"base second\n")]);
-        let bad = f.commit(&bad_tree, &[base.clone()], "conflicted message\n", &author("Zoë", "1700000100 -0530"));
+        let bad = f.commit(&bad_tree, std::slice::from_ref(&base), "conflicted message\n", &author("Zoë", "1700000100 -0530"));
         let mut tip = bad.clone(); let mut extras = Vec::new();
         if kind != "none" {
             let one_tree = f.tree(&[(path, b"request\n"), ("outside", b"old outside\n"), ("second", b"base second\n"), ("one", b"one\n")]);
             let one = f.commit(&one_tree, &[tip], "one message\n", &author("One", "1700000200 +0000"));
             let second: &[u8] = if kind == "conflict" { b"request second\n" } else { b"base second\n" };
             let two_tree = f.tree(&[(path, b"request\n"), ("outside", b"old outside\n"), ("second", second), ("one", b"one\n"), ("two", b"two\n")]);
-            tip = f.commit(&two_tree, &[one.clone()], "two message\n", &author("Two", "1700000300 +0000"));
+            tip = f.commit(&two_tree, std::slice::from_ref(&one), "two message\n", &author("Two", "1700000300 +0000"));
             extras = vec![one, tip.clone()];
         }
         let second: &[u8] = if kind == "conflict" { b"zone second\n" } else { b"base second\n" };
         let zone_tree = f.tree(&[(path, b"zone\n"), ("outside", b"advanced zone work\n"), ("second", second)]);
-        let zone = f.commit(&zone_tree, &[base.clone()], "zone message\n", &author("Zone", "1700000400 +0000"));
+        let zone = f.commit(&zone_tree, std::slice::from_ref(&base), "zone message\n", &author("Zone", "1700000400 +0000"));
         join_refs(&f, &zone, &tip);
         let r = Self { f, path: path.into(), base, bad, tip, zone, extras };
         let answer = caller(&r.f.git, &r.f, || join::join(&r.f.git, &r.f.repo.path, JOIN_ZONE, REQUEST_REF, ACTOR)).unwrap();

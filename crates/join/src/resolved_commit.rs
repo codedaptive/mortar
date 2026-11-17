@@ -19,5 +19,5 @@ pub(crate) fn resolved_commit(
     if info.author.date.as_deref() == Some("") {
         return Err(JoinError::EmptyAuthorDate(state.commit.clone()));
     }
-    Ok(git.commit_tree(resolved_tree, &[state.replayed_tip.clone()], &info.message, Some(&info.author), None)?)
+    Ok(git.commit_tree(resolved_tree, std::slice::from_ref(&state.replayed_tip), &info.message, Some(&info.author), None)?)
 }

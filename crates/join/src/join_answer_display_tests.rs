@@ -52,7 +52,7 @@ fn rebased_names_the_request_ref_ids_tests_and_next_join() {
     );
     assert!(text.contains("onto the zone"), "{text}");
     assert!(text.contains("the unit tests must run again"), "{text}");
-    assert!(text.contains("mortar join"), "{text}");
+    assert!(text.contains("mr join"), "{text}");
 }
 
 #[test]
@@ -81,7 +81,7 @@ fn rebased_from_a_plain_join_is_the_whole_text_with_no_folder_tree() {
         answer.to_string(),
         "rebased: refs/heads/request/r1 moved from 1111111111111111111111111111111111111111 to \
          2222222222222222222222222222222222222222, replayed onto the zone; the unit tests must run again, then run \
-         `mortar join`"
+         `mr join`"
     );
 }
 
@@ -98,7 +98,7 @@ fn rebased_from_a_resolve_names_the_folder_tree_to_move_from() {
         "rebased: refs/heads/request/r1 moved from 1111111111111111111111111111111111111111 to \
          2222222222222222222222222222222222222222, replayed onto the zone; the folder moves from tree \
          3333333333333333333333333333333333333333, which holds this join's resolved files; the unit tests must run \
-         again, then run `mortar join`"
+         again, then run `mr join`"
     );
 }
 
@@ -115,7 +115,7 @@ fn conflicted_names_commit_state_each_file_on_its_own_line_and_resolve() {
     let lines: Vec<&str> = text.lines().collect();
     assert!(lines.iter().any(|line| line.trim() == "src/a.rs"), "{text}");
     assert!(lines.iter().any(|line| line.trim() == "b.txt"), "{text}");
-    assert!(text.contains("mortar resolve"), "{text}");
+    assert!(text.contains("mr resolve"), "{text}");
 }
 
 #[test]
@@ -129,7 +129,7 @@ fn files_written_names_the_commit_each_file_and_the_next_step() {
     assert_eq!(
         answer.to_string(),
         "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
-         included:\n  src/a.rs\n  b.txt\nedit the files written, then run `mortar resolve` again"
+         included:\n  src/a.rs\n  b.txt\nedit the files written, then run `mr resolve` again"
     );
 }
 
@@ -145,7 +145,7 @@ fn files_written_lists_the_skipped_paths_under_their_own_line() {
         answer.to_string(),
         "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
          included:\n  src/a.rs\nthe conflicted tree has no version of these, so nothing was written for them:\n  \
-         old/name.rs\n  c.txt\nedit the files written, then run `mortar resolve` again"
+         old/name.rs\n  c.txt\nedit the files written, then run `mr resolve` again"
     );
 }
 
@@ -162,7 +162,7 @@ fn files_written_lists_the_submodules_with_their_step() {
         "files written: the conflicted versions from commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, markers \
          included:\n  src/a.rs\nthese are submodules, so nothing was written for them: populate each one in the folder \
          and check out the commit it should have there, then resolve again (an empty submodule folder is recorded as \
-         the request tip's commit):\n  vendor/lib\n  ext\nedit the files written, then run `mortar resolve` again"
+         the request tip's commit):\n  vendor/lib\n  ext\nedit the files written, then run `mr resolve` again"
     );
 }
 
@@ -180,6 +180,6 @@ fn files_written_lists_the_skipped_paths_then_the_submodules() {
          included:\n  src/a.rs\nthe conflicted tree has no version of these, so nothing was written for them:\n  \
          old/name.rs\nthese are submodules, so nothing was written for them: populate each one in the folder and \
          check out the commit it should have there, then resolve again (an empty submodule folder is recorded as the \
-         request tip's commit):\n  vendor/lib\nedit the files written, then run `mortar resolve` again"
+         request tip's commit):\n  vendor/lib\nedit the files written, then run `mr resolve` again"
     );
 }

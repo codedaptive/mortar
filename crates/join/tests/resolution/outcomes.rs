@@ -110,7 +110,7 @@ fn real_directory_marker_skip_still_refuses_a_folder_in_the_callers_tree_before_
     fs::write(r.f.repo.path.join(&r.path).join("child"), b"<<<<<<< a nested file must not be read\n").unwrap();
     let caller_tree = r.f.tree(&[("conflict/child", b"a folder entry\n")]);
     let before = r.f.state(); let text = r.state_text(); let commits = r.commits();
-    assert!(matches!(r.resolve(&caller_tree), Err(JoinRunError::ConflictedPathIsFolder { path }) if path == PathBuf::from(&r.path)));
+    assert!(matches!(r.resolve(&caller_tree), Err(JoinRunError::ConflictedPathIsFolder { path }) if path == std::path::Path::new(&r.path)));
     r.f.assert_state(&before); assert_eq!(r.state_text(), text); assert_eq!(r.commits(), commits); assert!(r.log().is_empty());
     assert_eq!(fs::read(r.f.repo.path.join(&r.path).join("child")).unwrap(), b"<<<<<<< a nested file must not be read\n");
 }

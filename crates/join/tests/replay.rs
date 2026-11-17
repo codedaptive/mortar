@@ -19,11 +19,11 @@ fn clean_replay_keeps_each_author_message_and_trailer_and_moves_no_ref_on_either
         let first_author = author("Zoë Ångström", "1700000100 -0530");
         let second_author = author("Second Author", "1700000200 +0930");
         let first_tree = f.tree(&[("file", b"topic\n")]);
-        let first = f.commit(&first_tree, &[base.clone()], first_message, &first_author);
+        let first = f.commit(&first_tree, std::slice::from_ref(&base), first_message, &first_author);
         let second_tree = f.tree(&[("file", b"topic\n"), ("second", b"second payload\n")]);
         let tip = f.commit(&second_tree, &[first], second_message, &second_author);
         let onto_tree = f.tree(&[("file", b"base\n"), ("upstream", b"upstream payload\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000300 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000300 +0000"));
         f.anchor(&onto, &tip);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -55,13 +55,13 @@ fn conflict_names_the_original_commit_replayed_tip_remaining_commits_tree_and_fi
         let base_tree = f.tree(&[("log.txt", b"base\n")]);
         let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
         let first_tree = f.tree(&[("log.txt", b"base\n"), ("clean", b"first replayed\n")]);
-        let first = f.commit(&first_tree, &[base.clone()], "clean first\n", &author("First", "1700000100 +0000"));
+        let first = f.commit(&first_tree, std::slice::from_ref(&base), "clean first\n", &author("First", "1700000100 +0000"));
         let bad_tree = f.tree(&[("log.txt", b"topic\n"), ("clean", b"first replayed\n")]);
         let bad = f.commit(&bad_tree, &[first], "conflict second\n", &author("Second", "1700000200 +0000"));
         let last_tree = f.tree(&[("log.txt", b"topic\n"), ("clean", b"first replayed\n"), ("later", b"must wait\n")]);
-        let last = f.commit(&last_tree, &[bad.clone()], "remaining third\n", &author("Third", "1700000300 +0000"));
+        let last = f.commit(&last_tree, std::slice::from_ref(&bad), "remaining third\n", &author("Third", "1700000300 +0000"));
         let onto_tree = f.tree(&[("log.txt", b"onto\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
         f.anchor(&onto, &last);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -95,9 +95,9 @@ fn union_driver_is_read_from_onto_not_the_conflicting_worktree_attributes_on_bot
         let base_tree = f.tree(&[("log.txt", b"base\n")]);
         let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
         let topic_tree = f.tree(&[("log.txt", b"topic\n")]);
-        let topic = f.commit(&topic_tree, &[base.clone()], "topic\n\nMortar-Request: request-1\n", &author("Topic", "1700000100 -0530"));
+        let topic = f.commit(&topic_tree, std::slice::from_ref(&base), "topic\n\nMortar-Request: request-1\n", &author("Topic", "1700000100 -0530"));
         let onto_tree = f.tree(&[("log.txt", b"onto\n"), (".gitattributes", b"log.txt merge=union\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto union\n", &author("Upstream", "1700000200 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto union\n", &author("Upstream", "1700000200 +0000"));
         f.anchor(&onto, &topic);
         fs::write(f.repo.path.join(".gitattributes"), b"log.txt -merge\n").unwrap();
         assert_eq!(f.run(&["check-attr", "merge", "--", "log.txt"]), b"log.txt: merge: unset\n");
@@ -126,7 +126,7 @@ fn missing_onto_is_typed_refusal_before_any_merge_replay_or_commit_on_both_paths
         let f = Fixture::new();
         let contents = f.tree(&[("file", b"base\n")]);
         let base = f.commit(&contents, &[], "base\n", &author("Base", "1700000000 +0000"));
-        let tip = f.commit(&contents, &[base.clone()], "topic\n", &author("Topic", "1700000100 +0000"));
+        let tip = f.commit(&contents, std::slice::from_ref(&base), "topic\n", &author("Topic", "1700000100 +0000"));
         f.anchor(&base, &tip);
         let missing = Oid::parse(&"0".repeat(40)).unwrap();
         let before = f.state();
@@ -148,8 +148,8 @@ fn emptied_commit_drops_and_already_empty_source_commit_is_kept_on_both_paths() 
         let base_tree = f.tree(&[("file", b"base\n")]);
         let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
         let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
-        let emptied = f.commit(&onto_tree, &[base.clone()], "emptied by onto\n", &author("First", "1700000100 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
+        let emptied = f.commit(&onto_tree, std::slice::from_ref(&base), "emptied by onto\n", &author("First", "1700000100 +0000"));
         let empty_source = f.commit(&onto_tree, &[emptied], "empty at source\n", &author("Second", "1700000200 +0000"));
         let third_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n"), ("t", b"topic\n")]);
         let third = f.commit(&third_tree, &[empty_source], "real third\n", &author("Third", "1700000300 +0000"));
@@ -183,8 +183,8 @@ fn range_of_only_an_emptied_commit_replays_to_onto_on_both_paths() {
         let base_tree = f.tree(&[("file", b"base\n")]);
         let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
         let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
-        let emptied = f.commit(&onto_tree, &[base.clone()], "emptied by onto\n", &author("First", "1700000100 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
+        let emptied = f.commit(&onto_tree, std::slice::from_ref(&base), "emptied by onto\n", &author("First", "1700000100 +0000"));
         f.anchor(&onto, &emptied);
         let before = f.state();
         let Some((git, trace)) = f.runner(fallback) else { continue };
@@ -202,9 +202,9 @@ fn emptied_last_commit_leaves_the_replayed_previous_commit_as_tip_on_both_paths(
         let base_tree = f.tree(&[("file", b"base\n")]);
         let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
         let onto_tree = f.tree(&[("file", b"base\n"), ("u", b"shared\n")]);
-        let onto = f.commit(&onto_tree, &[base.clone()], "onto\n", &author("Upstream", "1700000400 +0000"));
+        let onto = f.commit(&onto_tree, std::slice::from_ref(&base), "onto\n", &author("Upstream", "1700000400 +0000"));
         let first_tree = f.tree(&[("file", b"base\n"), ("t", b"topic\n")]);
-        let first = f.commit(&first_tree, &[base.clone()], "real first\n", &author("First", "1700000100 +0000"));
+        let first = f.commit(&first_tree, std::slice::from_ref(&base), "real first\n", &author("First", "1700000100 +0000"));
         let last_tree = f.tree(&[("file", b"base\n"), ("t", b"topic\n"), ("u", b"shared\n")]);
         let last = f.commit(&last_tree, &[first], "emptied last\n", &author("Second", "1700000200 +0000"));
         f.anchor(&onto, &last);
@@ -322,7 +322,7 @@ fn join_fast_forwards_only_the_zone_and_repeat_is_joined_without_another_op() {
     let initial = f.tree(&[("file", b"base\n")]);
     let base = f.commit(&initial, &[], "base\n", &author("Base", "1700000000 +0000"));
     let changed = f.tree(&[("file", b"request\n")]);
-    let tip = f.commit(&changed, &[base.clone()], "request\n", &author("Topic", "1700000100 -0530"));
+    let tip = f.commit(&changed, std::slice::from_ref(&base), "request\n", &author("Topic", "1700000100 -0530"));
     join_refs(&f, &base, &tip);
     let before = f.state();
     assert_eq!(join::join(&f.git, &f.repo.path, JOIN_ZONE, REQUEST_REF, JOIN_ACTOR).unwrap(),
@@ -353,7 +353,7 @@ fn join_rebases_a_moved_zone_and_stops_with_only_the_request_ref_moved() {
     let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
     let topic_tree = f.tree(&[("file", b"request\n")]);
     let message = "request change\n\nMortar-Request: task\nMortar-Zone: it-zone\n";
-    let topic = f.commit(&topic_tree, &[base.clone()], message, &author("Zoë", "1700000100 -0530"));
+    let topic = f.commit(&topic_tree, std::slice::from_ref(&base), message, &author("Zoë", "1700000100 -0530"));
     let zone_tree = f.tree(&[("file", b"base\n"), ("upstream", b"zone change\n")]);
     let zone = f.commit(&zone_tree, &[base], "zone moved\n", &author("Zone", "1700000200 +0000"));
     join_refs(&f, &zone, &topic);
@@ -389,11 +389,11 @@ fn join_conflict_lists_files_writes_exact_resolve_state_and_moves_no_ref() {
     let base_tree = f.tree(&[("conflict file.txt", b"base\n")]);
     let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
     let bad_tree = f.tree(&[("conflict file.txt", b"request\n")]);
-    let bad = f.commit(&bad_tree, &[base.clone()], "conflicting change\n", &author("Topic", "1700000100 +0000"));
+    let bad = f.commit(&bad_tree, std::slice::from_ref(&base), "conflicting change\n", &author("Topic", "1700000100 +0000"));
     let later_tree = f.tree(&[("conflict file.txt", b"request\n"), ("later", b"not replayed yet\n")]);
-    let tip = f.commit(&later_tree, &[bad.clone()], "remaining\n", &author("Later", "1700000200 +0000"));
+    let tip = f.commit(&later_tree, std::slice::from_ref(&bad), "remaining\n", &author("Later", "1700000200 +0000"));
     let zone_tree = f.tree(&[("conflict file.txt", b"zone\n")]);
-    let zone = f.commit(&zone_tree, &[base.clone()], "zone moved\n", &author("Zone", "1700000300 +0000"));
+    let zone = f.commit(&zone_tree, std::slice::from_ref(&base), "zone moved\n", &author("Zone", "1700000300 +0000"));
     join_refs(&f, &zone, &tip);
     let conflict_tree = match f.git.merge_tree(&zone, Some(&base), &zone, &bad).unwrap() {
         gitio::MergeTreeOutcome::Conflicted { tree, files } => { assert_eq!(files, vec![PathBuf::from("conflict file.txt")]); tree }
@@ -423,7 +423,7 @@ fn join_missing_zone_or_request_is_named_without_history() {
         let f = Fixture::new();
         let contents = f.tree(&[("file", b"base\n")]);
         let base = f.commit(&contents, &[], "base\n", &author("Base", "1700000000 +0000"));
-        let topic = f.commit(&contents, &[base.clone()], "request\n", &author("Topic", "1700000100 +0000"));
+        let topic = f.commit(&contents, std::slice::from_ref(&base), "request\n", &author("Topic", "1700000100 +0000"));
         join_refs(&f, &base, &topic);
         f.run(&["checkout", "--force", "main"]);
         f.run(&["update-ref", "-d", if missing_zone { ZONE_REF } else { REQUEST_REF }]);

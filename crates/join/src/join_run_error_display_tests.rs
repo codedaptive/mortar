@@ -139,7 +139,7 @@ fn still_marked_names_each_file_and_its_lines() {
     assert_eq!(
         error.to_string(),
         "conflict markers remain; no commit was made and no ref was moved:\n  src/a.rs (lines 3, 7, 11)\n  b.txt \
-         (lines 1)\nremove them, then run `mortar resolve` again"
+         (lines 1)\nremove them, then run `mr resolve` again"
     );
 }
 
@@ -156,7 +156,7 @@ fn state_stale_names_the_ref_both_tips_the_kept_file_and_the_way_out() {
         "request ref refs/heads/request/r1 is at 2222222222222222222222222222222222222222, not at \
          1111111111111111111111111111111111111111 where the paused join left it, so /repo/.git/mortar-join.json no \
          longer describes the request; the state file was kept and no ref was moved. To start over: remove \
-         /repo/.git/mortar-join.json, then run `mortar join` to replay the request afresh"
+         /repo/.git/mortar-join.json, then run `mr join` to replay the request afresh"
     );
 }
 
@@ -172,7 +172,7 @@ fn state_stale_with_the_ref_gone_says_it_does_not_exist() {
         error.to_string(),
         "request ref refs/heads/request/r1 does not exist, not at 1111111111111111111111111111111111111111 where the \
          paused join left it, so /repo/.git/mortar-join.json no longer describes the request; the state file was \
-         kept and no ref was moved. To start over: remove /repo/.git/mortar-join.json, then run `mortar join` to \
+         kept and no ref was moved. To start over: remove /repo/.git/mortar-join.json, then run `mr join` to \
          replay the request afresh"
     );
 }
@@ -211,7 +211,7 @@ fn state_remove_names_the_path_and_says_the_ref_moved_and_to_resolve_again() {
     assert_eq!(
         error.to_string(),
         "/repo/.git/mortar-join.json: denied here; the request ref was moved but the join state was not removed; \
-         check that folder and its permissions, then run `mortar resolve` again to finish"
+         check that folder and its permissions, then run `mr resolve` again to finish"
     );
 }
 
@@ -233,7 +233,7 @@ fn conflicted_path_is_folder_names_the_path_and_the_way_out() {
     assert_eq!(
         text,
         "conflicted path src/gen names a folder; nothing was committed and no ref was moved. A conflicted path \
-         must be a file or removed: make it one, then run `mortar resolve` again"
+         must be a file or removed: make it one, then run `mr resolve` again"
     );
 }
 
