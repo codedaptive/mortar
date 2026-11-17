@@ -1,5 +1,5 @@
-//! Guard failure texts. The Git arm prints gitio's own text, so its case runs another crate's Display: a RIT owed
-//! to Nagatha (S-101), not here. Io embeds std's text, so only its path prefix is checked.
+//! Guard failure texts. The Git arm prints gitio's own text, so its case runs another crate's Display: a RIT, in
+//! tests/land_rit/owed_displays.rs, not here. Io embeds std's text, so only its path prefix is checked.
 
 use std::io;
 use std::path::PathBuf;

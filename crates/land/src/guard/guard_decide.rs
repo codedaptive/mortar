@@ -11,11 +11,12 @@ const NEXT: &str = "bring your work in with `mr join`, or ask for a landing";
 
 /// Decides one hook run from its stdin `input`. `op_moves` is the moves of the open intent MORTAR_OP names, None
 /// when MORTAR_OP is unset or names no open intent: the env var alone never allows anything, since anyone can set
-/// it (S-60). A move of `refs/heads/<origin_branch>` or `refs/heads/<integration_branch>` is allowed only when the
-/// intent lists that ref with the same old and new. A symbolic value (`ref:<target>`, as git 2.45+ writes it) as old
-/// or new is refused on those two refs whatever the intent lists, since an intent's moves hold oids only, and allowed
-/// on any other ref. Every other readable line is allowed, and a line the guard cannot read is refused. The first line
-/// refused decides.
+/// it (S-60). A reference-transaction line on `refs/heads/<origin_branch>` or `refs/heads/<integration_branch>`
+/// whose old and new are the same non-zero oid moves nothing and is allowed, as a checkout of the branch writes it
+/// (S-153); a line that changes them is allowed only when the intent lists that ref with the same old and new. A
+/// symbolic value (`ref:<target>`, as git 2.45+ writes it) as old or new is refused on those two refs whatever the
+/// intent lists, since an intent's moves hold oids only, and allowed on any other ref. Every other readable line is
+/// allowed, and a line the guard cannot read is refused. The first line refused decides.
 ///
 /// A pre-push is read only when it is to the guarded remote `refs.remote` (S-100): its first argument is that name,
 /// or its URL is exactly one of the push URLs the caller read for it (text compared as is: no folding of case,
@@ -64,7 +65,7 @@ fn transaction_refusal(line: &str, guarded: &[String], moves: &[RefMove]) -> Opt
     let (Value::Oid(old), Value::Oid(new)) = (old, new) else {
         return refused;
     };
-    if intended(moves, refname, old, new) {
+    if (old == new && !is_zero(&old)) || intended(moves, refname, old, new) {
         return None;
     }
     refused
@@ -110,8 +111,13 @@ fn read_line<const N: usize>(line: &str) -> Option<[&str; N]> {
 /// Whether the intent lists exactly this move. Git writes an all-zero old for a ref that does not exist yet, which
 /// a RefMove says with `old: None`; an all-zero new is a deletion and must match the intent's zero `new`.
 fn intended(moves: &[RefMove], refname: &str, old: Oid, new: Oid) -> bool {
-    let old = (!old.as_str().bytes().all(|b| b == b'0')).then_some(old);
+    let old = (!is_zero(&old)).then_some(old);
     moves.iter().any(|m| m.refname == refname && m.old == old && m.new == new)
+}
+
+/// Whether git wrote the all-zero oid: no ref on that side.
+fn is_zero(oid: &Oid) -> bool {
+    oid.as_str().bytes().all(|b| b == b'0')
 }
 
 /// A line the guard cannot read is refused: it cannot tell what the line moves, so it fails closed.

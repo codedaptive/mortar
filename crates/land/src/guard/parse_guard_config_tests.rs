@@ -1,5 +1,6 @@
 //! parse_guard_config: text that is not a JSON object is refused before any string is read; every case here is.
-//! Cases that read a key or a value run oplog's parse_json_string, so they are Nagatha's RITs (owed, S-101).
+//! Cases that read a key or a value run oplog's parse_json_string, so tests/land_rit/guard_codec.rs
+//! runs them through read_guard_config (S-101).
 
 use super::parse_guard_config::parse_guard_config;
 

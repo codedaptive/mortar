@@ -151,6 +151,24 @@ fn transaction_cases() -> Vec<Case> {
             Some(vec![mv("refs/heads/zone/other", Some(A), B)]), GuardVerdict::Allow),
         case("HEAD to a symref, unrelated intent", tx("prepared"), &format!("{Z} ref:refs/heads/x HEAD"),
             Some(vec![mv("refs/heads/zone/other", Some(A), B)]), GuardVerdict::Allow),
+        // S-153: a line on a guarded ref whose old and new are the same non-zero oid moves nothing (a checkout of the
+        // branch writes it) and passes; the same all-zero oid on both sides with no intent is still refused.
+        case("integration unchanged no intent", tx("prepared"), &format!("{A} {A} refs/heads/integration"), None,
+            GuardVerdict::Allow),
+        case("origin unchanged no intent", tx("prepared"), &format!("{A} {A} refs/heads/main"), None,
+            GuardVerdict::Allow),
+        case("sha256 origin unchanged no intent", tx("prepared"), &format!("{A64} {A64} refs/heads/main"), None,
+            GuardVerdict::Allow),
+        case("origin zero to zero no intent", tx("prepared"), &format!("{Z} {Z} refs/heads/main"), None,
+            refuse("only Mortar moves refs/heads/main")),
+        case("sha256 integration zero to zero no intent", tx("prepared"),
+            &format!("{Z64} {Z64} refs/heads/integration"), None, refuse("only Mortar moves refs/heads/integration")),
+        case("integration unchanged then origin moved", tx("prepared"),
+            &format!("{A} {A} refs/heads/integration\n{A} {B} refs/heads/main\n"), None,
+            refuse("only Mortar moves refs/heads/main")),
+        case("worktree add of integration, unrelated intent", tx("prepared"),
+            &format!("{A} {A} refs/heads/integration"), Some(vec![mv("refs/heads/zone/other", Some(A), B)]),
+            GuardVerdict::Allow),
     ]
 }
 
