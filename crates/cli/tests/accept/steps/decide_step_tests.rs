@@ -24,19 +24,16 @@ fn unset(_: &str) -> Option<OsString> {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn an_always_step_with_a_body_runs() {
     assert_eq!(reason(decide_step(&spec(Gate::Always, true), &unset)), None);
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn a_step_with_no_body_names_its_order() {
     assert_eq!(reason(decide_step(&spec(Gate::Always, false), &unset)).as_deref(), Some("not written yet: ACCEPT-4"));
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn an_unset_or_empty_variable_is_named_before_the_missing_body() {
     let empty = |_: &str| Some(OsString::new());
     for env in [&unset as &dyn Fn(&str) -> Option<OsString>, &empty] {
@@ -46,7 +43,6 @@ fn an_unset_or_empty_variable_is_named_before_the_missing_body() {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn a_set_variable_lets_the_body_decide() {
     let set = |var: &str| (var == "ACCEPT_AGENT").then(|| OsString::from("claude -p"));
     assert_eq!(reason(decide_step(&spec(AGENT_GATE, true), &set)), None);

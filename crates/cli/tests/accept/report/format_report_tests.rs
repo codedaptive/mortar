@@ -5,7 +5,6 @@ fn check(ok: bool, did: &str, saw: &str) -> Line {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn blocks_lines_and_a_passing_result() {
     let blocks = [
         Block {
@@ -34,7 +33,6 @@ fn blocks_lines_and_a_passing_result() {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn a_failed_block_fails_the_result_and_extra_lines_are_indented() {
     let blocks = [Block {
         number: 1,
@@ -55,7 +53,6 @@ fn a_failed_block_fails_the_result_and_extra_lines_are_indented() {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn no_blocks_is_the_title_and_a_passing_result() {
     assert_eq!(format_report(&[]), "mortar acceptance report\n\nResult: PASS\n");
 }

@@ -5,13 +5,11 @@ fn block(verdict: Verdict) -> Block {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn pass_and_not_run_pass_the_drive() {
     assert!(drive_passed(&[block(Verdict::Pass), block(Verdict::NotRun("set X".to_string()))]));
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn one_failed_block_fails_the_drive() {
     assert!(!drive_passed(&[block(Verdict::Pass), block(Verdict::Fail), block(Verdict::Pass)]));
 }
