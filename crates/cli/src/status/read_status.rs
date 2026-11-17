@@ -12,7 +12,7 @@
 //! - an over-cap new file is listed with the cap;
 //! - a needed path outside the work order is listed as a gap;
 //! - work snapshotted after a join but never saved to the request branch is neither saved nor joined, next mr
-//!   save (crates/cli/tests/status_joined_tests.rs);
+//!   save (the RIT crates/cli/tests/cli_rit/status_joined_tests.rs, S-135, S-136);
 //! - status writes no file and moves no ref: refs, the folder's index and the op log are unchanged after it.
 
 use folders::gaps;

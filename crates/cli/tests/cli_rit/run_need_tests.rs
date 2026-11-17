@@ -2,24 +2,12 @@
 //! lock, folders::need or git write. A missing zone branch is need's refusal (exit 1, missing_branch_report's
 //! wording) before need writes its record, cone or refs. need's next step reads only what status_next needs, so an
 //! unreadable record of another folder (read for status's overlaps) does not turn a completed need into a failure.
-//! ZIT (S-119: the subject decides the group): the mortar binary runs as a child in a throwaway repository. The
-//! RIT cases of need stay in tests/operational_rit/need.rs.
-#[allow(dead_code)]
-#[path = "cli_rit/json.rs"]
-mod json;
-#[allow(dead_code)]
-#[path = "cli_rit/support.rs"]
-mod support;
-#[allow(dead_code)]
-#[path = "operational_rit/observe.rs"]
-mod observe;
-#[allow(dead_code)]
-#[path = "operational_rit/need_fixture.rs"]
-mod need_fixture;
+//! RIT (S-135, S-136): the mortar binary runs as a child in a throwaway repository, reaching folders, gitio and
+//! oplog below cli; Nagatha's from landing. More need RITs are in tests/operational_rit/need.rs.
 
-use need_fixture::Need;
-use observe::{before, peer, record_path};
-use support::{raw, ZONE};
+use crate::need_fixture::Need;
+use crate::observe::{before, peer, record_path};
+use crate::support::{raw, ZONE};
 
 #[test]
 fn need_wrong_argument_count_is_usage_without_work() {

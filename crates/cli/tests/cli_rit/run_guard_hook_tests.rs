@@ -2,29 +2,14 @@
 //! land::guard_decide, with no ref moved. With MORTAR_OP set and the op log unreadable (its path a directory), a
 //! reference-transaction committed or aborted is let through (exit 0, nothing printed) without reading the op log,
 //! and a prepared one, guarded line or not, fails on the op log (exit 5), with no ref moved.
-//! ZIT (S-119: the subject decides the group): each test runs the mortar binary with the hook's words and input, as
-//! git would, in a throwaway repository.
-//! The installed-hook and marked-op cases stay RITs in tests/operational_rit/guard.rs.
-#[allow(dead_code)]
-#[path = "cli_rit/json.rs"]
-mod json;
-#[allow(dead_code)]
-#[path = "cli_rit/support.rs"]
-mod support;
-#[allow(dead_code)]
-#[path = "operational_rit/cid.rs"]
-mod cid;
-#[allow(dead_code)]
-#[path = "operational_rit/refs.rs"]
-mod refs;
-#[allow(dead_code)]
-#[path = "operational_rit/guard_fixture.rs"]
-mod guard_fixture;
+//! RIT (S-135, S-136): each test runs the mortar binary with the hook's words and input, as git would, in a throwaway
+//! repository whose guard land::guard_install put in; Nagatha's from landing.
+//! The installed-hook and marked-op cases are RITs in tests/operational_rit/guard.rs.
 
 use std::fs;
 
-use guard_fixture::Guard;
-use json::check;
+use crate::guard_fixture::Guard;
+use crate::json::check;
 
 #[test]
 fn guard_invalid_utf8_input_refuses_without_moving_any_ref() {

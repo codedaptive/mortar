@@ -4,23 +4,13 @@
 //! attempt has no work yet (S-145), otherwise "wait for the harness to keep or drop the attempts", never join, even
 //! when the zone has moved. `need` stays refused in an attempt folder.
 //! Status reads only (S-85): refs, index, record, op log and files are unchanged by it (observe::status_at).
-//! ZIT (S-119: the subject decides the group): the mortar binary runs as a child in a throwaway repository, with
-//! the attempts made by the folders crate directly.
+//! RIT (S-135, S-136): the mortar binary runs as a child in a throwaway repository, with the attempts made by the
+//! folders crate directly; Nagatha's from landing.
 
-#[allow(dead_code)]
-#[path = "cli_rit/json.rs"]
-mod json;
-#[allow(dead_code)]
-#[path = "cli_rit/support.rs"]
-mod support;
-#[allow(dead_code)]
-#[path = "operational_rit/observe.rs"]
-mod observe;
-
-use json::check;
-use observe::{before, status_at};
+use crate::json::check;
+use crate::observe::{before, status_at};
+use crate::support::{raw, setup, write, Fixture, ZONE};
 use std::path::{Path, PathBuf};
-use support::{raw, setup, write, Fixture, ZONE};
 
 const WAIT: &str = "wait for the harness to keep or drop the attempts";
 const TRY_2: &str = "refs/heads/try/core/task/2";

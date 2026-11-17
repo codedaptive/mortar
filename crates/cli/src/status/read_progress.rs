@@ -3,9 +3,10 @@
 //! as a commit (S-144).
 //! Shell API: read_status and run_need call it.
 //! No unit test: it runs git and reads the folder's files (S-5, S-104); is_saved_tests, no_work_yet_tests,
-//! is_joined_tests, move_stalled_tests and status_next_tests cover the decisions made from what it reads, and the ZIT crates/cli/tests/status_joined_tests.rs
-//! covers joined with the mortar binary in a throwaway repository: work snapshotted after a join but never saved
-//! is not joined; a join with nothing new since, and a formatted save then a join, stay joined.
+//! is_joined_tests, move_stalled_tests and status_next_tests cover the decisions made from what it reads, and the RIT
+//! crates/cli/tests/cli_rit/status_joined_tests.rs (S-135, S-136) covers joined with the mortar binary in a throwaway
+//! repository: work snapshotted after a join but never saved is not joined; a join with nothing new since, and a
+//! formatted save then a join, stay joined.
 
 use ::join::paused_join;
 use gitio::{Git, Oid, StatusPaths};

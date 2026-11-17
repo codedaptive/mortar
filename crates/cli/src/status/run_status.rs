@@ -5,7 +5,8 @@
 //! the mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository
 //! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - in an attempt folder (S-127(1)): exit 0, attempt k's own branch and snapshot, next mr save or the wait for
-//!   the harness, never join (covered by the ZIT crates/cli/tests/status_attempt_folder_tests.rs);
+//!   the harness, never join (covered by the RIT crates/cli/tests/cli_rit/status_attempt_folder_tests.rs, S-135,
+//!   S-136);
 //! - a zone folder is refused;
 //! - any argument is exit 4;
 //! - --json gives one object;
