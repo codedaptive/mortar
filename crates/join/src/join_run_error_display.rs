@@ -1,4 +1,5 @@
 //! Display for JoinRunError: each refusal says why and names the ref, path or op it carries.
+//! join_run_error_display_tests and join_run_error_display_restore_tests cover each variant's text.
 
 use crate::JoinRunError;
 use std::fmt;
@@ -52,7 +53,7 @@ impl fmt::Display for JoinRunError {
                     let lines: Vec<String> = file.lines.iter().map(ToString::to_string).collect();
                     write!(f, "\n  {} (lines {})", file.path.display(), lines.join(", "))?;
                 }
-                write!(f, "\nremove them, then run `mortar resolve` again")
+                write!(f, "\nremove them, then run `mr resolve` again")
             }
             JoinRunError::StateStale { request_ref, expected, actual, state } => {
                 match actual {
@@ -62,7 +63,7 @@ impl fmt::Display for JoinRunError {
                 write!(
                     f,
                     "not at {expected} where the paused join left it, so {} no longer describes the request; the \
-                     state file was kept and no ref was moved. To start over: remove {}, then run `mortar join` to \
+                     state file was kept and no ref was moved. To start over: remove {}, then run `mr join` to \
                      replay the request afresh",
                     state.display(),
                     state.display()
@@ -79,7 +80,7 @@ impl fmt::Display for JoinRunError {
             JoinRunError::StateRemove { path, source } => write!(
                 f,
                 "{}: {source}; the request ref was moved but the join state was not removed; check that folder and \
-                 its permissions, then run `mortar resolve` again to finish",
+                 its permissions, then run `mr resolve` again to finish",
                 path.display()
             ),
             JoinRunError::FileRead { path, source } => write!(
@@ -90,7 +91,7 @@ impl fmt::Display for JoinRunError {
             JoinRunError::ConflictedPathIsFolder { path } => write!(
                 f,
                 "conflicted path {} names a folder; nothing was committed and no ref was moved. A conflicted path must \
-                 be a file or removed: make it one, then run `mortar resolve` again",
+                 be a file or removed: make it one, then run `mr resolve` again",
                 path.display()
             ),
             JoinRunError::ConflictedPathRefused { path, reason } => {
@@ -100,6 +101,36 @@ impl fmt::Display for JoinRunError {
                 }
                 write!(f, "{reason}; nothing was committed and no ref was moved")
             }
+            JoinRunError::NotAResolveOp { op_id } => write!(
+                f,
+                "op {op_id} is not a resolve's final join-rebase op recording a paused join's state; nothing was \
+                 written. Only a resolve's final op restores a paused join: undo that op as a plain step, or check \
+                 the op id with `mr log`"
+            ),
+            JoinRunError::RecordedStateCorrupt { op_id, reason } => write!(
+                f,
+                "the state recorded in op {op_id} cannot be used: {reason}; nothing was written. The op's ref move \
+                 can still be undone, but the paused join cannot be put back from it: run `mr join` to replay \
+                 the request afresh"
+            ),
+            JoinRunError::RestoreStale { request_ref, expected, actual } => {
+                match actual {
+                    Some(actual) => write!(f, "request ref {request_ref} is at {actual}, ")?,
+                    None => write!(f, "request ref {request_ref} does not exist, ")?,
+                }
+                write!(
+                    f,
+                    "not at {expected} where the recorded paused join left it; nothing was written: move \
+                     {request_ref} back to {expected} (undo the op's ref move) first, then restore again"
+                )
+            }
+            JoinRunError::StatePresent { state } => write!(
+                f,
+                "{} holds a different paused join; it was kept and nothing was written: finish that join with \
+                 `mr resolve`, or remove {} by hand, then restore again",
+                state.display(),
+                state.display()
+            ),
         }
     }
 }

@@ -1,14 +1,14 @@
-//! JoinRunError: why a join or a resolve was refused. A declaration only; join_run_error_display_tests exercises
-//! each variant's text.
-//! There is no Lock variant: join and resolve take no lock; their caller holds join-<zone> (S-47, S-16). oplog's
-//! errors are carried as they are, so no Clone or Eq is asked of them.
+//! JoinRunError: why a join, a resolve or a restore of a paused join was refused. A declaration only;
+//! join_run_error_display_tests and join_run_error_display_restore_tests exercise each variant's text.
+//! There is no Lock variant: join, resolve and restore_join_state take no lock; their caller holds join-<zone>
+//! (S-47, S-16). oplog's errors are carried as they are, so no Clone or Eq is asked of them.
 
 use crate::{JoinError, MarkedFile};
 use gitio::{GitError, Oid};
 use oplog::{OplogError, OpRecord};
 use std::path::PathBuf;
 
-/// A join or resolve refusal. Debug only: OplogError and io::Error are neither Clone nor Eq.
+/// A join, resolve or restore refusal. Debug only: OplogError and io::Error are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum JoinRunError {
     /// Replaying the request's commits failed: join's replay onto the zone tip, or resolve's continued replay.
@@ -51,4 +51,17 @@ pub enum JoinRunError {
     /// gitio refused to build the resolved tree from the conflicted paths, so no resolved commit was made; `path` is
     /// the conflicted path the refusal names, when it names one, and `reason` is gitio's.
     ConflictedPathRefused { path: Option<PathBuf>, reason: String },
+    /// The op given to restore is not a resolve's final join-rebase op recording a state: another kind, not done,
+    /// not exactly one ref move, or no join_state value. Nothing was written; the caller undoes the op as a plain
+    /// step, or checks the op id.
+    NotAResolveOp { op_id: String },
+    /// The state recorded in op `op_id` does not decode, or does not match the op's ref move; `reason` says which.
+    /// Nothing was written; the op's ref move can still be undone, and the caller replays the request afresh with a
+    /// join.
+    RecordedStateCorrupt { op_id: String, reason: String },
+    /// The request ref is not at the recorded state's request tip (`actual` is None when the ref is gone), so the
+    /// restored state would not describe the request. Nothing was written.
+    RestoreStale { request_ref: String, expected: Oid, actual: Option<Oid> },
+    /// mortar-join.json at `state` holds a different paused join; it was kept and nothing was written.
+    StatePresent { state: PathBuf },
 }

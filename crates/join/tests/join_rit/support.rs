@@ -34,7 +34,7 @@ impl Fixture {
         git.run(&["add", "--", "."], &RunOpts::default()).unwrap();
         let tree = oid(&git.run(&["write-tree"], &RunOpts::default()).unwrap().stdout);
         let base = git.commit_tree(&tree, &[], "base\n", None, None).unwrap();
-        let tip = git.commit_tree(&tree, &[base.clone()], "request\n", None, None).unwrap();
+        let tip = git.commit_tree(&tree, std::slice::from_ref(&base), "request\n", None, None).unwrap();
         git.run(&["update-ref", "refs/heads/main", base.as_str()], &RunOpts::default()).unwrap();
         git.run(&["update-ref", REQUEST, tip.as_str()], &RunOpts::default()).unwrap();
         git.run(&["reset", "--mixed", "main"], &RunOpts::default()).unwrap();

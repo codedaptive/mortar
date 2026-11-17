@@ -19,7 +19,7 @@ fn kill_and_repeat(mode: &str) {
     let tree = r.caller_tree();
     let expected_tree = r.f.tree(&[(&r.path, b"resolved\n"), ("outside", b"advanced zone work\n"), ("second", b"base second\n")]);
     // Independent raw-Git commit oracle from the specified tree/parent/message/author, not resolve's output.
-    let expected = r.f.commit(&expected_tree, &[r.zone.clone()], "conflicted message\n", &author("Zoë", "1700000100 -0530"));
+    let expected = r.f.commit(&expected_tree, std::slice::from_ref(&r.zone), "conflicted message\n", &author("Zoë", "1700000100 -0530"));
     kill_at_boundary(&r, &tree, mode);
     assert!(r.state_text().contains(&format!("\"rebased_to\":\"{expected}\"")));
     assert_eq!(r.f.git.read_ref(REQUEST_REF).unwrap(), Some(if mode == "before" { r.tip.clone() } else { expected.clone() }));

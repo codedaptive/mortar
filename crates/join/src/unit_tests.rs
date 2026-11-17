@@ -13,6 +13,8 @@ mod classify_conflicted_tests;
 mod decide_join_tests;
 #[path = "decide_resolve_tests.rs"]
 mod decide_resolve_tests;
+#[path = "decide_restore_tests.rs"]
+mod decide_restore_tests;
 #[path = "decode_join_state_tests.rs"]
 mod decode_join_state_tests;
 #[path = "encode_join_state_tests.rs"]
@@ -29,10 +31,14 @@ mod join_answer_display_tests;
 mod join_error_display_tests;
 #[path = "join_error_from_git_tests.rs"]
 mod join_error_from_git_tests;
+#[path = "join_run_error_display_restore_tests.rs"]
+mod join_run_error_display_restore_tests;
 #[path = "join_run_error_display_tests.rs"]
 mod join_run_error_display_tests;
 #[path = "join_state_path_tests.rs"]
 mod join_state_path_tests;
+#[path = "join_state_value_tests.rs"]
+mod join_state_value_tests;
 #[path = "map_steps_tests.rs"]
 mod map_steps_tests;
 #[path = "marked_lines_tests.rs"]
@@ -47,6 +53,8 @@ mod pair_overlaps_for_tests;
 mod read_git_replay_tests;
 #[path = "rebase_op_tests.rs"]
 mod rebase_op_tests;
+#[path = "recorded_join_state_tests.rs"]
+mod recorded_join_state_tests;
 #[path = "replay_commit_tests.rs"]
 mod replay_commit_tests;
 #[path = "replay_commits_tests.rs"]

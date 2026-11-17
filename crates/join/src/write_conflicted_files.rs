@@ -12,6 +12,9 @@ use crate::JoinRunError;
 use gitio::{Git, Oid};
 use std::path::{Path, PathBuf};
 
+/// (written, absent, gitlinks), each in the order given.
+type Sorted = (Vec<PathBuf>, Vec<PathBuf>, Vec<PathBuf>);
+
 /// Sorts `files`, in order, into those `tree` has a file version of, those it lacks and those that are gitlinks
 /// (submodules), writes the first into `folder` (no write when there are none) and returns all three:
 /// (written, absent, gitlinks).
@@ -20,7 +23,7 @@ pub(crate) fn write_conflicted_files(
     folder: &Path,
     tree: &Oid,
     files: Vec<PathBuf>,
-) -> Result<(Vec<PathBuf>, Vec<PathBuf>, Vec<PathBuf>), JoinRunError> {
+) -> Result<Sorted, JoinRunError> {
     let mut written = Vec::new();
     let mut absent = Vec::new();
     let mut gitlinks = Vec::new();

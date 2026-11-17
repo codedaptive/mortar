@@ -10,7 +10,7 @@ use crate::{JoinRunError, PausedJoin};
 use std::path::Path;
 
 /// The paused join in the folder whose git dir is `git_dir`, or None when no join is paused there. Read only, for
-/// the cli's `mortar status` (S-84): it writes nothing, takes no lock and runs no git. A state file that cannot be
+/// the cli's `mr status` (S-84): it writes nothing, takes no lock and runs no git. A state file that cannot be
 /// read is StateRead; one not in the layout join writes is StateCorrupt.
 pub fn paused_join(git_dir: &Path) -> Result<Option<PausedJoin>, JoinRunError> {
     Ok(read_join_state(&join_state_path(git_dir))?.map(|state| PausedJoin { commit: state.commit, files: state.files }))

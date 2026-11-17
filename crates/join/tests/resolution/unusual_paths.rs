@@ -24,9 +24,9 @@ fn rename_rename_absent_original_is_skipped_then_deleted_without_reverting_unrel
     let base_tree = f.tree(&[("original", payload), ("outside", b"old outside\n")]);
     let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
     let zone_tree = f.tree(&[("ours", payload), ("outside", b"advanced zone work\n")]);
-    let zone = f.commit(&zone_tree, &[base.clone()], "zone rename\n", &author("Zone", "1700000100 +0000"));
+    let zone = f.commit(&zone_tree, std::slice::from_ref(&base), "zone rename\n", &author("Zone", "1700000100 +0000"));
     let request_tree = f.tree(&[("theirs", payload), ("outside", b"old outside\n")]);
-    let tip = f.commit(&request_tree, &[base.clone()], "request rename\n", &author("Topic", "1700000200 +0000"));
+    let tip = f.commit(&request_tree, std::slice::from_ref(&base), "request rename\n", &author("Topic", "1700000200 +0000"));
     join_refs(&f, &zone, &tip);
     let r = Paused { f, path: "original".into(), base, bad: tip.clone(), tip, zone, extras: vec![] };
     let answer = caller(&r.f.git, &r.f, || join::join(&r.f.git, &r.f.repo.path, JOIN_ZONE, REQUEST_REF, ACTOR)).unwrap();
@@ -47,15 +47,15 @@ fn rename_rename_absent_original_is_skipped_then_deleted_without_reverting_unrel
 fn conflicted_gitlink_is_listed_not_written_and_directory_markers_are_skipped_for_caller_tree_overlay() {
     let f = Fixture::new(); let empty = f.tree(&[]);
     let sub_base = f.commit(&empty, &[], "sub base\n", &author("Sub", "1700000000 +0000"));
-    let sub_zone = f.commit(&empty, &[sub_base.clone()], "sub zone\n", &author("Sub", "1700000100 +0000"));
-    let sub_request = f.commit(&empty, &[sub_base.clone()], "sub request\n", &author("Sub", "1700000200 +0000"));
+    let sub_zone = f.commit(&empty, std::slice::from_ref(&sub_base), "sub zone\n", &author("Sub", "1700000100 +0000"));
+    let sub_request = f.commit(&empty, std::slice::from_ref(&sub_base), "sub request\n", &author("Sub", "1700000200 +0000"));
     let sub_choice = f.commit(&empty, &[sub_zone.clone(), sub_request.clone()], "sub chosen\n", &author("Sub", "1700000300 +0000"));
     let base_tree = gitlink_tree(&f, &sub_base, b"old outside\n");
     let base = f.commit(&base_tree, &[], "base\n", &author("Base", "1700000000 +0000"));
     let zone_tree = gitlink_tree(&f, &sub_zone, b"advanced zone work\n");
-    let zone = f.commit(&zone_tree, &[base.clone()], "zone submodule\n", &author("Zone", "1700000100 +0000"));
+    let zone = f.commit(&zone_tree, std::slice::from_ref(&base), "zone submodule\n", &author("Zone", "1700000100 +0000"));
     let request_tree = gitlink_tree(&f, &sub_request, b"old outside\n");
-    let tip = f.commit(&request_tree, &[base.clone()], "request submodule\n", &author("Topic", "1700000200 +0000"));
+    let tip = f.commit(&request_tree, std::slice::from_ref(&base), "request submodule\n", &author("Topic", "1700000200 +0000"));
     join_refs(&f, &zone, &tip);
     let r = Paused { f, path: "module".into(), base, bad: tip.clone(), tip, zone, extras: vec![] };
     let answer = caller(&r.f.git, &r.f, || join::join(&r.f.git, &r.f.repo.path, JOIN_ZONE, REQUEST_REF, ACTOR)).unwrap();

@@ -35,5 +35,5 @@ pub(crate) fn replay_commit(
     if git.commit_info(running_tip)?.tree == tree && git.commit_info(parent)?.tree != info.tree {
         return Ok(Step::Dropped);
     }
-    Ok(Step::Clean(git.commit_tree(&tree, &[running_tip.clone()], &info.message, Some(&info.author), None)?))
+    Ok(Step::Clean(git.commit_tree(&tree, std::slice::from_ref(running_tip), &info.message, Some(&info.author), None)?))
 }

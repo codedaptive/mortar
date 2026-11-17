@@ -1,4 +1,4 @@
-//! PausedJoin: what `mortar status` is told about a join paused on a conflict. A declaration only; paused_join's
+//! PausedJoin: what `mr status` is told about a join paused on a conflict. A declaration only; paused_join's
 //! header lists the integration cases that exercise it. Not named paused_join.rs: the function paused_join holds
 //! that name.
 

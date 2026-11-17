@@ -16,20 +16,20 @@ impl fmt::Display for JoinAnswer {
             JoinAnswer::Rebased { request_ref, from, to, folder_tree: None } => write!(
                 f,
                 "rebased: {request_ref} moved from {from} to {to}, replayed onto the zone; the unit tests must \
-                 run again, then run `mortar join`"
+                 run again, then run `mr join`"
             ),
             JoinAnswer::Rebased { request_ref, from, to, folder_tree: Some(tree) } => write!(
                 f,
                 "rebased: {request_ref} moved from {from} to {to}, replayed onto the zone; the folder moves from \
                  tree {tree}, which holds this join's resolved files; the unit tests must run again, then run \
-                 `mortar join`"
+                 `mr join`"
             ),
             JoinAnswer::Conflicted { commit, files, state } => {
                 write!(f, "conflicted: commit {commit} did not apply; state in {}", state.display())?;
                 for file in files {
                     write!(f, "\n  {}", file.display())?;
                 }
-                write!(f, "\nresolve the files, then run `mortar resolve`")
+                write!(f, "\nresolve the files, then run `mr resolve`")
             }
             JoinAnswer::FilesWritten { commit, files, skipped, gitlinks } => {
                 write!(f, "files written: the conflicted versions from commit {commit}, markers included:")?;
@@ -53,7 +53,7 @@ impl fmt::Display for JoinAnswer {
                         write!(f, "\n  {}", file.display())?;
                     }
                 }
-                write!(f, "\nedit the files written, then run `mortar resolve` again")
+                write!(f, "\nedit the files written, then run `mr resolve` again")
             }
         }
     }
