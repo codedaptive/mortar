@@ -21,3 +21,4 @@ mod run_rereview_tests;
 mod run_back_out_tests;
 mod run_publish_tests;
 mod rit6;
+mod rit7;
