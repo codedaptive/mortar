@@ -1,5 +1,5 @@
 //! disk_report: one line per folder with its files and build bytes, the object store counted once, the ref counts by
-//! namespace and what a plain mortar sweep frees, in the cli's words (never folders' reason text); the next is a sweep
+//! namespace and what a plain mr sweep frees, in the cli's words (never folders' reason text); the next is a sweep
 //! of idle build dirs when any build bytes exist, else nothing to do.
 
 use std::path::PathBuf;
@@ -57,10 +57,10 @@ fn a_zone_and_a_request_folder_are_measured_with_the_store_counted_once() {
                     .to_string(),
                 "object store: 50000 bytes, counted once".to_string(),
                 "refs by namespace: refs/heads 12, refs/mortar 7".to_string(),
-                "a mortar sweep with no --idle-days frees up to 4096 bytes".to_string(),
+                "an mr sweep with no --idle-days frees up to 4096 bytes".to_string(),
             ],
             owner: None,
-            next: "mortar sweep --idle-days <n> --actor <name>".to_string(),
+            next: "mr sweep --idle-days <n> --actor <name>".to_string(),
             fields: vec![
                 ("folders".to_string(), OutValue::Texts(vec!["/w/core".to_string(), "/w/fix-1".to_string()])),
                 ("store_bytes".to_string(), OutValue::Number(50_000)),
@@ -88,7 +88,7 @@ fn no_build_bytes_anywhere_leaves_nothing_to_do() {
 
 #[test]
 fn any_build_bytes_point_at_a_sweep_of_idle_build_dirs() {
-    assert_eq!(disk_report(&disk(1)).next, "mortar sweep --idle-days <n> --actor <name>");
+    assert_eq!(disk_report(&disk(1)).next, "mr sweep --idle-days <n> --actor <name>");
 }
 
 #[test]

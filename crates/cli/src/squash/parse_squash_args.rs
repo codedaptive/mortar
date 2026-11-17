@@ -1,4 +1,4 @@
-//! The words of `mortar squash` after its globals, read into the zone it squashes.
+//! The words of `mr squash` after its globals, read into the zone it squashes.
 
 use crate::config::Config;
 

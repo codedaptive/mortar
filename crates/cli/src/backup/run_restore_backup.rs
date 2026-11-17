@@ -1,4 +1,4 @@
-//! run_restore_backup: `mortar restore-backup <host>`, a host's backup on the remote brought back into the local
+//! run_restore_backup: `mr restore-backup <host>`, a host's backup on the remote brought back into the local
 //! store, under the land lock (SPEC-cli 06: land restore_backup). A local ref at another commit than its backup is
 //! listed, never moved. --key names the lock holder only, never passed to the op log.
 //! No sibling test (S-104): it takes a real lock and runs git, the op log and land;

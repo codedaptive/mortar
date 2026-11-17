@@ -1,4 +1,4 @@
-//! The words of `mortar after-publish` after its globals: the published zone and each --move.
+//! The words of `mr after-publish` after its globals: the published zone and each --move.
 
 use super::AfterPublishArgs;
 use crate::config::Config;

@@ -65,6 +65,6 @@ fn refused_extra_ref_deletes_neither_valid_candidates_nor_build_output() {
     write(&w.s.f.request, "target/out", b"must remain"); let before = observe(&w);
     let r = app(&w, &["sweep", "--ref", "refs/t3/eligible", "--ref", "refs/heads/main", "--idle-days", "0"], 1, "refused");
     assert_eq!(r.strings("lines"), &["extra ref refs/heads/main is under refs/heads/"]);
-    assert_eq!(r.text("next"), "mortar sweep with the same words without --ref refs/heads/main, with --actor <name>");
+    assert_eq!(r.text("next"), "mr sweep with the same words without --ref refs/heads/main, with --actor <name>");
     assert_eq!(observe(&w), before); assert!(!w.s.f.common.join("mortar/locks/folders.lock").exists());
 }

@@ -38,7 +38,7 @@ pub fn after_publish_error_report(error: &AfterPublishError, integration_branch:
                  published from it cannot be found"
             ),
             &format!("zone {zone}'s squashes"),
-            "name the zone whose squash was published: mortar after-publish <zone> [--move <zone>]... --actor <name>"
+            "name the zone whose squash was published: mr after-publish <zone> [--move <zone>]... --actor <name>"
                 .to_string(),
         ),
         AfterPublishError::SquashOfNotInZone { zone, squash_of } => refused(
@@ -48,8 +48,8 @@ pub fn after_publish_error_report(error: &AfterPublishError, integration_branch:
             ),
             &format!("zone {zone}"),
             format!(
-                "restore refs/heads/zone/{zone} to a commit that holds {squash_of} (find it with mortar log --ref \
-                 refs/heads/zone/{zone}, then mortar restore <op id> refs/heads/zone/{zone} --actor <name>), then \
+                "restore refs/heads/zone/{zone} to a commit that holds {squash_of} (find it with mr log --ref \
+                 refs/heads/zone/{zone}, then mr restore <op id> refs/heads/zone/{zone} --actor <name>), then \
                  repeat the same command"
             ),
         ),

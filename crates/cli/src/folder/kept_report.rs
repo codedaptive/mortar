@@ -1,4 +1,4 @@
-//! The report of a `mortar folder keep` that kept an attempt, or finished the request folder's move a killed keep
+//! The report of an `mr folder keep` that kept an attempt, or finished the request folder's move a killed keep
 //! left undone.
 
 use std::path::PathBuf;

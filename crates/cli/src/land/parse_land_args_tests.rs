@@ -35,7 +35,7 @@ fn a_change_id_is_refused_naming_would_merge_to_find_the_commit() {
     assert_eq!(
         parse(&[CHANGE]),
         Err("\"kkkkllllmmmmnnnnooooppppqqqqrrrr\" is a change ID; land takes the squash's commit id only (find it \
-             with mortar would-merge kkkkllllmmmmnnnnooooppppqqqqrrrr --actor <name>)"
+             with mr would-merge kkkkllllmmmmnnnnooooppppqqqqrrrr --actor <name>)"
             .to_string())
     );
 }

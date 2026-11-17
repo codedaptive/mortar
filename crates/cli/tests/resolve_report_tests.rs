@@ -71,10 +71,10 @@ fn the_first_run_lists_files_written_skipped_paths_and_submodules() {
                 "  src/a.rs".to_string(),
                 "  b.txt".to_string(),
                 "skipped (no version in the conflicted tree): moved.rs".to_string(),
-                "submodule vendor/lib: set its commit in the folder, then mortar resolve".to_string(),
+                "submodule vendor/lib: set its commit in the folder, then mr resolve".to_string(),
             ],
             owner: None,
-            next: "fix the files, then mortar resolve".to_string(),
+            next: "fix the files, then mr resolve".to_string(),
             fields: vec![
                 null("finished_move_from"),
                 null("finished_move_to"),
@@ -120,7 +120,7 @@ fn a_rebase_reports_as_join_does_with_the_snapshot_after_a_finished_move() {
                 "the unit tests must run again".to_string(),
             ],
             owner: None,
-            next: "mortar join".to_string(),
+            next: "mr join".to_string(),
             fields: vec![
                 text("finished_move_from", OLD),
                 text("finished_move_to", NEW),
@@ -154,7 +154,7 @@ fn a_conflict_on_a_later_commit_reports_as_join_does() {
                 "  src/c.rs".to_string(),
             ],
             owner: None,
-            next: "mortar resolve".to_string(),
+            next: "mr resolve".to_string(),
             fields: vec![
                 null("finished_move_from"),
                 null("finished_move_to"),

@@ -15,7 +15,7 @@ fn record(op_id: &str) -> OpRecord {
         key: "k".to_string(),
         kind: "save".to_string(),
         actor: "core/fix-1".to_string(),
-        reason: "mortar save".to_string(),
+        reason: "mr save".to_string(),
         at: 5,
         phase: OpPhase::Intent,
         moves: vec![RefMove {
@@ -37,7 +37,7 @@ fn no_record_is_empty_with_the_unfiltered_log_next() {
             outcome: "empty".to_string(),
             lines: vec!["no op in the log matches".to_string()],
             owner: None,
-            next: "mortar log with no filter lists every op".to_string(),
+            next: "mr log with no filter lists every op".to_string(),
             fields: vec![("records".to_string(), OutValue::Raw(Vec::new()))],
         }
     );
@@ -54,11 +54,11 @@ fn records_are_listed_with_the_restore_step_next() {
     assert_eq!(report.owner, None);
     assert_eq!(
         report.next,
-        "mortar restore <op id> <full ref name>... --actor <name> sets refs back as of one of these ops"
+        "mr restore <op id> <full ref name>... --actor <name> sets refs back as of one of these ops"
     );
     assert_eq!(report.lines.len(), 4);
-    assert_eq!(report.lines[0], "op-1 intent save by core/fix-1 at 5 key k: mortar save");
-    assert_eq!(report.lines[2], "op-2 intent save by core/fix-1 at 5 key k: mortar save");
+    assert_eq!(report.lines[0], "op-1 intent save by core/fix-1 at 5 key k: mr save");
+    assert_eq!(report.lines[2], "op-2 intent save by core/fix-1 at 5 key k: mr save");
     assert_eq!(
         report.fields,
         vec![(

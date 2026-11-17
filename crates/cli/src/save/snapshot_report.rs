@@ -1,4 +1,4 @@
-//! snapshot_report: the report of a `mortar snapshot` that ran (exit 0, written or not).
+//! snapshot_report: the report of an `mr snapshot` that ran (exit 0, written or not).
 
 use snapshot::{FormatterResult, FormatterRun, SnapshotOutcome};
 

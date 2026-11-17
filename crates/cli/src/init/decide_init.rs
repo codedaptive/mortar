@@ -1,4 +1,4 @@
-//! Whether `mortar init` writes, has nothing to do, replaces or refuses.
+//! Whether `mr init` writes, has nothing to do, replaces or refuses.
 
 use super::InitDecision;
 use crate::config::Config;

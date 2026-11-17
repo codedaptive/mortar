@@ -24,16 +24,16 @@ fn expected(outcome: &str, lines: &[&str], gap: bool, next: &str) -> Report {
 #[test]
 fn a_new_path_in_the_work_order_is_needed_with_one_line() {
     assert_eq!(
-        need_report("kit/b", false, false, "mortar join".to_string()),
-        expected("needed", &["added kit/b to this folder"], false, "mortar join"),
+        need_report("kit/b", false, false, "mr join".to_string()),
+        expected("needed", &["added kit/b to this folder"], false, "mr join"),
     );
 }
 
 #[test]
 fn a_new_path_outside_the_work_order_says_it_is_recorded_as_a_gap() {
     assert_eq!(
-        need_report("kit/b", false, true, "mortar save \"<sentence>\"".to_string()),
-        expected("needed", &["added kit/b to this folder", GAP_LINE], true, "mortar save \"<sentence>\""),
+        need_report("kit/b", false, true, "mr save \"<sentence>\"".to_string()),
+        expected("needed", &["added kit/b to this folder", GAP_LINE], true, "mr save \"<sentence>\""),
     );
 }
 
@@ -48,7 +48,7 @@ fn a_path_already_needed_is_already_done() {
 #[test]
 fn a_path_already_needed_outside_the_work_order_still_says_gap() {
     assert_eq!(
-        need_report("kit/b", true, true, "mortar join".to_string()),
-        expected("already-done", &["kit/b was already needed by this folder", GAP_LINE], true, "mortar join"),
+        need_report("kit/b", true, true, "mr join".to_string()),
+        expected("already-done", &["kit/b was already needed by this folder", GAP_LINE], true, "mr join"),
     );
 }

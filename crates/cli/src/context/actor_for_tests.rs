@@ -22,7 +22,7 @@ const READ_ONLY: VerbSpec = VerbSpec {
     kind: VerbKind::ReadOnly,
     lock: LockNeed::NoLock,
     needs_config: true,
-    usage: "mortar log [--actor <name>]",
+    usage: "mr log [--actor <name>]",
 };
 
 #[test]

@@ -1,4 +1,4 @@
-//! mortar save and mortar snapshot: save's runner, the sentence it takes (S-41), the run it reads before its lock
+//! mr save and mr snapshot: save's runner, the sentence it takes (S-41), the run it reads before its lock
 //! (S-143), the snapshot target a folder saves to (S-69, shared by both verbs), the report of a save and of a save
 //! that did not happen; snapshot's runner, the report of a snapshot, of a snapshot that did not happen and of one run
 //! in a zone folder.

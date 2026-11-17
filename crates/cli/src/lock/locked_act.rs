@@ -1,14 +1,14 @@
 //! Runs a verb's act under its oplog lock, after recover (S-16, S-25).
-//! Shell API: `mortar folder` (run_folder's runners), `mortar join` (run_join), `mortar need` (run_need),
-//! `mortar resolve` (run_resolve), `mortar restore` (run_restore), `mortar save` (run_save), `mortar guard`
-//! (run_guard_install, run_guard_status), `mortar squash` (run_squash), `mortar rereview` (run_rereview),
-//! `mortar back-out` (run_back_out), `mortar publish` (run_publish), `mortar would-merge` (run_would_merge),
-//! `mortar bisect` (run_bisect), `mortar backup` (run_backup), `mortar restore-backup` (run_restore_backup),
-//! `mortar land` (run_land), `mortar after-publish` (run_after_publish), `mortar snapshot` (run_snapshot),
-//! `mortar sweep` (run_sweep) and `mortar undo` (run_undo) call it, and so will each later verb that moves a ref.
+//! Shell API: `mr folder` (run_folder's runners), `mr join` (run_join), `mr need` (run_need),
+//! `mr resolve` (run_resolve), `mr restore` (run_restore), `mr save` (run_save), `mr guard`
+//! (run_guard_install, run_guard_status), `mr squash` (run_squash), `mr rereview` (run_rereview),
+//! `mr back-out` (run_back_out), `mr publish` (run_publish), `mr would-merge` (run_would_merge),
+//! `mr bisect` (run_bisect), `mr backup` (run_backup), `mr restore-backup` (run_restore_backup),
+//! `mr land` (run_land), `mr after-publish` (run_after_publish), `mr snapshot` (run_snapshot),
+//! `mr sweep` (run_sweep) and `mr undo` (run_undo) call it, and so will each later verb that moves a ref.
 //! No unit test: it takes a real lock file and runs git and the op log (S-5); crates/cli/tests/lock_report_tests.rs and
 //! failure_report_tests cover what it reports. Nagatha's integration group is to cover, with the mortar binary as a
-//! child process in a throwaway repository and `mortar join`: a lock held by a live pid is exit 3 naming the holder's
+//! child process in a throwaway repository and `mr join`: a lock held by a live pid is exit 3 naming the holder's
 //! pid, host and since, and the act does not run; an open intent left in the op log is settled by recover before the
 //! act runs; the lock file is gone after the act, whether it was done or refused; an act's refusal comes back as its
 //! own report.

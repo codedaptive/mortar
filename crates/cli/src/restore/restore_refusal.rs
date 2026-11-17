@@ -1,4 +1,4 @@
-//! Whether a `mortar restore` must refuse before moving a ref, for the folders standing on the refs it moves
+//! Whether an `mr restore` must refuse before moving a ref, for the folders standing on the refs it moves
 //! (S-113(2), S-32).
 
 use std::path::PathBuf;
@@ -32,7 +32,7 @@ pub fn restore_refusal(folders: &[FolderOnRef], unsaved: &[PathBuf], moves: &[Re
     }
     lines.push("nothing was moved".to_string());
     let next = if any_unsaved {
-        "have the folder's agent run mortar save, then repeat"
+        "have the folder's agent run mr save, then repeat"
     } else {
         "restore without the refs those folders stand on, or have the harness remove those folders first, then repeat"
     };

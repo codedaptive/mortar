@@ -24,7 +24,7 @@ fn refused(line: &str, owner: Option<&str>, next: &str) -> Report {
 #[test]
 fn an_unknown_op_points_at_mortar_log() {
     let error = OplogError::UnknownOp { op_id: "op-9".to_string() };
-    assert_eq!(restore_error_report(&error, "op op-9 unknown"), refused("op op-9 unknown", None, "mortar log"));
+    assert_eq!(restore_error_report(&error, "op op-9 unknown"), refused("op op-9 unknown", None, "mr log"));
 }
 
 #[test]
@@ -32,7 +32,7 @@ fn an_unknown_value_points_at_the_refs_log() {
     let error = OplogError::ValueUnknown { op_id: "op-9".to_string(), refname: "refs/heads/zone/core".to_string() };
     assert_eq!(
         restore_error_report(&error, "value unknown"),
-        refused("value unknown", None, "mortar log --ref refs/heads/zone/core")
+        refused("value unknown", None, "mr log --ref refs/heads/zone/core")
     );
 }
 

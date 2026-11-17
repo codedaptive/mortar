@@ -1,6 +1,6 @@
-//! status in an attempt folder (S-127(1)): in attempt folder k, `mortar status` exits 0 and reports attempt k's
+//! status in an attempt folder (S-127(1)): in attempt folder k, `mr status` exits 0 and reports attempt k's
 //! own progress, its branch try/<zone>/<request>/<k> and its trysnap snapshot, never the request's. Its next is
-//! `mortar save "<sentence>"` while the attempt is unsaved, "make your change, then mortar save" while a fresh
+//! `mr save "<sentence>"` while the attempt is unsaved, "make your change, then mr save" while a fresh
 //! attempt has no work yet (S-145), otherwise "wait for the harness to keep or drop the attempts", never join, even
 //! when the zone has moved. `need` stays refused in an attempt folder.
 //! Status reads only (S-85): refs, index, record, op log and files are unchanged by it (observe::status_at).
@@ -48,7 +48,7 @@ fn fresh_attempt_reports_saved_and_next_make_your_change() {
     let (one, _) = attempts(&f);
     let report = status_at(&f, &one, "saved");
     assert!(report.flag("saved"));
-    assert_eq!(report.text("next"), "make your change, then mortar save");
+    assert_eq!(report.text("next"), "make your change, then mr save");
     assert_eq!(report.number("attempt"), 1);
     assert_eq!(report.text("branch"), "try/core/task/1");
     assert!(report.lines().contains("try/core/task/1"));

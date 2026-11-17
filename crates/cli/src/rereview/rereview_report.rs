@@ -1,4 +1,4 @@
-//! The report of a `mortar rereview` that land answered with its re-review diff.
+//! The report of an `mr rereview` that land answered with its re-review diff.
 
 use gitio::Oid;
 

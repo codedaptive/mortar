@@ -53,7 +53,7 @@ fn an_undone_save_names_the_op_the_undo_and_the_snapshot_and_shows_the_work_unsa
                 "the files are untouched; the work shows as unsaved".to_string(),
             ],
             owner: None,
-            next: "mortar status".to_string(),
+            next: "mr status".to_string(),
             fields: Vec::new(),
         }
     );

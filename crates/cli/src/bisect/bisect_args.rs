@@ -1,4 +1,4 @@
-//! What `mortar bisect` reads from its line.
+//! What `mr bisect` reads from its line.
 //! A bare type (S-7); parse_bisect_args_tests exercises it.
 
 use std::time::Duration;

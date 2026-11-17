@@ -1,4 +1,4 @@
-//! A small JSON reader for what the drive reads from `mortar ... --json`.
+//! A small JSON reader for what the drive reads from `mr ... --json`.
 
 mod json_error;
 mod json_value;

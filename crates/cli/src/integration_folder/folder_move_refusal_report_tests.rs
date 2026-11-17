@@ -29,7 +29,7 @@ fn paths_in_the_way_after_a_back_out_are_listed_with_the_repeat_in_words() {
         &old,
         &new,
         &block,
-        "mortar back-out --actor <name>",
+        "mr back-out --actor <name>",
     );
     assert_eq!(
         report,
@@ -49,7 +49,7 @@ fn paths_in_the_way_after_a_back_out_are_listed_with_the_repeat_in_words() {
             owner: Some("the integration folder /r/integration".to_string()),
             next: "move each path listed out of the integration folder /r/integration, or put it back to the \
                    folder's index copy, and leave the index as it is; then repeat the same command: \
-                   mortar back-out --actor <name>"
+                   mr back-out --actor <name>"
                 .to_string(),
             fields: vec![
                 ("folder".to_string(), OutValue::Text("/r/integration".to_string())),
@@ -76,7 +76,7 @@ fn another_block_at_a_refused_finish_before_land_says_nothing_moved_and_to_repea
         &old,
         &tip,
         &block,
-        "mortar land 3333333333333333333333333333333333333333 --actor <name>",
+        "mr land 3333333333333333333333333333333333333333 --actor <name>",
     );
     assert_eq!(
         report,
@@ -96,7 +96,7 @@ fn another_block_at_a_refused_finish_before_land_says_nothing_moved_and_to_repea
             ],
             owner: Some("the integration folder /r/integration".to_string()),
             next: "clear what stops the integration folder /r/integration from moving, leaving its index as it is; \
-                   then repeat the same command: mortar land 3333333333333333333333333333333333333333 --actor <name>"
+                   then repeat the same command: mr land 3333333333333333333333333333333333333333 --actor <name>"
                 .to_string(),
             fields: vec![
                 ("folder".to_string(), OutValue::Text("/r/integration".to_string())),

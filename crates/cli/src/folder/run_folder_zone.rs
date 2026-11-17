@@ -1,4 +1,4 @@
-//! run_folder_zone: `mortar folder zone <zone> <path> [--start <commit>]`, a zone's standing folder made or refilled.
+//! run_folder_zone: `mr folder zone <zone> <path> [--start <commit>]`, a zone's standing folder made or refilled.
 //! No sibling test (S-104): it takes a real lock and runs git, the op log and folders; folder_setup_for_tests and
 //! folder_made_report_tests cover its decisions. The RIT crates/cli/tests/cli_rit/run_folder_zone_tests.rs covers it through
 //! the binary: a sparse folder holding the zone's paths and root files, recorded as a zone folder, and its repeat;

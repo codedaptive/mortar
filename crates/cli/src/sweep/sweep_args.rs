@@ -1,4 +1,4 @@
-//! What `mortar sweep` reads from its line.
+//! What `mr sweep` reads from its line.
 //! A bare type (S-7); parse_sweep_args_tests exercises it.
 
 /// `idle_days`: clear the build dirs of folders idle that many days, or None to clear none. `refs`: the caller's

@@ -23,7 +23,7 @@ use crate::json::check;
 use testkit::TestRepo;
 
 const FOREIGN: &str = "#!/bin/sh\nexit 0\n";
-const INSTALL_NEXT: &str = "mortar guard install --actor <name>";
+const INSTALL_NEXT: &str = "mr guard install --actor <name>";
 
 const GIT_ENV: [(&str, &str); 2] = [("GIT_CONFIG_GLOBAL", "/dev/null"), ("GIT_CONFIG_NOSYSTEM", "1")];
 
@@ -110,7 +110,7 @@ fn guard_status_of_a_foreign_reference_transaction_is_refused_naming_its_path() 
         "{path} is a hook Mortar did not write; Mortar never overwrites one")), "{}", report.lines());
     assert_eq!(report.text("owner"), "the repository's own hooks");
     assert_eq!(report.text("next"), format!(
-        "move {path} aside or fold it into your own hook by hand, then mortar guard install --actor <name>"));
+        "move {path} aside or fold it into your own hook by hand, then mr guard install --actor <name>"));
     assert_eq!(report.text("reference_transaction"), "foreign");
     assert_eq!(report.text("pre_push"), "missing");
     assert_eq!(fs::read_to_string(&foreign).unwrap(), FOREIGN);

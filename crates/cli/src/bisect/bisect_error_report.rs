@@ -25,7 +25,7 @@ pub fn bisect_error_report(error: &BisectError) -> Report {
             )],
             "the commits named",
             format!(
-                "name a failed commit on {origin_branch}'s first-parent line: mortar bisect <last pass> <failed> \
+                "name a failed commit on {origin_branch}'s first-parent line: mr bisect <last pass> <failed> \
                  --timeout <seconds> --actor <name> -- <command>..."
             ),
         ),
@@ -37,7 +37,7 @@ pub fn bisect_error_report(error: &BisectError) -> Report {
             )],
             "the commits named",
             format!(
-                "name a last passing commit on {failed}'s first-parent line: mortar bisect <last pass> {failed} \
+                "name a last passing commit on {failed}'s first-parent line: mr bisect <last pass> {failed} \
                  --timeout <seconds> --actor <name> -- <command>..."
             ),
         ),

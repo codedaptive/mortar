@@ -54,7 +54,7 @@ fn a_written_save_names_commit_and_change_id() {
                     .to_string()
             ],
             owner: None,
-            next: "mortar join".to_string(),
+            next: "mr join".to_string(),
             fields: vec![
                 ("finished_move_from".to_string(), OutValue::Null),
                 ("finished_move_to".to_string(), OutValue::Null),
@@ -95,7 +95,7 @@ fn an_unchanged_save_names_head() {
                     .to_string()
             ],
             owner: None,
-            next: "mortar join".to_string(),
+            next: "mr join".to_string(),
             fields: vec![
                 ("finished_move_from".to_string(), OutValue::Null),
                 ("finished_move_to".to_string(), OutValue::Null),

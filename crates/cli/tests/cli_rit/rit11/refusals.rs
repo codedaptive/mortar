@@ -49,7 +49,7 @@ fn resolve_undo_refusal_precedes_finishing_its_real_pending_folder_move_and_chan
     // If undo finishes first, it snapshots again or hits this obstruction instead of giving the resolve refusal.
     let before = observe(&w); let r = ours(&w, &["undo"], 1, "refused");
     assert_eq!(r.strings("lines"), &[format!("op {} resolved a join, and undo cannot put the paused join back", target.op_id), "nothing was changed".into()]);
-    assert_eq!(r.text("next"), "change the files, mortar save, then mortar join");
+    assert_eq!(r.text("next"), "change the files, mr save, then mr join");
     assert_eq!(observe(&w), before); assert!(done(&w, "undo").is_empty());
     assert_eq!(fs::read(w.s.f.request.join("sub/keep")).unwrap(), b"owner obstruction\n");
 }
@@ -61,6 +61,6 @@ fn nothing_to_undo_has_status_next_and_does_not_write_an_op_or_take_a_snapshot()
     let status = ours(&w, &["status"], 0, "saved"); assert!(status.flag("saved"));
     let r = ours(&w, &["undo"], 0, "nothing-to-undo");
     assert_eq!(r.strings("lines"), &["nothing to undo: no save, rebase or resolve of this folder is in the op log"]);
-    assert_eq!(r.text("next"), "make your change, then mortar save"); assert_eq!(r.text("next"), status.text("next"));
+    assert_eq!(r.text("next"), "make your change, then mr save"); assert_eq!(r.text("next"), status.text("next"));
     assert_eq!(observe(&w), before); assert!(done(&w, "undo").is_empty());
 }

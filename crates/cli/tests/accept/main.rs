@@ -1,7 +1,7 @@
-//! The acceptance drive (`make accept`): a black-box drive of the built `mortar` binary through the mission's Done
-//! list, on throwaway repositories only, writing a plain-text report. Every case in this target is ignored, so no
-//! unit, zone or repo integration run picks it up; `cargo test -p cli --test accept -- --ignored
-//! --test-threads=1` runs it.
+//! The acceptance drive (`make accept`): a black-box drive of the built binary, built under both its names (`mr`
+//! and `mortar`) and run as `mr`, through the mission's Done list, on throwaway repositories only, writing a
+//! plain-text report. Every case in this target is ignored, so no unit, zone or repo integration run picks it up;
+//! `cargo test -p cli --test accept -- --ignored --test-threads=1` runs it.
 
 mod json;
 mod report;

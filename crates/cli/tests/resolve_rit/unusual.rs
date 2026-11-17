@@ -49,7 +49,7 @@ fn rit_real_gitlink_is_listed_without_writes_then_actual_child_repo_head_selects
     write(&module, "local-marker", b"<<<<<<< nested submodule work must survive\n");
     let first = r.first(); assert!(first.strings("files").is_empty()); assert!(first.strings("skipped").is_empty());
     assert_eq!(first.strings("gitlinks"), &["src/module"]);
-    assert!(first.lines().contains("submodule src/module: set its commit in the folder, then mortar resolve"));
+    assert!(first.lines().contains("submodule src/module: set its commit in the folder, then mr resolve"));
     assert_eq!(fs::read(module.join("local-marker")).unwrap(), b"<<<<<<< nested submodule work must survive\n");
     assert_eq!(sub.rev_parse("HEAD").unwrap(), Some(sub_request.clone())); r.assert_unmoved();
     let chosen = f.git.commit_tree(&empty, &[sub_zone, sub_request], "chosen submodule merge\n", None, None).unwrap();

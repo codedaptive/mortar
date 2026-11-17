@@ -22,7 +22,7 @@ use oplog::{KillPidProbe, OpPhase, OpRecord};
 use testkit::TestRepo;
 
 const ACTOR: &str = "harness";
-const USAGE: &str = "mortar folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
+const USAGE: &str = "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
                      <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key \
                      <operation key>] [--json]";
 const TRY_PREFIX: &str = "refs/heads/try/core/task/";
@@ -127,7 +127,8 @@ fn member(output: &Output, key: &str) -> String {
 /// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
-    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status"] {
+    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",
+                       "mr save", "mr join", "mr need", "mr resolve", "mr status"] {
         assert!(!next.contains(agent_verb), "next names an agent verb: {next}");
     }
     assert!(!next.contains("agent run"), "next is aimed at an agent: {next}");
@@ -169,7 +170,7 @@ fn attempts_are_made_at_dir_try_k_on_try_branches_at_the_request_tip() {
     let next = member(&made, "next");
     assert_eq!(
         next,
-        "start one agent in each attempt folder; then mortar folder keep <k> --actor <name> or mortar folder drop \
+        "start one agent in each attempt folder; then mr folder keep <k> --actor <name> or mr folder drop \
          --actor <name> in the request's folder",
         "{out}"
     );
@@ -209,7 +210,7 @@ fn attempts_run_in_a_zone_folder_are_refused_and_make_nothing() {
     assert_eq!(refused.status.code(), Some(1), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
-    assert_eq!(next, "run mortar folder attempts <n> <dir> --actor <name> in the request's own folder", "{out}");
+    assert_eq!(next, "run mr folder attempts <n> <dir> --actor <name> in the request's own folder", "{out}");
     assert_harness_next(&next);
     fx.assert_nothing_made(before, &out);
 }

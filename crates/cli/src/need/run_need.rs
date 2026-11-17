@@ -1,4 +1,4 @@
-//! run_need: `mortar need <path> [--key <key>] [--json]`, the agent verb that adds a path to its folder's cone.
+//! run_need: `mr need <path> [--key <key>] [--json]`, the agent verb that adds a path to its folder's cone.
 //! No unit test: it takes the lock, runs git, the op log and folders::need (S-5, S-104); need_report_tests,
 //! missing_path_report_tests, need_error_report_tests and need_with_next_tests cover what it reports. The ZIT
 //! crates/cli/tests/run_need_tests.rs covers, with the mortar binary in a throwaway repository: a wrong argument count
@@ -38,7 +38,7 @@ use crate::status::{read_branch_tips, read_progress};
 /// not hold it too. The key (--key, else the verb and the folder with no moves) names the lock's holder.
 /// Already-done comes from the record read before need; the gap from the record need returns. next is status_next of
 /// read_progress for the folder as need left it, which reads no paths and no other folder's record; once need has
-/// written, a failed read keeps need's report and gives next "mortar status" (need_with_next).
+/// written, a failed read keeps need's report and gives next "mr status" (need_with_next).
 pub fn run_need(context: &ShellContext) -> Report {
     act(context).unwrap_or_else(|report| report)
 }

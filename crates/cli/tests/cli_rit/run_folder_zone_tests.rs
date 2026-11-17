@@ -21,7 +21,7 @@ use oplog::OpRecord;
 use testkit::TestRepo;
 
 const ACTOR: &str = "harness";
-const USAGE: &str = "mortar folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
+const USAGE: &str = "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
                      <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key \
                      <operation key>] [--json]";
 
@@ -119,7 +119,8 @@ fn member(output: &Output, key: &str) -> String {
 /// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
-    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status"] {
+    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",
+                       "mr save", "mr join", "mr need", "mr resolve", "mr status"] {
         assert!(!next.contains(agent_verb), "next names an agent verb: {next}");
     }
     assert!(!next.contains("agent run"), "next is aimed at an agent: {next}");
@@ -165,7 +166,7 @@ fn zone_folder_holds_only_the_zone_paths_and_root_files_and_a_repeat_finishes() 
     assert_eq!(made.status.code(), Some(0), "{out}");
     assert_eq!(member(&made, "outcome"), "made", "{out}");
     let next = member(&made, "next");
-    assert!(next.starts_with("make request folders with mortar folder request "), "{out}");
+    assert!(next.starts_with("make request folders with mr folder request "), "{out}");
     assert!(next.contains("--paths"), "{out}");
     assert_harness_next(&next);
     assert_eq!(files(&fx.path), ["Cargo.toml", "src/a/a.txt"], "{out}");
@@ -196,7 +197,7 @@ fn a_zone_not_in_the_config_is_refused_and_makes_nothing() {
     assert_eq!(refused.status.code(), Some(1), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
-    assert!(next.contains("mortar init --replace"), "{out}");
+    assert!(next.contains("mr init --replace"), "{out}");
     assert!(next.contains("--zone web="), "{out}");
     assert_harness_next(&next);
     assert!(!fx.path.exists(), "{out}");

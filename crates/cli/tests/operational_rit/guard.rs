@@ -88,7 +88,7 @@ fn rit_guard_missing_or_broken_config_fails_closed_naming_the_installer() {
         assert!(!output.status.success());
         let reason = String::from_utf8_lossy(&output.stderr);
         assert!(reason.contains("guard.json")); assert!(reason.contains("the harness that installs the guard"));
-        assert!(reason.contains("mortar guard install --actor")); assert_eq!(g.branches(), before);
+        assert!(reason.contains("mr guard install --actor")); assert_eq!(g.branches(), before);
     }
 }
 

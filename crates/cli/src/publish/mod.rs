@@ -1,4 +1,4 @@
-//! `mortar publish` (SPEC-cli 06): its report in the cli's own words, and its runner.
+//! `mr publish` (SPEC-cli 06): its report in the cli's own words, and its runner.
 
 mod publish_report;
 mod run_publish;

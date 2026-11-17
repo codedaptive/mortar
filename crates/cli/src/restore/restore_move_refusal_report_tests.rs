@@ -26,7 +26,7 @@ fn the_report_says_the_refs_moved_and_names_the_folder_that_did_not() {
                 "the folder /w/b on refs/heads/req/core/b could not move: files stand in the way".to_string(),
             ],
             owner: Some("the agent working in /w/b".to_string()),
-            next: "clear what stops the folder's move, then repeat the same mortar restore command; the repeat \
+            next: "clear what stops the folder's move, then repeat the same mr restore command; the repeat \
                    finishes the move"
                 .to_string(),
             fields: Vec::new(),

@@ -21,7 +21,7 @@ fn record(phase: OpPhase, moves: Vec<RefMove>, result: Option<OpResult>) -> OpRe
         key: "restore-1".to_string(),
         kind: "restore".to_string(),
         actor: "harness-1".to_string(),
-        reason: "mortar restore op-1".to_string(),
+        reason: "mr restore op-1".to_string(),
         at: 7,
         phase,
         moves,
@@ -86,7 +86,7 @@ fn a_done_restore_lists_moves_folders_and_zone_folders() {
                 "the zone folder /w/core stands on refs/heads/zone/core; its files stay where they were".to_string(),
             ],
             owner: None,
-            next: "mortar log --key restore-1".to_string(),
+            next: "mr log --key restore-1".to_string(),
             fields: vec![
                 ("op_id".to_string(), OutValue::Text("op-1".to_string())),
                 ("key".to_string(), OutValue::Text("restore-1".to_string())),
@@ -106,7 +106,7 @@ fn a_repeat_is_already_done_with_the_records_moves() {
     assert_eq!(report.exit, ExitCode::Done);
     assert_eq!(report.outcome, "already-done");
     assert_eq!(report.lines, vec![MOVE_A.to_string(), MOVE_SNAP.to_string()]);
-    assert_eq!(report.next, "mortar log --key restore-1");
+    assert_eq!(report.next, "mr log --key restore-1");
 }
 
 #[test]
@@ -150,7 +150,7 @@ fn a_failed_restore_names_the_stale_ref_and_points_at_its_log() {
             "the zone folder /w/core stands on refs/heads/zone/core; its files stay where they were".to_string(),
         ]
     );
-    assert_eq!(report.next, "mortar log --ref refs/mortar/snap/core/a");
+    assert_eq!(report.next, "mr log --ref refs/mortar/snap/core/a");
 }
 
 #[test]
@@ -163,5 +163,5 @@ fn a_failed_restore_not_moved_names_its_first_ref() {
         report.lines,
         vec!["refs/heads/req/core/a was not where it was read (it holds nothing), so nothing moved"]
     );
-    assert_eq!(report.next, "mortar log --ref refs/heads/req/core/a");
+    assert_eq!(report.next, "mr log --ref refs/heads/req/core/a");
 }

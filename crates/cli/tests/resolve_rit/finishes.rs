@@ -11,7 +11,7 @@ fn rit_clean_resolve_consumes_folder_tree_moves_real_index_files_and_head_preser
     let report = f.report(&["--json", "resolve"], "resolve", 0, "rebased"); let new = f.head();
     assert_ne!(new, r.old); assert_eq!(report.text("request_ref"), REQUEST);
     assert_eq!(report.text("from"), r.old.as_str()); assert_eq!(report.text("to"), new.as_str());
-    assert_eq!(report.text("next"), "mortar join"); assert_eq!(report.text("snapshot_ref"), SNAP);
+    assert_eq!(report.text("next"), "mr join"); assert_eq!(report.text("snapshot_ref"), SNAP);
     assert!(report.is_null("finished_move_from")); assert!(report.is_null("finished_move_to"));
     let snap = f.git.read_ref(SNAP).unwrap().unwrap(); assert_eq!(report.text("snapshot_commit"), snap.as_str());
     assert_eq!(f.blob(&snap, "src/file"), b"chosen resolution\n");
@@ -34,7 +34,7 @@ fn rit_clean_resolve_consumes_folder_tree_moves_real_index_files_and_head_preser
     assert!(!r.state.exists()); assert!(!f.lock_path().exists()); assert_one_rebase(f, &r.old, &new);
     // First no-pause repeat can snapshot the now-present upstream file, but never repeats the resolved rebase.
     let again = f.report(&["--json", "resolve"], "resolve", 0, "nothing-to-resolve");
-    assert_eq!(again.text("next"), "mortar join"); assert_eq!(f.head(), new); assert_one_rebase(f, &r.old, &new);
+    assert_eq!(again.text("next"), "mr join"); assert_eq!(f.head(), new); assert_one_rebase(f, &r.old, &new);
     let before = f.observe(); f.report(&["--json", "resolve"], "resolve", 0, "nothing-to-resolve");
     assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
 }
@@ -49,7 +49,7 @@ fn rit_later_commit_repauses_then_both_rounds_resolutions_reach_the_final_folder
     f.write("src/file", b"first chosen resolution\n");
     let report = f.report(&["--json", "resolve"], "resolve", 2, "conflicted");
     assert_eq!(report.text("commit"), old.as_str()); assert_eq!(report.strings("files"), &["sub/keep"]);
-    assert_eq!(report.text("next"), "mortar resolve"); assert_eq!(report.text("state"), r.state.to_str().unwrap());
+    assert_eq!(report.text("next"), "mr resolve"); assert_eq!(report.text("state"), r.state.to_str().unwrap());
     r.assert_unmoved(); assert!(rebase_records(f).is_empty());
     let paused = join::paused_join(&f.local().git_dir(&f.request).unwrap()).unwrap().unwrap();
     assert_eq!(paused.commit, old); assert_eq!(paused.files, vec![std::path::PathBuf::from("sub/keep")]);

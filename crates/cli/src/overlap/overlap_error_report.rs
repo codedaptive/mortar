@@ -1,4 +1,4 @@
-//! overlap_error_report: the report of a `mortar overlap` whose read of the requests' changed files failed, one arm
+//! overlap_error_report: the report of an `mr overlap` whose read of the requests' changed files failed, one arm
 //! per JoinError, in the cli's own words: gitio's Display is never printed (S-128 (4)).
 
 use ::join::JoinError;

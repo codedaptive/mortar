@@ -52,7 +52,7 @@ fn made_is_squashed_naming_change_commit_tip_and_requests() {
                 "requests: REQ-1, REQ-2".to_string(),
             ],
             owner: None,
-            next: "mortar would-merge 1111111111111111111111111111111111111111 --actor <name>, then hand change \
+            next: "mr would-merge 1111111111111111111111111111111111111111 --actor <name>, then hand change \
                    kkkkllllmmmmnnnnooooppppqqqqrrrr (commit 1111111111111111111111111111111111111111) to review"
                 .to_string(),
             fields: squash_fields(&["REQ-1", "REQ-2"]),
@@ -75,7 +75,7 @@ fn same_is_already_squashed_with_nothing_written() {
                 "requests: none named".to_string(),
             ],
             owner: None,
-            next: "mortar would-merge 1111111111111111111111111111111111111111 --actor <name>, then hand change \
+            next: "mr would-merge 1111111111111111111111111111111111111111 --actor <name>, then hand change \
                    kkkkllllmmmmnnnnooooppppqqqqrrrr (commit 1111111111111111111111111111111111111111) to review"
                 .to_string(),
             fields: squash_fields(&[]),
@@ -118,8 +118,8 @@ fn conflicted_exits_2_listing_each_file() {
                 "nothing was written and no ref moved".to_string(),
             ],
             owner: Some("zone a".to_string()),
-            next: "bring zone a up to date with origin through a request (mortar folder request a <request> <path> \
-                   --paths <path>... --actor <name>), then mortar squash a --actor <name>"
+            next: "bring zone a up to date with origin through a request (mr folder request a <request> <path> \
+                   --paths <path>... --actor <name>), then mr squash a --actor <name>"
                 .to_string(),
             fields: vec![
                 text("zone", "a"),

@@ -1,4 +1,4 @@
-//! run_folder_drop: `mortar folder drop`, run in a request folder: every attempt of the request dropped, their folders
+//! run_folder_drop: `mr folder drop`, run in a request folder: every attempt of the request dropped, their folders
 //! and try branches gone, the request branch unmoved and the trysnap refs kept (S-82, S-94).
 //! No sibling test (S-104): it takes a real lock and runs git, the op log, snapshot and folders;
 //! request_folder_refusal_tests, attempt_saved_tests and dropped_report_tests cover its decisions. The RIT

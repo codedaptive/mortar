@@ -1,4 +1,4 @@
-//! What one `mortar resolve` did, as resolve_report reads it.
+//! What one `mr resolve` did, as resolve_report reads it.
 //! A bare type (S-7); crates/cli/tests/resolve_report_tests.rs exercises it.
 
 use ::join::JoinAnswer;

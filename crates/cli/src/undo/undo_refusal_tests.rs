@@ -8,13 +8,13 @@ use crate::report::{ExitCode, Report};
 const NOTHING_CHANGED: &str = "nothing was changed";
 /// Commands an agent cannot run: harness verbs, and --actor, which agent verbs refuse.
 const UNREACHABLE: [&str; 8] = [
-    "mortar restore",
-    "mortar back-out",
-    "mortar folder",
-    "mortar snapshot",
-    "mortar land",
-    "mortar publish",
-    "mortar after-publish",
+    "mr restore",
+    "mr back-out",
+    "mr folder",
+    "mr snapshot",
+    "mr land",
+    "mr publish",
+    "mr after-publish",
     "--actor",
 ];
 
@@ -61,7 +61,7 @@ fn a_resolve_is_refused_with_the_way_forward_in_words() {
         refused(
             &["op op-8 resolved a join, and undo cannot put the paused join back", NOTHING_CHANGED],
             None,
-            "change the files, mortar save, then mortar join",
+            "change the files, mr save, then mr join",
         )
     );
 }
@@ -76,7 +76,7 @@ fn an_op_that_is_not_a_step_is_refused_naming_it_and_its_kind() {
                 NOTHING_CHANGED,
             ],
             None,
-            "mortar status",
+            "mr status",
         )
     );
 }

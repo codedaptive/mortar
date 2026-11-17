@@ -42,7 +42,7 @@ fn not_a_request_folder(verb: &str, why: String) -> Report {
         outcome: "refused".to_string(),
         lines: vec![why, "nothing ran".to_string()],
         owner: Some("the harness that makes Mortar folders".to_string()),
-        next: format!("run mortar {verb} inside a request folder Mortar made"),
+        next: format!("run mr {verb} inside a request folder Mortar made"),
         fields: Vec::new(),
     }
 }

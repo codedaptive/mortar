@@ -129,7 +129,7 @@ fn requests_to_rebase_send_them_to_join() {
     assert_eq!(report.exit, ExitCode::Done);
     assert_eq!(report.outcome, "after-published");
     assert_eq!(report.owner, None);
-    assert_eq!(report.next, "run mortar join in the folder of each request listed");
+    assert_eq!(report.next, "run mr join in the folder of each request listed");
     assert_eq!(report.fields[3], texts("rebase", &["r1", "r2", "r3"]));
     assert_eq!(
         report.lines[1..3],
@@ -161,7 +161,7 @@ fn a_conflicted_zone_alone_is_done_with_its_coordinator_and_the_repeat_next() {
             ]),
             owner: None,
             next: "zone land conflicts with origin: its coordinator resolves the conflict; then repeat the same \
-                   command: mortar after-publish cli --move land --actor <name>"
+                   command: mr after-publish cli --move land --actor <name>"
                 .to_string(),
             fields: vec![
                 texts("moved", &["cli"]),
@@ -188,7 +188,7 @@ fn several_conflicted_zones_are_named_together() {
     assert_eq!(
         report.next,
         "zone cli, land conflicts with origin: its coordinator resolves the conflict; then repeat the same command: \
-         mortar after-publish cli --move join --move land --actor <name>"
+         mr after-publish cli --move join --move land --actor <name>"
     );
 }
 
@@ -216,7 +216,7 @@ fn a_folder_with_paths_in_the_way_is_refused_with_its_next_and_the_repeat() {
             ]),
             owner: Some("the zone folders listed".to_string()),
             next: format!(
-                "{IN_THE_WAY}; then repeat the same command: mortar after-publish cli --move land --actor <name>"
+                "{IN_THE_WAY}; then repeat the same command: mr after-publish cli --move land --actor <name>"
             ),
             fields: vec![
                 texts("moved", &["land"]),
@@ -239,7 +239,7 @@ fn an_unmerged_folder_is_refused_with_its_next() {
     assert_eq!(report.exit, ExitCode::Refused);
     assert_eq!(report.outcome, "folder-not-moved");
     assert_eq!(report.owner, Some("the zone folders listed".to_string()));
-    assert_eq!(report.next, format!("{UNMERGED}; then repeat the same command: mortar after-publish cli --actor <name>"));
+    assert_eq!(report.next, format!("{UNMERGED}; then repeat the same command: mr after-publish cli --actor <name>"));
 }
 
 #[test]
@@ -251,7 +251,7 @@ fn a_folder_matching_no_zone_commit_is_refused_with_its_next() {
     assert_eq!(report.owner, Some("the zone folders listed".to_string()));
     assert_eq!(
         report.next,
-        format!("{NO_ZONE_COMMIT}; then repeat the same command: mortar after-publish cli --actor <name>")
+        format!("{NO_ZONE_COMMIT}; then repeat the same command: mr after-publish cli --actor <name>")
     );
     assert_eq!(report.fields[5], texts("folders_refused", &["/work/zones/cli"]));
 }
@@ -268,7 +268,7 @@ fn a_failed_folder_is_a_failure_with_its_next() {
     assert_eq!(report.owner, Some("the zone folders listed".to_string()));
     assert_eq!(
         report.next,
-        format!("{FAILED}; then repeat the same command: mortar after-publish cli --move land --actor <name>")
+        format!("{FAILED}; then repeat the same command: mr after-publish cli --move land --actor <name>")
     );
     assert_eq!(
         report.lines[1],
@@ -306,7 +306,7 @@ fn every_part_that_applies_is_in_the_fixed_order_whatever_the_zones_order() {
         report.next,
         format!(
             "{IN_THE_WAY}; {UNMERGED}; {NO_ZONE_COMMIT}; {FAILED}; zone cli conflicts with origin: its coordinator \
-             resolves the conflict; then repeat the same command: mortar after-publish cli --move land --move join \
+             resolves the conflict; then repeat the same command: mr after-publish cli --move land --move join \
              --move oplog --move gitio --actor <name>"
         )
     );
@@ -324,7 +324,7 @@ fn a_kind_shared_by_several_folders_is_one_part() {
     let report = after_publish_report(&args("cli", &["land"]), &zones);
     assert_eq!(
         report.next,
-        format!("{IN_THE_WAY}; then repeat the same command: mortar after-publish cli --move land --actor <name>")
+        format!("{IN_THE_WAY}; then repeat the same command: mr after-publish cli --move land --actor <name>")
     );
     assert_eq!(report.fields[5], texts("folders_refused", &["/work/zones/cli", "/work/zones/land"]));
 }

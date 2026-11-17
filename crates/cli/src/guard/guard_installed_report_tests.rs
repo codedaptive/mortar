@@ -74,6 +74,6 @@ fn a_guard_json_gone_before_it_was_read_back_sends_the_reader_to_install() {
     let report = guard_installed_report(false, &installed_state(None));
     assert_eq!(report.outcome, "installed");
     assert_eq!(report.lines[1], "guard.json names no branches to guard");
-    assert_eq!(report.next, "mortar guard install --actor <name>");
+    assert_eq!(report.next, "mr guard install --actor <name>");
     assert_eq!(report.fields[3], ("origin_branch".to_string(), OutValue::Null));
 }

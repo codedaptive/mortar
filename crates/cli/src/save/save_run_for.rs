@@ -1,4 +1,4 @@
-//! save_run_for: what `mortar save` and `mortar undo` read once, before their lock, as join's RequestRun, so that
+//! save_run_for: what `mr save` and `mr undo` read once, before their lock, as join's RequestRun, so that
 //! each can finish a pending folder move with join's finish_pending_move (S-143).
 //! Shell API: run_save and run_undo call it.
 

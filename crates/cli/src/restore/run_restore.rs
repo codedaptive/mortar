@@ -1,4 +1,4 @@
-//! run_restore: `mortar restore <op id> <ref>...`, the harness verb that sets refs back to their values as of an op
+//! run_restore: `mr restore <op id> <ref>...`, the harness verb that sets refs back to their values as of an op
 //! and moves the folders standing on them (SPEC-cli 05, S-113, S-115).
 //! No unit test: it takes a real lock, runs git, the op log, snapshot and folders (S-5, S-104); restore_lock_tests,
 //! restore_key_tests, restore_refusal_tests, restore_error_report_tests, restore_report_tests and
@@ -90,7 +90,7 @@ fn act(run: &Restore) -> Result<Report, Report> {
         return Err(refusal);
     }
     let caller =
-        OpCaller { key: run.key.clone(), actor: actor.clone(), reason: format!("mortar restore {}", run.op_id) };
+        OpCaller { key: run.key.clone(), actor: actor.clone(), reason: format!("mr restore {}", run.op_id) };
     let outcome = oplog::restore(git, common, run.op_id, run.refs, &caller, &run.context.protected)
         .map_err(oplog_refusal)?;
     let moved = match &outcome {

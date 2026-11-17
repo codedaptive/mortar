@@ -63,7 +63,7 @@ fn a_bad_sentence_is_refused_with_its_reason() {
             "refused",
             &["the sentence is empty or only whitespace", "nothing ran"],
             None,
-            "mortar save \"<one line saying what changed>\"",
+            "mr save \"<one line saying what changed>\"",
         )
     );
 }
@@ -78,7 +78,7 @@ fn an_unborn_head_is_refused_naming_the_folder() {
             "refused",
             &["HEAD of the folder /w/orc-r1 has no commit", "nothing was saved"],
             Some("the folder's HEAD"),
-            "check out the request's branch in this folder, then mortar save again",
+            "check out the request's branch in this folder, then mr save again",
         )
     );
 }
@@ -93,7 +93,7 @@ fn a_detached_head_is_refused_naming_the_folder() {
             "refused",
             &["HEAD of the folder /w/orc-r1 names no branch", "nothing was saved"],
             Some("the folder's HEAD"),
-            "check out the request's branch in this folder, then mortar save again",
+            "check out the request's branch in this folder, then mr save again",
         )
     );
 }
@@ -126,7 +126,7 @@ fn a_path_that_is_not_utf8_is_refused_naming_the_file() {
             &["the refused file \"data/big.bin\" has a name that is not UTF-8, so it cannot be passed to git; no \
                commit was written"],
             Some("the file data/big.bin"),
-            "rename the file to a UTF-8 name, then mortar save again",
+            "rename the file to a UTF-8 name, then mr save again",
         )
     );
 }
@@ -165,7 +165,7 @@ fn a_moved_snapshot_ref_without_a_stale_result_is_busy() {
 fn a_repeated_op_is_already_done() {
     assert_eq!(
         save_error_report(&SnapshotError::OpRepeated(record(Some(OpResult::Moved)))),
-        report(ExitCode::Done, "already-done", &["this save was already done"], None, "mortar join")
+        report(ExitCode::Done, "already-done", &["this save was already done"], None, "mr join")
     );
 }
 

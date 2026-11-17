@@ -7,7 +7,7 @@ use folders::{FolderKind, FolderRecord};
 use crate::report::{ExitCode, Report};
 
 /// Some for an attempt folder record: exit 1 "refused" naming k and the request, "nothing ran", owned by this
-/// request, next "keep or drop the attempts, then mortar join in the request's folder". None for a request or zone
+/// request, next "keep or drop the attempts, then mr join in the request's folder". None for a request or zone
 /// folder, and for an attempt record naming no request (decode_folder_record never gives one).
 pub fn attempt_refusal(verb: &str, record: &FolderRecord) -> Option<Report> {
     let (FolderKind::Attempt(k), Some(request)) = (record.kind, record.request.as_deref()) else {
@@ -18,11 +18,11 @@ pub fn attempt_refusal(verb: &str, record: &FolderRecord) -> Option<Report> {
         exit: ExitCode::Refused,
         outcome: "refused".to_string(),
         lines: vec![
-            format!("this is attempt folder {k} of request {request}: mortar {verb} runs in the request's own folder"),
+            format!("this is attempt folder {k} of request {request}: mr {verb} runs in the request's own folder"),
             "nothing ran".to_string(),
         ],
         owner: Some("this request".to_string()),
-        next: "keep or drop the attempts, then mortar join in the request's folder".to_string(),
+        next: "keep or drop the attempts, then mr join in the request's folder".to_string(),
         fields: Vec::new(),
     })
 }

@@ -103,7 +103,7 @@ fn no_paused_join_is_nothing_to_resolve() {
             outcome: "nothing-to-resolve".to_string(),
             lines: vec!["no join is paused in this folder; nothing to resolve".to_string()],
             owner: None,
-            next: "mortar join".to_string(),
+            next: "mr join".to_string(),
             fields: Vec::new(),
         }
     );
@@ -127,7 +127,7 @@ fn markers_left_name_each_file_and_its_lines() {
                 "  b.txt (lines 1)".to_string(),
             ],
             owner: None,
-            next: "fix the files, then mortar resolve".to_string(),
+            next: "fix the files, then mr resolve".to_string(),
             fields: Vec::new(),
         }
     );
@@ -149,7 +149,7 @@ fn a_stale_state_puts_the_request_back() {
                /r/.git/worktrees/fix-1/mortar-join.json no longer describes the request; the state file was kept and \
                no ref was moved. To start over: remove /r/.git/worktrees/fix-1/mortar-join.json, then run `mortar \
                join` to replay the request afresh"],
-            "put refs/heads/req/core/fix-1 back at 1111111111111111111111111111111111111111, then mortar resolve",
+            "put refs/heads/req/core/fix-1 back at 1111111111111111111111111111111111111111, then mr resolve",
         )
     );
 }
@@ -161,7 +161,7 @@ fn a_conflicted_path_that_is_a_folder_needs_a_file() {
         refused(
             &["conflicted path src/dir names a folder; nothing was committed and no ref was moved. A conflicted path \
                must be a file or removed: make it one, then run `mortar resolve` again"],
-            "put a file at that path, then mortar resolve",
+            "put a file at that path, then mr resolve",
         )
     );
 }
@@ -174,7 +174,7 @@ fn a_refused_conflicted_path_needs_a_file() {
         resolve_refusal_report(&error),
         refused(
             &["conflicted path src/x.rs was refused: bad mode; nothing was committed and no ref was moved"],
-            "put a file at that path, then mortar resolve",
+            "put a file at that path, then mr resolve",
         )
     );
 }
@@ -186,7 +186,7 @@ fn refused_conflicted_paths_with_no_path_named_need_a_file() {
         resolve_refusal_report(&error),
         refused(
             &["the conflicted paths were refused: bad mode; nothing was committed and no ref was moved"],
-            "put a file at that path, then mortar resolve",
+            "put a file at that path, then mr resolve",
         )
     );
 }
@@ -202,7 +202,7 @@ fn a_corrupt_state_is_kept_and_mended_by_hand() {
                  and no ref was moved",
                 "the file is kept",
             ],
-            "mend or remove that file by hand, then mortar join",
+            "mend or remove that file by hand, then mr join",
         )
     );
 }
@@ -213,7 +213,7 @@ fn a_missing_request_is_joins_refusal_under_resolve() {
         resolve_refusal_report(&JoinRunError::RequestMissing("refs/heads/req/core/fix-1".to_string())),
         refused(
             &["request ref refs/heads/req/core/fix-1 does not exist; nothing to join"],
-            "make the request folder again, then mortar join",
+            "make the request folder again, then mr join",
         )
     );
 }

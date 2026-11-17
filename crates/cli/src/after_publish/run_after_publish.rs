@@ -1,4 +1,4 @@
-//! run_after_publish: `mortar after-publish <zone> [--move <zone>]...`, every named zone moved onto the origin a
+//! run_after_publish: `mr after-publish <zone> [--move <zone>]...`, every named zone moved onto the origin a
 //! publish left by land's after_publish under the land lock, then each named zone's folder brought to its zone
 //! branch's tip (SPEC-cli 06; S-139, S-140). --key names the lock holder only, never passed to the op log (S-132).
 //! After land's Ok answer (Moved, Current or Conflicted), each named zone's folder is brought to its tip from gitio

@@ -42,7 +42,7 @@ fn yes_merges_and_next_lands_the_commit() {
                 "no ref moved and no commit was written".to_string(),
             ],
             owner: None,
-            next: "mortar land 1111111111111111111111111111111111111111 --actor <name>".to_string(),
+            next: "mr land 1111111111111111111111111111111111111111 --actor <name>".to_string(),
             fields: vec![text("change_id", CHANGE), text("commit", COMMIT)],
         }
     );
@@ -66,8 +66,8 @@ fn no_exits_2_listing_each_file_owned_by_the_changes_zone() {
                 "no ref moved and no commit was written".to_string(),
             ],
             owner: Some("the change's zone".to_string()),
-            next: "fix the conflict in the change's zone through a request (mortar folder request <zone> <request> \
-                   <path> --paths <path>... --actor <name>), then mortar squash <zone> --actor <name>"
+            next: "fix the conflict in the change's zone through a request (mr folder request <zone> <request> \
+                   <path> --paths <path>... --actor <name>), then mr squash <zone> --actor <name>"
                 .to_string(),
             fields: vec![
                 text("change_id", CHANGE),

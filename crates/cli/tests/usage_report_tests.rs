@@ -3,7 +3,7 @@
 
 use cli::{usage_report, ExitCode, Report, UsageError};
 
-const INIT_USAGE: &str = "mortar init --actor <name> --origin <branch> --integration <branch> --remote <name> \
+const INIT_USAGE: &str = "mr init --actor <name> --origin <branch> --integration <branch> --remote <name> \
 [--zone <zone>=<path>[,<path>...]]... [--root-file <path>]... [--build-dir <path>]... [--cap-bytes <n>] \
 [--floor-bytes <n>] [--formatter <word>]... [--formatter-timeout <seconds>] [--replace] [--json]";
 
@@ -18,7 +18,7 @@ fn an_unknown_verb_lists_the_verbs() {
             outcome: "usage".to_string(),
             lines: vec!["unknown verb \"jump\"".to_string(), "verbs: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge".to_string()],
             owner: None,
-            next: "mortar <verb>, one of: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge".to_string(),
+            next: "mr <verb>, one of: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge".to_string(),
             fields: Vec::new(),
         }
     );
@@ -29,7 +29,7 @@ fn no_verb_has_an_empty_verb() {
     let report = usage_report(&UsageError { verb: None, reason: "no verb given".to_string(), json: false });
     assert_eq!(report.verb, "");
     assert_eq!(report.lines, vec!["no verb given".to_string(), "verbs: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge".to_string()]);
-    assert_eq!(report.next, "mortar <verb>, one of: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge");
+    assert_eq!(report.next, "mr <verb>, one of: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge");
 }
 
 #[test]

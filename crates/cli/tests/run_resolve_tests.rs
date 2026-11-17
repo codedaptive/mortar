@@ -62,12 +62,12 @@ fn an_attempt_folder_is_refused_with_nothing_run() {
             exit: ExitCode::Refused,
             outcome: "refused".to_string(),
             lines: vec![
-                "this is attempt folder 2 of request fix-1: mortar resolve runs in the request's own folder"
+                "this is attempt folder 2 of request fix-1: mr resolve runs in the request's own folder"
                     .to_string(),
                 "nothing ran".to_string(),
             ],
             owner: Some("this request".to_string()),
-            next: "keep or drop the attempts, then mortar join in the request's folder".to_string(),
+            next: "keep or drop the attempts, then mr join in the request's folder".to_string(),
             fields: Vec::new(),
         }
     );
@@ -83,7 +83,7 @@ fn an_argument_is_resolves_usage() {
             outcome: "usage".to_string(),
             lines: vec!["resolve takes no arguments".to_string(), "verbs: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge".to_string()],
             owner: None,
-            next: "mortar resolve [--key <operation key>] [--json]".to_string(),
+            next: "mr resolve [--key <operation key>] [--json]".to_string(),
             fields: Vec::new(),
         }
     );

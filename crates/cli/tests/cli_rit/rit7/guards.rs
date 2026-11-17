@@ -35,7 +35,7 @@ fn all_three_verbs_without_config_refuse_before_work_and_point_to_the_built_init
     for verb in ["bisect", "backup", "restore-backup"] {
         let r = s.app(&words(&s, verb), 1, "no-config");
         assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
-        assert_eq!(r.text("next"), "mortar init"); assert_eq!(s.observe(), before);
+        assert_eq!(r.text("next"), "mr init"); assert_eq!(s.observe(), before);
     }
     s.assert_no_probes_left();
 }

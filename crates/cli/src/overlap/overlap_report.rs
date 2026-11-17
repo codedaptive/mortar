@@ -1,4 +1,4 @@
-//! overlap_report: the report of a `mortar overlap <zone>` that read the zone's open requests (exit 0 either way).
+//! overlap_report: the report of an `mr overlap <zone>` that read the zone's open requests (exit 0 either way).
 
 use ::join::OverlapPair;
 

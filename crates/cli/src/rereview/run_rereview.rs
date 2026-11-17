@@ -1,4 +1,4 @@
-//! run_rereview: `mortar rereview <reviewed commit> <new commit>`, the re-review diff of two squashes of one change
+//! run_rereview: `mr rereview <reviewed commit> <new commit>`, the re-review diff of two squashes of one change
 //! (SPEC-cli 06): its words read, then land's rereview under the land lock after recover, as every landing verb
 //! runs (S-16), though rereview moves no ref and records no op. --key names the lock holder only,
 //! never passed to the op log (S-132).
@@ -8,7 +8,7 @@
 //! with both ids and only what changed; squashes of two changes are refused exit 1 "not-same-change"; one word,
 //! three words and a word that is not a full commit id are exit 4 with rereview's usage line as next.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid, exit
-//! 3 (oplog's locks); without a config, exit 1, next mortar init (the shell's load_config); RereviewError Git,
+//! 3 (oplog's locks); without a config, exit 1, next mr init (the shell's load_config); RereviewError Git,
 //! Trailers and NoParent (a root commit) through the binary; ACCEPT-1 check 9.
 
 use std::path::Path;

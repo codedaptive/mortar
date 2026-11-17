@@ -1,4 +1,4 @@
-//! The report of a `mortar squash` that land's squash answered (SPEC-cli 06).
+//! The report of an `mr squash` that land's squash answered (SPEC-cli 06).
 
 use land::{Squash, SquashAnswer};
 
@@ -7,7 +7,7 @@ use crate::report::{ExitCode, OutValue, Report};
 const VERB: &str = "squash";
 
 /// - Made: exit 0 "squashed", the squash commit, its change ID, the zone tip it squashes and its requests; next
-///   asks mortar would-merge of the squash's commit, then hands the change to review.
+///   asks mr would-merge of the squash's commit, then hands the change to review.
 /// - Same: exit 0 "already-squashed", the commit already at the squash ref; nothing written. Fields and next as Made.
 /// - Nothing: exit 0 "nothing-to-squash", the zone holds nothing origin lacks; fields zone and source.
 /// - Conflicted: exit 2 "conflict", each conflicting file on its own line, owner the zone; next brings the zone up
@@ -55,8 +55,8 @@ pub fn squash_report(zone: &str, answer: &SquashAnswer) -> Report {
             lines.extend(files.iter().cloned());
             lines.push("nothing was written and no ref moved".to_string());
             let next = format!(
-                "bring zone {zone} up to date with origin through a request (mortar folder request {zone} <request> \
-                 <path> --paths <path>... --actor <name>), then mortar squash {zone} --actor <name>"
+                "bring zone {zone} up to date with origin through a request (mr folder request {zone} <request> \
+                 <path> --paths <path>... --actor <name>), then mr squash {zone} --actor <name>"
             );
             let fields = vec![zone_field, ("files".to_string(), OutValue::Texts(files))];
             report(ExitCode::Conflict, "conflict", lines, Some(format!("zone {zone}")), next, fields)
@@ -75,7 +75,7 @@ fn requests_line(squash: &Squash) -> String {
 /// Asks would-merge of the squash's commit first, then review of the change.
 fn review_next(squash: &Squash) -> String {
     format!(
-        "mortar would-merge {commit} --actor <name>, then hand change {} (commit {commit}) to review",
+        "mr would-merge {commit} --actor <name>, then hand change {} (commit {commit}) to review",
         squash.change_id,
         commit = squash.commit
     )

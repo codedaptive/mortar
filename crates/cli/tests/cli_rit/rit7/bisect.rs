@@ -30,7 +30,7 @@ fn fast_forward_and_merge_culprits_name_the_actual_landing_squash_and_zone_and_r
         assert_eq!(r.text("commit"), failed.as_str()); assert_eq!(r.text("change_id"), squash.change_id.as_str()); assert_eq!(r.text("zone"), "core");
         assert_eq!(r.strings("lines")[0], format!("the first failing landing is {failed}"));
         assert_eq!(r.strings("lines")[1], format!("its squash is change {} from zone core", squash.change_id));
-        assert_eq!(r.text("next"), "fix the break in zone core through a request (mortar folder request core <request> <path> --paths <path>... --actor <name>), then mortar squash core --actor <name>");
+        assert_eq!(r.text("next"), "fix the break in zone core through a request (mr folder request core <request> <path> --paths <path>... --actor <name>), then mr squash core --actor <name>");
         assert_eq!(r.strings("probes")[0], format!("{failed}: failed with exit 1"));
         assert_eq!(r.strings("probes")[1], format!("{}: passed", s.f.base));
         removed_trace(&trace, if merge { 3 } else { 2 });
@@ -46,7 +46,7 @@ fn a_real_commit_without_mortar_trailers_is_named_without_inventing_a_change_id_
     let r = run(&s, &mut s.bisect_command(&s.f.base, &failed, "60", &program, &[trace.to_str().unwrap()]), 0, "culprit");
     assert_eq!(r.text("commit"), failed.as_str()); assert!(r.is_null("change_id")); assert!(r.is_null("zone"));
     assert_eq!(r.strings("lines")[1], "it carries no squash trailers, so no change ID or zone is named");
-    assert_eq!(r.text("next"), "fix the break in the zone that owns it through a request (mortar folder request <zone> <request> <path> --paths <path>... --actor <name>), then mortar squash <zone> --actor <name>");
+    assert_eq!(r.text("next"), "fix the break in the zone that owns it through a request (mr folder request <zone> <request> <path> --paths <path>... --actor <name>), then mr squash <zone> --actor <name>");
     removed_trace(&trace, 2);
 }
 
@@ -64,7 +64,7 @@ fn both_not_found_reasons_preserve_history_and_remove_probe_worktrees() {
             assert_eq!(r.strings("probes"), &[format!("{failed}: passed")]);
         } else {
             assert_eq!(r.strings("lines")[0], format!("no culprit: the last passing commit {} fails the test command, so the break is at or before it", s.f.base));
-            assert_eq!(r.text("next"), format!("repeat with an earlier passing commit: mortar bisect <last pass> {failed} --timeout <seconds> --actor <name> -- <command>..."));
+            assert_eq!(r.text("next"), format!("repeat with an earlier passing commit: mr bisect <last pass> {failed} --timeout <seconds> --actor <name> -- <command>..."));
             assert_eq!(r.strings("probes"), &[format!("{failed}: failed with exit 1"), format!("{}: failed with exit 1", s.f.base)]);
         }
     }

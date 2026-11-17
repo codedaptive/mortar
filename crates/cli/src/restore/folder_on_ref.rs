@@ -1,4 +1,4 @@
-//! A Mortar folder standing on a ref a `mortar restore` names.
+//! A Mortar folder standing on a ref an `mr restore` names.
 //! A bare type (S-7); restore_refusal_tests and restore_report_tests exercise it.
 
 use std::path::PathBuf;

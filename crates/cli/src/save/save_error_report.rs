@@ -8,9 +8,9 @@ use snapshot::SnapshotError;
 use crate::report::{failure_report, ExitCode, Report};
 
 /// The step after a refused sentence.
-const NEXT_SENTENCE: &str = "mortar save \"<one line saying what changed>\"";
+const NEXT_SENTENCE: &str = "mr save \"<one line saying what changed>\"";
 /// The step after a HEAD save cannot use.
-const NEXT_HEAD: &str = "check out the request's branch in this folder, then mortar save again";
+const NEXT_HEAD: &str = "check out the request's branch in this folder, then mr save again";
 
 /// Refused (exit 1): a bad sentence, an unborn or detached HEAD, a HEAD of this request without a change ID, a
 /// refused path that is not UTF-8. Busy (exit 3): the branch moved while save ran (the snapshot ref may have
@@ -42,7 +42,7 @@ pub fn save_error_report(error: &SnapshotError) -> Report {
                  was written"
             )],
             Some(format!("the file {}", path.display())),
-            "rename the file to a UTF-8 name, then mortar save again",
+            "rename the file to a UTF-8 name, then mr save again",
         ),
         SnapshotError::BranchMoved(record) => busy(moved_line(
             "the branch",
@@ -56,7 +56,7 @@ pub fn save_error_report(error: &SnapshotError) -> Report {
             outcome: "already-done".to_string(),
             lines: vec!["this save was already done".to_string()],
             owner: None,
-            next: "mortar join".to_string(),
+            next: "mr join".to_string(),
             fields: Vec::new(),
         },
         SnapshotError::IndexNotSet { commit, error } => Report {

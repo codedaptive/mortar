@@ -1,4 +1,4 @@
-//! `mortar overlap <zone>`'s words: exactly one, a zone the config names.
+//! `mr overlap <zone>`'s words: exactly one, a zone the config names.
 
 use crate::config::Config;
 

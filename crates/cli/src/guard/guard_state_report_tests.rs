@@ -41,7 +41,7 @@ fn a_foreign_reference_transaction_is_refused_naming_its_path() {
                     .to_string()
             ],
             owner: Some("the repository's own hooks".to_string()),
-            next: "move /r/.git/hooks/reference-transaction aside or fold it into your own hook by hand, then mortar \
+            next: "move /r/.git/hooks/reference-transaction aside or fold it into your own hook by hand, then mr \
                    guard install --actor <name>"
                 .to_string(),
             fields: vec![
@@ -114,7 +114,7 @@ fn an_untouched_repository_names_both_hooks_and_guard_json_missing() {
                 "there is no guard.json, so the guard has no branches to check".to_string(),
             ],
             owner: None,
-            next: "mortar guard install --actor <name>".to_string(),
+            next: "mr guard install --actor <name>".to_string(),
             fields: vec![
                 ("hooks_dir".to_string(), text("/r/.git/hooks")),
                 ("reference_transaction".to_string(), text("missing")),
@@ -158,6 +158,6 @@ fn a_guard_json_for_other_branches_names_both_sets() {
                 .to_string(),
         ]
     );
-    assert_eq!(report.next, "mortar guard install --actor <name>");
+    assert_eq!(report.next, "mr guard install --actor <name>");
     assert_eq!(report.fields[3], ("origin_branch".to_string(), text("main")));
 }

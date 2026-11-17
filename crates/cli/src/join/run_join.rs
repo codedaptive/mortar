@@ -1,4 +1,4 @@
-//! `mortar join`: finishes a folder move a kill or a refused move left (a rebase's or an undo's, S-143), saves the
+//! `mr join`: finishes a folder move a kill or a refused move left (a rebase's or an undo's, S-143), saves the
 //! folder's work, joins the request to its zone and moves the folder after a rebase, all under the zone's join lock
 //! after recover (S-72, S-86, S-47, S-49); in an attempt folder it runs nothing (S-91).
 //! No unit test: it runs git, the formatter and the op log, and takes a real lock (S-5); the tests in crates/cli/tests
@@ -8,8 +8,8 @@
 //! the mortar binary as a child process in a throwaway repository and a request folder: a request ahead of an unmoved
 //! zone fast-forwards it, exit 0 "joined", next "wait for the zone's tests", and a repeat answers joined with nothing
 //! moved; unsaved edits are saved first as "<request>: work saved at join" on the request branch and joined; a zone
-//! moved under the request rebases it, exit 0 "rebased", the folder's files and HEAD at the new tip, next "mortar
-//! join"; a conflicting zone change is exit 2 listing the files, no ref moved, next "mortar resolve"; a local edit in
+//! moved under the request rebases it, exit 0 "rebased", the folder's files and HEAD at the new tip, next "mr
+//! join"; a conflicting zone change is exit 2 listing the files, no ref moved, next "mr resolve"; a local edit in
 //! the way of the folder move is exit 1 listing the paths, and once moved aside the next join finishes the move; a
 //! missing zone branch is exit 1 owned by the zone's coordinator; any argument is exit 4 with join's usage; an attempt
 //! folder is exit 1 naming its number with nothing run; a held join lock is exit 3; a configured formatter runs over

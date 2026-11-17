@@ -12,7 +12,7 @@ const AGENT: VerbSpec = VerbSpec {
     kind: VerbKind::Agent,
     lock: LockNeed::Join,
     needs_config: true,
-    usage: "mortar save [--json]",
+    usage: "mr save [--json]",
 };
 
 const HOOK: VerbSpec = VerbSpec {
@@ -50,7 +50,7 @@ fn an_agent_verb_refuses_actor_as_usage() {
     assert_eq!(report.exit, ExitCode::Usage);
     assert_eq!(report.verb, "save");
     assert_eq!(report.lines[0], "agent verbs take the actor from the folder record");
-    assert_eq!(report.next, "mortar save [--json]");
+    assert_eq!(report.next, "mr save [--json]");
 }
 
 #[test]
@@ -65,7 +65,7 @@ fn an_agent_verb_outside_a_request_folder_is_refused_naming_the_folder() {
         assert_eq!(report.exit as i32, 1);
         assert_eq!(report.verb, "save");
         assert_eq!(report.lines, vec![why.to_string(), "nothing ran".to_string()]);
-        assert_eq!(report.next, "run mortar save inside a request folder Mortar made");
+        assert_eq!(report.next, "run mr save inside a request folder Mortar made");
     }
 }
 

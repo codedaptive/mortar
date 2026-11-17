@@ -1,4 +1,4 @@
-//! The words of `mortar restore-backup` after its globals, read into the host whose backup to restore.
+//! The words of `mr restore-backup` after its globals, read into the host whose backup to restore.
 
 /// Exactly one word, the host, taken as it is (land's restore_backup refuses a host that cannot name a namespace).
 /// The Err is the reason: no word, or a second word (named).

@@ -1,4 +1,4 @@
-//! One `--zone <zone>=<path>[,<path>...]` of `mortar init`.
+//! One `--zone <zone>=<path>[,<path>...]` of `mr init`.
 
 use std::collections::BTreeMap;
 

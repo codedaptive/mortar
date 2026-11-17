@@ -50,7 +50,7 @@ fn an_extra_ref_refused_names_the_ref_to_drop_from_the_same_command() {
         refused(
             "sweep",
             &["extra ref refs/heads/main is protected"],
-            "mortar sweep with the same words without --ref refs/heads/main, with --actor <name>",
+            "mr sweep with the same words without --ref refs/heads/main, with --actor <name>",
         )
     );
 }
@@ -63,7 +63,7 @@ fn an_extra_ref_refused_names_the_verb_it_came_from() {
     };
     assert_eq!(
         folders_error_report("disk", &error).next,
-        "mortar disk with the same words without --ref refs/t3/x, with --actor <name>"
+        "mr disk with the same words without --ref refs/t3/x, with --actor <name>"
     );
 }
 
@@ -107,7 +107,7 @@ fn a_record_mortar_does_not_write_is_refused_with_its_reason() {
         refused(
             "disk",
             &["/w/a/.git: the folder record is not one Mortar writes: no key kind"],
-            "make the folder again at another path with mortar folder zone <zone> <path> --actor <name> or mortar \
+            "make the folder again at another path with mr folder zone <zone> <path> --actor <name> or mr \
              folder request <zone> <request> <path> --paths <path>... --actor <name>",
         )
     );
@@ -121,7 +121,7 @@ fn a_missing_zone_branch_is_refused_with_folder_refusals_next() {
         refused(
             "sweep",
             &["zone branch zone/core does not exist"],
-            "mortar folder zone <zone> <path> --start <commit> --actor <name>, then repeat",
+            "mr folder zone <zone> <path> --start <commit> --actor <name>, then repeat",
         )
     );
 }
@@ -130,7 +130,7 @@ fn a_missing_zone_branch_is_refused_with_folder_refusals_next() {
 fn git_is_a_failure_in_the_clis_words() {
     assert_eq!(
         folders_error_report("sweep", &FolderError::Git(git_error())),
-        failed("sweep", "mortar sweep: a git run failed")
+        failed("sweep", "mr sweep: a git run failed")
     );
 }
 
@@ -147,7 +147,7 @@ fn git_never_prints_gitios_text() {
 fn oplog_is_a_failure_in_the_clis_words() {
     let error = FolderError::Oplog(OplogError::Malformed { line: None, reason: "no op_id".to_string() });
     let report = folders_error_report("disk", &error);
-    assert_eq!(report, failed("disk", "mortar disk: the op log could not be read or written"));
+    assert_eq!(report, failed("disk", "mr disk: the op log could not be read or written"));
     assert!(!format!("{report:?}").contains("malformed op data"), "{report:?}");
 }
 
@@ -156,7 +156,7 @@ fn disk_probe_is_a_failure_naming_the_path_and_reason() {
     let error = FolderError::DiskProbe { path: PathBuf::from("/w"), reason: "df failed".to_string() };
     assert_eq!(
         folders_error_report("disk", &error),
-        failed("disk", "mortar disk: the free disk at /w could not be read: df failed")
+        failed("disk", "mr disk: the free disk at /w could not be read: df failed")
     );
 }
 

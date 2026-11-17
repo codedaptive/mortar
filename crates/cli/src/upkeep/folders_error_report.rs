@@ -1,4 +1,4 @@
-//! The report of a `mortar disk` or `mortar sweep` that folders refused or failed. folders' own Display text, and
+//! The report of an `mr disk` or `mr sweep` that folders refused or failed. folders' own Display text, and
 //! gitio's and oplog's inside it, is never printed (S-128 (4)): the why is the cli's words or folder_error_why's facts.
 
 use folders::FolderError;
@@ -7,12 +7,12 @@ use crate::folder::{folder_error_why, folder_refusal};
 use crate::lock::lock_report;
 use crate::report::{failure_report, ExitCode, Report};
 
-/// Lock is lock_report(verb). Git, Oplog and DiskProbe are failures (exit 5) led by "mortar <verb>:", in the cli's
+/// Lock is lock_report(verb). Git, Oplog and DiskProbe are failures (exit 5) led by "mr <verb>:", in the cli's
 /// words (DiskProbe names its path and reason). ExtraRefRefused is exit 1 naming the --ref to drop from the same
 /// command (S-112). Every other variant, named one by one so a new one breaks the build, is folder_error_why's lines
 /// with folder_refusal's exit and next: exit 1 "refused", or for Io exit 5 "failed".
 pub fn folders_error_report(verb: &str, error: &FolderError) -> Report {
-    let failed = |what: String| failure_report(verb, &format!("mortar {verb}: {what}"));
+    let failed = |what: String| failure_report(verb, &format!("mr {verb}: {what}"));
     match error {
         FolderError::Lock(lock) => lock_report(verb, lock),
         FolderError::Git(_) => failed("a git run failed".to_string()),
@@ -24,7 +24,7 @@ pub fn folders_error_report(verb: &str, error: &FolderError) -> Report {
             verb,
             error,
             ExitCode::Refused,
-            format!("mortar {verb} with the same words without --ref {refname}, with --actor <name>"),
+            format!("mr {verb} with the same words without --ref {refname}, with --actor <name>"),
         ),
         FolderError::Plan(_)
         | FolderError::Record { .. }

@@ -1,5 +1,5 @@
-//! status joined: `mortar status` reports joined only when the folder's saved work is the joined request tip's.
-//! Work snapshotted after a join but never saved to the request branch is unsaved and not joined, next mortar save
+//! status joined: `mr status` reports joined only when the folder's saved work is the joined request tip's.
+//! Work snapshotted after a join but never saved to the request branch is unsaved and not joined, next mr save
 //! (S-144: a snapshot is not a save);
 //! a join with nothing new since, and a formatted save then a join, stay joined, next "wait for the zone's tests".
 //! Status reads only (S-85): refs, index, record, op log and files are unchanged by it (observe::status_at).
@@ -51,7 +51,7 @@ fn snapshot_only_work_after_a_join_is_not_joined() {
     // A snapshot is not a save: the folder's tree is the snapshot's, not the tip's, so it reads unsaved (S-144).
     let report = status(&f, "unsaved");
     assert!(!report.flag("saved")); assert!(!report.flag("joined"));
-    assert_eq!(report.text("next"), "mortar save \"<sentence>\"");
+    assert_eq!(report.text("next"), "mr save \"<sentence>\"");
     assert_eq!(f.head(), tip);
 }
 

@@ -86,7 +86,7 @@ fn a_bad_host_on_restore_backup_is_the_host_named() {
             "restore-backup",
             "host \"\" cannot name a backup namespace: it is empty or holds '/'",
             "the host named",
-            "name the host as its backup is named on the remote (refs/mortar-backup/<host>/): mortar restore-backup \
+            "name the host as its backup is named on the remote (refs/mortar-backup/<host>/): mr restore-backup \
              <host> --actor <name>",
         )
     );

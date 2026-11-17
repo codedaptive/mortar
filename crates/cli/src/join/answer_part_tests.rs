@@ -76,7 +76,7 @@ fn rebased_says_the_tests_run_again_and_joins_next() {
             fields: vec![text("from", FROM), text("to", TO)],
             exit: ExitCode::Done,
             outcome: "rebased",
-            next: "mortar join",
+            next: "mr join",
         })
     );
 }
@@ -105,7 +105,7 @@ fn conflicted_lists_each_file_and_resolves_next() {
             ],
             exit: ExitCode::Conflict,
             outcome: "conflicted",
-            next: "mortar resolve",
+            next: "mr resolve",
         })
     );
 }

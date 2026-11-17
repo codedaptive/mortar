@@ -1,4 +1,4 @@
-//! The words of `mortar folder` after its globals, read into the sub-verb they ask for.
+//! The words of `mr folder` after its globals, read into the sub-verb they ask for.
 
 use std::path::PathBuf;
 

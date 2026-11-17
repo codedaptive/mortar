@@ -41,10 +41,10 @@ fn files_in_the_way_are_listed_and_the_next_join_finishes() {
                 "the folder could not move; these files stand in the way:".to_string(),
                 "  src/a.rs".to_string(),
                 "  b.txt".to_string(),
-                "the request branch already stands at the new tip; the next mortar join finishes the move".to_string(),
+                "the request branch already stands at the new tip; the next mr join finishes the move".to_string(),
             ],
             owner: Some("this request's folder".to_string()),
-            next: "move those files out of the way, then mortar join".to_string(),
+            next: "move those files out of the way, then mr join".to_string(),
             fields: Vec::new(),
         }
     );
@@ -69,7 +69,7 @@ fn a_branch_elsewhere_is_put_back() {
                          2222222222222222222222222222222222222222"
                 .to_string()],
             owner: Some("this request's folder".to_string()),
-            next: "put the request branch back where mortar left it, then mortar join".to_string(),
+            next: "put the request branch back where mortar left it, then mr join".to_string(),
             fields: Vec::new(),
         }
     );
@@ -116,7 +116,7 @@ fn a_branch_at_no_commit_says_no_commit() {
                     .to_string(),
             ],
             owner: Some("this request's folder".to_string()),
-            next: "put the request branch back where mortar left it, then mortar join".to_string(),
+            next: "put the request branch back where mortar left it, then mr join".to_string(),
             fields: Vec::new(),
         }
     );

@@ -1,4 +1,4 @@
-//! status_report: the report of `mortar status`, assembled from its parts; attempt_status_report builds on it for
+//! status_report: the report of `mr status`, assembled from its parts; attempt_status_report builds on it for
 //! an attempt folder.
 //! No sibling unit test: it calls status_lines, status_fields, status_next and status_outcome, so its tests are the
 //! ZIT crates/cli/tests/status_report_tests.rs, which also renders both forms (S-104).

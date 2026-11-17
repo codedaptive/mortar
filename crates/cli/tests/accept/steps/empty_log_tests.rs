@@ -1,7 +1,7 @@
 use super::empty_log;
 
 const EMPTY: &str = "{\"verb\":\"log\",\"ok\":true,\"outcome\":\"empty\",\"exit\":0,\
-                     \"next\":\"mortar log with no filter lists every op\",\"lines\":[],\"owner\":null,\"records\":[]}\n";
+                     \"next\":\"mr log with no filter lists every op\",\"lines\":[],\"owner\":null,\"records\":[]}\n";
 
 #[test]
 #[ignore = "acceptance: make accept"]

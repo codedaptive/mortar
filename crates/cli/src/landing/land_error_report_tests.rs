@@ -11,7 +11,7 @@ use crate::report::{ExitCode, Report};
 
 const A: &str = "1111111111111111111111111111111111111111";
 const B: &str = "2222222222222222222222222222222222222222";
-const RESTORE: &str = "find the op that moved it with mortar log --ref refs/heads/integ, then mortar restore <op id> \
+const RESTORE: &str = "find the op that moved it with mr log --ref refs/heads/integ, then mr restore <op id> \
                        refs/heads/integ --actor <name>";
 
 fn oid(hex: &str) -> Oid {
@@ -98,7 +98,7 @@ fn a_squash_commit_with_no_zone_is_refused_naming_it() {
         refused(
             "squash commit 1111111111111111111111111111111111111111 carries no Mortar-Zone trailer",
             "the squash commit",
-            "make the squash again: mortar squash <zone> --actor <name>",
+            "make the squash again: mr squash <zone> --actor <name>",
         )
     );
 }

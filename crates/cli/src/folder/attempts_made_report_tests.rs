@@ -37,7 +37,7 @@ fn two_attempts_made() {
                 format!("attempt folder /w/tries/try-2 on base {TIP}"),
             ],
             owner: None,
-            next: "start one agent in each attempt folder; then mortar folder keep <k> --actor <name> or mortar \
+            next: "start one agent in each attempt folder; then mr folder keep <k> --actor <name> or mr \
                    folder drop --actor <name> in the request's folder"
                 .to_string(),
             fields: vec![

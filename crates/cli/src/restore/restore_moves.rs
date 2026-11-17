@@ -1,4 +1,4 @@
-//! restore_moves: the moves a `mortar restore` makes, read before it runs so the folders on those refs can be
+//! restore_moves: the moves an `mr restore` makes, read before it runs so the folders on those refs can be
 //! checked first (S-113(2)).
 //! No unit test: it reads the op log and runs git (S-5, S-104); its decisions are oplog's (find_done_record,
 //! check_restore_ref_names, plan_restore), covered there, and restore_refusal_tests cover what restore decides from

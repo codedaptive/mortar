@@ -1,11 +1,11 @@
-//! run_squash: `mortar squash <zone>`, a configured zone's changes squashed onto origin as one commit at
+//! run_squash: `mr squash <zone>`, a configured zone's changes squashed onto origin as one commit at
 //! refs/mortar/squash/<zone> under the land lock (SPEC-cli 06). --key names the lock holder only,
 //! never passed to the op log (S-132): repeat safety comes from land's answers (Same).
 //! No sibling test (S-104): it takes a real lock and runs git, the op log and land; parse_squash_args_tests,
 //! squash_report_tests and landing's squash_error_report_tests cover its decisions. The RIT
 //! crates/cli/tests/cli_rit/run_squash_tests.rs covers it through the binary.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid,
-//! exit 3; without a config, exit 1, next mortar init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
+//! exit 3; without a config, exit 1, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
 //! OpRepeated texts when git or the op log fails for real; ACCEPT-1 checks 7 and 9.
 
 use std::path::Path;

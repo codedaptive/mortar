@@ -31,7 +31,7 @@ fn outside_a_repository_is_not_a_folder() {
                 "git rev-parse --show-toplevel: exit code 128: fatal: not a git repository".to_string(),
             ],
             owner: Some("the harness that makes Mortar folders".to_string()),
-            next: "run mortar save inside a folder Mortar made".to_string(),
+            next: "run mr save inside a folder Mortar made".to_string(),
             fields: Vec::new(),
         }
     );
@@ -47,7 +47,7 @@ fn a_worktree_without_a_record_is_not_a_folder_naming_it() {
         vec!["this directory is not in a Mortar folder: the worktree /r/main has no Mortar record".to_string()]
     );
     assert_eq!(report.owner.as_deref(), Some("the harness that makes Mortar folders"));
-    assert_eq!(report.next, "run mortar join inside a folder Mortar made");
+    assert_eq!(report.next, "run mr join inside a folder Mortar made");
 }
 
 #[test]

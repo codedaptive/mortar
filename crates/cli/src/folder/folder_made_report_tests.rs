@@ -40,7 +40,7 @@ fn a_zone_folder_made_names_its_zone_base_and_cone_and_next_makes_request_folder
                 "cone Cargo.toml, src/a".to_string(),
             ],
             owner: None,
-            next: "make request folders with mortar folder request core <request> <path> --paths <path>... --actor \
+            next: "make request folders with mr folder request core <request> <path> --paths <path>... --actor \
                    <name>"
                 .to_string(),
             fields: vec![

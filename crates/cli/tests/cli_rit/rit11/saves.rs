@@ -12,7 +12,7 @@ fn undo_save_keeps_all_file_bytes_sets_the_restored_index_and_repeats_without_re
     let r = ours(&w, &["undo", "--key", "holder-key-not-op-key"], 0, "undone");
     let undo = assert_one_undo(&w, &target, &saved, &w.s.f.base);
     assert_eq!(r.text("undone_op"), target.op_id); assert_eq!(r.text("undone_kind"), "save");
-    assert_eq!(r.text("undo_op"), undo.op_id); assert_eq!(r.text("next"), "mortar status");
+    assert_eq!(r.text("undo_op"), undo.op_id); assert_eq!(r.text("next"), "mr status");
     let snap = Oid::parse(r.text("snapshot")).unwrap();
     assert_eq!(r.strings("lines"), &[format!("undid save op {}", target.op_id), format!("the undo is op {}", undo.op_id),
         format!("the folder as it stood is kept in snapshot commit {snap}"), "the files are untouched; the work shows as unsaved".into()]);
@@ -21,7 +21,7 @@ fn undo_save_keeps_all_file_bytes_sets_the_restored_index_and_repeats_without_re
     assert_eq!(w.s.f.blob(&snap, "src/file"), b"later unsaved work\n"); assert_eq!(w.s.f.blob(&snap, "src/new"), b"new unsaved file\n");
     assert_eq!(w.tip("core"), zone); assert_eq!(w.s.remote_refs(), remote); assert!(!w.s.f.lock_path().exists());
     let before = observe(&w); let status = ours(&w, &["status"], 0, "unsaved");
-    assert!(!status.flag("saved")); assert_eq!(status.text("next"), "mortar save \"<sentence>\""); assert_eq!(observe(&w), before);
+    assert!(!status.flag("saved")); assert_eq!(status.text("next"), "mr save \"<sentence>\""); assert_eq!(observe(&w), before);
     let repeat = ours(&w, &["undo"], 0, "already-done");
     assert_eq!(repeat.text("undo_op"), undo.op_id); assert_eq!(repeat.text("undone_op"), target.op_id);
     assert_eq!(observe(&w), before); assert_eq!(done(&w, "undo").len(), 1);

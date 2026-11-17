@@ -1,4 +1,4 @@
-//! What `mortar init` does with the config already there.
+//! What `mr init` does with the config already there.
 //! A bare type (S-7); decide_init_tests and init_report_tests exercise each variant.
 
 /// Write: there is none. AlreadyDone: it holds the same values. Replace: it holds other values and --replace

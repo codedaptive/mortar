@@ -17,7 +17,7 @@ use oplog::{Op, RefMove};
 use testkit::TestRepo;
 
 const RESTORE_USAGE: &str =
-    "mortar restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]";
+    "mr restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]";
 
 fn context(rest: &[&str]) -> ShellContext {
     let config = Config {
@@ -128,7 +128,7 @@ fn a_ref_name_git_refuses_is_oplogs_bad_move_with_nothing_written() {
          refused it); fix the op's moves and run again"
     );
     assert_eq!(report.next, "name \"refs/heads/req/core/a..b\" by its full, valid ref name, then repeat");
-    assert!(!report.next.contains("mortar log --ref"), "{}", report.next);
+    assert!(!report.next.contains("mr log --ref"), "{}", report.next);
     assert_eq!(git.read_ref("refs/heads/req/core/a..b").unwrap(), None);
     assert_eq!(oplog::read_op_log(&common).unwrap().records.len(), before);
 }

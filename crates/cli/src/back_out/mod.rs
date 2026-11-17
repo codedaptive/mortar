@@ -1,4 +1,4 @@
-//! `mortar back-out` (SPEC-cli 06): its report in the cli's own words, and its runner.
+//! `mr back-out` (SPEC-cli 06): its report in the cli's own words, and its runner.
 
 mod back_out_report;
 mod run_back_out;

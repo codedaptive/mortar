@@ -63,14 +63,14 @@ pub fn squash_error_report(verb: &str, error: &SquashError) -> Report {
         SquashError::TrailerMissing { commit, trailer } => refused(
             format!("commit {commit} carries no {trailer} trailer, so it is not a squash Mortar wrote"),
             &format!("the commit {commit}"),
-            "name the commit at refs/mortar/squash/<zone>, or make the squash again: mortar squash <zone> --actor \
+            "name the commit at refs/mortar/squash/<zone>, or make the squash again: mr squash <zone> --actor \
              <name>"
                 .to_string(),
         ),
         SquashError::TrailerMalformed { commit, trailer, value } => refused(
             format!("commit {commit}'s {trailer} trailer holds {value:?}, which is not a change ID or a commit id"),
             &format!("the commit {commit}"),
-            "make the squash again: mortar squash <zone> --actor <name>".to_string(),
+            "make the squash again: mr squash <zone> --actor <name>".to_string(),
         ),
         SquashError::RequestsMalformed { commit } => refused(
             format!(
@@ -78,7 +78,7 @@ pub fn squash_error_report(verb: &str, error: &SquashError) -> Report {
                  squash Mortar wrote"
             ),
             &format!("the commit {commit}"),
-            "make the squash again: mortar squash <zone> --actor <name>".to_string(),
+            "make the squash again: mr squash <zone> --actor <name>".to_string(),
         ),
     }
 }

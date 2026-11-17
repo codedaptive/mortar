@@ -1,4 +1,4 @@
-//! The report of a `mortar publish` that land's publish answered (SPEC-cli 06).
+//! The report of an `mr publish` that land's publish answered (SPEC-cli 06).
 
 use std::path::Path;
 
@@ -13,7 +13,7 @@ const VERB: &str = "publish";
 ///   zone's squash ref removed; field origin.
 /// - OriginMoved: exit 1 "origin-moved", someone else moved the remote's origin branch to `found`; the local origin
 ///   branch and integration are on it, the squash kept, and `folder` (the integration folder moved onto `found`,
-///   if any) is named. Owned by whoever pushed `found`; next lands the squash again onto `found` with `mortar land
+///   if any) is named. Owned by whoever pushed `found`; next lands the squash again onto `found` with `mr land
 ///   <commit>`, then publishes. Fields found, integration
 ///   (also `found`) and folder (its path, or null).
 /// - NothingToPublish: exit 0 "nothing-to-publish", no landing waiting; no fields.
@@ -44,7 +44,7 @@ pub fn publish_report(answer: &PublishAnswer, refs: &LandRefs, folder: Option<&P
             ],
             owner: Some(format!("whoever pushed {found} to {remote}")),
             next: format!(
-                "land the change's squash again onto {found}: mortar land <commit> --actor <name>, then mortar \
+                "land the change's squash again onto {found}: mr land <commit> --actor <name>, then mr \
                  publish --actor <name>"
             ),
             fields: vec![

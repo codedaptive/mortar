@@ -1,4 +1,4 @@
-//! The report of a `mortar folder attempts` that made (or found already made) its attempt folders.
+//! The report of an `mr folder attempts` that made (or found already made) its attempt folders.
 
 use std::path::{Path, PathBuf};
 
@@ -20,7 +20,7 @@ pub fn attempts_made_report(dir: &Path, records: &[(PathBuf, FolderRecord)]) -> 
         outcome: "made".to_string(),
         lines,
         owner: None,
-        next: "start one agent in each attempt folder; then mortar folder keep <k> --actor <name> or mortar folder \
+        next: "start one agent in each attempt folder; then mr folder keep <k> --actor <name> or mr folder \
                drop --actor <name> in the request's folder"
             .to_string(),
         fields: vec![

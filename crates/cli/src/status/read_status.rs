@@ -1,4 +1,4 @@
-//! read_status: everything `mortar status` reports about a request or attempt folder, read without changing anything
+//! read_status: everything `mr status` reports about a request or attempt folder, read without changing anything
 //! (S-85). An attempt folder's progress is read from its own try branch and snapshot by read_progress; its
 //! overlaps stay the request's.
 //! Shell API: run_status calls it.
@@ -7,11 +7,11 @@
 //! what it reads, and crates/cli/tests/status_report_tests.rs the report. Nagatha's integration group is to cover,
 //! with the mortar binary as a child process in a request folder made by the landing verbs in a throwaway
 //! repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
-//! - an unsaved edit gives next mortar save;
-//! - a real paused join (Orc #1312) gives its paused commit and files, next mortar resolve;
+//! - an unsaved edit gives next mr save;
+//! - a real paused join (Orc #1312) gives its paused commit and files, next mr resolve;
 //! - an over-cap new file is listed with the cap;
 //! - a needed path outside the work order is listed as a gap;
-//! - work snapshotted after a join but never saved to the request branch is neither saved nor joined, next mortar
+//! - work snapshotted after a join but never saved to the request branch is neither saved nor joined, next mr
 //!   save (crates/cli/tests/status_joined_tests.rs);
 //! - status writes no file and moves no ref: refs, the folder's index and the op log are unchanged after it.
 

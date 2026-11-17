@@ -53,7 +53,7 @@ fn push_refused_report(why: &str) -> Report {
             "the remote's refs/heads/main is still at the landing's starting origin",
         ],
         "the remote upstream",
-        "clear what the remote refused, then mortar publish --actor <name>",
+        "clear what the remote refused, then mr publish --actor <name>",
     )
 }
 
@@ -81,7 +81,7 @@ fn a_land_error_names_the_configured_integration_branch() {
             &["integration is at 2222222222222222222222222222222222222222, at neither origin nor the landed commit \
                1111111111111111111111111111111111111111"],
             "refs/heads/integ",
-            "find the op that moved it with mortar log --ref refs/heads/integ, then mortar restore <op id> \
+            "find the op that moved it with mr log --ref refs/heads/integ, then mr restore <op id> \
              refs/heads/integ --actor <name>",
         )
     );
@@ -136,7 +136,7 @@ fn a_missing_remote_branch_is_refused_naming_remote_and_branch() {
         refused(
             &["upstream has no refs/heads/main to publish onto; nothing was pushed"],
             "the remote upstream",
-            "create refs/heads/main on upstream, then mortar publish --actor <name>",
+            "create refs/heads/main on upstream, then mr publish --actor <name>",
         )
     );
 }
@@ -153,7 +153,7 @@ fn a_push_intent_in_the_log_names_its_op_id_and_phase() {
                     "the push intent op-3 for this move is already in the op log ({words}); nothing was pushed"
                 )],
                 "the op log",
-                "mortar publish --actor <name>; a repeat settles the open intent",
+                "mr publish --actor <name>; a repeat settles the open intent",
             ),
             "{phase:?}"
         );

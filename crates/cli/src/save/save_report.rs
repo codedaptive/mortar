@@ -6,7 +6,7 @@ use snapshot::{FormatterResult, FormatterRun, SaveOutcome};
 use crate::join::{finished_move_part, PendingMove};
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Done, next `mortar join`. Lines: first finished_move_part's for `finished` (the move's line, none without a
+/// Done, next `mr join`. Lines: first finished_move_part's for `finished` (the move's line, none without a
 /// move); then, written: "saved", naming the commit and its change ID; not written: "unchanged", naming HEAD. Then
 /// one line per file the size cap refused, then, when the formatter did not end Formatted, how it ended (the files
 /// were saved as they are). Fields: finished_move_part's (finished_move_from and finished_move_to, Null without a
@@ -56,7 +56,7 @@ pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>, fini
         outcome: word.to_string(),
         lines,
         owner: None,
-        next: "mortar join".to_string(),
+        next: "mr join".to_string(),
         fields,
     }
 }

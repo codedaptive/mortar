@@ -1,4 +1,4 @@
-//! The report of a folder move that folders::move_folder refused during `mortar join`. folders' own Display text is
+//! The report of a folder move that folders::move_folder refused during `mr join`. folders' own Display text is
 //! never printed: it carries next steps that are not cli commands (S-112); the facts are folder_error_why's.
 
 use folders::FolderError;
@@ -23,13 +23,13 @@ pub fn move_refusal_report(error: &FolderError, before: Vec<String>) -> Report {
             lines.push("the folder could not move; these files stand in the way:".to_string());
             lines.extend(paths.iter().map(|path| format!("  {}", path.display())));
             lines.push(
-                "the request branch already stands at the new tip; the next mortar join finishes the move".to_string(),
+                "the request branch already stands at the new tip; the next mr join finishes the move".to_string(),
             );
-            "move those files out of the way, then mortar join".to_string()
+            "move those files out of the way, then mr join".to_string()
         }
         FolderError::BranchElsewhere { .. } => {
             lines.extend(folder_error_why(error));
-            "put the request branch back where mortar left it, then mortar join".to_string()
+            "put the request branch back where mortar left it, then mr join".to_string()
         }
         other => match folder_refusal(other) {
             Some((ExitCode::Refused, next)) => {

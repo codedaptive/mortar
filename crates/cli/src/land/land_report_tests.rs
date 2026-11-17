@@ -48,8 +48,8 @@ fn landed_with_a_folder_names_integration_and_the_moved_folder() {
                     .to_string(),
             ],
             owner: None,
-            next: "run the integration tests on integration, then mortar publish --actor <name> when they pass, or \
-                   mortar back-out --actor <name> when they fail"
+            next: "run the integration tests on integration, then mr publish --actor <name> when they pass, or \
+                   mr back-out --actor <name> when they fail"
                 .to_string(),
             fields: vec![
                 text("change_id", CHANGE),
@@ -96,8 +96,8 @@ fn conflicted_exits_2_listing_each_file_owned_by_the_changes_zone() {
                 "integration was not moved and no landing state was written".to_string(),
             ],
             owner: Some("the change's zone".to_string()),
-            next: "fix the conflict in the change's zone through a request (mortar folder request <zone> <request> \
-                   <path> --paths <path>... --actor <name>), then mortar squash <zone> --actor <name>"
+            next: "fix the conflict in the change's zone through a request (mr folder request <zone> <request> \
+                   <path> --paths <path>... --actor <name>), then mr squash <zone> --actor <name>"
                 .to_string(),
             fields: vec![
                 text("change_id", CHANGE),
@@ -123,8 +123,8 @@ fn busy_exits_3_owned_by_the_other_changes_landing() {
                     .to_string()
             ],
             owner: Some("change zzzzyyyyxxxxwwwwvvvvuuuuttttssss's landing".to_string()),
-            next: "finish that landing first (mortar publish --actor <name>, or mortar back-out --actor <name>), then \
-                   mortar land 1111111111111111111111111111111111111111 --actor <name>"
+            next: "finish that landing first (mr publish --actor <name>, or mr back-out --actor <name>), then \
+                   mr land 1111111111111111111111111111111111111111 --actor <name>"
                 .to_string(),
             fields: vec![text("change_id", CHANGE), text("commit", COMMIT), text("busy_with", OTHER)],
         }

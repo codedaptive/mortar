@@ -13,7 +13,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mortar back-out --actor <name> [--key <operation key>] [--json]",
+        usage: "mr back-out --actor <name> [--key <operation key>] [--json]",
     },
     BACKUP_SPEC,
     BISECT_SPEC,
@@ -23,7 +23,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Join,
         needs_config: true,
-        usage: "mortar folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
+        usage: "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
                 <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key \
                 <operation key>] [--json]",
     },
@@ -32,7 +32,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mortar guard (install | status) --actor <name> [--key <operation key>] [--json]",
+        usage: "mr guard (install | status) --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "guard-hook",
@@ -46,7 +46,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::NoLock,
         needs_config: false,
-        usage: "mortar init --actor <name> --origin <branch> --integration <branch> --remote <name> \
+        usage: "mr init --actor <name> --origin <branch> --integration <branch> --remote <name> \
                 [--zone <zone>=<path>[,<path>...]]... [--root-file <path>]... [--build-dir <path>]... \
                 [--cap-bytes <n>] [--floor-bytes <n>] [--formatter <word>]... [--formatter-timeout <seconds>] \
                 [--replace] [--json]",
@@ -56,28 +56,28 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Agent,
         lock: LockNeed::Join,
         needs_config: true,
-        usage: "mortar join [--key <operation key>] [--json]",
+        usage: "mr join [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "land",
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mortar land <commit> --actor <name> [--key <operation key>] [--json]",
+        usage: "mr land <commit> --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "log",
         kind: VerbKind::ReadOnly,
         lock: LockNeed::NoLock,
         needs_config: true,
-        usage: "mortar log [--ref <full ref name>] [--actor <name>] [--key <operation key>] [--json]",
+        usage: "mr log [--ref <full ref name>] [--actor <name>] [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "need",
         kind: VerbKind::Agent,
         lock: LockNeed::Join,
         needs_config: true,
-        usage: "mortar need <path> [--key <key>] [--json]",
+        usage: "mr need <path> [--key <key>] [--json]",
     },
     OVERLAP_SPEC,
     VerbSpec {
@@ -85,28 +85,28 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mortar publish --actor <name> [--key <operation key>] [--json]",
+        usage: "mr publish --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "rereview",
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mortar rereview <reviewed commit> <new commit> --actor <name> [--key <operation key>] [--json]",
+        usage: "mr rereview <reviewed commit> <new commit> --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "resolve",
         kind: VerbKind::Agent,
         lock: LockNeed::Join,
         needs_config: true,
-        usage: "mortar resolve [--key <operation key>] [--json]",
+        usage: "mr resolve [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "restore",
         kind: VerbKind::Harness,
         lock: LockNeed::FromRefs,
         needs_config: true,
-        usage: "mortar restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]",
+        usage: "mr restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]",
     },
     RESTORE_BACKUP_SPEC,
     VerbSpec {
@@ -114,7 +114,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Agent,
         lock: LockNeed::Join,
         needs_config: true,
-        usage: "mortar save \"<sentence>\" [--key <key>] [--json]",
+        usage: "mr save \"<sentence>\" [--key <key>] [--json]",
     },
     SNAPSHOT_SPEC,
     VerbSpec {
@@ -122,14 +122,14 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mortar squash <zone> --actor <name> [--key <operation key>] [--json]",
+        usage: "mr squash <zone> --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "status",
         kind: VerbKind::Agent,
         lock: LockNeed::NoLock,
         needs_config: true,
-        usage: "mortar status [--json]",
+        usage: "mr status [--json]",
     },
     SWEEP_SPEC,
     UNDO_SPEC,
@@ -138,6 +138,6 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mortar would-merge <commit or change ID> --actor <name> [--key <operation key>] [--json]",
+        usage: "mr would-merge <commit or change ID> --actor <name> [--key <operation key>] [--json]",
     },
 ];

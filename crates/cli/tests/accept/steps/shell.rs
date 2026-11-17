@@ -1,4 +1,4 @@
-//! Step 0, the shell: proves the world, the mortar runner and the kill path work, with `mortar init` and `mortar log`.
+//! Step 0, the shell: proves the world, the `mr` runner and the kill path work, with `mr init` and `mr log`.
 //! The log is empty after the two inits because init records no op: it writes config.json only and moves no ref
 //! (crates/cli/src/init/run_init.rs writes only the config; SPEC-cli 01-shell, S-81). ACCEPT-1 checks real records
 //! once its verbs move refs.
@@ -22,14 +22,14 @@ const UPDATE_REF: &str = "git -C \"$0\" update-ref refs/heads/accept-kill HEAD; 
 
 fn check_shell(world: &World, checks: &mut Checks) {
     check_repositories(world, checks);
-    for (did, outcome) in [("mortar init in work", "written"), ("mortar init again", "already-done")] {
+    for (did, outcome) in [("mr init in work", "written"), ("mr init again", "already-done")] {
         let ran = world.mortar(&world.work, INIT);
         let ok = ran.code == Some(0) && ran.stdout.contains(&format!("\"outcome\":\"{outcome}\""));
         checks.check(did, ok, &format!("{}; {}", ran.seen(), ran.stdout.trim()));
     }
     let log = world.mortar(&world.work, &["log", "--json"]);
     let (ok, saw) = empty_log(log.code, &log.stdout);
-    checks.check("mortar log --json in work after init", ok, &saw);
+    checks.check("mr log --json in work after init", ok, &saw);
     for (crash, want) in [(Crash::Before, ""), (Crash::After, world.base.as_str())] {
         check_kill(world, checks, crash, want);
     }

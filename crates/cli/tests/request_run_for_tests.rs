@@ -60,11 +60,11 @@ fn attempt_refused(verb: &str) -> Report {
         exit: ExitCode::Refused,
         outcome: "refused".to_string(),
         lines: vec![
-            format!("this is attempt folder 3 of request fix-1: mortar {verb} runs in the request's own folder"),
+            format!("this is attempt folder 3 of request fix-1: mr {verb} runs in the request's own folder"),
             "nothing ran".to_string(),
         ],
         owner: Some("this request".to_string()),
-        next: "keep or drop the attempts, then mortar join in the request's folder".to_string(),
+        next: "keep or drop the attempts, then mr join in the request's folder".to_string(),
         fields: Vec::new(),
     }
 }
@@ -107,5 +107,5 @@ fn an_argument_is_the_verbs_usage() {
     assert_eq!(report.exit, ExitCode::Usage);
     assert_eq!(report.verb, "join");
     assert_eq!(report.lines[0], "join takes no arguments");
-    assert_eq!(report.next, "mortar join [--key <operation key>] [--json]");
+    assert_eq!(report.next, "mr join [--key <operation key>] [--json]");
 }

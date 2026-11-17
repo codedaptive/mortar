@@ -13,7 +13,7 @@ fn record(op_id: &str) -> MarkedRecord {
         key: "k".to_string(),
         kind: "save".to_string(),
         actor: "core/fix-1".to_string(),
-        reason: "mortar save".to_string(),
+        reason: "mr save".to_string(),
         at: 5,
         phase: OpPhase::Intent,
         moves: vec![RefMove {
@@ -26,9 +26,9 @@ fn record(op_id: &str) -> MarkedRecord {
     MarkedRecord { record, values: Vec::new(), remote: None }
 }
 
-const OP_1: &str = r#"{"op_id":"op-1","key":"k","kind":"save","actor":"core/fix-1","reason":"mortar save","at":5,"phase":"intent","moves":[{"ref":"refs/heads/req/core/fix-1","old":null,"new":"cccccccccccccccccccccccccccccccccccccccc"}]}"#;
-const OP_2: &str = r#"{"op_id":"op-2","key":"k","kind":"save","actor":"core/fix-1","reason":"mortar save","at":5,"phase":"intent","moves":[{"ref":"refs/heads/req/core/fix-1","old":null,"new":"cccccccccccccccccccccccccccccccccccccccc"}]}"#;
-const OP_3_MARKED: &str = r#"{"op_id":"op-3","key":"k","kind":"save","actor":"core/fix-1","reason":"mortar save","at":5,"phase":"intent","moves":[{"ref":"refs/heads/req/core/fix-1","old":null,"new":"cccccccccccccccccccccccccccccccccccccccc"}],"values":[{"name":"folder_tree","value":"t1"},{"name":"n","value":"v"}],"remote":"origin"}"#;
+const OP_1: &str = r#"{"op_id":"op-1","key":"k","kind":"save","actor":"core/fix-1","reason":"mr save","at":5,"phase":"intent","moves":[{"ref":"refs/heads/req/core/fix-1","old":null,"new":"cccccccccccccccccccccccccccccccccccccccc"}]}"#;
+const OP_2: &str = r#"{"op_id":"op-2","key":"k","kind":"save","actor":"core/fix-1","reason":"mr save","at":5,"phase":"intent","moves":[{"ref":"refs/heads/req/core/fix-1","old":null,"new":"cccccccccccccccccccccccccccccccccccccccc"}]}"#;
+const OP_3_MARKED: &str = r#"{"op_id":"op-3","key":"k","kind":"save","actor":"core/fix-1","reason":"mr save","at":5,"phase":"intent","moves":[{"ref":"refs/heads/req/core/fix-1","old":null,"new":"cccccccccccccccccccccccccccccccccccccccc"}],"values":[{"name":"folder_tree","value":"t1"},{"name":"n","value":"v"}],"remote":"origin"}"#;
 
 #[test]
 fn without_json_two_records_give_no_lines() {

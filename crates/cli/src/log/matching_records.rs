@@ -1,4 +1,4 @@
-//! The op records `mortar log` lists: those every filter keeps.
+//! The op records `mr log` lists: those every filter keeps.
 
 use oplog::{history_matches, HistoryFilter, MarkedRecord};
 

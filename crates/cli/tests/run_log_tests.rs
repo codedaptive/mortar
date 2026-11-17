@@ -16,7 +16,7 @@ use std::sync::Once;
 use cli::{find_verb, run_log, ExitCode, OutValue, ParsedArgs, Report, ShellContext};
 use testkit::TestRepo;
 
-const LOG_USAGE: &str = "mortar log [--ref <full ref name>] [--actor <name>] [--key <operation key>] [--json]";
+const LOG_USAGE: &str = "mr log [--ref <full ref name>] [--actor <name>] [--key <operation key>] [--json]";
 
 /// One op with no values and no remote mark, in oplog's key order.
 const OP_1: &str = r#"{"op_id":"op-1","key":"k","kind":"save","actor":"core/fix-1","reason":"mortar save","at":5,"phase":"intent","moves":[{"ref":"refs/heads/req/core/fix-1","old":null,"new":"cccccccccccccccccccccccccccccccccccccccc"}]}"#;

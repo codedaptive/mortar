@@ -1,4 +1,4 @@
-//! The words of `mortar would-merge` after its globals, read into the squash it asks about.
+//! The words of `mr would-merge` after its globals, read into the squash it asks about.
 
 use gitio::Oid;
 use oplog::ChangeId;

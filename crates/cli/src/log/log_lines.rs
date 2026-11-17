@@ -1,4 +1,4 @@
-//! The plain lines `mortar log` prints for its records.
+//! The plain lines `mr log` prints for its records.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, OpResult, RefMove};

@@ -99,7 +99,7 @@ fn next(
     }
     match (parts.is_empty(), no_rebase) {
         (false, _) => format!("{}; then repeat the same command: {}", parts.join("; "), repeat_command(args)),
-        (true, false) => "run mortar join in the folder of each request listed".to_string(),
+        (true, false) => "run mr join in the folder of each request listed".to_string(),
         (true, true) => "nothing to do".to_string(),
     }
 }

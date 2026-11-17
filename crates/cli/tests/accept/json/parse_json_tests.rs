@@ -11,13 +11,13 @@ fn n(text: &str) -> JsonValue {
 #[test]
 #[ignore = "acceptance: make accept"]
 fn init_json_line_parses_member_by_member_in_order() {
-    let line = r#"{"verb":"init","ok":true,"outcome":"written","exit":0,"next":"mortar folder zone <zone> <path>","lines":["wrote the Mortar config /x/.git/mortar/config.json"],"owner":null,"config_path":"/x/.git/mortar/config.json"}"#;
+    let line = r#"{"verb":"init","ok":true,"outcome":"written","exit":0,"next":"mr folder zone <zone> <path>","lines":["wrote the Mortar config /x/.git/mortar/config.json"],"owner":null,"config_path":"/x/.git/mortar/config.json"}"#;
     let expected = JsonValue::Object(vec![
         ("verb".to_string(), s("init")),
         ("ok".to_string(), JsonValue::Bool(true)),
         ("outcome".to_string(), s("written")),
         ("exit".to_string(), n("0")),
-        ("next".to_string(), s("mortar folder zone <zone> <path>")),
+        ("next".to_string(), s("mr folder zone <zone> <path>")),
         ("lines".to_string(), JsonValue::Array(vec![s("wrote the Mortar config /x/.git/mortar/config.json")])),
         ("owner".to_string(), JsonValue::Null),
         ("config_path".to_string(), s("/x/.git/mortar/config.json")),

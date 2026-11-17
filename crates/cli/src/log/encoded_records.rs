@@ -1,4 +1,4 @@
-//! The "records" lines of `mortar log`: each record's own op log line.
+//! The "records" lines of `mr log`: each record's own op log line.
 
 use oplog::{encode_marked_record, MarkedRecord};
 

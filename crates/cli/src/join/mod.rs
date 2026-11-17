@@ -1,4 +1,4 @@
-//! `mortar join` (S-72, S-86): the pending folder move detector (a rebase's or an undo's, S-143) and its finish,
+//! `mr join` (S-72, S-86): the pending folder move detector (a rebase's or an undo's, S-143) and its finish,
 //! the run's setup, the save's inputs, the reports and their parts, and the runner.
 
 mod answer_part;

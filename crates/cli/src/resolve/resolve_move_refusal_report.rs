@@ -11,7 +11,7 @@ const VERB: &str = "resolve";
 
 /// `before` (what the resolve already did) comes first. Edits on paths the zone changed (MoveRefused) are exit 1
 /// "refused", owned by the folder: the paths, then the snapshot ref and commit that keep them, since the snapshot
-/// taken before join resolve holds them; next "put those files back to the folder's version, then mortar join".
+/// taken before join resolve holds them; next "put those files back to the folder's version, then mr join".
 /// Anything else is move_refusal_report's report under the verb resolve.
 pub fn resolve_move_refusal_report(
     error: &FolderError,
@@ -32,7 +32,7 @@ pub fn resolve_move_refusal_report(
         outcome: "refused".to_string(),
         lines,
         owner: Some("this request's folder".to_string()),
-        next: "put those files back to the folder's version, then mortar join".to_string(),
+        next: "put those files back to the folder's version, then mr join".to_string(),
         fields: Vec::new(),
     }
 }

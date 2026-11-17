@@ -25,7 +25,7 @@ fn rit_join_rebases_diverged_zone_moves_real_folder_and_reports_pending_move_eve
     let old_info = f.git.commit_info(&old).unwrap();
     let report = f.report(&["--json", "join"], "join", 0, "rebased"); let new = f.head();
     assert_ne!(new, old); assert_eq!(report.text("from"), old.as_str()); assert_eq!(report.text("to"), new.as_str());
-    assert_eq!(report.text("next"), "mortar join"); assert!(!report.flag("saved_written"));
+    assert_eq!(report.text("next"), "mr join"); assert!(!report.flag("saved_written"));
     let info = f.git.commit_info(&new).unwrap(); assert_eq!(info.parents, vec![zone.clone()]);
     assert_eq!(info.message, old_info.message); assert_eq!(info.author, old_info.author);
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(zone));
@@ -46,7 +46,7 @@ fn rit_join_rebases_diverged_zone_moves_real_folder_and_reports_pending_move_eve
 fn rit_conflicting_join_lists_files_and_real_state_with_no_branch_or_folder_movement() {
     let f = Fixture::new(); let old = f.save_topic(); let zone = f.advance_zone(true); let log = f.log();
     let report = f.report(&["--json", "join"], "join", 2, "conflicted");
-    assert_eq!(report.text("next"), "mortar resolve"); assert_eq!(report.text("commit"), old.as_str());
+    assert_eq!(report.text("next"), "mr resolve"); assert_eq!(report.text("commit"), old.as_str());
     assert_eq!(report.strings("files"), &["src/file"]); assert_eq!(f.head(), old);
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(zone)); assert_eq!(f.log(), log);
     let dir = f.local().git_dir(&f.request).unwrap();
@@ -59,7 +59,7 @@ fn rit_conflicting_join_lists_files_and_real_state_with_no_branch_or_folder_move
 fn rit_join_arguments_are_usage_without_work_and_missing_zone_is_owned_refusal_with_lock_released() {
     let f = Fixture::new(); let before = f.observe();
     let usage = f.report(&["--json", "join", "unexpected"], "join", 4, "usage");
-    assert!(usage.lines().contains("join takes no arguments")); assert_eq!(usage.text("next"), "mortar join [--key <operation key>] [--json]");
+    assert!(usage.lines().contains("join takes no arguments")); assert_eq!(usage.text("next"), "mr join [--key <operation key>] [--json]");
     assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
     raw(&f.git, &["update-ref", "-d", ZONE]);
     let refused = f.report(&["--json", "join"], "join", 1, "refused");

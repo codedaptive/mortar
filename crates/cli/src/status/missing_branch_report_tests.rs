@@ -14,7 +14,7 @@ fn a_missing_zone_branch_is_the_zone_coordinators() {
             outcome: "refused".to_string(),
             lines: vec!["the branch refs/heads/zone/core does not exist".to_string()],
             owner: Some("the zone's coordinator".to_string()),
-            next: "have the zone made, then mortar status".to_string(),
+            next: "have the zone made, then mr status".to_string(),
             fields: Vec::new(),
         }
     );
@@ -30,7 +30,7 @@ fn a_missing_request_branch_is_this_requests() {
             outcome: "refused".to_string(),
             lines: vec!["the branch refs/heads/req/core/fix-1 does not exist".to_string()],
             owner: Some("this request".to_string()),
-            next: "make the request folder again, then mortar need".to_string(),
+            next: "make the request folder again, then mr need".to_string(),
             fields: Vec::new(),
         }
     );

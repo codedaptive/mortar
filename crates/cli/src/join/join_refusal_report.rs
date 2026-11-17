@@ -11,13 +11,13 @@ use crate::report::{failure_report, ExitCode, Report};
 pub fn join_refusal_report(error: &JoinRunError) -> Report {
     const REQUEST: &str = "this request";
     let (owner, next) = match error {
-        JoinRunError::ZoneMissing(_) => ("the zone's coordinator", "have the zone made, then mortar join"),
-        JoinRunError::RequestMissing(_) => (REQUEST, "make the request folder again, then mortar join"),
+        JoinRunError::ZoneMissing(_) => ("the zone's coordinator", "have the zone made, then mr join"),
+        JoinRunError::RequestMissing(_) => (REQUEST, "make the request folder again, then mr join"),
         JoinRunError::Unrelated { .. } => (REQUEST, "cut the request again from the zone"),
-        JoinRunError::StatePath(_) => (REQUEST, "rename that file to a UTF-8 name, then mortar join"),
+        JoinRunError::StatePath(_) => (REQUEST, "rename that file to a UTF-8 name, then mr join"),
         JoinRunError::Replay(JoinError::MergeCommit(_) | JoinError::RootCommit(_) | JoinError::EmptyAuthorDate(_)) => (
             REQUEST,
-            "rewrite the request's commits as one-parent commits with author dates, then mortar join",
+            "rewrite the request's commits as one-parent commits with author dates, then mr join",
         ),
         _ => return failure_report("join", &error.to_string()),
     };

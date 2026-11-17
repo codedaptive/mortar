@@ -1,4 +1,4 @@
-//! The report of a `mortar land` that land's land answered (SPEC-cli 06).
+//! The report of an `mr land` that land's land answered (SPEC-cli 06).
 
 use std::path::Path;
 
@@ -39,8 +39,8 @@ pub fn land_report(squash: &Squash, answer: &LandAnswer, folder: Option<&Path>) 
                     integration_folder_line(folder, integration),
                 ],
                 owner: None,
-                next: "run the integration tests on integration, then mortar publish --actor <name> when they pass, \
-                       or mortar back-out --actor <name> when they fail"
+                next: "run the integration tests on integration, then mr publish --actor <name> when they pass, \
+                       or mr back-out --actor <name> when they fail"
                     .to_string(),
                 fields,
             }
@@ -72,8 +72,8 @@ pub fn land_report(squash: &Squash, answer: &LandAnswer, folder: Option<&Path>) 
                 )],
                 owner: Some(format!("change {other}'s landing")),
                 next: format!(
-                    "finish that landing first (mortar publish --actor <name>, or mortar back-out --actor <name>), \
-                     then mortar land {commit} --actor <name>"
+                    "finish that landing first (mr publish --actor <name>, or mr back-out --actor <name>), \
+                     then mr land {commit} --actor <name>"
                 ),
                 fields,
             }

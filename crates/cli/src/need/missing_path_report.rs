@@ -1,4 +1,4 @@
-//! missing_path_report: `mortar need`'s refusal of a path the repository does not hold (spec 02, S-90(2)).
+//! missing_path_report: `mr need`'s refusal of a path the repository does not hold (spec 02, S-90(2)).
 
 use gitio::Oid;
 
@@ -16,7 +16,7 @@ pub fn missing_path_report(path: &str, commit: &Oid) -> Report {
             "nothing ran".to_string(),
         ],
         owner: Some("this request".to_string()),
-        next: "mortar need <a path the repository holds>".to_string(),
+        next: "mr need <a path the repository holds>".to_string(),
         fields: vec![
             ("path".to_string(), OutValue::Text(path.to_string())),
             ("commit".to_string(), OutValue::Text(commit.as_str().to_string())),

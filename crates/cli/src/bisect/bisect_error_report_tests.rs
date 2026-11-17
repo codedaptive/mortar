@@ -62,7 +62,7 @@ fn a_failed_commit_off_origin_is_refused_naming_it_and_the_branch() {
             "the failed commit e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 is not on main's first-parent line, so it \
              names no landing",
             "the commits named",
-            "name a failed commit on main's first-parent line: mortar bisect <last pass> <failed> --timeout \
+            "name a failed commit on main's first-parent line: mr bisect <last pass> <failed> --timeout \
              <seconds> --actor <name> -- <command>...",
         )
     );
@@ -77,7 +77,7 @@ fn a_last_pass_off_the_failed_line_is_refused_naming_both() {
             "the last passing commit 4b825dc642cb6eb9a060e54bf8d69288fbee4904 is not on \
              e69de29bb2d1d6434b8b29ae775ad8c2e48c5391's first-parent line, so the range names no landings",
             "the commits named",
-            "name a last passing commit on e69de29bb2d1d6434b8b29ae775ad8c2e48c5391's first-parent line: mortar \
+            "name a last passing commit on e69de29bb2d1d6434b8b29ae775ad8c2e48c5391's first-parent line: mr \
              bisect <last pass> e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 --timeout <seconds> --actor <name> -- \
              <command>...",
         )

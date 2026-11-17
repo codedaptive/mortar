@@ -1,4 +1,4 @@
-//! snapshot_error_report: the report of a `mortar snapshot` that did not happen, one arm per SnapshotError, in the
+//! snapshot_error_report: the report of an `mr snapshot` that did not happen, one arm per SnapshotError, in the
 //! cli's own words: no arm prints an inner git, op log, trailer, change ID or io error's Display (S-128 (4)).
 
 use oplog::OpResult;
