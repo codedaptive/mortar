@@ -1,5 +1,5 @@
-//! The report line a not-run test expects. Test-only: flow/not_run_tests.rs, kill/kill_not_run_tests.rs and
-//! agent/agent_not_run_tests.rs build their expected lines with it.
+//! The failed report line a test expects. Test-only: flow/not_run_tests.rs, kill/kill_not_run_tests.rs,
+//! agent/agent_not_run_tests.rs and disk/disk_number_lines_tests.rs build their expected lines with it.
 
 use crate::report::Line;
 
