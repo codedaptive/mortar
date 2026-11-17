@@ -1,6 +1,7 @@
-//! recorded_join_state: a good resolve op gives its state; each cause of NotAResolveOp (another kind, an intent, two
-//! moves, no value, a plain join's op with only folder_tree); the first of two join_state values taken; each cause of
-//! RecordedStateCorrupt. Ops are built as data; the recorded texts are written out by hand.
+//! recorded_join_state: a good resolve op gives its state, whatever its move's new value (no ref is read); each cause
+//! of NotAResolveOp (another kind, an intent, two moves, no value, a plain join's op with only folder_tree); the first
+//! of two join_state values taken; each cause of RecordedStateCorrupt. Ops are built as data; the recorded texts are
+//! written out by hand.
 
 use crate::join_state::JoinState;
 use crate::recorded_join_state::recorded_join_state;
@@ -94,6 +95,15 @@ fn corrupt_reason(op: ValuedRecord) -> String {
 #[test]
 fn a_resolves_final_op_gives_the_recorded_state() {
     assert_eq!(recorded_join_state(&resolve_op()).unwrap(), expected());
+}
+
+#[test]
+fn a_good_op_gives_the_recorded_state_whatever_its_moves_new_value() {
+    for new in [oid('8'), oid('1'), oid('f')] {
+        let mut op = resolve_op();
+        op.record.moves[0].new = new;
+        assert_eq!(recorded_join_state(&op).unwrap(), expected());
+    }
 }
 
 #[test]

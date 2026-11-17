@@ -69,5 +69,9 @@ mod replay_mapped_in_tests;
 mod resolved_commit_tests;
 #[path = "resolved_folder_tree_tests.rs"]
 mod resolved_folder_tree_tests;
+#[path = "restore_refusal_tests.rs"]
+mod restore_refusal_tests;
+#[path = "restore_state_step_tests.rs"]
+mod restore_state_step_tests;
 #[path = "tree_refusal_tests.rs"]
 mod tree_refusal_tests;
