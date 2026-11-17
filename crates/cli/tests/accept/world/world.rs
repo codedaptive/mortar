@@ -7,9 +7,9 @@ use std::path::PathBuf;
 use super::Scratch;
 
 /// Under `root`: `work`, the working repository (main and integration at `base`, remote `origin`); `origin.git`, the
-/// bare remote holding `main`; `other`, a second clone of the remote, for "someone else"; `bin`, the built binary
-/// as `mr` and `mortar` (world_bin_dir). All are removed with the scratch folder. `path` is every child's PATH:
-/// `bin`, then the drive's own PATH.
+/// bare remote holding `main`; `other`, a second clone of the remote, for "someone else". All are removed with the
+/// scratch folder. `path` is every child's PATH: cargo's own build output folder, holding the `mr` and `mortar` it
+/// built, then the drive's own PATH (world_bin_path).
 pub struct World {
     pub root: PathBuf,
     pub work: PathBuf,

@@ -30,8 +30,8 @@ fn rit_real_rename_rename_lists_absent_original_as_skipped_then_keeps_only_the_c
 fn rit_real_gitlink_is_listed_without_writes_then_actual_child_repo_head_selects_the_resolution() {
     let f = Fixture::new(); let empty = oid(&raw(&f.git, &["mktree"]));
     let sub_base = f.git.commit_tree(&empty, &[], "sub base\n", None, None).unwrap();
-    let sub_zone = f.git.commit_tree(&empty, &[sub_base.clone()], "sub zone\n", None, None).unwrap();
-    let sub_request = f.git.commit_tree(&empty, &[sub_base.clone()], "sub request\n", None, None).unwrap();
+    let sub_zone = f.git.commit_tree(&empty, std::slice::from_ref(&sub_base), "sub zone\n", None, None).unwrap();
+    let sub_request = f.git.commit_tree(&empty, std::slice::from_ref(&sub_base), "sub request\n", None, None).unwrap();
     let base_tree = tree(&f, &f.base, &[(".gitmodules", b"[submodule \"module\"]\n\tpath = src/module\n\turl = ./unused\n")], &[], &[("src/module", &sub_base)]);
     let base = commit(&f, &f.base, &base_tree, "base with submodule\n");
     let zone_tree = tree(&f, &base, &[("src/upstream", b"advanced zone work\n")], &[], &[("src/module", &sub_zone)]);

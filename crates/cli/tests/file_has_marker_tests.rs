@@ -1,12 +1,14 @@
 //! file_has_marker: true for a regular file (or a link to one) whose bytes hold the marker, wherever it falls in the
 //! 64 KiB reads; false for a file without it, a directory or a missing path. On files each test makes in its own
 //! scratch folder under the system temp dir.
+//! ZIT (rule 11, S-104): it calls cli::path::file_has_marker on real files, directories and symlinks it makes itself
+//! in that folder and removes after the test.
 
 use std::fs;
 use std::os::unix::fs::symlink;
 use std::path::PathBuf;
 
-use super::file_has_marker;
+use cli::path::file_has_marker;
 
 const MARKER: &[u8] = b"\0test-marker/file_has_marker\0";
 

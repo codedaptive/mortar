@@ -61,7 +61,7 @@ struct Read {
 fn take(slot: &mut Option<String>, flag: &str, value: Option<&str>) -> Option<String> {
     match value {
         None => Some(format!("{flag} needs a value")),
-        Some(value) if value.is_empty() => Some(format!("{flag} needs a non-empty value")),
+        Some("") => Some(format!("{flag} needs a non-empty value")),
         Some(_) if slot.is_some() => Some(format!("{flag} is given twice")),
         Some(value) => {
             *slot = Some(value.to_string());

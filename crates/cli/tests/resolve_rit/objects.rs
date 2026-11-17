@@ -15,7 +15,7 @@ pub fn tree(f: &Fixture, parent: &Oid, blobs: &[(&str, &[u8])], remove: &[&str],
 }
 
 pub fn commit(f: &Fixture, parent: &Oid, tree: &Oid, message: &str) -> Oid {
-    f.git.commit_tree(tree, &[parent.clone()], message, None, None).unwrap()
+    f.git.commit_tree(tree, std::slice::from_ref(parent), message, None, None).unwrap()
 }
 
 pub fn set_zone(f: &Fixture, tip: &Oid) { raw(&f.git, &["update-ref", ZONE, tip.as_str()]); }

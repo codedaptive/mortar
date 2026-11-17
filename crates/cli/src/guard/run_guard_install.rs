@@ -3,8 +3,9 @@
 //! No sibling test (S-104): it takes a real lock, runs git, the op log and land, and reads PATH, this binary's path
 //! and the file system; guard_in_place_tests, guard_installed_report_tests, guard_error_report_tests,
 //! install_outcome_tests (the warning on installed outcomes only, last before next), with_path_warning_tests and
-//! path's path_warning_for_tests (the warning's decision), first_on_path_tests, same_build_tests,
-//! file_has_marker_tests, marker_in_chunks_tests and mr_path_warning_tests cover its decisions. The RIT
+//! path's path_warning_for_tests (the warning's decision), same_build_tests, marker_in_chunks_tests and
+//! mr_path_warning_tests cover its decisions; the ZITs crates/cli/tests/first_on_path_tests.rs and
+//! crates/cli/tests/file_has_marker_tests.rs cover the PATH lookup and the marker read on real files. The RIT
 //! crates/cli/tests/cli_rit/run_guard_install_tests.rs covers it through the binary: a fresh repository gets
 //! guard.json and both hooks, executable, each the guard's script (exit 0 "installed"); a repeat is "already-installed" and changes no byte; a foreign pre-push is refused exit 1
 //! "foreign-hook" with nothing written; without --actor, exit 4; from a linked worktree the hooks land in the main
@@ -39,9 +40,9 @@ const VERB: &str = "guard";
 /// the guard was already in place for the config's branches (a guard_status that fails counts as not), then land's
 /// guard_install (refusing a foreign hook before writing anything), then guard_status read back for the report.
 /// The result goes through install_outcome: the installed report (either outcome) gets path_warning_for's line, over
-/// this binary's path, the first `mr` on PATH (an unset PATH reads as empty), the file system's canonicalize and
-/// file_has_marker's read of the candidate for MORTAR_MARKER (S-147), as its last; refusals, failures and a busy lock
-/// do not.
+/// this binary's path, the first `mr` on PATH as the shell in `cwd` would find it (an unset PATH finds none), the
+/// file system's canonicalize and file_has_marker's read of the candidate for MORTAR_MARKER (S-147), as its last;
+/// refusals, failures and a busy lock do not.
 /// Records no op: it moves no ref.
 pub fn run_guard_install(context: &ShellContext, config: &Config, cwd: &Path) -> Report {
     let git = Git::new(cwd);
@@ -59,7 +60,7 @@ pub fn run_guard_install(context: &ShellContext, config: &Config, cwd: &Path) ->
     });
     let warning = path_warning_for(
         std::env::current_exe().ok().as_deref(),
-        first_on_path("mr", &std::env::var_os("PATH").unwrap_or_default()).as_deref(),
+        first_on_path("mr", std::env::var_os("PATH").as_deref(), cwd).as_deref(),
         &|path| path.canonicalize().ok(),
         &|path| file_has_marker(path, &MORTAR_MARKER),
     );
