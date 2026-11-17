@@ -62,9 +62,9 @@ fn rename_rename_conflict_missing_original_path_can_be_deleted_without_reverting
     let base_tree = tree(&r.git, &[("original", b"identical rename payload\n"), ("zone", b"base\n")]);
     let base = commit(&r.git, &base_tree, &[], "base\n");
     let ours_tree = tree(&r.git, &[("ours", b"identical rename payload\n"), ("zone", b"zone advanced\n")]);
-    let ours = commit(&r.git, &ours_tree, &[base.clone()], "ours\n");
+    let ours = commit(&r.git, &ours_tree, std::slice::from_ref(&base), "ours\n");
     let theirs_tree = tree(&r.git, &[("theirs", b"identical rename payload\n"), ("zone", b"base\n")]);
-    let theirs = commit(&r.git, &theirs_tree, &[base.clone()], "theirs\n");
+    let theirs = commit(&r.git, &theirs_tree, std::slice::from_ref(&base), "theirs\n");
     let MergeTreeOutcome::Conflicted { tree: conflicted, files } = r.git.merge_tree(&base, None, &ours, &theirs).unwrap() else { panic!("expected real rename/rename conflict") };
     assert!(files.contains(&PathBuf::from("original")));
     assert_eq!(r.git.tree_entry(&conflicted, Path::new("original")).unwrap(), None);

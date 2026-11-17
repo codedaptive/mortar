@@ -29,7 +29,7 @@ fn rev_parse_peels_annotated_tag_and_list_refs_respects_prefix() {
     let r = repo();
     let empty = tree(&r.git, &[]);
     let first = commit(&r.git, &empty, &[], "first\n");
-    let second = commit(&r.git, &empty, &[first.clone()], "second\n");
+    let second = commit(&r.git, &empty, std::slice::from_ref(&first), "second\n");
     set_ref(&r.git, "refs/heads/main", &first);
     set_ref(&r.git, "refs/heads/topic", &second);
     r.git.run(&["tag", "-a", "v1", "-m", "annotated tag", first.as_str()], &RunOpts::default()).unwrap();
@@ -56,7 +56,7 @@ fn changed_files_keeps_both_rename_sides_and_literal_unusual_paths() {
     let old_tree = tree(&r.git, &[("old name.txt", b"same\n"), ("z space.txt", b"before\n")]);
     let old = commit(&r.git, &old_tree, &[], "before\n");
     let new_tree = tree(&r.git, &[("new\nname.txt", b"same\n"), ("z space.txt", b"after\n"), ("-leading", b"new\n")]);
-    let new = commit(&r.git, &new_tree, &[old.clone()], "after\n");
+    let new = commit(&r.git, &new_tree, std::slice::from_ref(&old), "after\n");
     assert_eq!(r.git.changed_files(&old, &new).unwrap(), vec![
         PathBuf::from("-leading"), PathBuf::from("new\nname.txt"),
         PathBuf::from("old name.txt"), PathBuf::from("z space.txt"),
@@ -71,9 +71,9 @@ fn range_diff_returns_real_git_review_text_without_colour() {
     let initial = tree(&r.git, &[("file", b"base\n")]);
     let base = commit(&r.git, &initial, &[], "base\n");
     let old_tree = tree(&r.git, &[("file", b"base\nchange\n")]);
-    let old = commit(&r.git, &old_tree, &[base.clone()], "topic patch\n");
+    let old = commit(&r.git, &old_tree, std::slice::from_ref(&base), "topic patch\n");
     let new_tree = tree(&r.git, &[("file", b"base\nchange\namended\n")]);
-    let new = commit(&r.git, &new_tree, &[base.clone()], "topic patch\n");
+    let new = commit(&r.git, &new_tree, std::slice::from_ref(&base), "topic patch\n");
     r.git.run(&["config", "color.ui", "always"], &RunOpts::default()).unwrap();
     let actual = r.git.range_diff(&base, &old, &new).unwrap();
     let oracle = r.git.run(&["range-diff", "--no-color", &format!("{base}..{old}"), &format!("{base}..{new}")], &RunOpts::default()).unwrap();

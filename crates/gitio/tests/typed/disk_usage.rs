@@ -35,7 +35,7 @@ fn a_blob_shared_with_another_tip_is_not_counted() {
     let r = repo();
     let contents = tree(&r.git, &[("shared", b"the same blob is held by another ref\n")]);
     let common = commit(&r.git, &contents, &[], "shared ancestor\n");
-    let selected = commit(&r.git, &contents, &[common.clone()], "selected child\n");
+    let selected = commit(&r.git, &contents, std::slice::from_ref(&common), "selected child\n");
     let kept = commit(&r.git, &contents, &[common], "kept child\n");
     set_ref(&r.git, SELECTED, &selected);
     set_ref(&r.git, "refs/heads/main", &kept);
@@ -51,7 +51,7 @@ fn checked_out_ref_and_ref_contained_by_detached_head_count_zero() {
     set_ref(&r.git, SELECTED, &selected);
     run(&r.git, &["checkout", "--detach", selected.as_str()]);
     assert_eq!(r.git.disk_usage_only(&[SELECTED]).unwrap(), 0);
-    let descendant = commit(&r.git, &contents, &[selected.clone()], "descendant\n");
+    let descendant = commit(&r.git, &contents, std::slice::from_ref(&selected), "descendant\n");
     run(&r.git, &["checkout", "--detach", descendant.as_str()]);
     assert_eq!(r.git.disk_usage_only(&[SELECTED]).unwrap(), 0, "detached HEAD keeps its ancestors alive too");
     set_ref(&r.git, "refs/heads/checked", &selected);
@@ -84,7 +84,7 @@ fn older_shared_blob_and_parentless_shared_tree_obey_upper_bound_not_exact_recla
     let old_tree = tree(&r.git, &[("old", b"payload once held in old history\n")]);
     let old = commit(&r.git, &old_tree, &[], "old\n");
     let current_tree = tree(&r.git, &[("current", b"current kept files\n")]);
-    let kept = commit(&r.git, &current_tree, &[old.clone()], "kept descendant\n");
+    let kept = commit(&r.git, &current_tree, std::slice::from_ref(&old), "kept descendant\n");
     set_ref(&r.git, "refs/heads/main", &kept);
     let selected = commit(&r.git, &old_tree, &[], "parentless reuse\n");
     set_ref(&r.git, SELECTED, &selected);
@@ -123,7 +123,8 @@ fn loose_size(r: &GitRepo, id: &Oid) -> u64 {
     fs::metadata(r.path.join(".git/objects").join(&name[..2]).join(&name[2..])).unwrap().len()
 }
 fn run(git: &Git, args: &[&str]) -> Vec<u8> { git.run(args, &RunOpts::default()).unwrap().stdout }
-fn observe(r: &GitRepo) -> (Vec<u8>, Vec<u8>, Vec<u8>, Vec<u8>, Vec<u8>) {
+type Observed = (Vec<u8>, Vec<u8>, Vec<u8>, Vec<u8>, Vec<u8>);
+fn observe(r: &GitRepo) -> Observed {
     (run(&r.git, &["for-each-ref", "--format=%(refname) %(objectname)"]), fs::read(r.path.join(".git/index")).unwrap(),
      fs::read(r.path.join(".git/HEAD")).unwrap(), fs::read(r.path.join("base")).unwrap(), fs::read(r.path.join("untracked")).unwrap())
 }

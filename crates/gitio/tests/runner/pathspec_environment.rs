@@ -98,10 +98,9 @@ fn pathspec_environment_child() {
             let events = fs::read_to_string(trace).unwrap();
             assert!(has_parameter(&events, "MORTAR_PATHSPEC_CONTROL", "still-inherited"), "{events}");
             for tracked in MODES {
-                if tracked == *key && explicit.is_some() {
-                    assert!(has_parameter(&events, tracked, explicit.unwrap()), "{events}");
-                } else {
-                    assert!(!events.contains(&format!("\"param\":\"{tracked}\"")), "inherited mode leaked: {events}");
+                match explicit {
+                    Some(value) if tracked == *key => assert!(has_parameter(&events, tracked, value), "{events}"),
+                    _ => assert!(!events.contains(&format!("\"param\":\"{tracked}\"")), "inherited mode leaked: {events}"),
                 }
             }
         }

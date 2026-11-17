@@ -89,10 +89,10 @@ struct History { root: Oid, m1: Oid, s1: Oid, x: Oid, t: Oid }
 fn history(git: &Git) -> History {
     let at = |text: &[u8], parents: &[Oid], message: &str| commit(git, &tree(git, &[("f", text)]), parents, message);
     let root = at(b"root\n", &[], "root\n");
-    let m1 = at(b"m1\n", &[root.clone()], "m1\n");
-    let s1 = at(b"s1\n", &[root.clone()], "s1\n");
+    let m1 = at(b"m1\n", std::slice::from_ref(&root), "m1\n");
+    let s1 = at(b"s1\n", std::slice::from_ref(&root), "s1\n");
     let x = at(b"x\n", &[m1.clone(), s1.clone()], "x\n");
-    let t = at(b"t\n", &[x.clone()], "t\n");
+    let t = at(b"t\n", std::slice::from_ref(&x), "t\n");
     History { root, m1, s1, x, t }
 }
 

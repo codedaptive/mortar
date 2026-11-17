@@ -10,11 +10,11 @@ fn replay_union_comes_from_the_supplied_commit_and_plain_source_conflicts_despit
     let base_tree = tree(&r.git, &[("log.txt", b"base\n")]);
     let base = commit(&r.git, &base_tree, &[], "base\n");
     let topic_tree = tree(&r.git, &[("log.txt", b"topic\n")]);
-    let topic = commit(&r.git, &topic_tree, &[base.clone()], "topic shared-line edit\n");
+    let topic = commit(&r.git, &topic_tree, std::slice::from_ref(&base), "topic shared-line edit\n");
     let onto_tree = tree(&r.git, &[("log.txt", b"onto\n")]);
-    let onto = commit(&r.git, &onto_tree, &[base.clone()], "upstream shared-line edit\n");
+    let onto = commit(&r.git, &onto_tree, std::slice::from_ref(&base), "upstream shared-line edit\n");
     let union_tree = tree(&r.git, &[("log.txt", b"base\n"), (".gitattributes", b"log.txt merge=union\n")]);
-    let union_source = commit(&r.git, &union_tree, &[base.clone()], "attributes on a separate branch\n");
+    let union_source = commit(&r.git, &union_tree, std::slice::from_ref(&base), "attributes on a separate branch\n");
     assert_ne!(union_source, onto);
     assert_ne!(union_source, topic);
     set_ref(&r.git, "refs/heads/main", &onto);
