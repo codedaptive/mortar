@@ -18,10 +18,10 @@ impl Fixture {
         let base_tree = tree(&git, b"base\n");
         let base = git.commit_tree(&base_tree, &[], "base\n", None, None).unwrap();
         let source_tree = tree(&git, b"zone change\n");
-        let source = git.commit_tree(&source_tree, &[base.clone()],
+        let source = git.commit_tree(&source_tree, std::slice::from_ref(&base),
             &format!("request change\n\nMortar-Change-Id: {CHANGE_ID}\nMortar-Request: task\nMortar-Zone: core\n"), None, None).unwrap();
         // A literal known prior ID makes the trailer expectation independent of random new-ID generation.
-        let prior = git.commit_tree(&base_tree, &[base.clone()],
+        let prior = git.commit_tree(&base_tree, std::slice::from_ref(&base),
             &format!("prior squash\n\nMortar-Change-Id: {CHANGE_ID}\nMortar-Zone: core\nMortar-Squash-Of: {base}\n"), None, None).unwrap();
         for (name, tip) in [("refs/heads/main", &base), ("refs/heads/integration", &base),
             ("refs/heads/zone/core", &source), ("refs/mortar/squash/core", &prior)] {

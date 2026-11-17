@@ -38,7 +38,7 @@ impl Prepared {
     /// An actual external push. Keeping the parent's tree avoids an unrelated merge-conflict question.
     pub fn foreign_push_on(&self, parent: &Oid) -> Oid {
         let tree = self.f.git.commit_info(parent).unwrap().tree;
-        let next = self.f.git.commit_tree(&tree, &[parent.clone()], "external actor\n", None, None).unwrap();
+        let next = self.f.git.commit_tree(&tree, std::slice::from_ref(parent), "external actor\n", None, None).unwrap();
         raw(&self.f, &["push", "--quiet", "origin", &format!("{next}:{MAIN}")]); next
     }
     pub fn traced_git(&self) -> Git {

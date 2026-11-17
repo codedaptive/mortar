@@ -38,5 +38,5 @@ fn no_requests_is_nothing_to_rebase() {
 #[test]
 fn a_request_whose_tip_is_the_new_tip_but_based_elsewhere_is_listed() {
     let on_tip = OpenRequest { name: "a".to_string(), base: oid(OLD), tip: oid(NEW) };
-    assert_eq!(requests_to_rebase(&[on_tip.clone()], &oid(NEW)), vec![on_tip]);
+    assert_eq!(requests_to_rebase(std::slice::from_ref(&on_tip), &oid(NEW)), vec![on_tip]);
 }

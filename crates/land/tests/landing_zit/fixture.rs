@@ -103,7 +103,7 @@ impl Fixture {
     /// Moves origin past the base: a commit on the base holding `files`, with `main` and `integration` set to it.
     pub fn move_origin(&self, files: &[(&str, &str)]) -> Oid {
         let tree = tree(&self.git, files);
-        let moved = self.git.commit_tree(&tree, &[self.base.clone()], "origin moved\n", None, None).unwrap();
+        let moved = self.git.commit_tree(&tree, std::slice::from_ref(&self.base), "origin moved\n", None, None).unwrap();
         self.set_branch("main", &moved);
         self.set_branch("integration", &moved);
         moved
@@ -115,7 +115,7 @@ impl Fixture {
             "land: squash of WO-land-3\n\nMortar-Change-Id: {id}\nMortar-Zone: land\nMortar-Request: WO-land-3\n"
         );
         Squash {
-            commit: self.git.commit_tree(&tree(&self.git, files), &[parent.clone()], &message, None, None).unwrap(),
+            commit: self.git.commit_tree(&tree(&self.git, files), std::slice::from_ref(parent), &message, None, None).unwrap(),
             change_id: ChangeId::parse(id).unwrap(),
             source: parent.clone(),
             requests: vec!["WO-land-3".to_string()],
