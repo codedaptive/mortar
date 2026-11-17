@@ -14,21 +14,20 @@
 use folders::FolderKind;
 
 use super::{attempt_status_report, progress_branch, read_status, status_report, StatusState};
-use crate::args::{usage_report, UsageError};
+use crate::args::no_arguments_report;
 use crate::config::snapshot_settings_for;
 use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
-/// Any argument is usage_report. The shell gives an agent verb its folder (actor_for refuses a zone folder) and a
-/// verb that needs the config its config; a missing one is a failure here. Then read_status with the config's
-/// snapshot settings, reported by status_report; in attempt folder k it reports attempt k's own branch and
-/// snapshot by attempt_status_report, whose next is mortar save or the wait for the harness, never join
+/// Any argument is no_arguments_report's usage report. The shell gives an agent verb its folder (actor_for refuses a
+/// zone folder) and a verb that needs the config its config; a missing one is a failure here. Then read_status with
+/// the config's snapshot settings, reported by status_report; in attempt folder k it reports attempt k's own branch
+/// and snapshot by attempt_status_report, whose next is mortar save or the wait for the harness, never join
 /// (S-127(1)). No lock: status is read only (S-85).
 pub fn run_status(context: &ShellContext) -> Report {
     let args = &context.args;
-    if !args.rest.is_empty() {
-        let reason = "status takes no arguments".to_string();
-        return usage_report(&UsageError { verb: Some("status".to_string()), reason, json: args.json });
+    if let Some(usage) = no_arguments_report("status", &args.rest, args.json) {
+        return usage;
     }
     let (Some(folder), Some(config)) = (&context.folder, &context.config) else {
         let what = "status runs with its folder and the Mortar config, and the shell gave it neither";

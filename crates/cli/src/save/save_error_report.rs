@@ -62,7 +62,9 @@ pub fn save_error_report(error: &SnapshotError) -> Report {
         SnapshotError::IndexNotSet { commit, error } => Report {
             lines: vec![
                 format!("saved commit {commit} but the folder's index was not set: {error}"),
-                "the files are untouched and the index is the old one; a repeat sets it (S-41)".to_string(),
+                "the files are untouched and the index is the old one, or the saved tree without its skip-worktree \
+                 bits if the sparse-checkout reapply failed; a repeat sets it (S-41, S-125)"
+                    .to_string(),
             ],
             ..failure_report("save", "")
         },

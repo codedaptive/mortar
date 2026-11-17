@@ -2,6 +2,7 @@
 
 mod find_verb;
 mod lock_need;
+mod no_arguments_report;
 mod parse_args;
 mod parsed_args;
 mod usage_error;
@@ -13,12 +14,15 @@ mod verbs;
 #[cfg(test)]
 mod find_verb_tests;
 #[cfg(test)]
+mod no_arguments_report_tests;
+#[cfg(test)]
 mod parse_args_tests;
 #[cfg(test)]
 mod verbs_tests;
 
 pub use find_verb::find_verb;
 pub use lock_need::LockNeed;
+pub use no_arguments_report::no_arguments_report;
 pub use parse_args::parse_args;
 pub use parsed_args::ParsedArgs;
 pub use usage_error::UsageError;

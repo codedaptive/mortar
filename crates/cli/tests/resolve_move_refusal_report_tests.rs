@@ -78,21 +78,20 @@ fn a_branch_elsewhere_is_joins_move_refusal_under_resolve() {
 }
 
 #[test]
-fn anything_else_is_a_failure_under_resolve_after_the_lines_before() {
+fn anything_else_is_joins_move_refusal_under_resolve_after_the_lines_before() {
     let error = FolderError::NotSaved { path: PathBuf::from("/w/fix-1") };
     assert_eq!(
         resolve_move_refusal_report(&error, SNAP_REF, &oid(SNAP), before()),
         Report {
             verb: "resolve".to_string(),
-            exit: ExitCode::Failure,
-            outcome: "failed".to_string(),
+            exit: ExitCode::Refused,
+            outcome: "refused".to_string(),
             lines: vec![
                 "rebased: refs/heads/req/core/fix-1 moved".to_string(),
-                "/w/fix-1 holds work that is not saved; the folder was not moved; next step: mortar save".to_string(),
-                "nothing half-done is left".to_string(),
+                "/w/fix-1 holds work that is not saved".to_string(),
             ],
-            owner: None,
-            next: "repeat the same command".to_string(),
+            owner: Some("this request's folder".to_string()),
+            next: "repeat once the folder's work is saved".to_string(),
             fields: Vec::new(),
         }
     );

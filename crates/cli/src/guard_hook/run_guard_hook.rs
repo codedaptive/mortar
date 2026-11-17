@@ -6,7 +6,8 @@
 //! nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let through (exit 0,
 //! nothing printed) and a prepared one fails on the op log (exit 5).
 //! The RITs (S-101) in tests/operational_rit/guard.rs cover, with the mortar binary installed as the hook
-//! (land::guard_install; mortar guard install once built, S-112) in a throwaway repository, git run with
+//! (the fixture installs it with land::guard_install, the code under `mortar guard install`, S-112) in a throwaway
+//! repository, git run with
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1:
 //! - an allowed move prints nothing on stdout or stderr, exit 0, also with --json (S-111);
 //! - update-ref, commit and push against integration and origin are refused, with nothing moved;
@@ -69,7 +70,8 @@ fn open_moves(common: &Path) -> Result<Option<Vec<RefMove>>, Report> {
     }
 }
 
-/// All of stdin as UTF-8 text; a read error or bytes that are not UTF-8 are refused.
+/// All of stdin as UTF-8 text; a read error or bytes that are not UTF-8 are refused, with next: repeat the git
+/// command, then `mortar guard install --actor <name>` if it fails again.
 fn read_input() -> Result<String, Report> {
     let mut bytes = Vec::new();
     std::io::stdin()
@@ -79,14 +81,15 @@ fn read_input() -> Result<String, Report> {
         .map_err(|why| {
             refuse(
                 format!("the guard cannot read the hook's input ({why}), so it fails closed"),
-                "repeat the git command; if the guard still cannot read its input, ask the harness that installs \
-                 the guard to install it again",
+                "repeat the git command; if the guard still cannot read its input, run mortar guard install \
+                 --actor <name>",
             )
         })
 }
 
-/// The branches guard.json protects. Missing while its hooks run, or not a guard config: refused. Any other
-/// failure to read it: failure_report.
+/// The branches guard.json protects. Missing while its hooks run, or not a guard config: refused, with next
+/// `mortar guard install --actor <name>` (after mending or removing guard.json by hand when it is not a guard
+/// config). Any other failure to read it: failure_report.
 fn read_refs(git: &Git, common: &Path) -> Result<LandRefs, Report> {
     match read_guard_config(git) {
         Ok(Some(refs)) => Ok(refs),
@@ -96,11 +99,11 @@ fn read_refs(git: &Git, common: &Path) -> Result<LandRefs, Report> {
                  the guard fails closed",
                 common.join("mortar").display()
             ),
-            "ask the harness that installs the guard to install it again",
+            "mortar guard install --actor <name>",
         )),
         Err(error @ GuardError::BadConfig { .. }) => Err(refuse(
             error.to_string(),
-            "mend or remove guard.json by hand, then ask the harness that installs the guard to install it again",
+            "mend or remove guard.json by hand, then mortar guard install --actor <name>",
         )),
         Err(error) => Err(failure_report(VERB, &error.to_string())),
     }

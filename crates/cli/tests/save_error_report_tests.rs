@@ -179,7 +179,8 @@ fn an_index_not_set_is_a_failure_a_repeat_mends() {
             &[
                 "saved commit 0123456789abcdef0123456789abcdef01234567 but the folder's index was not set: git \
                  read-tree HEAD: exit code 128: fatal: index.lock exists",
-                "the files are untouched and the index is the old one; a repeat sets it (S-41)",
+                "the files are untouched and the index is the old one, or the saved tree without its skip-worktree \
+                 bits if the sparse-checkout reapply failed; a repeat sets it (S-41, S-125)",
             ],
             None,
             "repeat the same command",
