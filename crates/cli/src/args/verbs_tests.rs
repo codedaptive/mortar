@@ -13,6 +13,8 @@ fn built_verbs_are_listed_alphabetically() {
         names,
         vec![
             "back-out",
+            "backup",
+            "bisect",
             "folder",
             "guard",
             "guard-hook",
@@ -25,6 +27,7 @@ fn built_verbs_are_listed_alphabetically() {
             "rereview",
             "resolve",
             "restore",
+            "restore-backup",
             "save",
             "squash",
             "status",
@@ -197,5 +200,39 @@ fn restore_is_a_harness_verb_whose_lock_comes_from_its_refs_that_needs_the_confi
     assert_eq!(
         restore.usage,
         "mortar restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]"
+    );
+}
+
+#[test]
+fn backup_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let backup = verb("backup");
+    assert_eq!(backup.kind, VerbKind::Harness);
+    assert_eq!(backup.lock, LockNeed::Land);
+    assert!(backup.needs_config);
+    assert_eq!(backup.usage, "mortar backup --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn bisect_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let bisect = verb("bisect");
+    assert_eq!(bisect.kind, VerbKind::Harness);
+    assert_eq!(bisect.lock, LockNeed::Land);
+    assert!(bisect.needs_config);
+    assert_eq!(
+        bisect.usage,
+        "mortar bisect <last pass> <failed> --timeout <seconds> --actor <name> [--key <operation key>] [--json] -- \
+         <command>..."
+    );
+}
+
+#[test]
+fn restore_backup_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let restore_backup = verb("restore-backup");
+    assert_eq!(restore_backup.kind, VerbKind::Harness);
+    assert_eq!(restore_backup.lock, LockNeed::Land);
+    assert!(restore_backup.needs_config);
+    assert_eq!(
+        restore_backup.usage,
+        "mortar restore-backup <host> --actor <name> [--key <operation key>] [--json]"
     );
 }

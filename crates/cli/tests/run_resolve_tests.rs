@@ -36,6 +36,7 @@ fn context(kind: FolderKind, rest: Vec<String>) -> ShellContext {
         args: ParsedArgs {
             verb: find_verb("resolve").expect("resolve is a verb"),
             rest,
+            dash_dash: None,
             json: false,
             key: None,
             actor: None,
@@ -80,7 +81,7 @@ fn an_argument_is_resolves_usage() {
             verb: "resolve".to_string(),
             exit: ExitCode::Usage,
             outcome: "usage".to_string(),
-            lines: vec!["resolve takes no arguments".to_string(), "verbs: back-out, folder, guard, guard-hook, init, join, land, log, need, publish, rereview, resolve, restore, save, squash, status, would-merge".to_string()],
+            lines: vec!["resolve takes no arguments".to_string(), "verbs: back-out, backup, bisect, folder, guard, guard-hook, init, join, land, log, need, publish, rereview, resolve, restore, restore-backup, save, squash, status, would-merge".to_string()],
             owner: None,
             next: "mortar resolve [--key <operation key>] [--json]".to_string(),
             fields: Vec::new(),

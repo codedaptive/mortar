@@ -3,6 +3,8 @@
 
 pub mod args;
 pub mod back_out;
+pub mod backup;
+pub mod bisect;
 pub mod config;
 pub mod context;
 pub mod folder;
@@ -31,9 +33,16 @@ pub mod would_merge;
 
 pub use args::{
     find_verb, no_arguments_report, parse_args, usage_report, LockNeed, ParsedArgs, UsageError, VerbKind, VerbSpec,
-    VERBS,
+    BACKUP_SPEC, BISECT_SPEC, RESTORE_BACKUP_SPEC, VERBS,
 };
 pub use back_out::{back_out_report, run_back_out};
+pub use backup::{
+    backup_error_report, backup_report, parse_restore_backup_args, restore_backup_report, run_backup,
+    run_restore_backup,
+};
+pub use bisect::{
+    bisect_error_report, bisect_report, culprit_line, parse_bisect_args, probe_line, run_bisect, BisectArgs,
+};
 pub use config::{
     config_path, decode_config, encode_config, protected_refs, read_config, snapshot_settings_for, write_config,
     Config, ConfigError, FormatterConfig, SnapshotSettings, ZoneConfig,

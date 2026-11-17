@@ -30,6 +30,7 @@ fn context_with(rest: &[&str], json: bool) -> ShellContext {
         args: ParsedArgs {
             verb: find_verb("log").expect("log is a verb"),
             rest: rest.iter().map(ToString::to_string).collect(),
+            dash_dash: None,
             json,
             key: None,
             actor: None,

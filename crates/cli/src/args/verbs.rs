@@ -1,6 +1,6 @@
 //! The verbs the binary knows: only those that are built.
 
-use super::{LockNeed, VerbKind, VerbSpec};
+use super::{LockNeed, VerbKind, VerbSpec, BACKUP_SPEC, BISECT_SPEC, RESTORE_BACKUP_SPEC};
 
 /// In the order the usage error lists them.
 pub const VERBS: &[VerbSpec] = &[
@@ -11,6 +11,8 @@ pub const VERBS: &[VerbSpec] = &[
         needs_config: true,
         usage: "mortar back-out --actor <name> [--key <operation key>] [--json]",
     },
+    BACKUP_SPEC,
+    BISECT_SPEC,
     VerbSpec {
         name: "folder",
         kind: VerbKind::Harness,
@@ -100,6 +102,7 @@ pub const VERBS: &[VerbSpec] = &[
         needs_config: true,
         usage: "mortar restore <op id> <full ref name>... --actor <name> [--key <operation key>] [--json]",
     },
+    RESTORE_BACKUP_SPEC,
     VerbSpec {
         name: "save",
         kind: VerbKind::Agent,
