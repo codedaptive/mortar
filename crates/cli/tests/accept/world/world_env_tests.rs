@@ -8,7 +8,6 @@ fn value(env: &[(OsString, OsString)], key: &str) -> Option<String> {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn git_config_is_cut_off_and_home_is_the_root() {
     let env = world_env(Path::new("/scratch/root"), OsStr::new("/usr/bin:/bin"));
     assert_eq!(value(&env, "GIT_CONFIG_GLOBAL").as_deref(), Some("/dev/null"));
@@ -20,7 +19,6 @@ fn git_config_is_cut_off_and_home_is_the_root() {
 }
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn only_the_listed_variables_are_set() {
     let env = world_env(Path::new("/r"), OsStr::new("/bin"));
     let mut keys: Vec<String> = env.iter().map(|(k, _)| k.to_string_lossy().into_owned()).collect();

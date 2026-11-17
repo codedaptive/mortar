@@ -1,7 +1,6 @@
 use super::{Checks, Line};
 
 #[test]
-#[ignore = "acceptance: make accept"]
 fn check_returns_ok_and_lines_keep_the_order_recorded() {
     let mut checks = Checks::new();
     assert!(checks.check("ran init", true, "exit 0"));
