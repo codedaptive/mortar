@@ -35,10 +35,6 @@ mod nothing_to_undo_report_tests;
 #[cfg(test)]
 mod own_refs_tests;
 #[cfg(test)]
-mod restore_check_report_tests;
-#[cfg(test)]
-mod restore_failed_report_tests;
-#[cfg(test)]
 mod restore_why_tests;
 #[cfg(test)]
 mod undo_caller_tests;

@@ -1,5 +1,5 @@
 //! restore_why: each JoinRunError a restore of a paused join can give has its own why lines, built from its fields;
-//! the errors a restore never gives share one line.
+//! the errors a restore never gives share one line. The Git case is the RIT in cli_rit/restore_git_errors.rs (S-101).
 
 use std::ffi::OsStr;
 use std::io;
@@ -7,7 +7,7 @@ use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
 
 use ::join::JoinRunError;
-use gitio::{GitError, Oid};
+use gitio::Oid;
 
 use super::restore_why;
 
@@ -100,16 +100,6 @@ fn a_request_ref_that_is_gone_is_at_nothing() {
         why(error),
         vec!["refs/heads/req/a is at nothing, not at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, where the paused join stopped"]
     );
-}
-
-#[test]
-fn a_git_failure_gives_git_s_own_text() {
-    let error = JoinRunError::Git(GitError {
-        args: vec!["rev-parse".to_string(), "x".to_string()],
-        code: Some(128),
-        stderr: "fatal: bad\n".to_string(),
-    });
-    assert_eq!(why(error), vec!["git failed: git rev-parse x: exit code 128: fatal: bad"]);
 }
 
 #[test]

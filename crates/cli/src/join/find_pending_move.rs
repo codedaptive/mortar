@@ -3,6 +3,8 @@
 //! step (S-142 (1)) is none: undo puts the paused join back and sets the index itself, keeping the folder's files
 //! (S-148). join, resolve, save and undo finish the move; status only reports it, and only while the folder's index
 //! is not at the new tip (read_stalled_move, S-85, S-97).
+//! Tested by find_pending_move_tests.rs, and by the ZITs in crates/cli/tests/find_pending_move_resolve_tests.rs for
+//! an undo whose reversed op's Done record decides (a resolve step, one missing from the log or one that only failed).
 
 use ::join::FOLDER_TREE;
 use gitio::Oid;
