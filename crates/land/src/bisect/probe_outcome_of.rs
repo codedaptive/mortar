@@ -10,7 +10,7 @@ use super::ProbeOutcome;
 /// TimedOut with its limit, which counts as a fail (S-78). SpawnFailed is neither a pass nor a fail: the suite's
 /// verdict at that commit is unknown, so its error text is returned for bisect to stop on (S-78; probe_outcome_of_tests
 /// a_spawn_failure_is_its_error_text). The command's stderr is dropped.
-pub fn probe_outcome_of(end: GroupRunEnd) -> Result<ProbeOutcome, String> {
+pub(crate) fn probe_outcome_of(end: GroupRunEnd) -> Result<ProbeOutcome, String> {
     match end {
         GroupRunEnd::Exited { code: Some(0), .. } => Ok(ProbeOutcome::Passed),
         GroupRunEnd::Exited { code, .. } => Ok(ProbeOutcome::Failed { code }),

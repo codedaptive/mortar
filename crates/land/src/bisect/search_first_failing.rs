@@ -17,7 +17,7 @@ use super::{BisectNotFound, BisectVerdict};
 /// most 2 + ceil(log2(candidates.len())). When the results are not monotonic (a later commit passes again) the
 /// answer is still a failing commit whose predecessor (or `last_pass`) passed, though not always the oldest
 /// such one. A probe's Err is returned at once, with no further probe.
-pub fn search_first_failing<E>(
+pub(crate) fn search_first_failing<E>(
     last_pass: &Oid,
     candidates: &[Oid],
     mut passes: impl FnMut(&Oid) -> Result<bool, E>,
