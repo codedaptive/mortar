@@ -12,6 +12,7 @@ fn built_verbs_are_listed_alphabetically() {
     assert_eq!(
         names,
         vec![
+            "after-publish",
             "back-out",
             "backup",
             "bisect",
@@ -33,6 +34,18 @@ fn built_verbs_are_listed_alphabetically() {
             "status",
             "would-merge"
         ]
+    );
+}
+
+#[test]
+fn after_publish_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let after_publish = verb("after-publish");
+    assert_eq!(after_publish.kind, VerbKind::Harness);
+    assert_eq!(after_publish.lock, LockNeed::Land);
+    assert!(after_publish.needs_config);
+    assert_eq!(
+        after_publish.usage,
+        "mortar after-publish <zone> [--move <zone>]... --actor <name> [--key <operation key>] [--json]"
     );
 }
 

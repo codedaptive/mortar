@@ -1,9 +1,10 @@
 //! The verbs the binary knows: only those that are built.
 
-use super::{LockNeed, VerbKind, VerbSpec, BACKUP_SPEC, BISECT_SPEC, RESTORE_BACKUP_SPEC};
+use super::{LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, RESTORE_BACKUP_SPEC};
 
 /// In the order the usage error lists them.
 pub const VERBS: &[VerbSpec] = &[
+    AFTER_PUBLISH_SPEC,
     VerbSpec {
         name: "back-out",
         kind: VerbKind::Harness,

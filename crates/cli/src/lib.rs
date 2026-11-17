@@ -1,6 +1,7 @@
 //! cli: the shell of the `mortar` binary: arguments, the per-repository config, the folder and lock a verb
 //! runs with, the op key, the verbs, and the report every verb prints.
 
+pub mod after_publish;
 pub mod args;
 pub mod back_out;
 pub mod backup;
@@ -31,9 +32,14 @@ pub mod squash;
 pub mod status;
 pub mod would_merge;
 
+pub use after_publish::{
+    after_publish_error_report, after_publish_failure, after_publish_report, bring_zone_folder, find_zone_old,
+    parse_after_publish_args, read_named_zones, repeat_command, run_after_publish, zone_folder_lines, zone_move_lines,
+    zone_values, AfterPublishArgs, FolderRefusal, NamedZone, ZoneFolderOutcome, ZoneOld,
+};
 pub use args::{
     find_verb, no_arguments_report, parse_args, usage_report, LockNeed, ParsedArgs, UsageError, VerbKind, VerbSpec,
-    BACKUP_SPEC, BISECT_SPEC, RESTORE_BACKUP_SPEC, VERBS,
+    AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, RESTORE_BACKUP_SPEC, VERBS,
 };
 pub use back_out::{back_out_report, run_back_out};
 pub use backup::{
