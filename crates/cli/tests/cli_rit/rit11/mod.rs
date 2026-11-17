@@ -2,6 +2,7 @@
 //! S-142 own attempt refs and repeat safety; S-143 pending moves and refusal-before-finish ordering.
 //! Every case owns its disposable repository/worktrees/remote through the reused support::Fixture.
 mod fixture;
+mod resolve_undo;
 mod saves;
 mod rebases;
 mod refusals;
