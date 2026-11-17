@@ -7,6 +7,7 @@ mod support;
 mod saves;
 mod joins;
 mod recovery;
+mod precheck_status;
 mod processes;
 mod run_folder_zone_tests;
 mod run_folder_request_tests;
