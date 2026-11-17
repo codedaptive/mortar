@@ -1,5 +1,5 @@
-//! attempt_next: unsaved gives mortar save and saved waits for the harness, whatever else holds; no answer is join
-//! or resolve.
+//! attempt_next: unsaved gives mortar save, saved with no work yet gives "make your change, then mortar save"
+//! (S-145) and other saved work waits for the harness, whatever else holds; no answer is join or resolve.
 
 use std::path::PathBuf;
 
@@ -22,6 +22,7 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
         refused: Vec::new(),
         zone_moved: false,
         joined,
+        no_work_yet: false,
         paused: paused.then(|| PausedJoin {
             commit: oid("3333333333333333333333333333333333333333"),
             files: vec![PathBuf::from("src/c.rs")],
@@ -42,7 +43,8 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
 const WAIT: &str = "wait for the harness to keep or drop the attempts";
 const SAVE: &str = "mortar save \"<sentence>\"";
 
-/// Every combination of (stalled, paused, saved, joined, the answer): unsaved is always save, saved always wait.
+/// Every combination of (stalled, paused, saved, joined, the answer), no work yet false: unsaved is always save,
+/// saved always wait.
 const EVERY_STATE: [(bool, bool, bool, bool, &str); 16] = [
     (false, false, false, false, SAVE),
     (false, false, false, true, SAVE),
@@ -76,7 +78,25 @@ fn unsaved_is_save_and_saved_is_wait_whatever_else_holds() {
 #[test]
 fn no_state_answers_join_or_resolve() {
     for (stalled, paused, saved, joined, _) in EVERY_STATE {
-        let next = attempt_next(&state(stalled, paused, saved, joined));
-        assert!(!next.contains("join") && !next.contains("resolve"), "{next}");
+        for no_work_yet in [false, true] {
+            let next = attempt_next(&StatusState { no_work_yet, ..state(stalled, paused, saved, joined) });
+            assert!(!next.contains("join") && !next.contains("resolve"), "{next}");
+        }
+    }
+}
+
+const MAKE_CHANGE: &str = "make your change, then mortar save";
+
+/// S-145: a saved attempt with no work yet is told to make its change, never to wait on keep or drop, whatever
+/// else holds; an unsaved one is still told to save.
+#[test]
+fn saved_with_no_work_yet_is_make_your_change_and_unsaved_is_still_save() {
+    for (stalled, paused, saved, joined, _) in EVERY_STATE {
+        let answer = if saved { MAKE_CHANGE } else { SAVE };
+        assert_eq!(
+            attempt_next(&StatusState { no_work_yet: true, ..state(stalled, paused, saved, joined) }),
+            answer,
+            "stalled {stalled}, paused {paused}, saved {saved}, joined {joined}"
+        );
     }
 }

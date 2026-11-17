@@ -35,6 +35,7 @@ fn bare() -> StatusState {
         refused: Vec::new(),
         zone_moved: false,
         joined: true,
+        no_work_yet: false,
         paused: None,
         stalled: None,
         overlaps: Vec::new(),
@@ -109,6 +110,7 @@ fn a_full_state_fills_every_member() {
         ],
         zone_moved: true,
         joined: false,
+        no_work_yet: false,
         paused: Some(PausedJoin { commit: oid("3333333333333333333333333333333333333333"), files: paths(&["c"]) }),
         stalled: Some(PendingMove {
             request_ref: "refs/heads/req/core/fix-1".to_string(),

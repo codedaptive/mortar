@@ -39,8 +39,9 @@ fn rit_status_reports_zone_moves_by_ancestry_not_the_original_cut() {
     assert_eq!(report.text("next"), "mortar join");
     assert!(report.lines().contains("the zone has commits this request has not taken in"));
     f.report(&["--json", "join"], "join", 0, "rebased");
-    // saved_state compares with the earlier snapshot, whose tree predates the rebase's new zone file.
-    assert!(!status(&f, "unsaved").flag("zone_moved"), "rebased request has taken the zone in despite its old cut record");
+    // The rebase moved the folder to the new tip, so its tree is the tip's: saved (S-144). The zone does not hold the
+    // rebased tip yet, so it is not joined.
+    assert!(!status(&f, "saved").flag("zone_moved"), "rebased request has taken the zone in despite its old cut record");
 }
 
 #[test]
@@ -91,10 +92,10 @@ fn rit_status_rebased_request_excludes_zone_only_changes_from_overlap() {
     let zone = f.advance_zone(false);
     f.report(&["--json", "join"], "join", 0, "rebased");
     assert_eq!(f.git.commit_info(&f.head()).unwrap().parents, vec![zone]);
-    let report = status(&f, "unsaved");
+    let report = status(&f, "saved");
     assert!(report.strings("overlaps").is_empty()); assert!(report.strings("overlap_paths").is_empty());
     assert!(!report.flag("zone_moved"));
-    assert_eq!(report.text("next"), "mortar save \"<sentence>\"", "the snapshot predates the rebased folder tree");
+    assert_eq!(report.text("next"), "mortar join", "the folder's tree is the rebased tip's; the zone does not hold it yet");
 }
 
 #[test]
@@ -112,7 +113,7 @@ fn rit_status_corrupt_peer_record_fails_instead_of_claiming_no_overlap() {
 #[test]
 fn rit_status_rejects_arguments_and_zone_folders_and_reads_attempt_folders_before_mutation() {
     // Actual shell/actor/attempt decisions with real folder records, not status_report ZIT data; a fresh attempt
-    // (no trysnap ref) reads as unsaved (S-127(1)).
+    // (its try branch at its base, its tree the tip's) reads as saved with no work yet (S-145).
     let f = Fixture::new(); let old = before(&f, &f.request);
     check(f.app(&["--json", "status", "unexpected"]), "status", 4, "usage");
     assert_eq!(before(&f, &f.request), old);
@@ -122,7 +123,7 @@ fn rit_status_rejects_arguments_and_zone_folders_and_reads_attempt_folders_befor
     oplog::recover(&f.git, &f.common).unwrap();
     folders::make_attempts(&setup(&f.git, &attempts), "core", "task", &["src".into()], 1).unwrap();
     let attempt = attempts.join("try-1"); let old = before(&f, &attempt);
-    check(f.command(&attempt, &["--json", "status"]).output().unwrap(), "status", 0, "unsaved");
+    check(f.command(&attempt, &["--json", "status"]).output().unwrap(), "status", 0, "saved");
     assert_eq!(before(&f, &attempt), old);
 }
 

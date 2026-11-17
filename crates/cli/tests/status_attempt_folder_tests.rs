@@ -1,7 +1,8 @@
 //! status in an attempt folder (S-127(1)): in attempt folder k, `mortar status` exits 0 and reports attempt k's
 //! own progress, its branch try/<zone>/<request>/<k> and its trysnap snapshot, never the request's. Its next is
-//! `mortar save "<sentence>"` while the attempt is unsaved, otherwise "wait for the harness to keep or drop the
-//! attempts", never join, even when the zone has moved. `need` stays refused in an attempt folder.
+//! `mortar save "<sentence>"` while the attempt is unsaved, "make your change, then mortar save" while a fresh
+//! attempt has no work yet (S-145), otherwise "wait for the harness to keep or drop the attempts", never join, even
+//! when the zone has moved. `need` stays refused in an attempt folder.
 //! Status reads only (S-85): refs, index, record, op log and files are unchanged by it (observe::status_at).
 //! ZIT (S-119: the subject decides the group): the mortar binary runs as a child in a throwaway repository, with
 //! the attempts made by the folders crate directly.
@@ -40,13 +41,14 @@ fn save_in(f: &Fixture, attempt: &Path) {
     assert_eq!(f.head(), tip, "a save in an attempt must not move the request branch");
 }
 
+/// A fresh attempt's try branch is at its base and its tree is the tip's: saved with no work yet (S-144, S-145).
 #[test]
-fn fresh_attempt_reports_unsaved_and_next_save() {
+fn fresh_attempt_reports_saved_and_next_make_your_change() {
     let f = Fixture::new(); f.save_topic();
     let (one, _) = attempts(&f);
-    let report = status_at(&f, &one, "unsaved");
-    assert!(!report.flag("saved"));
-    assert_eq!(report.text("next"), "mortar save \"<sentence>\"");
+    let report = status_at(&f, &one, "saved");
+    assert!(report.flag("saved"));
+    assert_eq!(report.text("next"), "make your change, then mortar save");
     assert_eq!(report.number("attempt"), 1);
     assert_eq!(report.text("branch"), "try/core/task/1");
     assert!(report.lines().contains("try/core/task/1"));
@@ -63,7 +65,8 @@ fn saved_attempt_waits_for_keep_or_drop() {
     assert!(report.flag("saved"));
     assert_eq!(report.text("next"), WAIT);
     assert!(!report.text("next").contains("join"));
-    let second = status_at(&f, &two, "unsaved");
+    // Attempt 2 is still fresh: saved with no work yet (S-145).
+    let second = status_at(&f, &two, "saved");
     assert_eq!(second.number("attempt"), 2);
     assert_eq!(second.text("branch"), "try/core/task/2");
 }

@@ -11,8 +11,8 @@
 //! - a real paused join (Orc #1312) gives its paused commit and files, next mortar resolve;
 //! - an over-cap new file is listed with the cap;
 //! - a needed path outside the work order is listed as a gap;
-//! - work snapshotted after a join but never saved to the request branch is not joined, next mortar join
-//!   (crates/cli/tests/status_joined_tests.rs);
+//! - work snapshotted after a join but never saved to the request branch is neither saved nor joined, next mortar
+//!   save (crates/cli/tests/status_joined_tests.rs);
 //! - status writes no file and moves no ref: refs, the folder's index and the op log are unchanged after it.
 
 use folders::gaps;
@@ -24,9 +24,9 @@ use crate::context::FolderContext;
 use crate::report::{failure_report, Report};
 
 /// The state of `folder` for `actor`: read_progress's (the folder's branch and zone tips, saved_state with the config's
-/// excludes and cap as save snapshots it (`settings`), zone_moved, joined when the branch tip is in the zone, the
-/// branch has commits of its own and the folder's tree (saved_state's) equals the tip's tree, the paused join and
-/// the stalled folder move); then the changed, untracked and conflicted paths; the overlaps (read_overlaps, against
+/// excludes and cap as save snapshots it (`settings`), saved when the folder's tree equals the branch tip's (S-144),
+/// zone_moved, joined when the branch tip is in the zone, the branch has commits of its own and the folder is
+/// saved, no_work_yet (S-145), the paused join and the stalled folder move); then the changed, untracked and conflicted paths; the overlaps (read_overlaps, against
 /// each request's fork point from the zone tip read_progress read, S-108); the record's gaps. A save error is
 /// save_error_report relabelled for `verb`; every other failure is failure_report. Reads only: no lock, no
 /// recover, no ref move (S-85).

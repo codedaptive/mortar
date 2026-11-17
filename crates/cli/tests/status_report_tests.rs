@@ -44,6 +44,7 @@ fn clean() -> StatusState {
         refused: Vec::new(),
         zone_moved: false,
         joined: true,
+        no_work_yet: false,
         paused: None,
         stalled: None,
         overlaps: Vec::new(),
@@ -64,6 +65,7 @@ fn full() -> StatusState {
         refused: vec![RefusedFile { path: PathBuf::from("data/big.bin"), size: 2_000_000, cap: 1_048_576 }],
         zone_moved: true,
         joined: false,
+        no_work_yet: false,
         paused: Some(PausedJoin { commit: oid(PAUSED), files: paths(&["src/c.rs", "src/d.rs"]) }),
         stalled: Some(PendingMove {
             request_ref: "refs/heads/req/core/fix-1".to_string(),
