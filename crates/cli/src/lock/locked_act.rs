@@ -2,8 +2,8 @@
 //! Shell API: `mortar folder` (run_folder's runners), `mortar join` (run_join), `mortar need` (run_need),
 //! `mortar resolve` (run_resolve), `mortar restore` (run_restore), `mortar save` (run_save), `mortar guard`
 //! (run_guard_install, run_guard_status), `mortar squash` (run_squash), `mortar rereview` (run_rereview),
-//! `mortar back-out` (run_back_out) and `mortar publish` (run_publish) call it, and so will each later verb that
-//! moves a ref.
+//! `mortar back-out` (run_back_out), `mortar publish` (run_publish), `mortar would-merge` (run_would_merge) and
+//! `mortar land` (run_land) call it, and so will each later verb that moves a ref.
 //! No unit test: it takes a real lock file and runs git and the op log (S-5); crates/cli/tests/lock_report_tests.rs and
 //! failure_report_tests cover what it reports. Nagatha's integration group is to cover, with the mortar binary as a
 //! child process in a throwaway repository and `mortar join`: a lock held by a live pid is exit 3 naming the holder's

@@ -52,6 +52,13 @@ pub const VERBS: &[VerbSpec] = &[
         usage: "mortar join [--key <operation key>] [--json]",
     },
     VerbSpec {
+        name: "land",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Land,
+        needs_config: true,
+        usage: "mortar land <commit> --actor <name> [--key <operation key>] [--json]",
+    },
+    VerbSpec {
         name: "log",
         kind: VerbKind::ReadOnly,
         lock: LockNeed::NoLock,
@@ -113,5 +120,12 @@ pub const VERBS: &[VerbSpec] = &[
         lock: LockNeed::NoLock,
         needs_config: true,
         usage: "mortar status [--json]",
+    },
+    VerbSpec {
+        name: "would-merge",
+        kind: VerbKind::Harness,
+        lock: LockNeed::Land,
+        needs_config: true,
+        usage: "mortar would-merge <commit or change ID> --actor <name> [--key <operation key>] [--json]",
     },
 ];

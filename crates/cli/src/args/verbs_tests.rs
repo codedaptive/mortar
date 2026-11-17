@@ -18,6 +18,7 @@ fn built_verbs_are_listed_alphabetically() {
             "guard-hook",
             "init",
             "join",
+            "land",
             "log",
             "need",
             "publish",
@@ -26,7 +27,8 @@ fn built_verbs_are_listed_alphabetically() {
             "restore",
             "save",
             "squash",
-            "status"
+            "status",
+            "would-merge"
         ]
     );
 }
@@ -47,6 +49,27 @@ fn publish_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
     assert_eq!(publish.lock, LockNeed::Land);
     assert!(publish.needs_config);
     assert_eq!(publish.usage, "mortar publish --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn would_merge_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let would_merge = verb("would-merge");
+    assert_eq!(would_merge.kind, VerbKind::Harness);
+    assert_eq!(would_merge.lock, LockNeed::Land);
+    assert!(would_merge.needs_config);
+    assert_eq!(
+        would_merge.usage,
+        "mortar would-merge <commit or change ID> --actor <name> [--key <operation key>] [--json]"
+    );
+}
+
+#[test]
+fn land_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let land = verb("land");
+    assert_eq!(land.kind, VerbKind::Harness);
+    assert_eq!(land.lock, LockNeed::Land);
+    assert!(land.needs_config);
+    assert_eq!(land.usage, "mortar land <commit> --actor <name> [--key <operation key>] [--json]");
 }
 
 #[test]

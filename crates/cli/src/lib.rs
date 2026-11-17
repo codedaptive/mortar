@@ -12,6 +12,7 @@ pub mod init;
 pub mod integration_folder;
 pub mod join;
 mod json;
+pub mod land;
 pub mod landing;
 pub mod lock;
 pub mod log;
@@ -26,6 +27,7 @@ pub mod save;
 pub mod shell;
 pub mod squash;
 pub mod status;
+pub mod would_merge;
 
 pub use args::{
     find_verb, no_arguments_report, parse_args, usage_report, LockNeed, ParsedArgs, UsageError, VerbKind, VerbSpec,
@@ -50,14 +52,20 @@ pub use guard::{
 pub use guard_hook::{guard_hook_from_args, guard_hook_report, run_guard_hook};
 pub use init::{decide_init, init_report, parse_init_args, run_init, InitDecision, InitOptions};
 pub use integration_folder::{
-    folder_move_refusal_report, integration_folder, integration_folder_line, move_integration_folder,
+    finish_stopped_move, folder_move_refusal_report, integration_folder, integration_folder_line,
+    integration_move_stopped, last_integration_old, move_integration_folder, note_finished_move, FinishedMove,
+    MoveBlock,
 };
 pub use crate::join::{
     answer_part, attempt_refusal, find_pending_move, finish_pending_move, finished_move_part, join_refusal_report,
     join_report, join_save_subject, move_refusal_report, read_pending_move, request_run_for, run_join, save_part,
     snapshot_failure, AnswerPart, JoinOutcome, PendingMove, RequestRun,
 };
-pub use landing::{land_error_report, landing_state_error_report, publish_error_report, squash_error_report};
+pub use crate::land::{land_report, parse_land_args, run_land};
+pub use landing::{
+    land_error_report, landing_state_error_report, pick_squash_ref, publish_error_report, resolve_squash,
+    squash_error_report, squash_pick_report, SquashName, SquashPick, CHANGE_CONFLICT_NEXT,
+};
 pub use lock::{lock_name_for, lock_report, locked_act};
 pub use log::{log_filters, log_lines, log_report, matching_records, run_log};
 pub use need::{missing_path_report, need_error_report, need_report, read_need_path, run_need};
@@ -80,3 +88,4 @@ pub use status::{
     read_stalled_move, read_status, run_status, status_fields, status_lines, status_next, status_outcome, status_report,
     StatusState,
 };
+pub use would_merge::{parse_would_merge_args, run_would_merge, would_merge_report};

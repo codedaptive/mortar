@@ -52,8 +52,8 @@ fn made_is_squashed_naming_change_commit_tip_and_requests() {
                 "requests: REQ-1, REQ-2".to_string(),
             ],
             owner: None,
-            next: "hand change kkkkllllmmmmnnnnooooppppqqqqrrrr (commit 1111111111111111111111111111111111111111) to \
-                   review"
+            next: "mortar would-merge 1111111111111111111111111111111111111111 --actor <name>, then hand change \
+                   kkkkllllmmmmnnnnooooppppqqqqrrrr (commit 1111111111111111111111111111111111111111) to review"
                 .to_string(),
             fields: squash_fields(&["REQ-1", "REQ-2"]),
         }
@@ -75,8 +75,8 @@ fn same_is_already_squashed_with_nothing_written() {
                 "requests: none named".to_string(),
             ],
             owner: None,
-            next: "hand change kkkkllllmmmmnnnnooooppppqqqqrrrr (commit 1111111111111111111111111111111111111111) to \
-                   review"
+            next: "mortar would-merge 1111111111111111111111111111111111111111 --actor <name>, then hand change \
+                   kkkkllllmmmmnnnnooooppppqqqqrrrr (commit 1111111111111111111111111111111111111111) to review"
                 .to_string(),
             fields: squash_fields(&[]),
         }
