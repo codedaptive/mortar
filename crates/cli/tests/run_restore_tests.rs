@@ -35,6 +35,7 @@ fn context(rest: &[&str]) -> ShellContext {
         args: ParsedArgs {
             verb: find_verb("restore").expect("restore is a verb"),
             rest: rest.iter().map(ToString::to_string).collect(),
+            dash_dash: None,
             json: false,
             key: None,
             actor: Some("harness-1".to_string()),

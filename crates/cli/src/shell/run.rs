@@ -17,6 +17,8 @@ use gitio::Git;
 use super::{load_config, ShellContext};
 use crate::args::{parse_args, usage_report, ParsedArgs, VerbKind};
 use crate::back_out::run_back_out;
+use crate::backup::{run_backup, run_restore_backup};
+use crate::bisect::run_bisect;
 use crate::config::protected_refs;
 use crate::context::{actor_for, context_report, read_folder_context, repository_error, repository_report};
 use crate::folder::run_folder;
@@ -74,6 +76,8 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
 fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
     match context.args.verb.name {
         "back-out" => run_back_out(context, cwd),
+        "backup" => run_backup(context, cwd),
+        "bisect" => run_bisect(context, cwd),
         "folder" => run_folder(context, cwd),
         "guard" => run_guard(context, cwd),
         "guard-hook" => run_guard_hook(context, cwd),
@@ -86,6 +90,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "rereview" => run_rereview(context, cwd),
         "resolve" => run_resolve(context),
         "restore" => run_restore(context, cwd),
+        "restore-backup" => run_restore_backup(context, cwd),
         "save" => run_save(context),
         "squash" => run_squash(context, cwd),
         "status" => run_status(context),

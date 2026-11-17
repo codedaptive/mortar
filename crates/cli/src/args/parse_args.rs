@@ -6,13 +6,15 @@ use super::{find_verb, ParsedArgs, UsageError};
 /// or `--key=<v>`, `--actor <v>` or `--actor=<v>`; a missing or empty value, or a flag given twice, is a
 /// usage error. The first other word is the verb, and must be in VERBS; every word after it that is not a
 /// global, unknown dashes included, goes to `rest` in order. `--` ends the globals: the words after it go to
-/// `rest` as they are. The first error in the line is the one returned, but the whole line is read first so
-/// that its `json` says whether `--json` came before `--`.
+/// `rest` as they are, and `dash_dash` is where they start in `rest` (a later `--` is one of them). The first
+/// error in the line is the one returned, but the whole line is read first so that its `json` says whether
+/// `--json` came before `--`.
 pub fn parse_args(argv: &[String]) -> Result<ParsedArgs, UsageError> {
     let mut read = Read::default();
     let mut words = argv.iter();
     while let Some(word) = words.next() {
         if word == "--" {
+            read.dash_dash = Some(read.rest.len());
             read.rest.extend(words.cloned());
             break;
         }
@@ -48,6 +50,7 @@ pub fn parse_args(argv: &[String]) -> Result<ParsedArgs, UsageError> {
 struct Read {
     verb: Option<String>,
     rest: Vec<String>,
+    dash_dash: Option<usize>,
     json: bool,
     key: Option<String>,
     actor: Option<String>,
@@ -78,5 +81,12 @@ fn finish(read: Read) -> Result<ParsedArgs, UsageError> {
     let Some(verb) = find_verb(name) else {
         return Err(fail(format!("unknown verb {name:?}")));
     };
-    Ok(ParsedArgs { verb, rest: read.rest, json: read.json, key: read.key, actor: read.actor })
+    Ok(ParsedArgs {
+        verb,
+        rest: read.rest,
+        dash_dash: read.dash_dash,
+        json: read.json,
+        key: read.key,
+        actor: read.actor,
+    })
 }

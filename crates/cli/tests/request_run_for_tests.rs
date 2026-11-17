@@ -37,6 +37,7 @@ fn context(kind: FolderKind, rest: Vec<String>) -> ShellContext {
         args: ParsedArgs {
             verb: find_verb("join").expect("join is a verb"),
             rest,
+            dash_dash: None,
             json: false,
             key: None,
             actor: None,

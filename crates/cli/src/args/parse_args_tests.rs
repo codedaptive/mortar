@@ -104,3 +104,34 @@ fn json_is_kept_on_a_usage_error() {
     assert!(late.json);
     assert!(!err(&["jump", "--", "--json"]).json);
 }
+
+#[test]
+fn dash_dash_marks_where_the_words_after_the_first_double_dash_start() {
+    let a = "1111111111111111111111111111111111111111";
+    let b = "2222222222222222222222222222222222222222";
+    let parsed = ok(&["bisect", a, b, "--timeout", "5", "--", "make", "--actor", "x", "--json"]);
+    assert_eq!(parsed.rest, strings(&[a, b, "--timeout", "5", "make", "--actor", "x", "--json"]));
+    assert_eq!(parsed.dash_dash, Some(4));
+    assert_eq!(parsed.actor, None);
+    assert!(!parsed.json);
+}
+
+#[test]
+fn a_line_without_double_dash_has_no_dash_dash() {
+    assert_eq!(ok(&["init", "--origin", "main"]).dash_dash, None);
+    assert_eq!(ok(&["init"]).dash_dash, None);
+}
+
+#[test]
+fn a_double_dash_with_nothing_before_or_after_it_is_at_zero() {
+    let parsed = ok(&["init", "--"]);
+    assert!(parsed.rest.is_empty());
+    assert_eq!(parsed.dash_dash, Some(0));
+}
+
+#[test]
+fn only_the_first_double_dash_marks_a_later_one_is_a_plain_word() {
+    let parsed = ok(&["init", "--zone", "a=x", "--", "--json", "--key", "k", "--"]);
+    assert_eq!(parsed.rest, strings(&["--zone", "a=x", "--json", "--key", "k", "--"]));
+    assert_eq!(parsed.dash_dash, Some(2));
+}
