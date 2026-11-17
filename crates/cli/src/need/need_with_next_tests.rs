@@ -31,6 +31,7 @@ fn saved_unjoined() -> StatusState {
         refused: Vec::new(),
         zone_moved: false,
         joined: false,
+        no_work_yet: false,
         paused: None,
         stalled: None,
         overlaps: Vec::new(),

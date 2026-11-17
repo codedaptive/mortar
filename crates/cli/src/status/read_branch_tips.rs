@@ -5,7 +5,7 @@
 //! verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - status in a clean, saved and joined folder reads both tips and gives next "wait for the zone's tests";
-//! - saved and not joined, status gives next mortar join;
+//! - saved with work of its own and not joined, status gives next mortar join;
 //! - with the zone moved on, status says the zone has commits this request has not taken in and gives next mortar join;
 //! - a missing request branch or a missing zone branch: status (and need) refuse with missing_branch_report's wording,
 //!   exit 1, nothing changed.

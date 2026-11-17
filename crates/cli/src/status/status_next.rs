@@ -5,7 +5,8 @@ use crate::join::MoveCause;
 
 /// The step for StatusPhase's phase of the state: a stalled folder move is finished by `mortar undo` when an undo
 /// left it and by `mortar join` when a rebase did (S-143); a paused join by `mortar resolve`; unsaved work by
-/// `mortar save "<sentence>"`; saved work not yet joined by `mortar join`; a joined request waits for the zone's
+/// `mortar save "<sentence>"`; a saved folder with no work yet (its branch still at its base) by making its change,
+/// then `mortar save` (S-145); other saved work not yet joined by `mortar join`; a joined request waits for the zone's
 /// tests.
 pub fn status_next(state: &StatusState) -> String {
     match StatusPhase::from(state) {
@@ -15,6 +16,7 @@ pub fn status_next(state: &StatusState) -> String {
         },
         StatusPhase::Paused => "mortar resolve",
         StatusPhase::Unsaved => "mortar save \"<sentence>\"",
+        StatusPhase::Saved if state.no_work_yet => "make your change, then mortar save",
         StatusPhase::Saved => "mortar join",
         StatusPhase::Joined => "wait for the zone's tests",
     }

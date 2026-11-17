@@ -48,8 +48,9 @@ fn need_does_not_read_other_folders_for_its_next_step() {
     let other = peer(&n.f, "peer", &["src".into()]);
     std::fs::write(record_path(&n.f, &other), b"{not a folder record\n").unwrap();
     let report = n.report(&["--json", "need", "sub"], 0, "needed");
-    // A fresh request folder with nothing saved: status_next's unsaved row.
-    assert_eq!(report.text("next"), "mortar save \"<sentence>\"");
+    // A fresh request folder: its branch is at its base and its tree is the tip's, so it reads saved with no work
+    // yet, and status_next tells it to make its change (S-144, S-145).
+    assert_eq!(report.text("next"), "make your change, then mortar save");
     assert_eq!(report.text("path"), "sub"); assert_eq!(n.paths(), vec!["sub"]);
     assert_eq!(std::fs::read(n.folder.join("sub/keep")).unwrap(), b"keep\n");
 }

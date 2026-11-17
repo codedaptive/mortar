@@ -1,5 +1,6 @@
 //! status_next: one state per StatusPhase phase gives its step; a stalled move an undo left is finished by
-//! `mortar undo`, one a rebase left by `mortar join` (S-143);
+//! `mortar undo`, one a rebase left by `mortar join` (S-143); a saved folder with no work yet is told to make its
+//! change, then save, after the stall, the paused join and unsaved work (S-145);
 //! status_phase_from_status_state_tests holds the whole state table.
 
 use std::path::PathBuf;
@@ -23,6 +24,7 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
         refused: Vec::new(),
         zone_moved: false,
         joined,
+        no_work_yet: false,
         paused: paused.then(|| PausedJoin {
             commit: oid("3333333333333333333333333333333333333333"),
             files: vec![PathBuf::from("src/c.rs")],
@@ -75,4 +77,22 @@ fn a_move_an_undo_left_stalled_is_finished_by_undo() {
 #[test]
 fn a_move_a_rebase_left_stalled_is_finished_by_join() {
     assert_eq!(status_next(&stalled_by(MoveCause::Rebase)), "mortar join");
+}
+
+/// `state(stalled, paused, saved, joined)` with no work yet: the branch still at its base, the folder at its tree.
+fn no_work(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState {
+    StatusState { no_work_yet: true, ..state(stalled, paused, saved, joined) }
+}
+
+#[test]
+fn a_saved_folder_with_no_work_yet_is_told_to_make_its_change_then_save() {
+    assert_eq!(status_next(&no_work(false, false, true, false)), "make your change, then mortar save");
+}
+
+/// S-145's order: the stall, the paused join and unsaved work come before the no-work step.
+#[test]
+fn a_stall_a_paused_join_and_unsaved_work_come_before_no_work_yet() {
+    assert_eq!(status_next(&no_work(true, true, false, false)), "mortar join");
+    assert_eq!(status_next(&no_work(false, true, true, false)), "mortar resolve");
+    assert_eq!(status_next(&no_work(false, false, false, false)), "mortar save \"<sentence>\"");
 }

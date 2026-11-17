@@ -22,6 +22,7 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
         refused: Vec::new(),
         zone_moved: false,
         joined,
+        no_work_yet: false,
         paused: paused.then(|| PausedJoin {
             commit: oid("3333333333333333333333333333333333333333"),
             files: vec![PathBuf::from("src/c.rs")],
