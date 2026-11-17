@@ -66,8 +66,8 @@ fn origin_moved_with_a_folder_exits_1_naming_the_moved_folder() {
                     .to_string(),
             ],
             owner: Some("whoever pushed 3333333333333333333333333333333333333333 to origin".to_string()),
-            next: "land the change's squash again onto 3333333333333333333333333333333333333333: mortar land \
-                   <commit> --actor <name>, then mortar publish --actor <name>"
+            next: "land the change's squash again onto 3333333333333333333333333333333333333333: mr land \
+                   <commit> --actor <name>, then mr publish --actor <name>"
                 .to_string(),
             fields: vec![text("found", FOUND), text("integration", FOUND), text("folder", "/work/integration")],
         }

@@ -1,4 +1,4 @@
-//! The report of `mortar log`.
+//! The report of `mr log`.
 
 use oplog::OpRecord;
 
@@ -11,10 +11,10 @@ use crate::report::{ExitCode, OutValue, Report};
 /// own op log line, values and remote mark included, in the order of `records` (S-114).
 pub fn log_report(records: &[&OpRecord], encoded: Vec<String>) -> Report {
     let (outcome, next) = match records {
-        [] => ("empty", "mortar log with no filter lists every op"),
+        [] => ("empty", "mr log with no filter lists every op"),
         _ => (
             "listed",
-            "mortar restore <op id> <full ref name>... --actor <name> sets refs back as of one of these ops",
+            "mr restore <op id> <full ref name>... --actor <name> sets refs back as of one of these ops",
         ),
     };
     Report {

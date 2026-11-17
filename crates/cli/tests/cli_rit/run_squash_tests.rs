@@ -21,7 +21,7 @@ use cli::{Config, ZoneConfig};
 use crate::json::check;
 use testkit::TestRepo;
 
-const USAGE: &str = "mortar squash <zone> --actor <name> [--key <operation key>] [--json]";
+const USAGE: &str = "mr squash <zone> --actor <name> [--key <operation key>] [--json]";
 const SQUASH_A: &str = "refs/mortar/squash/a";
 const X: &str = "x1\nx2\nx3\nx4\nx5\nx6\n";
 const X_ZONE: &str = "zone edit of x1\nx2\nx3\nx4\nx5\nx6\n";

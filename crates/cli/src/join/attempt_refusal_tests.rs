@@ -26,7 +26,7 @@ fn refused(verb: &str, first: &str) -> Report {
         outcome: "refused".to_string(),
         lines: vec![first.to_string(), "nothing ran".to_string()],
         owner: Some("this request".to_string()),
-        next: "keep or drop the attempts, then mortar join in the request's folder".to_string(),
+        next: "keep or drop the attempts, then mr join in the request's folder".to_string(),
         fields: Vec::new(),
     }
 }
@@ -35,7 +35,7 @@ fn refused(verb: &str, first: &str) -> Report {
 fn join_in_attempt_folder_three_is_refused() {
     assert_eq!(
         attempt_refusal("join", &record(FolderKind::Attempt(3), Some("fix-1"))),
-        Some(refused("join", "this is attempt folder 3 of request fix-1: mortar join runs in the request's own folder"))
+        Some(refused("join", "this is attempt folder 3 of request fix-1: mr join runs in the request's own folder"))
     );
 }
 
@@ -45,7 +45,7 @@ fn resolve_in_attempt_folder_three_is_refused() {
         attempt_refusal("resolve", &record(FolderKind::Attempt(3), Some("fix-1"))),
         Some(refused(
             "resolve",
-            "this is attempt folder 3 of request fix-1: mortar resolve runs in the request's own folder"
+            "this is attempt folder 3 of request fix-1: mr resolve runs in the request's own folder"
         ))
     );
 }

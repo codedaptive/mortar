@@ -24,6 +24,7 @@ pub mod log;
 pub mod need;
 pub mod opkey;
 pub mod overlap;
+pub mod path;
 pub mod publish;
 pub mod report;
 pub mod rereview;
@@ -73,7 +74,8 @@ pub use folder::{
 };
 pub use guard::{
     foreign_hook_report, guard_error_report, guard_fields, guard_in_place, guard_installed_report, guard_refs_for,
-    guard_state_report, parse_guard_args, run_guard, run_guard_install, run_guard_status, GuardCommand,
+    guard_state_report, parse_guard_args, run_guard, run_guard_install, run_guard_status, with_path_warning,
+    GuardCommand,
 };
 pub use guard_hook::{guard_hook_from_args, guard_hook_report, run_guard_hook};
 pub use init::{decide_init, init_report, parse_init_args, run_init, InitDecision, InitOptions};
@@ -97,6 +99,7 @@ pub use log::{log_filters, log_lines, log_report, matching_records, run_log};
 pub use need::{missing_path_report, need_error_report, need_report, read_need_path, run_need};
 pub use opkey::op_key;
 pub use overlap::{overlap_error_report, overlap_report, parse_overlap_args, run_overlap};
+pub use path::{first_on_path, mr_path_warning, same_build};
 pub use publish::{publish_report, run_publish};
 pub use report::{failure_report, prints_nothing, render_json, render_plain, ExitCode, OutValue, Report};
 pub use rereview::{parse_rereview_args, rereview_error_report, rereview_report, run_rereview};

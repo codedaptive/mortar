@@ -1,4 +1,4 @@
-//! run_overlap: `mortar overlap <zone>`, which open requests of the zone change the same paths, before anyone joins
+//! run_overlap: `mr overlap <zone>`, which open requests of the zone change the same paths, before anyone joins
 //! (SPEC-cli 05). Takes no lock and writes nothing (S-16).
 //! No sibling test (S-104): it runs git and reads the folders' records through read_named_zones and join's overlap;
 //! parse_overlap_args_tests, overlap_report_tests and overlap_error_report_tests cover its decisions.

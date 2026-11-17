@@ -12,14 +12,14 @@ fn shown(report: Report) -> Report {
 #[test]
 fn nothing_to_undo_says_so_with_the_next_given() {
     assert_eq!(
-        shown(nothing_to_undo_report("mortar save \"<one line saying what changed>\"")),
+        shown(nothing_to_undo_report("mr save \"<one line saying what changed>\"")),
         Report {
             verb: "undo".to_string(),
             exit: ExitCode::Done,
             outcome: "nothing-to-undo".to_string(),
             lines: vec!["nothing to undo: no save, rebase or resolve of this folder is in the op log".to_string()],
             owner: None,
-            next: "mortar save \"<one line saying what changed>\"".to_string(),
+            next: "mr save \"<one line saying what changed>\"".to_string(),
             fields: Vec::new(),
         }
     );
@@ -27,7 +27,7 @@ fn nothing_to_undo_says_so_with_the_next_given() {
 
 #[test]
 fn the_next_is_the_one_passed_in() {
-    for next in ["mortar join", "mortar status", "wait for the zone's coordinator"] {
+    for next in ["mr join", "mr status", "wait for the zone's coordinator"] {
         assert_eq!(nothing_to_undo_report(next).next, next);
     }
 }

@@ -16,7 +16,7 @@ fn refused(why: &str) -> Report {
         outcome: "refused".to_string(),
         lines: vec![why.to_string(), "nothing ran".to_string()],
         owner: None,
-        next: "mortar save \"<one line saying what changed>\"".to_string(),
+        next: "mr save \"<one line saying what changed>\"".to_string(),
         fields: Vec::new(),
     }
 }

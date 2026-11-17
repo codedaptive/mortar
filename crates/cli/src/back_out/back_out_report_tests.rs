@@ -41,7 +41,7 @@ fn backed_out_with_a_moved_folder_names_change_integration_and_folder() {
                 "moved the integration folder /work/int to 3333333333333333333333333333333333333333".to_string(),
             ],
             owner: None,
-            next: "fix the change in its zone, then mortar squash <zone> --actor <name>".to_string(),
+            next: "fix the change in its zone, then mr squash <zone> --actor <name>".to_string(),
             fields: vec![text("change_id", CHANGE), text("integration", MAIN), text("folder", "/work/int")],
         }
     );

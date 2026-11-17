@@ -7,7 +7,7 @@ fn rit_no_pause_is_exit_zero_with_real_pre_act_snapshot_and_inert_repeat() {
     let f = Fixture::new(); f.write("src/file", b"unsaved work without a pause\n");
     let old = f.head(); let start = f.records().len();
     let report = f.report(&["--json", "resolve"], "resolve", 0, "nothing-to-resolve");
-    assert_eq!(report.text("next"), "mortar join"); assert!(report.lines().contains("no join is paused"));
+    assert_eq!(report.text("next"), "mr join"); assert!(report.lines().contains("no join is paused"));
     assert_eq!(f.head(), old); assert_eq!(fs::read(f.request.join("src/file")).unwrap(), b"unsaved work without a pause\n");
     let snap = f.git.read_ref(SNAP).unwrap().unwrap();
     assert_eq!(f.blob(&snap, "src/file"), b"unsaved work without a pause\n");
@@ -34,7 +34,7 @@ fn rit_first_resolve_writes_exact_conflicted_bytes_after_snapshot_from_subdirect
     let report = check(f.command(&f.request.join("src"), &["--json", "resolve"]).output().unwrap(), "resolve", 2, "files-written");
     assert_eq!(report.text("commit"), r.bad.as_str()); assert_eq!(report.text("request_ref"), REQUEST);
     assert_eq!(report.strings("files"), &["src/file"]); assert!(report.strings("skipped").is_empty()); assert!(report.strings("gitlinks").is_empty());
-    assert_eq!(report.text("next"), "fix the files, then mortar resolve");
+    assert_eq!(report.text("next"), "fix the files, then mr resolve");
     assert_eq!(fs::read(f.request.join("src/file")).unwrap(), expected);
     let text = String::from_utf8(expected).unwrap();
     assert!(text.contains("<<<<<<<") && text.contains("zone work\n") && text.contains("topic work\n") && text.contains(">>>>>>>"));
@@ -60,7 +60,7 @@ fn rit_marker_repeat_is_exit_two_naming_literal_lines_without_rewriting_work_or_
     assert!(lines[0].starts_with("<<<<<<<")); assert_eq!(lines[2], "======="); assert!(lines[4].starts_with(">>>>>>>"));
     let report = f.report(&["--json", "resolve"], "resolve", 2, "still-marked");
     assert!(report.lines().contains("src/file (lines 1, 3, 5)"), "{}", report.lines());
-    assert_eq!(report.text("next"), "fix the files, then mortar resolve");
+    assert_eq!(report.text("next"), "fix the files, then mr resolve");
     assert_eq!(fs::read(f.request.join("src/file")).unwrap(), bytes); assert_eq!(r.state_bytes(), state);
     let snap = f.git.read_ref(SNAP).unwrap().unwrap(); assert_eq!(f.blob(&snap, "src/file"), bytes);
     assert!(crate::objects::rebase_records(f).is_empty()); r.assert_unmoved();

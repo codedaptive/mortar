@@ -1,4 +1,4 @@
-//! The report of a `mortar restore` that oplog::restore answered.
+//! The report of an `mr restore` that oplog::restore answered.
 
 use std::path::PathBuf;
 
@@ -9,8 +9,8 @@ use super::FolderOnRef;
 use crate::report::{is_zero_oid, ExitCode, OutValue, Report};
 
 /// Done is exit 0 "restored"; Repeated (the same key ran before) exit 0 "already-done"; both name next
-/// "mortar log --key <key>". Failed is exit 1 "not-moved": a ref was not where it was read and nothing moved; next
-/// "mortar log --ref <that ref>". Lines: each move of the record, "<ref> <old|absent> -> <new|deleted>" (or "every
+/// "mr log --key <key>". Failed is exit 1 "not-moved": a ref was not where it was read and nothing moved; next
+/// "mr log --ref <that ref>". Lines: each move of the record, "<ref> <old|absent> -> <new|deleted>" (or "every
 /// ref already holds its value as of op <op_id>" when there is none; for Failed, the ref that stood in the way
 /// instead); each folder `moved`; each folder already `in_place`; each folder `left_alone` because its ref has moved
 /// on since the record's op (a repeat never reapplies its move after a later mover, S-113(3)), "the folder <path>
@@ -47,8 +47,8 @@ pub fn restore_report(
         format!("the zone folder {path} stands on {}; its files stay where they were", folder.refname)
     }));
     let next = match outcome {
-        ApplyOutcome::Failed(_) => format!("mortar log --ref {}", stale_ref(record.result.as_ref(), &record.moves)),
-        _ => format!("mortar log --key {}", record.key),
+        ApplyOutcome::Failed(_) => format!("mr log --ref {}", stale_ref(record.result.as_ref(), &record.moves)),
+        _ => format!("mr log --key {}", record.key),
     };
     Report {
         verb: "restore".to_string(),

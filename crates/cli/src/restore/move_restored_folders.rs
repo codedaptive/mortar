@@ -1,4 +1,4 @@
-//! move_restored_folders: step 6 of `mortar restore`: each folder that needs it is moved with its restored ref
+//! move_restored_folders: step 6 of `mr restore`: each folder that needs it is moved with its restored ref
 //! (S-113(3)).
 //! No unit test: it moves real folders through folders::move_folder (S-5, S-104); restore_move_refusal_report_tests
 //! cover what a refused move reports. Nagatha's integration group is to cover, with the mortar binary as a child

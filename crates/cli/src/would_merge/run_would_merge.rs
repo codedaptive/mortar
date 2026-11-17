@@ -1,4 +1,4 @@
-//! run_would_merge: `mortar would-merge <commit or change ID>`, whether a squash would merge cleanly into the
+//! run_would_merge: `mr would-merge <commit or change ID>`, whether a squash would merge cleanly into the
 //! integration tip, under the land lock (SPEC-cli 06). No ref moves and no commit is written (git's trial merge
 //! writes tree objects nothing keeps); --key names the lock holder only, never passed to the op log.
 //! No sibling test (S-104): it takes a real lock and runs git and land; parse_would_merge_args_tests,
@@ -7,7 +7,7 @@
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): would-merge yes and no, by change ID
 //! and by commit; a change ID no squash ref carries, exit 1; two squash refs carrying one change ID, exit 1; a
 //! squash ref holding a commit read_squash refuses; the land lock held by a live pid, exit 3; without a config,
-//! exit 1, next mortar init.
+//! exit 1, next mr init.
 
 use std::path::Path;
 

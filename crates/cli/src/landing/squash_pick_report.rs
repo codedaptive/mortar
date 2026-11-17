@@ -19,14 +19,14 @@ pub fn squash_pick_report(verb: &str, change: &ChangeId, pick: &SquashPick) -> O
             verb,
             vec![format!("no squash at refs/mortar/squash/* carries change ID {change}")],
             OWNER,
-            "make the change's squash with mortar squash <zone> --actor <name>, then repeat the same command"
+            "make the change's squash with mr squash <zone> --actor <name>, then repeat the same command"
                 .to_string(),
         )),
         SquashPick::Several { refnames } => Some(landing_refusal(
             verb,
             vec![format!("change ID {change} is carried by more than one squash ref: {}", refnames.join(", "))],
             OWNER,
-            format!("name the squash by its commit instead: mortar {verb} <commit> --actor <name>"),
+            format!("name the squash by its commit instead: mr {verb} <commit> --actor <name>"),
         )),
     }
 }

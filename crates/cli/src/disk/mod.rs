@@ -1,4 +1,4 @@
-//! `mortar disk` (SPEC-cli 05): its report and its runner.
+//! `mr disk` (SPEC-cli 05): its report and its runner.
 
 mod disk_report;
 mod run_disk;

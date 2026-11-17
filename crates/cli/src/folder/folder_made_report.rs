@@ -1,4 +1,4 @@
-//! The report of a `mortar folder zone` or `mortar folder request` that made (or found already made) its folder.
+//! The report of an `mr folder zone` or `mr folder request` that made (or found already made) its folder.
 
 use std::path::Path;
 
@@ -8,7 +8,7 @@ use crate::report::{ExitCode, OutValue, Report};
 
 /// Exit 0, outcome "made". Lines: the folder's kind, zone and request and its path; its base (full commit id); its
 /// cone (the work order's paths, then the needed paths). Fields: path, kind ("zone", "request" or "attempt"), zone,
-/// request (null for a zone folder), base, paths. Next for `sub` "zone": make request folders with mortar folder
+/// request (null for a zone folder), base, paths. Next for `sub` "zone": make request folders with mr folder
 /// request in that zone; for any other sub: start the request's agent in `path`.
 pub fn folder_made_report(sub: &str, path: &Path, record: &FolderRecord) -> Report {
     let (zone, request) = (&record.zone, record.request.as_deref());
@@ -23,7 +23,7 @@ pub fn folder_made_report(sub: &str, path: &Path, record: &FolderRecord) -> Repo
     let cone: Vec<String> = record.work_order_paths.iter().chain(&record.needed_paths).cloned().collect();
     let next = if sub == "zone" {
         format!(
-            "make request folders with mortar folder request {zone} <request> <path> --paths <path>... --actor <name>"
+            "make request folders with mr folder request {zone} <request> <path> --paths <path>... --actor <name>"
         )
     } else {
         format!("start the request's agent in {}", path.display())

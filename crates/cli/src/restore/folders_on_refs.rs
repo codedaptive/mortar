@@ -1,4 +1,4 @@
-//! folders_on_refs: the Mortar folders a `mortar restore` would move, found by walking the repository's worktrees.
+//! folders_on_refs: the Mortar folders an `mr restore` would move, found by walking the repository's worktrees.
 //! No unit test: it runs git and reads folder records (S-5, S-104); restore_refusal_tests and restore_report_tests
 //! cover what is decided from what it finds, and the ZIT crates/cli/tests/run_restore_tests.rs restore's usage refusals,
 //! before any lock. Nagatha's integration group is to cover, with the mortar binary as a child process in a throwaway

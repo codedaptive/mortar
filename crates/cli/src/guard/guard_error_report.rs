@@ -1,4 +1,4 @@
-//! The report of a `mortar guard` that land's guard_install or guard_status stopped, in the cli's own words: land's
+//! The report of an `mr guard` that land's guard_install or guard_status stopped, in the cli's own words: land's
 //! and gitio's Display texts are never printed.
 //! The Git case is a RIT left for Nagatha (listed only, not written: S-101, S-119): it needs git itself to fail to name
 //! the hooks folder or common dir, and checks the cli's words are printed, not gitio's.
@@ -14,9 +14,9 @@ const IO_REPEAT: &str = "what was already written is the guard's own and harmles
 
 /// - ForeignHook { path }: exit 1 Refused, outcome "foreign-hook", lines "<path> is a hook Mortar did not write;
 ///   Mortar never overwrites one" and "nothing was written", owner "the repository's own hooks", next moving `path`
-///   aside, then `mortar guard install --actor <name>` (foreign_hook_report). Fields: none.
+///   aside, then `mr guard install --actor <name>` (foreign_hook_report). Fields: none.
 /// - BadConfig { path, why }: exit 1 Refused, outcome "refused", line "<path> is not a Mortar guard config: <why>",
-///   owner "the Mortar guard", next `mortar guard install --actor <name>` (install rewrites a guard.json whose bytes
+///   owner "the Mortar guard", next `mr guard install --actor <name>` (install rewrites a guard.json whose bytes
 ///   differ from the config's). Fields: none.
 /// - Io { path, error }: failure_report (exit 5, "failed", next "repeat the same command"), lines "reading or writing
 ///   <path> failed: <error>" and, in place of "nothing half-done is left", that what was written is harmless and a
@@ -35,7 +35,7 @@ pub fn guard_error_report(error: &GuardError) -> Report {
             outcome: "refused".to_string(),
             lines: vec![format!("{} is not a Mortar guard config: {why}", path.display())],
             owner: Some("the Mortar guard".to_string()),
-            next: "mortar guard install --actor <name>".to_string(),
+            next: "mr guard install --actor <name>".to_string(),
             fields: Vec::new(),
         },
         GuardError::Io { path, error } => {

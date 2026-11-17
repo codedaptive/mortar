@@ -1,4 +1,4 @@
-//! missing_config_report: refused "no-config", naming the file, with `mortar init` as next.
+//! missing_config_report: refused "no-config", naming the file, with `mr init` as next.
 
 use std::path::Path;
 
@@ -18,7 +18,7 @@ fn a_missing_config_is_refused_with_init_as_next() {
                 "nothing ran".to_string(),
             ],
             owner: Some("whoever sets up Mortar in this repository".to_string()),
-            next: "mortar init".to_string(),
+            next: "mr init".to_string(),
             fields: Vec::new(),
         }
     );

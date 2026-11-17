@@ -1,4 +1,4 @@
-//! Parses one JSON value: what the drive reads from `mortar ... --json` (the target links no Mortar crate and cli
+//! Parses one JSON value: what the drive reads from `mr ... --json` (the target links no Mortar crate and cli
 //! has no JSON library).
 
 use super::{json_error, parse_json_string, JsonValue};

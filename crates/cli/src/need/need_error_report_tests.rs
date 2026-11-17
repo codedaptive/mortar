@@ -26,7 +26,7 @@ fn a_plan_refusal_is_refused_with_the_plan_reason() {
     let error = FolderError::Plan(PlanError { reason: "sparse path \"../x\" has a bad component".to_string() });
     assert_eq!(
         need_error_report(&error),
-        refused("sparse path \"../x\" has a bad component", "mortar need <a path inside the repository>"),
+        refused("sparse path \"../x\" has a bad component", "mr need <a path inside the repository>"),
     );
 }
 
@@ -40,7 +40,7 @@ fn a_folder_without_a_record_is_refused_naming_the_folder_and_why() {
         need_error_report(&error),
         refused(
             "/work/red-one is not a Mortar folder: a worktree with no Mortar folder record",
-            "make the request folder again, then mortar need",
+            "make the request folder again, then mr need",
         ),
     );
 }

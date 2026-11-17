@@ -7,9 +7,9 @@ use crate::report::{ExitCode, Report};
 /// the same way.
 pub fn missing_branch_report(verb: &str, refname: &str, zone: bool) -> Report {
     let (owner, next) = if zone {
-        ("the zone's coordinator", format!("have the zone made, then mortar {verb}"))
+        ("the zone's coordinator", format!("have the zone made, then mr {verb}"))
     } else {
-        ("this request", format!("make the request folder again, then mortar {verb}"))
+        ("this request", format!("make the request folder again, then mr {verb}"))
     };
     Report {
         verb: verb.to_string(),

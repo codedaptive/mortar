@@ -1,4 +1,4 @@
-//! `mortar undo` (S-73, S-142, S-143): the folder's own refs, the choice of the op to undo and its folder step, the
+//! `mr undo` (S-73, S-142, S-143): the folder's own refs, the choice of the op to undo and its folder step, the
 //! oplog caller, the check against a later op, the reports and refusals, and the runner.
 
 mod already_undone_report;

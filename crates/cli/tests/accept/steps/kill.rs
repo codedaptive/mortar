@@ -1,5 +1,6 @@
-//! Step 3, nothing lost, nothing twice (03-kill.md). ACCEPT-3 writes its body here, killing mortar with
-//! World::killed and World::mortar_bin, and sets `body: Some(<its fn>)`; until then the report shows it NOT RUN.
+//! Step 3, nothing lost, nothing twice (03-kill.md). ACCEPT-3 writes its body here, killing `mr` with
+//! World::killed (it resolves by name on the world's PATH), and sets `body: Some(<its fn>)`; until then the report
+//! shows it NOT RUN.
 
 use super::{Gate, StepSpec};
 

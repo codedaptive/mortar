@@ -37,7 +37,7 @@ fn absent_zone_folder_still_lists_open_requests_using_their_actual_snapshot_tips
         assert!(report.strings("rebase").contains(&name.into()));
         assert!(report.strings("lines").contains(&format!("request {name} rebases at its next join")));
     }
-    assert_eq!(report.text("next"), "run mortar join in the folder of each request listed");
+    assert_eq!(report.text("next"), "run mr join in the folder of each request listed");
     assert_eq!(report.strings("folders_moved"), &[w.s.f.zone.display().to_string()]);
     assert_eq!(w.s.f.git.read_ref("refs/mortar/snap/b/unsaved").unwrap(), Some(snapshot.commit));
     assert_eq!((w.folder_state(&plain), w.folder_state(&unsaved)), request_states); w.assert_origin(&origin);

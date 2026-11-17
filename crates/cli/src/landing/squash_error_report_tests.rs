@@ -166,7 +166,7 @@ fn a_missing_trailer_is_refused_naming_the_commit_and_trailer() {
             "commit 1111111111111111111111111111111111111111 carries no Mortar-Change-Id trailer, so it is not a \
              squash Mortar wrote",
             "the commit 1111111111111111111111111111111111111111",
-            "name the commit at refs/mortar/squash/<zone>, or make the squash again: mortar squash <zone> --actor \
+            "name the commit at refs/mortar/squash/<zone>, or make the squash again: mr squash <zone> --actor \
              <name>",
         )
     );
@@ -185,7 +185,7 @@ fn a_malformed_trailer_is_refused_quoting_its_value() {
             "commit 2222222222222222222222222222222222222222's Mortar-Squash-Of trailer holds \"not an id\", which is \
              not a change ID or a commit id",
             "the commit 2222222222222222222222222222222222222222",
-            "make the squash again: mortar squash <zone> --actor <name>",
+            "make the squash again: mr squash <zone> --actor <name>",
         )
     );
 }
@@ -199,7 +199,7 @@ fn malformed_request_lines_are_refused_naming_the_commit() {
             "commit 1111111111111111111111111111111111111111's request lines do not match the request count in its \
              subject, so it is not a squash Mortar wrote",
             "the commit 1111111111111111111111111111111111111111",
-            "make the squash again: mortar squash <zone> --actor <name>",
+            "make the squash again: mr squash <zone> --actor <name>",
         )
     );
 }

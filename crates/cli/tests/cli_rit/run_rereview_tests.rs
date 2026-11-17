@@ -22,7 +22,7 @@ use land::{LandRefs, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName};
 use testkit::TestRepo;
 
-const USAGE: &str = "mortar rereview <reviewed commit> <new commit> --actor <name> [--key <operation key>] [--json]";
+const USAGE: &str = "mr rereview <reviewed commit> <new commit> --actor <name> [--key <operation key>] [--json]";
 const X: &str = "x1\nx2\nx3\nx4\nx5\nx6\nx7\nx8\n";
 const X_EDIT_LINE: &str = "zone edit of x1";
 const X_ZONE: &str = "zone edit of x1\nx2\nx3\nx4\nx5\nx6\nx7\nx8\n";

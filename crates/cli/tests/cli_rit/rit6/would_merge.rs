@@ -18,7 +18,7 @@ fn yes_and_no_by_full_commit_and_change_id_leave_refs_log_folder_and_commit_inve
             assert_eq!(r.text("change_id"), s.squash.change_id.as_str());
             assert_eq!(r.text("commit"), s.squash.commit.as_str());
             if conflict { assert_eq!(r.strings("files"), &["src/file"]); }
-            else { assert_eq!(r.text("next"), format!("mortar land {} --actor <name>", s.squash.commit)); }
+            else { assert_eq!(r.text("next"), format!("mr land {} --actor <name>", s.squash.commit)); }
             assert!(r.lines().contains("no ref moved and no commit was written"));
             assert_eq!(s.observe(), before); assert_eq!(self::commits(&s), commits);
         }
@@ -31,12 +31,12 @@ fn missing_and_duplicate_change_ids_are_refused_without_movement_and_name_the_am
     let before = s.observe();
     let r = s.run("would-merge", Some("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"), 1, "refused");
     assert!(r.lines().contains("no squash at refs/mortar/squash/* carries change ID"));
-    assert!(r.text("next").contains("mortar squash <zone>")); assert_eq!(s.observe(), before);
+    assert!(r.text("next").contains("mr squash <zone>")); assert_eq!(s.observe(), before);
     raw(&s.f.git, &["update-ref", "refs/mortar/squash/duplicate", s.squash.commit.as_str()]);
     let before = s.observe();
     let r = s.run("would-merge", Some(s.squash.change_id.as_str()), 1, "refused");
     assert!(r.lines().contains("refs/mortar/squash/core, refs/mortar/squash/duplicate"));
-    assert!(r.text("next").contains("mortar would-merge <commit>")); assert_eq!(s.observe(), before);
+    assert!(r.text("next").contains("mr would-merge <commit>")); assert_eq!(s.observe(), before);
     s.run("would-merge", Some(s.squash.commit.as_str()), 0, "merges");
     assert_eq!(s.observe(), before);
 }

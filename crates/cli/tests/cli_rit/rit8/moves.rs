@@ -44,7 +44,7 @@ fn a_conflicted_zone_keeps_its_branch_but_its_lagging_folder_is_brought_to_that_
     assert_eq!(w.tip("b"), b_tip); assert_eq!(r.strings("folders_moved").len(), 2);
     assert!(r.strings("lines").contains(&format!("zone b left in place at {b_tip}: replaying {b_tip} onto origin conflicts in:")));
     assert!(r.strings("lines").contains(&"src/file".into()));
-    assert_eq!(r.text("next"), "zone b conflicts with origin: its coordinator resolves the conflict; then repeat the same command: mortar after-publish core --move b --actor <name>");
+    assert_eq!(r.text("next"), "zone b conflicts with origin: its coordinator resolves the conflict; then repeat the same command: mr after-publish core --move b --actor <name>");
     w.folder_at(&w.b, &b_tip, &[("src/file", b"b's conflicting bytes\n")]);
     w.folder_at(&w.s.f.zone, &origin, &[("src/file", b"published\n")]); w.assert_origin(&origin);
     assert!(raw(&w.git(&w.b), &["ls-files", "-u"]).is_empty());

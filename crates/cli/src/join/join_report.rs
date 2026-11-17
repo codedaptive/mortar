@@ -1,4 +1,4 @@
-//! The report of a `mortar join` that ran to an answer (S-72, S-86).
+//! The report of an `mr join` that ran to an answer (S-72, S-86).
 
 use super::{answer_part, save_part, JoinOutcome};
 use crate::report::{failure_report, OutValue, Report};

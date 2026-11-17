@@ -1,4 +1,4 @@
-//! progress_branch: the branch whose progress `mortar status` reads for a folder: the request branch, or attempt
+//! progress_branch: the branch whose progress `mr status` reads for a folder: the request branch, or attempt
 //! k's own try branch.
 
 use folders::plan::{attempt_branch, request_branch, PlanError};

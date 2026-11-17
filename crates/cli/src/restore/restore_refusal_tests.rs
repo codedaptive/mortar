@@ -10,7 +10,7 @@ use oplog::RefMove;
 use super::{restore_refusal, FolderOnRef};
 use crate::report::{ExitCode, Report};
 
-const SAVE_NEXT: &str = "have the folder's agent run mortar save, then repeat";
+const SAVE_NEXT: &str = "have the folder's agent run mr save, then repeat";
 const DELETE_NEXT: &str =
     "restore without the refs those folders stand on, or have the harness remove those folders first, then repeat";
 

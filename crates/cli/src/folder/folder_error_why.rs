@@ -1,6 +1,6 @@
-//! Why a `mortar folder` was refused, as facts read from the error's fields. folders' own Display text is never
+//! Why an `mr folder` was refused, as facts read from the error's fields. folders' own Display text is never
 //! used: it carries next steps that are not cli commands (S-112), and BelowFloor's would print what a sweep frees,
-//! which mortar folder does not measure.
+//! which mr folder does not measure.
 
 use std::path::PathBuf;
 

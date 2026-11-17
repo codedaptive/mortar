@@ -1,4 +1,4 @@
-//! The words of `mortar rereview` after its globals, read into the reviewed squash and the new one.
+//! The words of `mr rereview` after its globals, read into the reviewed squash and the new one.
 
 use gitio::Oid;
 

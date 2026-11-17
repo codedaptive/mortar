@@ -1,4 +1,4 @@
-//! The report of a `mortar backup` or `mortar restore-backup` that land refused, in the cli's own words: land's,
+//! The report of an `mr backup` or `mr restore-backup` that land refused, in the cli's own words: land's,
 //! gitio's and oplog's Display texts are never printed; only a host, a refname, the remote, an op id or key, and
 //! git's summary of a push refusal it did not classify, are.
 
@@ -26,7 +26,7 @@ pub fn backup_error_report(verb: &str, error: &BackupError, remote: &str) -> Rep
             let (owner, next) = if verb == RESTORE {
                 (
                     "the host named",
-                    "name the host as its backup is named on the remote (refs/mortar-backup/<host>/): mortar \
+                    "name the host as its backup is named on the remote (refs/mortar-backup/<host>/): mr \
                      restore-backup <host> --actor <name>",
                 )
             } else {

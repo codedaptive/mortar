@@ -1,4 +1,4 @@
-//! The words of `mortar init` after its globals, read into the config it is to write.
+//! The words of `mr init` after its globals, read into the config it is to write.
 
 use std::collections::BTreeMap;
 

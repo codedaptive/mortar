@@ -1,4 +1,4 @@
-//! The whole environment of every git and mortar child the drive runs.
+//! The whole environment of every git, `mr` and `mortar` child the drive runs.
 
 use std::ffi::{OsStr, OsString};
 use std::path::Path;

@@ -10,7 +10,7 @@ use crate::report::{ExitCode, OutValue, Report};
 
 const REVIEWED: &str = "1111111111111111111111111111111111111111";
 const NEW: &str = "2222222222222222222222222222222222222222";
-const NEXT: &str = "name two squash commits of one change: mortar rereview <reviewed commit> <new commit> --actor <name>";
+const NEXT: &str = "name two squash commits of one change: mr rereview <reviewed commit> <new commit> --actor <name>";
 
 fn oid(text: &str) -> Oid {
     Oid::parse(text).unwrap()

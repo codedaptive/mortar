@@ -1,4 +1,4 @@
-//! `mortar init`: writes the repository's Mortar config (S-70).
+//! `mr init`: writes the repository's Mortar config (S-70).
 //! No unit test: it runs git and reads and writes a real file (S-5); parse_init_args_tests, decide_init_tests,
 //! init_report_tests and repository_report_tests cover its parts. Nagatha's integration group is to cover, with
 //! the mortar binary as a child process in a throwaway repository: init writes <common>/mortar/config.json,

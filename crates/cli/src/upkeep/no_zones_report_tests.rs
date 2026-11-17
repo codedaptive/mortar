@@ -16,7 +16,7 @@ fn expected(verb: &str) -> Report {
                 .to_string(),
         ],
         owner: Some("the repository's mortar config".to_string()),
-        next: "mortar init --replace with every value the config holds and at least one --zone <zone>=<path> --actor \
+        next: "mr init --replace with every value the config holds and at least one --zone <zone>=<path> --actor \
                <name>, then repeat the same command"
             .to_string(),
         fields: Vec::new(),

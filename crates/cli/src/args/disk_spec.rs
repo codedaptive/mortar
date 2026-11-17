@@ -1,4 +1,4 @@
-//! The verb table's entry for `mortar disk`.
+//! The verb table's entry for `mr disk`.
 //! A bare const (S-7); verbs_tests covers it.
 
 use super::{LockNeed, VerbKind, VerbSpec};
@@ -8,5 +8,5 @@ pub const DISK_SPEC: VerbSpec = VerbSpec {
     kind: VerbKind::Harness,
     lock: LockNeed::NoLock,
     needs_config: true,
-    usage: "mortar disk --actor <name> [--json]",
+    usage: "mr disk --actor <name> [--json]",
 };

@@ -68,7 +68,7 @@ fn plan() {
 fn record() {
     refused(
         FolderError::Record { path: path("/w/a"), error: RecordError { reason: "no kind".to_string() } },
-        "make the folder again at another path with mortar folder zone <zone> <path> --actor <name> or mortar folder \
+        "make the folder again at another path with mr folder zone <zone> <path> --actor <name> or mr folder \
          request <zone> <request> <path> --paths <path>... --actor <name>",
     );
 }
@@ -124,7 +124,7 @@ fn branch_exists() {
 fn zone_branch_missing() {
     refused(
         FolderError::ZoneBranchMissing { branch: "zone/core".to_string() },
-        "mortar folder zone <zone> <path> --start <commit> --actor <name>, then repeat",
+        "mr folder zone <zone> <path> --start <commit> --actor <name>, then repeat",
     );
 }
 
@@ -132,7 +132,7 @@ fn zone_branch_missing() {
 fn request_branch_missing() {
     refused(
         FolderError::RequestBranchMissing { branch: "req/core/fix-1".to_string() },
-        "mortar folder request <zone> <request> <path> --paths <path>... --actor <name>, then repeat",
+        "mr folder request <zone> <request> <path> --paths <path>... --actor <name>, then repeat",
     );
 }
 
@@ -140,7 +140,7 @@ fn request_branch_missing() {
 fn attempt_missing() {
     refused(
         FolderError::AttemptMissing { branch: "try/core/fix-1/3".to_string() },
-        "mortar folder keep <k> --actor <name> with an attempt that exists, or mortar folder drop --actor <name>",
+        "mr folder keep <k> --actor <name> with an attempt that exists, or mr folder drop --actor <name>",
     );
 }
 
@@ -156,7 +156,7 @@ fn attempts_unsaved() {
 fn attempts_remain() {
     refused(
         FolderError::AttemptsRemain { path: path("/w/fix"), attempts: vec!["refs/heads/try/core/fix-1/1".to_string()] },
-        "mortar folder keep <k> --actor <name> or mortar folder drop --actor <name>, run in the request's folder",
+        "mr folder keep <k> --actor <name> or mr folder drop --actor <name>, run in the request's folder",
     );
 }
 
@@ -185,7 +185,7 @@ fn request_moved_on() {
 fn attempt_folder() {
     refused(
         FolderError::AttemptFolder { path: path("/w/tries/try-2"), k: 2 },
-        "after keep or drop, run mortar folder remove <path> --actor <name> with the request's own folder as <path>",
+        "after keep or drop, run mr folder remove <path> --actor <name> with the request's own folder as <path>",
     );
 }
 
@@ -206,7 +206,7 @@ fn move_refused() {
 fn branch_elsewhere() {
     refused(
         FolderError::BranchElsewhere { branch: "req/core/fix-1".to_string(), at: None, old: oid('a'), new: oid('b') },
-        "read who moved the branch with mortar log --ref <full ref name>, then repeat",
+        "read who moved the branch with mr log --ref <full ref name>, then repeat",
     );
 }
 
@@ -234,7 +234,7 @@ fn not_joined() {
 fn zone_folder() {
     refused(
         FolderError::ZoneFolder { path: path("/w/z"), zone: "core".to_string() },
-        "leave the zone folder in place; mortar folder remove <path> --actor <name> takes request folders only",
+        "leave the zone folder in place; mr folder remove <path> --actor <name> takes request folders only",
     );
 }
 

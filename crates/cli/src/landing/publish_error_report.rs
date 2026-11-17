@@ -1,4 +1,4 @@
-//! The report of a `mortar publish` that land's publish refused, in the cli's own words: land's, gitio's and
+//! The report of an `mr publish` that land's publish refused, in the cli's own words: land's, gitio's and
 //! oplog's Display texts are never printed; only an error's refnames, remotes and op ids, and git's summary of a
 //! push refusal it did not classify, are.
 
@@ -10,7 +10,7 @@ use super::{land_error_report, landing_refusal, landing_state_error_report, squa
 use crate::report::{failure_report, Report};
 
 const VERB: &str = "publish";
-const PUBLISH: &str = "mortar publish --actor <name>";
+const PUBLISH: &str = "mr publish --actor <name>";
 
 /// - Squash, Land, State: squash_error_report, land_error_report (with `refs`' integration branch) and
 ///   landing_state_error_report, as "publish".

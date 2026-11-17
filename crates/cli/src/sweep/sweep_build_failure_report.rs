@@ -1,4 +1,4 @@
-//! The report of a `mortar sweep` whose refs were deleted and whose build dir sweep then failed. It never says
+//! The report of an `mr sweep` whose refs were deleted and whose build dir sweep then failed. It never says
 //! nothing half-done is left: the refs are gone, so a repeat sweeps only the build dirs.
 
 use folders::FolderError;

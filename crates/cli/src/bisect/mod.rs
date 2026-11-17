@@ -1,4 +1,4 @@
-//! `mortar bisect` (SPEC-cli 06): its words, its report and land's refusals in the cli's own words, and its runner.
+//! `mr bisect` (SPEC-cli 06): its words, its report and land's refusals in the cli's own words, and its runner.
 
 mod bisect_args;
 mod bisect_error_report;

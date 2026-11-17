@@ -15,7 +15,7 @@ fn staged_work_at_a_path_the_published_tip_changes_is_kept_then_clear_and_repeat
     assert_eq!(r.strings("folders_moved"), &[w.b.display().to_string()]);
     assert_eq!(r.text("owner"), "the zone folders listed");
     assert!(r.strings("lines").contains(&format!("the zone folder {} was not brought to {origin}: its index matches no commit zone core has held", w.s.f.zone.display())));
-    assert_eq!(r.text("next"), "take the staged changes out of each zone folder whose index matches no zone commit, without resetting its index to HEAD alone; then repeat the same command: mortar after-publish core --move b --actor <name>");
+    assert_eq!(r.text("next"), "take the staged changes out of each zone folder whose index matches no zone commit, without resetting its index to HEAD alone; then repeat the same command: mr after-publish core --move b --actor <name>");
     assert_eq!(w.folder_state(&w.s.f.zone), folder);
     assert_eq!(raw(&w.git(&w.s.f.zone), &["show", ":src/file"]), b"owner's staged bytes\n");
     w.folder_at(&w.b, &origin, &[("src/file", b"published\n")]); w.assert_origin(&origin);
@@ -53,7 +53,7 @@ fn unstaged_untracked_and_unmerged_refusals_preserve_every_byte_leave_other_zone
         assert!(r.strings("lines").contains(&path.to_string())); assert!(r.strings("lines").contains(&"nothing in it changed".into()));
         let next = if kind == "unmerged" { "finish or undo the merge in each zone folder whose index has unmerged entries, leaving no unmerged entry" }
             else { "move each path listed as in the way out of its zone folder, or put it back to that folder's index copy, and leave the index as it is" };
-        assert_eq!(r.text("next"), format!("{next}; then repeat the same command: mortar after-publish core --move b --actor <name>"));
+        assert_eq!(r.text("next"), format!("{next}; then repeat the same command: mr after-publish core --move b --actor <name>"));
         assert_eq!(w.folder_state(folder), before_folder); w.folder_at(&w.b, &origin, &[("src/file", b"published\n")]);
         let held = w.s.f.root.join(format!("kept-{kind}")); fs::rename(folder.join(path), &held).unwrap();
         if kind == "unmerged" { raw(&git, &["read-tree", w.s.f.base.as_str()]); }

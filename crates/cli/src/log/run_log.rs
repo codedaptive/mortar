@@ -1,4 +1,4 @@
-//! run_log: `mortar log [--ref <r>] [--actor <a>] [--key <k>]`, the read-only verb that lists the op log's records
+//! run_log: `mr log [--ref <r>] [--actor <a>] [--key <k>]`, the read-only verb that lists the op log's records
 //! (S-114).
 //! No unit test: it runs git for the common dir and reads the op log file (S-5, S-104); log_filters_tests,
 //! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, and the ZIT

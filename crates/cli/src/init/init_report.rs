@@ -1,4 +1,4 @@
-//! The report of `mortar init`.
+//! The report of `mr init`.
 
 use std::path::Path;
 
@@ -6,7 +6,7 @@ use super::InitDecision;
 use crate::report::{ExitCode, OutValue, Report};
 
 /// The step after init: making a zone's folder.
-const NEXT_DONE: &str = "mortar folder zone <zone> <path>";
+const NEXT_DONE: &str = "mr folder zone <zone> <path>";
 
 /// Write and Replace: done, "written" or "replaced", naming the path and for Replace the keys changed.
 /// AlreadyDone: done, "already-done", nothing changed. Refused: exit 1, naming the keys that differ, owned by the
@@ -37,7 +37,7 @@ pub fn init_report(decision: &InitDecision, path: &Path) -> Report {
                 "nothing changed".to_string(),
             ],
             Some(format!("the existing config at {shown}")),
-            "mortar init with the same values, or add --replace",
+            "mr init with the same values, or add --replace",
         ),
     };
     Report {

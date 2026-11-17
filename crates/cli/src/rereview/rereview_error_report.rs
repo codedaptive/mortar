@@ -1,4 +1,4 @@
-//! The report of a `mortar rereview` that land's rereview stopped, in the cli's own words: land's, gitio's and
+//! The report of an `mr rereview` that land's rereview stopped, in the cli's own words: land's, gitio's and
 //! oplog's Display texts are never printed; commit ids and change ids are.
 //! The Git and Trailers cases are RITs left for Nagatha (listed only, not written: S-101, S-119): git itself must
 //! fail to read a commit or produce the range-diff, or a commit's Mortar trailers must be unreadable, and the RIT
@@ -10,7 +10,7 @@ use oplog::ChangeId;
 use crate::report::{failure_report, ExitCode, OutValue, Report};
 
 const VERB: &str = "rereview";
-const NEXT: &str = "name two squash commits of one change: mortar rereview <reviewed commit> <new commit> --actor <name>";
+const NEXT: &str = "name two squash commits of one change: mr rereview <reviewed commit> <new commit> --actor <name>";
 
 /// - Git: failure_report, "git could not read a commit or produce the range-diff".
 /// - Trailers: failure_report, "a commit's Mortar trailers could not be read".

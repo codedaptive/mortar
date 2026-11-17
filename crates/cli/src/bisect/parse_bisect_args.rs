@@ -1,4 +1,4 @@
-//! `mortar bisect`'s words: two commits and --timeout before `--`, the test command after it.
+//! `mr bisect`'s words: two commits and --timeout before `--`, the test command after it.
 
 use std::ffi::OsString;
 use std::path::PathBuf;

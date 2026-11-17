@@ -1,4 +1,4 @@
-//! run_folder_request: `mortar folder request <zone> <request> <path> --paths <path>...`, a request's folder made from
+//! run_folder_request: `mr folder request <zone> <request> <path> --paths <path>...`, a request's folder made from
 //! its zone's branch, holding only its paths and the root files (ACCEPT-1 step 1).
 //! No sibling test (S-104): it takes a real lock and runs git, the op log and folders; request_folder_paths_tests,
 //! folder_setup_for_tests and folder_made_report_tests cover its decisions. The RIT

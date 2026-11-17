@@ -1,4 +1,4 @@
-//! The report of a `mortar resolve` that ran to an answer (S-50, S-64, S-87).
+//! The report of an `mr resolve` that ran to an answer (S-50, S-64, S-87).
 //! crates/cli/tests/resolve_report_tests.rs covers it (a ZIT: it calls join's answer_part and finished_move_part and
 //! report::failure_report for real).
 
@@ -16,7 +16,7 @@ const VERB: &str = "resolve";
 /// Lines: finished_move_part's, then the answer's. Fields: finished_move_part's, request_ref, then the answer's.
 /// FilesWritten (the first run) is exit 2 "files-written": the commit whose conflict was written, each file written,
 /// each path skipped for having no version in the conflicted tree (S-50) and each submodule path with its own step
-/// (S-64); next "fix the files, then mortar resolve". Rebased and Conflicted report as join does (answer_part), and
+/// (S-64); next "fix the files, then mr resolve". Rebased and Conflicted report as join does (answer_part), and
 /// Rebased adds the snapshot's ref and commit. Joined and FastForwarded, which resolve never gives, are
 /// failure_report.
 pub fn resolve_report(outcome: &ResolveOutcome) -> Report {
@@ -57,7 +57,7 @@ fn files_written(commit: &Oid, files: &[PathBuf], skipped: &[PathBuf], gitlinks:
     lines.extend(
         texts(gitlinks)
             .into_iter()
-            .map(|path| format!("submodule {path}: set its commit in the folder, then mortar resolve")),
+            .map(|path| format!("submodule {path}: set its commit in the folder, then mr resolve")),
     );
     AnswerPart {
         lines,
@@ -69,6 +69,6 @@ fn files_written(commit: &Oid, files: &[PathBuf], skipped: &[PathBuf], gitlinks:
         ],
         exit: ExitCode::Conflict,
         outcome: "files-written",
-        next: "fix the files, then mortar resolve",
+        next: "fix the files, then mr resolve",
     }
 }

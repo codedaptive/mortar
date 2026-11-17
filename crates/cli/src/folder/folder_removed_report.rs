@@ -1,4 +1,4 @@
-//! The report of a `mortar folder remove` that removed a request folder.
+//! The report of an `mr folder remove` that removed a request folder.
 
 use std::path::Path;
 

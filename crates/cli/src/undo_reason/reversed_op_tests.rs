@@ -42,7 +42,7 @@ fn a_reason_not_in_that_form_gives_none() {
         "undo of  op op-7",
         "redo of save op op-7",
         "Undo of save op op-7",
-        "mortar restore op-1",
+        "mr restore op-1",
     ] {
         assert_eq!(reversed_op(reason), None, "{reason:?}");
     }

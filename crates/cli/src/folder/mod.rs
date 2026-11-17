@@ -1,4 +1,4 @@
-//! `mortar folder` (SPEC-cli 05): its words, the paths a folder is cut on, the decisions its sub-verbs make from
+//! `mr folder` (SPEC-cli 05): its words, the paths a folder is cut on, the decisions its sub-verbs make from
 //! data, its refusals and its reports, and the runners of its sub-verbs.
 
 mod attempt_saved;

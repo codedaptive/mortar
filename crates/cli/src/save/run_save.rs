@@ -1,11 +1,11 @@
-//! run_save: `mortar save "<sentence>"`, the agent verb that commits its folder's files on the folder's branch
+//! run_save: `mr save "<sentence>"`, the agent verb that commits its folder's files on the folder's branch
 //! (the request's branch, or attempt k's try branch).
 //! No unit test: it takes the lock, runs git, the formatter and the op log (S-79); save_sentence, save_run_for,
 //! snapshot_target_for, save_report, save_error_report, find_pending_move, snapshot_settings_for and op_key are its
 //! decisions and have their tests.
 //! Nagatha's integration group is to cover, with the mortar binary as a child process in a request folder made by
 //! the landing verbs in a throwaway repository:
-//! - a first save writes a commit with the sentence as subject and prints next mortar join, exit 0, outcome saved;
+//! - a first save writes a commit with the sentence as subject and prints next mr join, exit 0, outcome saved;
 //! - a save in attempt folder k moves refs/mortar/trysnap/<zone>/<request>/<k>, not the request's snapshot ref;
 //! - a repeat with nothing changed is exit 0, outcome unchanged, and writes no commit and moves no branch;
 //! - a blank or two-line sentence is exit 1 and nothing runs (no lock file, no snapshot ref move);
@@ -14,12 +14,12 @@
 //! - a formatter past its timeout is listed and the save goes ahead;
 //! - a held join-<zone> lock is exit 3 naming the holder;
 //! - run in a zone folder it is refused, exit 1;
-//! - without a config it is refused, exit 1, next mortar init;
+//! - without a config it is refused, exit 1, next mr init;
 //! - --json gives one object with finished_move_from, finished_move_to, commit, change_id, written, refused and cap;
-//! - a kill after a join's rebase op and before its folder move, then mortar save: the save finishes the move (the
+//! - a kill after a join's rebase op and before its folder move, then mr save: the save finishes the move (the
 //!   folder at the rebased tip, its work kept in the request's snapshot ref), then saves, naming the finished move;
 //! - an undo of a join rebase whose folder move was refused (an edit in the way) leaves the move pending; once the
-//!   edit is moved aside, mortar save finishes it (the folder back at the tip before the rebase), then saves;
+//!   edit is moved aside, mr save finishes it (the folder back at the tip before the rebase), then saves;
 //! - a pending move refused again (the edit still in the way) is exit 1 listing the paths, and nothing is saved.
 
 use oplog::KillPidProbe;

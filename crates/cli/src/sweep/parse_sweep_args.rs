@@ -1,4 +1,4 @@
-//! `mortar sweep`'s words: --idle-days <n> at most once, --ref <full ref name> any number of times.
+//! `mr sweep`'s words: --idle-days <n> at most once, --ref <full ref name> any number of times.
 
 use super::SweepArgs;
 

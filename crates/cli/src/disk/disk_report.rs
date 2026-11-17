@@ -1,4 +1,4 @@
-//! The report of `mortar disk`: each folder's bytes, the store once, the refs by namespace and what a plain sweep
+//! The report of `mr disk`: each folder's bytes, the store once, the refs by namespace and what a plain sweep
 //! frees, in the cli's words. folders' SweepEstimate reason is never printed: it is folders' text, not the cli's.
 
 use folders::DiskReport;
@@ -8,7 +8,7 @@ use crate::report::{ExitCode, OutValue, Report};
 
 /// Exit 0, outcome "measured". One line per folder (its path, kind, zone and request, files and build bytes), then
 /// "object store: <n> bytes, counted once", one line of ref counts by namespace, and the sweep figure as what a
-/// mortar sweep with no --idle-days frees. The next is a sweep of idle build dirs when any folder has build bytes,
+/// mr sweep with no --idle-days frees. The next is a sweep of idle build dirs when any folder has build bytes,
 /// else "nothing to do". Fields: folders (paths), store_bytes, refs ("<namespace> <count>"), sweep_bytes.
 pub fn disk_report(report: &DiskReport) -> Report {
     let mut lines: Vec<String> = report
@@ -27,9 +27,9 @@ pub fn disk_report(report: &DiskReport) -> Report {
     let refs: Vec<String> = report.refs.iter().map(|(namespace, count)| format!("{namespace} {count}")).collect();
     lines.push(format!("object store: {} bytes, counted once", report.store_bytes));
     lines.push(format!("refs by namespace: {}", refs.join(", ")));
-    lines.push(format!("a mortar sweep with no --idle-days frees up to {} bytes", report.sweep.bytes));
+    lines.push(format!("an mr sweep with no --idle-days frees up to {} bytes", report.sweep.bytes));
     let next = if report.folders.iter().any(|folder| folder.build_bytes > 0) {
-        "mortar sweep --idle-days <n> --actor <name>"
+        "mr sweep --idle-days <n> --actor <name>"
     } else {
         "nothing to do"
     };

@@ -1,4 +1,4 @@
-//! The filters of `mortar log`: --ref from the verb's words, --actor and --key from the global flags (S-114).
+//! The filters of `mr log`: --ref from the verb's words, --actor and --key from the global flags (S-114).
 
 use oplog::HistoryFilter;
 

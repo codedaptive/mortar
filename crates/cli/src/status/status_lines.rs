@@ -1,4 +1,4 @@
-//! status_lines: the plain lines of `mortar status`, in the spec's order.
+//! status_lines: the plain lines of `mr status`, in the spec's order.
 
 use std::path::PathBuf;
 

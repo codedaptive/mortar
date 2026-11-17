@@ -7,8 +7,8 @@ use super::AnswerPart;
 use crate::report::{ExitCode, OutValue};
 
 /// Joined and FastForwarded are exit 0 "joined", next "wait for the zone's tests"; Rebased is exit 0 "rebased", next
-/// "mortar join", since the unit tests must run again first (S-86); Conflicted is exit 2 "conflicted", each file
-/// indented, next "mortar resolve". FilesWritten, which only resolve gives, is None.
+/// "mr join", since the unit tests must run again first (S-86); Conflicted is exit 2 "conflicted", each file
+/// indented, next "mr resolve". FilesWritten, which only resolve gives, is None.
 pub fn answer_part(answer: &JoinAnswer, request_ref: &str) -> Option<AnswerPart> {
     const JOINED_NEXT: &str = "wait for the zone's tests";
     Some(match answer {
@@ -36,7 +36,7 @@ pub fn answer_part(answer: &JoinAnswer, request_ref: &str) -> Option<AnswerPart>
             fields: vec![text("from", from), text("to", to)],
             exit: ExitCode::Done,
             outcome: "rebased",
-            next: "mortar join",
+            next: "mr join",
         },
         JoinAnswer::Conflicted { commit, files, state } => {
             let paths: Vec<String> = files.iter().map(|file| file.display().to_string()).collect();
@@ -53,7 +53,7 @@ pub fn answer_part(answer: &JoinAnswer, request_ref: &str) -> Option<AnswerPart>
                 ],
                 exit: ExitCode::Conflict,
                 outcome: "conflicted",
-                next: "mortar resolve",
+                next: "mr resolve",
             }
         }
         JoinAnswer::FilesWritten { .. } => return None,

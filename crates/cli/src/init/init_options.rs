@@ -1,4 +1,4 @@
-//! What `mortar init` was asked to do.
+//! What `mr init` was asked to do.
 //! A bare type (S-7); parse_init_args_tests exercises it.
 
 use crate::config::Config;

@@ -1,4 +1,4 @@
-//! The report of a `mortar folder drop` that dropped every attempt, or found none left.
+//! The report of an `mr folder drop` that dropped every attempt, or found none left.
 
 use std::path::PathBuf;
 

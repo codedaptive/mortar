@@ -151,7 +151,8 @@ fn member(output: &Output, key: &str) -> String {
 /// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
-    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status"] {
+    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",
+                       "mr save", "mr join", "mr need", "mr resolve", "mr status"] {
         assert!(!next.contains(agent_verb), "next names an agent verb: {next}");
     }
     assert!(!next.contains("agent run"), "next is aimed at an agent: {next}");

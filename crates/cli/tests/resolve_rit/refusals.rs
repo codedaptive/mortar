@@ -22,7 +22,7 @@ fn rit_resolve_argument_is_exit_four_with_full_usage_and_no_lock_or_work() {
     let r = Paused::new(false); let f = &r.f; let before = f.observe(); let state = r.state_bytes();
     let report = f.report(&["--json", "resolve", "unexpected"], "resolve", 4, "usage");
     assert!(report.lines().contains("resolve takes no arguments"));
-    assert_eq!(report.text("next"), "mortar resolve [--key <operation key>] [--json]");
+    assert_eq!(report.text("next"), "mr resolve [--key <operation key>] [--json]");
     assert_eq!(f.observe(), before); assert_eq!(r.state_bytes(), state); r.assert_unmoved();
 }
 
@@ -45,9 +45,9 @@ fn rit_real_attempt_folders_refuse_join_and_resolve_before_held_lock_recovery_or
         for verb in ["join", "resolve"] {
             let report = check(f.command(&path.join("src"), &["--json", verb]).output().unwrap(), verb, 1, "refused");
             assert_eq!(report.text("owner"), "this request");
-            assert!(report.lines().contains(&format!("this is attempt folder {k} of request task: mortar {verb} runs in the request's own folder")));
+            assert!(report.lines().contains(&format!("this is attempt folder {k} of request task: mr {verb} runs in the request's own folder")));
             assert!(report.lines().contains("nothing ran"));
-            assert_eq!(report.text("next"), "keep or drop the attempts, then mortar join in the request's folder");
+            assert_eq!(report.text("next"), "keep or drop the attempts, then mr join in the request's folder");
             assert_eq!(f.observe(), before); assert_eq!(raw(&local, &["ls-files", "--stage", "-z"]), index);
             assert_eq!(fs::read(path.join("src/file")).unwrap(), b"unsaved attempt work\n");
             assert_eq!(fs::read(&state).unwrap(), b"not a paused join\n"); assert_eq!(fs::read(dir.join("mortar-folder.json")).unwrap(), record);
@@ -70,7 +70,7 @@ fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_loca
     assert!(report.lines().contains("  sub/keep"));
     let snap = f.git.read_ref(SNAP).unwrap().unwrap();
     assert!(report.lines().contains(&format!("they are kept in {SNAP} at {snap}")));
-    assert_eq!(report.text("next"), "put those files back to the folder's version, then mortar join");
+    assert_eq!(report.text("next"), "put those files back to the folder's version, then mr join");
     assert_eq!(f.blob(&snap, "sub/keep"), b"local obstruction must survive\n");
     assert_eq!(f.blob(&snap, "src/file"), b"chosen resolution\n");
     assert_eq!(fs::read(f.request.join("sub/keep")).unwrap(), b"local obstruction must survive\n");

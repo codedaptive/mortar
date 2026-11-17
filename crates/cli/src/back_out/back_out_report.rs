@@ -1,4 +1,4 @@
-//! The report of a `mortar back-out` that land's back_out answered (SPEC-cli 06).
+//! The report of an `mr back-out` that land's back_out answered (SPEC-cli 06).
 
 use std::path::Path;
 
@@ -25,7 +25,7 @@ pub fn back_out_report(answer: &BackOutAnswer, integration: &Oid, folder: Option
                 "the squash and its ref are kept, with the same change ID".to_string(),
                 integration_folder_line(folder, integration),
             ],
-            "fix the change in its zone, then mortar squash <zone> --actor <name>",
+            "fix the change in its zone, then mr squash <zone> --actor <name>",
             vec![
                 ("change_id".to_string(), OutValue::Text(change_id.to_string())),
                 integration_field,

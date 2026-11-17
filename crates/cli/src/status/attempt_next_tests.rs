@@ -1,4 +1,4 @@
-//! attempt_next: unsaved gives mortar save, saved with no work yet gives "make your change, then mortar save"
+//! attempt_next: unsaved gives mr save, saved with no work yet gives "make your change, then mr save"
 //! (S-145) and other saved work waits for the harness, whatever else holds; no answer is join or resolve.
 
 use std::path::PathBuf;
@@ -41,7 +41,7 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
 }
 
 const WAIT: &str = "wait for the harness to keep or drop the attempts";
-const SAVE: &str = "mortar save \"<sentence>\"";
+const SAVE: &str = "mr save \"<sentence>\"";
 
 /// Every combination of (stalled, paused, saved, joined, the answer), no work yet false: unsaved is always save,
 /// saved always wait.
@@ -85,7 +85,7 @@ fn no_state_answers_join_or_resolve() {
     }
 }
 
-const MAKE_CHANGE: &str = "make your change, then mortar save";
+const MAKE_CHANGE: &str = "make your change, then mr save";
 
 /// S-145: a saved attempt with no work yet is told to make its change, never to wait on keep or drop, whatever
 /// else holds; an unsaved one is still told to save.

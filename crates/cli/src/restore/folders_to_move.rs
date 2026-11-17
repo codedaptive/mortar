@@ -1,4 +1,4 @@
-//! folders_to_move: step 3 of `mortar restore`: which request and attempt folders on the refs it moves need moving,
+//! folders_to_move: step 3 of `mr restore`: which request and attempt folders on the refs it moves need moving,
 //! which a repeat leaves because their ref has moved on since its done record (ref_moved_on, S-113(3)), and which
 //! of those needing a move hold work that is not saved (S-113(2), S-32), on a repeat checked against the snapshot
 //! ref's value before the restore (snapshot_value_to_check, S-122(3)).

@@ -19,7 +19,7 @@ pub fn land_error_report(verb: &str, error: &LandError, integration_branch: &str
     let refused = |line: String, owner: &str, next: String| landing_refusal(verb, vec![line], owner, next);
     let integration_ref = format!("refs/heads/{integration_branch}");
     let restore = format!(
-        "find the op that moved it with mortar log --ref {integration_ref}, then mortar restore <op id> \
+        "find the op that moved it with mr log --ref {integration_ref}, then mr restore <op id> \
          {integration_ref} --actor <name>"
     );
     match error {
@@ -31,7 +31,7 @@ pub fn land_error_report(verb: &str, error: &LandError, integration_branch: &str
         LandError::NoZone { commit } => refused(
             format!("squash commit {commit} carries no Mortar-Zone trailer"),
             "the squash commit",
-            "make the squash again: mortar squash <zone> --actor <name>".to_string(),
+            "make the squash again: mr squash <zone> --actor <name>".to_string(),
         ),
         LandError::NoLandingState { origin, integration } => refused(
             format!(

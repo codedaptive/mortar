@@ -2,8 +2,8 @@
 
 use super::AfterPublishArgs;
 
-/// `mortar after-publish <published> [--move <zone>]... --actor <name>`, the --moves in their order.
+/// `mr after-publish <published> [--move <zone>]... --actor <name>`, the --moves in their order.
 pub fn repeat_command(args: &AfterPublishArgs) -> String {
     let moves: String = args.moves.iter().map(|zone| format!(" --move {zone}")).collect();
-    format!("mortar after-publish {}{moves} --actor <name>", args.published)
+    format!("mr after-publish {}{moves} --actor <name>", args.published)
 }

@@ -23,7 +23,7 @@ fn an_undone_save_says_it_was_already_undone_by_the_undo_op() {
                 "the files are untouched; the work shows as unsaved".to_string(),
             ],
             owner: None,
-            next: "mortar status".to_string(),
+            next: "mr status".to_string(),
             fields: Vec::new(),
         }
     );

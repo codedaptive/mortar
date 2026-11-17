@@ -1,12 +1,12 @@
-//! run_folder: `mortar folder <sub-verb> ...`, the harness verb that makes, removes, multiplies and settles Mortar
+//! run_folder: `mr folder <sub-verb> ...`, the harness verb that makes, removes, multiplies and settles Mortar
 //! folders (SPEC-cli 05): its words read, a zone the config does not name refused, then the sub-verb's runner.
 //! No sibling test (S-104): it reaches git, the op log, folders and snapshot through its runners;
 //! parse_folder_args_tests, zone_folder_paths_tests and request_folder_paths_tests cover its decisions. The RITs
 //! crates/cli/tests/cli_rit/run_folder_{zone,request,remove,attempts,keep,drop}_tests.rs cover it through the binary: usage
 //! errors (no --paths, n = 0) exit 4 with folder's usage line; a zone not in the config exit 1, nothing made, next
-//! naming `mortar init --replace` with `--zone <zone>=`.
+//! naming `mr init --replace` with `--zone <zone>=`.
 //! RITs left for Nagatha (cross-zone, listed only, not written): run outside any git repository it is refused exit 1
-//! (the shell's repository_report); without a config, exit 1, next mortar init.
+//! (the shell's repository_report); without a config, exit 1, next mr init.
 
 use std::path::Path;
 
@@ -68,7 +68,7 @@ fn unknown_zone(zone: &str, config: &Config) -> Report {
         ],
         owner: Some("the zones in the Mortar config".to_string()),
         next: format!(
-            "mortar init --replace --actor <name> --origin <branch> --integration <branch> --remote <name> \
+            "mr init --replace --actor <name> --origin <branch> --integration <branch> --remote <name> \
              --zone {zone}=<path>[,<path>...] with every other zone and setting the config already holds, then repeat"
         ),
         fields: Vec::new(),

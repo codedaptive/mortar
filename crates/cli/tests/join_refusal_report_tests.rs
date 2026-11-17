@@ -39,7 +39,7 @@ fn a_missing_zone_is_the_zone_coordinators() {
         refused(
             "zone ref refs/heads/zone/core does not exist; join does not create it: make the zone folder first",
             "the zone's coordinator",
-            "have the zone made, then mortar join",
+            "have the zone made, then mr join",
         )
     );
 }
@@ -51,7 +51,7 @@ fn a_missing_request_is_this_requests() {
         refused(
             "request ref refs/heads/req/core/fix-1 does not exist; nothing to join",
             "this request",
-            "make the request folder again, then mortar join",
+            "make the request folder again, then mr join",
         )
     );
 }
@@ -80,14 +80,14 @@ fn a_state_path_is_renamed() {
         refused(
             "conflicted path src/bad-name is not UTF-8, so mortar-join.json cannot record it; no ref was moved",
             "this request",
-            "rename that file to a UTF-8 name, then mortar join",
+            "rename that file to a UTF-8 name, then mr join",
         )
     );
 }
 
 #[test]
 fn commits_replay_cannot_take_are_rewritten() {
-    const NEXT: &str = "rewrite the request's commits as one-parent commits with author dates, then mortar join";
+    const NEXT: &str = "rewrite the request's commits as one-parent commits with author dates, then mr join";
     assert_eq!(
         join_refusal_report(&replay(JoinError::MergeCommit(oid()))),
         refused(

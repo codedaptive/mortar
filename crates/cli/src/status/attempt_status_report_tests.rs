@@ -32,7 +32,7 @@ fn the_attempt_line_follows_the_request_line() {
 
 #[test]
 fn unsaved_gives_save_and_saved_waits_for_the_harness() {
-    assert_eq!(attempt_status_report(1, "try/core/task/1", &state(false)).next, "mortar save \"<sentence>\"");
+    assert_eq!(attempt_status_report(1, "try/core/task/1", &state(false)).next, "mr save \"<sentence>\"");
     assert_eq!(
         attempt_status_report(1, "try/core/task/1", &state(true)).next,
         "wait for the harness to keep or drop the attempts"

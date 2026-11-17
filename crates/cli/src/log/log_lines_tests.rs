@@ -16,7 +16,7 @@ fn record(phase: OpPhase, moves: Vec<RefMove>, result: Option<OpResult>) -> OpRe
         key: "save-1f".to_string(),
         kind: "save".to_string(),
         actor: "core/fix-1".to_string(),
-        reason: "mortar save".to_string(),
+        reason: "mr save".to_string(),
         at: 1700000000,
         phase,
         moves,
@@ -49,7 +49,7 @@ fn a_done_record_is_its_head_then_its_moves() {
     assert_eq!(
         log_lines(&[&done]),
         vec![
-            "op-7 done save by core/fix-1 at 1700000000 key save-1f: mortar save".to_string(),
+            "op-7 done save by core/fix-1 at 1700000000 key save-1f: mr save".to_string(),
             format!("  refs/heads/req/core/fix-1 {A40} -> {B40}"),
             format!("  refs/mortar/snap/core/fix-1 absent -> {B40}"),
         ]
@@ -62,7 +62,7 @@ fn an_all_zero_new_is_deleted() {
     assert_eq!(
         log_lines(&[&intent]),
         vec![
-            "op-7 intent save by core/fix-1 at 1700000000 key save-1f: mortar save".to_string(),
+            "op-7 intent save by core/fix-1 at 1700000000 key save-1f: mr save".to_string(),
             format!("  refs/heads/req/core/fix-1 {A40} -> deleted"),
         ]
     );
@@ -82,7 +82,7 @@ fn a_not_moved_result_names_each_ref() {
     assert_eq!(
         log_lines(&[&failed]),
         vec![
-            "op-7 failed save by core/fix-1 at 1700000000 key save-1f: mortar save".to_string(),
+            "op-7 failed save by core/fix-1 at 1700000000 key save-1f: mr save".to_string(),
             format!("  not moved: refs/heads/a held {A40}, refs/heads/b was absent"),
         ]
     );

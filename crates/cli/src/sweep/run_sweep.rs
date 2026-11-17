@@ -1,4 +1,4 @@
-//! run_sweep: `mortar sweep [--idle-days <n>] [--ref <full ref name>]...`, the refs folders' sweep picks (closed
+//! run_sweep: `mr sweep [--idle-days <n>] [--ref <full ref name>]...`, the refs folders' sweep picks (closed
 //! requests' snapshot refs, joined leftover branches, replay records of zones the config no longer lists, the
 //! caller's extra refs: S-52, S-53, S-121 (2)) deleted in one op, then, only with --idle-days, the build dirs of
 //! folders idle that long cleared (SPEC-cli 05). Under the folders lock after recover (S-16): sweep_refs deletes refs

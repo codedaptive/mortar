@@ -2,11 +2,11 @@
 //! No unit test: it runs git through read_folder_context, load_config and the verbs (S-5); the tests in
 //! crates/cli/tests (usage_report_tests, actor_for_tests, context_report_tests) and in src (repository_report_tests,
 //! missing_config_report_tests) cover what it reports. Nagatha's integration group is to cover, with the mortar binary
-//! as a child process in a throwaway repository: an unknown verb is exit 4 listing the verbs; `mortar init` without
+//! as a child process in a throwaway repository: an unknown verb is exit 4 listing the verbs; `mr init` without
 //! --actor is exit 4; with --json stdout holds one JSON object and nothing else, also for a usage error; an agent verb
-//! outside a Mortar folder is refused, exit 1 (with `mortar join`); a verb that needs the config is refused without
-//! one, exit 1, next "mortar init", and outside any git repository is refused, exit 1, outcome "not-a-folder" for an
-//! agent verb (`mortar join`) and "not-a-repository" for a harness verb that needs the config (with the first such
+//! outside a Mortar folder is refused, exit 1 (with `mr join`); a verb that needs the config is refused without
+//! one, exit 1, next "mr init", and outside any git repository is refused, exit 1, outcome "not-a-folder" for an
+//! agent verb (`mr join`) and "not-a-repository" for a harness verb that needs the config (with the first such
 //! verb); `mortar guard-hook` runs in any repository with no folder and no --actor, and --actor with it is exit 4;
 //! every report names its verb ("" when none was read).
 

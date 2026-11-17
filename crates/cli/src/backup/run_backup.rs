@@ -1,4 +1,4 @@
-//! run_backup: `mortar backup`, this host's in-flight refs pushed to its backup namespace on the remote, under the
+//! run_backup: `mr backup`, this host's in-flight refs pushed to its backup namespace on the remote, under the
 //! land lock (SPEC-cli 06: land backup). --key names the lock holder only, never passed to the op log.
 //! No sibling test (S-104): it takes a real lock and runs git, the op log and land; backup_report_tests and
 //! backup_error_report_tests cover its decisions.

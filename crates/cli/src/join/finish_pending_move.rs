@@ -10,7 +10,7 @@
 //! it saves, with the finished move in its report and the folder's work in the request's snapshot ref; a local edit
 //! in the way of the pending move is exit 1 listing the paths, and once moved aside the next join finishes it; with
 //! no move pending it moves nothing; a resolve whose folder move is refused (an edit on a path the zone changed), the
-//! files put back to the folder's version, then mortar join finishes the move from the op's folder_tree; a kill
+//! files put back to the folder's version, then mr join finishes the move from the op's folder_tree; a kill
 //! after resolve's final op and before the folder move is finished by the next join; an undo of a join rebase whose
 //! folder move was refused is finished by the next save, undo or join, the folder back at the tip before the rebase.
 

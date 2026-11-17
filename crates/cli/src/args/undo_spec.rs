@@ -1,4 +1,4 @@
-//! The verb table's entry for `mortar undo`.
+//! The verb table's entry for `mr undo`.
 //! A bare const (S-7); verbs_tests covers it.
 
 use super::{LockNeed, VerbKind, VerbSpec};
@@ -8,5 +8,5 @@ pub const UNDO_SPEC: VerbSpec = VerbSpec {
     kind: VerbKind::Agent,
     lock: LockNeed::Join,
     needs_config: true,
-    usage: "mortar undo [--key <key>] [--json]",
+    usage: "mr undo [--key <key>] [--json]",
 };

@@ -22,7 +22,7 @@ fn undo_killed_before_set_index_or_reverse_folder_move_repeats_once_without_redo
         assert!(w.s.f.lock_path().exists(), "the dead holder is left for locked_act recovery");
         if step == "rebase" {
             let before = observe(&w); let status = ours(&w, &["status"], 0, "stalled");
-            assert_eq!(status.text("next"), "mortar undo"); assert_eq!(status.text("stalled_from"), new.as_str());
+            assert_eq!(status.text("next"), "mr undo"); assert_eq!(status.text("stalled_from"), new.as_str());
             assert_eq!(status.text("stalled_to"), old.as_str()); assert_eq!(observe(&w), before);
         }
         let r = ours(&w, &["undo"], 0, "already-done");

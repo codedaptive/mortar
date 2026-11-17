@@ -1,5 +1,5 @@
 //! need_with_next: a read state gives status's next step and nothing else changes; a failed read keeps need's
-//! report, adds one line with the failure's reason and gives next "mortar status".
+//! report, adds one line with the failure's reason and gives next "mr status".
 
 use gitio::StatusPaths;
 
@@ -46,7 +46,7 @@ fn failure(outcome: &str, lines: &[&str]) -> Report {
         outcome: outcome.to_string(),
         lines: lines.iter().map(|line| line.to_string()).collect(),
         owner: None,
-        next: "mortar doctor".to_string(),
+        next: "mr doctor".to_string(),
         fields: Vec::new(),
     }
 }
@@ -56,7 +56,7 @@ const GAP: &str = "kit/b is outside the work order: recorded as a gap";
 
 #[test]
 fn a_saved_unjoined_state_gives_mortar_join_and_keeps_the_rest() {
-    let expected = Report { next: "mortar join".to_string(), ..need(&[ADDED, GAP]) };
+    let expected = Report { next: "mr join".to_string(), ..need(&[ADDED, GAP]) };
     assert_eq!(need_with_next(need(&[ADDED, GAP]), Ok(saved_unjoined())), expected);
 }
 
@@ -69,7 +69,7 @@ fn a_failed_read_keeps_need_and_adds_the_reason_with_next_mortar_status() {
             GAP.to_string(),
             "need is done but its next step could not be read: git rev-parse failed; exit 128".to_string(),
         ],
-        next: "mortar status".to_string(),
+        next: "mr status".to_string(),
         ..need(&[ADDED, GAP])
     };
     assert_eq!(need_with_next(need(&[ADDED, GAP]), read), expected);
@@ -79,7 +79,7 @@ fn a_failed_read_keeps_need_and_adds_the_reason_with_next_mortar_status() {
 fn a_failed_read_with_no_lines_gives_its_outcome_as_the_reason() {
     let expected = Report {
         lines: vec![ADDED.to_string(), "need is done but its next step could not be read: snapshot-refused".to_string()],
-        next: "mortar status".to_string(),
+        next: "mr status".to_string(),
         ..need(&[ADDED])
     };
     assert_eq!(need_with_next(need(&[ADDED]), Err(failure("snapshot-refused", &[]))), expected);

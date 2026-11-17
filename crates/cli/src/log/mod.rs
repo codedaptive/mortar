@@ -1,4 +1,4 @@
-//! `mortar log` (SPEC-cli 05, S-114): its filters, the records they keep, their --json encoding, its lines and
+//! `mr log` (SPEC-cli 05, S-114): its filters, the records they keep, their --json encoding, its lines and
 //! report, and its runner.
 
 mod encoded_records;

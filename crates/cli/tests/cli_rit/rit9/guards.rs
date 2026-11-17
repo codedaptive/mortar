@@ -36,7 +36,7 @@ fn all_four_verbs_without_config_refuse_before_any_work_and_name_init() {
     for words in [vec!["snapshot"], vec!["overlap", "core"], vec!["disk"], vec!["sweep", "--ref", "refs/t3/eligible"]] {
         let r = run(&w, &w.s.f.request, &words, 1, "no-config");
         assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
-        assert_eq!(r.text("next"), "mortar init"); assert_eq!(observe(&w), before);
+        assert_eq!(r.text("next"), "mr init"); assert_eq!(observe(&w), before);
     }
 }
 
@@ -51,7 +51,7 @@ fn disk_and_sweep_with_no_configured_zones_refuse_before_reading_corrupt_folders
         let r = app(&w, &words, 1, "refused");
         assert_eq!(r.strings("lines"), &["the config names no zone", "with no zone listed, a sweep would delete every zone's replay records (refs/mortar/replayed/); nothing was read or deleted"]);
         assert_eq!(r.text("owner"), "the repository's mortar config");
-        assert_eq!(r.text("next"), "mortar init --replace with every value the config holds and at least one --zone <zone>=<path> --actor <name>, then repeat the same command");
+        assert_eq!(r.text("next"), "mr init --replace with every value the config holds and at least one --zone <zone>=<path> --actor <name>, then repeat the same command");
         assert_eq!(observe(&w), before);
     }
 }
@@ -60,12 +60,12 @@ fn disk_and_sweep_with_no_configured_zones_refuse_before_reading_corrupt_folders
 fn invalid_words_are_exact_usage_errors_without_snapshot_overlap_measurement_or_sweep() {
     let w = World::new(); let before = observe(&w);
     for (words, why, next) in [
-        (vec!["snapshot", "extra"], "snapshot takes no arguments", "mortar snapshot --actor <name> [--key <operation key>] [--json]"),
-        (vec!["disk", "extra"], "disk takes no arguments", "mortar disk --actor <name> [--json]"),
-        (vec!["overlap"], "overlap needs a zone", "mortar overlap <zone> --actor <name> [--json]"),
-        (vec!["overlap", "unknown"], "unknown zone \"unknown\": the config names b, core", "mortar overlap <zone> --actor <name> [--json]"),
-        (vec!["overlap", "core", "extra"], "unexpected word \"extra\" after the zone", "mortar overlap <zone> --actor <name> [--json]"),
-        (vec!["sweep", "--idle-days", "-1"], "--idle-days needs a whole number of days, not \"-1\"", "mortar sweep [--idle-days <n>] [--ref <full ref name>]... --actor <name> [--key <operation key>] [--json]"),
+        (vec!["snapshot", "extra"], "snapshot takes no arguments", "mr snapshot --actor <name> [--key <operation key>] [--json]"),
+        (vec!["disk", "extra"], "disk takes no arguments", "mr disk --actor <name> [--json]"),
+        (vec!["overlap"], "overlap needs a zone", "mr overlap <zone> --actor <name> [--json]"),
+        (vec!["overlap", "unknown"], "unknown zone \"unknown\": the config names b, core", "mr overlap <zone> --actor <name> [--json]"),
+        (vec!["overlap", "core", "extra"], "unexpected word \"extra\" after the zone", "mr overlap <zone> --actor <name> [--json]"),
+        (vec!["sweep", "--idle-days", "-1"], "--idle-days needs a whole number of days, not \"-1\"", "mr sweep [--idle-days <n>] [--ref <full ref name>]... --actor <name> [--key <operation key>] [--json]"),
     ] {
         let r = app(&w, &words, 4, "usage"); assert_eq!(r.strings("lines")[0], why); assert_eq!(r.text("next"), next);
         assert_eq!(observe(&w), before);

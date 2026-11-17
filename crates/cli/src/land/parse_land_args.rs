@@ -1,4 +1,4 @@
-//! The words of `mortar land` after its globals, read into the squash commit it lands.
+//! The words of `mr land` after its globals, read into the squash commit it lands.
 
 use gitio::Oid;
 use oplog::ChangeId;
@@ -15,7 +15,7 @@ pub fn parse_land_args(rest: &[String]) -> Result<Oid, String> {
     }
     Oid::parse(word).map_err(|_| match ChangeId::parse(word) {
         Ok(_) => format!(
-            "{word:?} is a change ID; land takes the squash's commit id only (find it with mortar would-merge {word} \
+            "{word:?} is a change ID; land takes the squash's commit id only (find it with mr would-merge {word} \
              --actor <name>)"
         ),
         Err(_) => format!("{word:?} is not a full commit id (40 or 64 lowercase hex characters)"),

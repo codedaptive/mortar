@@ -1,4 +1,4 @@
-//! run_folder_keep: `mortar folder keep <k>`, run in a request folder: attempt k kept, the request branch and folder
+//! run_folder_keep: `mr folder keep <k>`, run in a request folder: attempt k kept, the request branch and folder
 //! moved to it, every attempt folder and try branch gone, their trysnap refs kept (S-49, S-69, S-93).
 //! No sibling test (S-104): it takes a real lock and runs git, the op log, snapshot and folders;
 //! request_folder_refusal_tests, pending_keep_move_tests, attempt_saved_tests and kept_report_tests cover its

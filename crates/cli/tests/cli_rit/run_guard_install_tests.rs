@@ -22,7 +22,7 @@ use cli::{Config, ZoneConfig};
 use crate::json::check;
 use testkit::TestRepo;
 
-const USAGE: &str = "mortar guard (install | status) --actor <name> [--key <operation key>] [--json]";
+const USAGE: &str = "mr guard (install | status) --actor <name> [--key <operation key>] [--json]";
 const CONFIG: &str = "{\"origin_branch\":\"main\",\"integration_branch\":\"integration\",\"remote\":\"origin\"}\n";
 const REFERENCE_TRANSACTION: &str = "#!/bin/sh\nexec mortar guard-hook reference-transaction \"$@\"\n";
 const PRE_PUSH: &str = "#!/bin/sh\nexec mortar guard-hook pre-push \"$@\"\n";
@@ -134,7 +134,7 @@ fn guard_install_refuses_a_foreign_pre_push_and_writes_nothing() {
     assert!(report.strings("lines").contains(&"nothing was written".to_string()), "{}", report.lines());
     assert_eq!(report.text("owner"), "the repository's own hooks");
     assert_eq!(report.text("next"), format!(
-        "move {path} aside or fold it into your own hook by hand, then mortar guard install --actor <name>"));
+        "move {path} aside or fold it into your own hook by hand, then mr guard install --actor <name>"));
     assert_eq!(fs::read_to_string(&foreign).unwrap(), FOREIGN);
     assert!(!root.join(".git/hooks/reference-transaction").exists());
     assert!(!root.join(".git/mortar/guard.json").exists());

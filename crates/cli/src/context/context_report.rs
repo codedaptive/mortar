@@ -7,7 +7,7 @@ use crate::report::{failure_report, ExitCode, Report};
 
 const OWNER: &str = "the harness that makes Mortar folders";
 
-/// NotARepository and NotAFolder: refused (exit 1), outcome "not-a-folder", next "run mortar <verb> inside a
+/// NotARepository and NotAFolder: refused (exit 1), outcome "not-a-folder", next "run mr <verb> inside a
 /// folder Mortar made". A record Mortar did not write: refused, naming the file and why. A record that could not
 /// be read, any other folder error, and git failing: failure (exit 5).
 pub fn context_report(verb: &str, error: &ContextError) -> Report {
@@ -50,7 +50,7 @@ fn not_a_folder(verb: &str, lines: Vec<String>) -> Report {
         outcome: "not-a-folder".to_string(),
         lines,
         owner: Some(OWNER.to_string()),
-        next: format!("run mortar {verb} inside a folder Mortar made"),
+        next: format!("run mr {verb} inside a folder Mortar made"),
         fields: Vec::new(),
     }
 }

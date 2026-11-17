@@ -1,4 +1,4 @@
-//! A Ran from a finished child. Real processes: the shell step (steps/shell.rs) reads every git and mortar child
+//! A Ran from a finished child. Real processes: the shell step (steps/shell.rs) reads every git and `mr` child
 //! through it on every drive.
 
 use std::os::unix::process::ExitStatusExt;

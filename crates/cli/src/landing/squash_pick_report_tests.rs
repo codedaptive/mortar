@@ -33,7 +33,7 @@ fn missing_is_a_refusal_that_says_to_make_the_squash() {
                 "no squash at refs/mortar/squash/* carries change ID kkkkllllmmmmnnnnooooppppqqqqrrrr".to_string()
             ],
             owner: Some("the zones' squash refs".to_string()),
-            next: "make the change's squash with mortar squash <zone> --actor <name>, then repeat the same command"
+            next: "make the change's squash with mr squash <zone> --actor <name>, then repeat the same command"
                 .to_string(),
             fields: Vec::new(),
         })
@@ -57,7 +57,7 @@ fn several_is_a_refusal_naming_each_ref_and_the_verb_to_repeat_by_commit() {
                     .to_string()
             ],
             owner: Some("the zones' squash refs".to_string()),
-            next: "name the squash by its commit instead: mortar land <commit> --actor <name>".to_string(),
+            next: "name the squash by its commit instead: mr land <commit> --actor <name>".to_string(),
             fields: Vec::new(),
         })
     );
@@ -70,5 +70,5 @@ fn several_names_the_verb_it_was_given() {
     };
     let report = squash_pick_report("would-merge", &change(), &pick).expect("a refusal");
     assert_eq!(report.verb, "would-merge");
-    assert_eq!(report.next, "name the squash by its commit instead: mortar would-merge <commit> --actor <name>");
+    assert_eq!(report.next, "name the squash by its commit instead: mr would-merge <commit> --actor <name>");
 }

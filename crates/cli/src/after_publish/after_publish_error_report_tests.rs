@@ -86,7 +86,7 @@ fn a_land_error_is_worded_as_the_landing_verbs_word_it_with_the_integration_bran
                4b825dc642cb6eb9a060e54bf8d69288fbee4904, and no landing state names a landing in flight",
               SECOND],
             "refs/heads/stage",
-            "find the op that moved it with mortar log --ref refs/heads/stage, then mortar restore <op id> \
+            "find the op that moved it with mr log --ref refs/heads/stage, then mr restore <op id> \
              refs/heads/stage --actor <name>",
         )
     );
@@ -212,7 +212,7 @@ fn no_squash_of_is_refused_asking_for_the_published_zone() {
                 SECOND,
             ],
             "zone cli's squashes",
-            "name the zone whose squash was published: mortar after-publish <zone> [--move <zone>]... --actor <name>",
+            "name the zone whose squash was published: mr after-publish <zone> [--move <zone>]... --actor <name>",
         )
     );
 }
@@ -230,7 +230,7 @@ fn a_squash_source_the_zone_does_not_hold_is_refused_naming_the_zone_and_the_sou
             ],
             "zone cli",
             "restore refs/heads/zone/cli to a commit that holds 9c1f3e2a7b6d5c4e3f2a1b0c9d8e7f6a5b4c3d2e (find it \
-             with mortar log --ref refs/heads/zone/cli, then mortar restore <op id> refs/heads/zone/cli --actor \
+             with mr log --ref refs/heads/zone/cli, then mr restore <op id> refs/heads/zone/cli --actor \
              <name>), then repeat the same command",
         )
     );

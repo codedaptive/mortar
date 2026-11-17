@@ -43,7 +43,7 @@ fn edits_on_zone_changed_paths_are_named_with_the_snapshot_that_keeps_them() {
                 "they are kept in refs/mortar/snap/core/fix-1 at 4444444444444444444444444444444444444444".to_string(),
             ],
             owner: Some("this request's folder".to_string()),
-            next: "put those files back to the folder's version, then mortar join".to_string(),
+            next: "put those files back to the folder's version, then mr join".to_string(),
             fields: Vec::new(),
         }
     );
@@ -71,7 +71,7 @@ fn a_branch_elsewhere_is_joins_move_refusal_under_resolve() {
                     .to_string(),
             ],
             owner: Some("this request's folder".to_string()),
-            next: "put the request branch back where mortar left it, then mortar join".to_string(),
+            next: "put the request branch back where mortar left it, then mr join".to_string(),
             fields: Vec::new(),
         }
     );

@@ -21,10 +21,10 @@ fn actual_live_join_lock_refuses_undo_with_the_complete_holder_report_and_no_act
 fn undo_bad_arguments_and_missing_config_refuse_before_any_snapshot_or_ref_movement() {
     let w = World::new(); w.s.f.save_topic(); let before = observe(&w);
     let r = ours(&w, &["undo", "extra"], 4, "usage");
-    assert_eq!(r.strings("lines")[0], "undo takes no arguments"); assert_eq!(r.text("next"), "mortar undo [--key <key>] [--json]");
+    assert_eq!(r.strings("lines")[0], "undo takes no arguments"); assert_eq!(r.text("next"), "mr undo [--key <key>] [--json]");
     assert_eq!(observe(&w), before);
     let config = cli::config_path(&w.s.f.common); fs::rename(&config, config.with_extension("held")).unwrap();
     let r = ours(&w, &["undo"], 1, "no-config");
     assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
-    assert_eq!(r.text("next"), "mortar init"); assert_eq!(observe(&w), before);
+    assert_eq!(r.text("next"), "mr init"); assert_eq!(observe(&w), before);
 }

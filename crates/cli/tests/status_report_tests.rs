@@ -150,7 +150,7 @@ fn a_folder_with_every_part_reports_each_and_is_stalled_first() {
                 "gaps (needed outside the work order): docs/guide.txt, tools/gen.rs".to_string(),
             ],
             owner: None,
-            next: "mortar join".to_string(),
+            next: "mr join".to_string(),
             fields: vec![
                 field("zone", text("core")),
                 field("request", text("fix-1")),
@@ -217,11 +217,11 @@ fn a_full_folder_renders_plain_and_json() {
          overlaps with fix-2: src/b.rs\n\
          overlaps with fix-3: src/a.rs, src/b.rs\n\
          gaps (needed outside the work order): docs/guide.txt, tools/gen.rs\n\
-         next: mortar join\n"
+         next: mr join\n"
     );
     assert_eq!(
         render_json(&report),
-        "{\"verb\":\"status\",\"ok\":true,\"outcome\":\"stalled\",\"exit\":0,\"next\":\"mortar join\",\
+        "{\"verb\":\"status\",\"ok\":true,\"outcome\":\"stalled\",\"exit\":0,\"next\":\"mr join\",\
          \"lines\":[\"request fix-1 in zone core\",\"changed: src/a.rs, src/b.rs\",\"untracked: notes.txt\",\
          \"conflicted: src/c.rs\",\"there is work not yet saved\",\
          \"not saved: data/big.bin is 2000000 bytes, over the size cap of 1048576 bytes\",\

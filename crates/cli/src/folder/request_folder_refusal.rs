@@ -1,4 +1,4 @@
-//! The refusal of a `mortar folder` sub-verb that runs in a request folder (attempts, keep, drop) when the current
+//! The refusal of an `mr folder` sub-verb that runs in a request folder (attempts, keep, drop) when the current
 //! folder is a zone or attempt folder.
 
 use folders::{FolderKind, FolderRecord};
@@ -7,7 +7,7 @@ use crate::report::{ExitCode, Report};
 
 /// None for a Request record. A Zone or Attempt(k) record is exit 1 "refused": a line naming the folder's kind and
 /// zone (for an attempt, also k and its request), then "nothing ran"; owner "the harness that makes Mortar
-/// folders"; next "run mortar <verb_line> --actor <name> in the request's own folder". `verb_line` is the verb and
+/// folders"; next "run mr <verb_line> --actor <name> in the request's own folder". `verb_line` is the verb and
 /// sub-verb, e.g. "folder keep".
 pub fn request_folder_refusal(verb_line: &str, record: &FolderRecord) -> Option<Report> {
     let zone = &record.zone;
@@ -23,9 +23,9 @@ pub fn request_folder_refusal(verb_line: &str, record: &FolderRecord) -> Option<
         verb: "folder".to_string(),
         exit: ExitCode::Refused,
         outcome: "refused".to_string(),
-        lines: vec![format!("{what}: mortar {verb_line} runs in a request folder"), "nothing ran".to_string()],
+        lines: vec![format!("{what}: mr {verb_line} runs in a request folder"), "nothing ran".to_string()],
         owner: Some("the harness that makes Mortar folders".to_string()),
-        next: format!("run mortar {verb_line} --actor <name> in the request's own folder"),
+        next: format!("run mr {verb_line} --actor <name> in the request's own folder"),
         fields: Vec::new(),
     })
 }

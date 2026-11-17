@@ -1,4 +1,4 @@
-//! The one lock a `mortar restore` holds, chosen from the refs it names before any lock or git run (S-113(1),
+//! The one lock an `mr restore` holds, chosen from the refs it names before any lock or git run (S-113(1),
 //! S-115(2)).
 
 use oplog::LockName;

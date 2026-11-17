@@ -1,15 +1,23 @@
-//! run_guard_install: `mortar guard install`, guard.json and both guard hooks put in place for the config's branches.
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and land; guard_in_place_tests,
-//! guard_installed_report_tests and guard_error_report_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_guard_install_tests.rs covers it through the binary: a fresh repository gets guard.json and
-//! both hooks, executable, each the guard's script (exit 0 "installed"); a repeat is "already-installed" and changes
-//! no byte; a foreign pre-push is refused exit 1 "foreign-hook" with nothing written; without --actor, exit 4; from a
-//! linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is honoured.
+//! run_guard_install: `mr guard install`, guard.json and both guard hooks put in place for the config's branches,
+//! with a warning line when the first `mr` on PATH is not this Mortar (S-133 (1)).
+//! No sibling test (S-104): it takes a real lock, runs git, the op log and land, and reads PATH, this binary's path
+//! and the file system; guard_in_place_tests, guard_installed_report_tests, guard_error_report_tests,
+//! install_outcome_tests (the warning on installed outcomes only, last before next), with_path_warning_tests and
+//! path's path_warning_for_tests (the warning's decision), first_on_path_tests, same_build_tests,
+//! file_has_marker_tests, marker_in_chunks_tests and mr_path_warning_tests cover its decisions. The RIT
+//! crates/cli/tests/cli_rit/run_guard_install_tests.rs covers it through the binary: a fresh repository gets
+//! guard.json and both hooks, executable, each the guard's script (exit 0 "installed"); a repeat is "already-installed" and changes no byte; a foreign pre-push is refused exit 1
+//! "foreign-hook" with nothing written; without --actor, exit 4; from a linked worktree the hooks land in the main
+//! repository's hooks folder; a relative core.hooksPath is honoured.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid, exit
-//! 3 (oplog's locks); GuardError::Git in the cli's own words; after `mortar guard install`, git update-ref, commit and
-//! push against integration and origin are refused through the installed hook and Mortar's own moves pass (ACCEPT-2
-//! checks 1-9; land's guard_decide); tests/operational_rit/guard_fixture.rs to install through `mortar guard install`
-//! instead of land::guard_install.
+//! 3 (oplog's locks); GuardError::Git in the cli's own words; after `mr guard install`, git update-ref, commit and
+//! push against integration and origin are refused through the installed hook (which runs `mortar guard-hook`) and
+//! Mortar's own moves pass (ACCEPT-2 checks 1-9; land's guard_decide); tests/operational_rit/guard_fixture.rs to
+//! install through `mr guard install` instead of land::guard_install; through the binary, a foreign `mr` first on a
+//! scratch PATH makes `mr guard install` exit 0 "installed" with the PATH warning as the last line before next, and
+//! this build's bin dir first on PATH gives no warning; a copied Mortar binary, not this path, first on PATH gives no
+//! warning; a myrepos-like `mr` beside Mortar gives the warning as the last line before next, exit 0 "installed"
+//! (S-147).
 
 use std::path::Path;
 
@@ -17,10 +25,11 @@ use gitio::Git;
 use land::{guard_install, guard_status};
 use oplog::{KillPidProbe, LockName};
 
-use super::{guard_error_report, guard_in_place, guard_installed_report, guard_refs_for};
+use super::{guard_error_report, guard_in_place, guard_installed_report, guard_refs_for, install_outcome};
 use crate::config::Config;
 use crate::lock::locked_act;
 use crate::opkey::op_key;
+use crate::path::{file_has_marker, first_on_path, path_warning_for, MORTAR_MARKER};
 use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
@@ -29,6 +38,10 @@ const VERB: &str = "guard";
 /// Under the land lock after recover (locked_act), keyed by --key or op_key("guard-install", the common dir): whether
 /// the guard was already in place for the config's branches (a guard_status that fails counts as not), then land's
 /// guard_install (refusing a foreign hook before writing anything), then guard_status read back for the report.
+/// The result goes through install_outcome: the installed report (either outcome) gets path_warning_for's line, over
+/// this binary's path, the first `mr` on PATH (an unset PATH reads as empty), the file system's canonicalize and
+/// file_has_marker's read of the candidate for MORTAR_MARKER (S-147), as its last; refusals, failures and a busy lock
+/// do not.
 /// Records no op: it moves no ref.
 pub fn run_guard_install(context: &ShellContext, config: &Config, cwd: &Path) -> Report {
     let git = Git::new(cwd);
@@ -38,11 +51,17 @@ pub fn run_guard_install(context: &ShellContext, config: &Config, cwd: &Path) ->
     };
     let refs = guard_refs_for(config);
     let key = op_key(context.args.key.as_deref(), "guard-install", &common, &[]);
-    locked_act(&git, &common, &LockName::Land, &key, &KillPidProbe, VERB, || {
+    let installed = locked_act(&git, &common, &LockName::Land, &key, &KillPidProbe, VERB, || {
         let already = guard_status(&git).is_ok_and(|state| guard_in_place(&state, &refs));
         guard_install(&git, &refs).map_err(|error| guard_error_report(&error))?;
         let state = guard_status(&git).map_err(|error| guard_error_report(&error))?;
         Ok(guard_installed_report(already, &state))
-    })
-    .unwrap_or_else(|report| report)
+    });
+    let warning = path_warning_for(
+        std::env::current_exe().ok().as_deref(),
+        first_on_path("mr", &std::env::var_os("PATH").unwrap_or_default()).as_deref(),
+        &|path| path.canonicalize().ok(),
+        &|path| file_has_marker(path, &MORTAR_MARKER),
+    );
+    install_outcome(installed, warning)
 }

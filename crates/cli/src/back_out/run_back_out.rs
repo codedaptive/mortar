@@ -1,4 +1,4 @@
-//! run_back_out: `mortar back-out`, integration moved back to where the landing found it and the integration folder
+//! run_back_out: `mr back-out`, integration moved back to where the landing found it and the integration folder
 //! moved back with it, under the land lock (SPEC-cli 06: land back_out, integration folder moved back).
 //! --key names the lock holder only, never passed to the op log (S-132); repeat safety comes from
 //! land's answers (NothingToBackOut) and from the stopped-move finish: before land's call, finish_stopped_move moves
@@ -12,7 +12,7 @@
 //! note_finished_move_tests and landing's land_error_report_tests cover its decisions. The RIT
 //! crates/cli/tests/cli_rit/run_back_out_tests.rs covers it through the binary.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid,
-//! exit 3; without a config, exit 1, next mortar init; the LandError texts that need git, the op log or the landing
+//! exit 3; without a config, exit 1, next mr init; the LandError texts that need git, the op log or the landing
 //! state to fail for real; ACCEPT-1 check 11; the stopped-move finish (a kill after land's op and before the folder
 //! move, then a plain repeat moves the folder from the op's old value to the tip and the report's first line says
 //! so); a staged edit in the integration folder (no move, the verb goes on).
@@ -35,7 +35,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "back-out";
 /// The same command run again, which a refused integration folder move's next ends with (S-112).
-const REPEAT: &str = "mortar back-out --actor <name>";
+const REPEAT: &str = "mr back-out --actor <name>";
 
 /// Any argument is back-out's usage report, before any git. Then, under the land lock after recover (locked_act),
 /// keyed by --key or op_key("back-out", the common dir): first a stopped integration folder move is finished

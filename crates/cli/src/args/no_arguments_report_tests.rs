@@ -16,7 +16,7 @@ fn one_argument_is_a_usage_report_naming_the_verb_and_its_usage_line() {
     assert_eq!(report.outcome, "usage");
     assert_eq!(report.lines[0], "status takes no arguments");
     assert_eq!(report.owner, None);
-    assert_eq!(report.next, "mortar status [--json]");
+    assert_eq!(report.next, "mr status [--json]");
     assert!(report.fields.is_empty());
 }
 
@@ -28,5 +28,5 @@ fn json_asked_for_gives_the_same_usage_report() {
     assert_eq!(report.exit, ExitCode::Usage);
     assert_eq!(report.outcome, "usage");
     assert_eq!(report.lines[0], "resolve takes no arguments");
-    assert_eq!(report.next, "mortar resolve [--key <operation key>] [--json]");
+    assert_eq!(report.next, "mr resolve [--key <operation key>] [--json]");
 }

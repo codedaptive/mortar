@@ -1,4 +1,4 @@
-//! run_land: `mortar land <commit>`, a reviewed squash landed on integration under the land lock, and the
+//! run_land: `mr land <commit>`, a reviewed squash landed on integration under the land lock, and the
 //! integration folder moved with integration (SPEC-cli 06: land land). --key names the lock holder only, never passed
 //! to the op log (S-132); repeat safety comes from land's answers (a repeat of a landed squash answers Landed) and
 //! from the stopped-move finish: before land's call, finish_stopped_move moves an integration folder a stopped run
@@ -11,7 +11,7 @@
 //! repeat after Landed answers landed and moves nothing more; a change ID word, exit 4; the stopped-move finish (a
 //! kill after land's op and before the folder move, then a plain repeat moves the folder and the report's first
 //! line says so); a staged edit in the integration folder left untouched before land's call; the land lock held by
-//! a live pid, exit 3; without a config, exit 1, next mortar init; ACCEPT-1 checks 10 and 13, ACCEPT-2 check 8.
+//! a live pid, exit 3; without a config, exit 1, next mr init; ACCEPT-1 checks 10 and 13, ACCEPT-2 check 8.
 //! A refused folder move is finished by a repeat when the folder was cleared as the refusal says (paths moved out or
 //! put back to the index copy, the index left as it is); a clear that resets the index to HEAD (the folder's HEAD is
 //! already the branch's new commit) leaves no stall for the repeat to see, and the folder's files are then their
@@ -60,7 +60,7 @@ pub fn run_land(context: &ShellContext, cwd: &Path) -> Report {
     };
     let refs = guard_refs_for(config);
     let key = op_key(args.key.as_deref(), VERB, &common, &[]);
-    let repeat = format!("mortar land {commit} --actor <name>");
+    let repeat = format!("mr land {commit} --actor <name>");
     locked_act(&git, &common, &LockName::Land, &key, &KillPidProbe, VERB, || {
         let finished = finish_stopped_move(&git, &common, VERB, &refs.integration_branch, &context.actor, &repeat)?;
         land(&git, &refs, commit, &context.actor, &repeat)

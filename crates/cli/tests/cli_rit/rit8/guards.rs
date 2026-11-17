@@ -26,6 +26,6 @@ fn missing_config_refuses_without_any_work_and_names_init_as_next() {
     let before = w.store(); let folders = (w.folder_state(&w.s.f.zone), w.folder_state(&w.b));
     let r = w.after(1, "no-config");
     assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
-    assert_eq!(r.text("next"), "mortar init"); assert_eq!(w.store(), before);
+    assert_eq!(r.text("next"), "mr init"); assert_eq!(w.store(), before);
     assert_eq!((w.folder_state(&w.s.f.zone), w.folder_state(&w.b)), folders);
 }

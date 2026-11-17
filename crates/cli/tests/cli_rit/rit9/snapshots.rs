@@ -56,11 +56,11 @@ fn attempt_snapshot_moves_only_its_trysnap_and_never_the_request_or_attempt_bran
 fn snapshot_zone_folder_and_non_mortar_checkout_refuse_without_mutation() {
     let w = World::new(); let before = observe(&w);
     let r = run(&w, &w.s.f.zone, &["snapshot"], 1, "refused");
-    assert_eq!(r.strings("lines"), &[format!("mortar snapshot runs in a request or attempt folder; {} is a zone folder", w.s.f.zone.display())]);
-    assert_eq!(r.text("next"), "run mortar snapshot --actor <name> in a request or attempt folder");
+    assert_eq!(r.strings("lines"), &[format!("mr snapshot runs in a request or attempt folder; {} is a zone folder", w.s.f.zone.display())]);
+    assert_eq!(r.text("next"), "run mr snapshot --actor <name> in a request or attempt folder");
     assert_eq!(observe(&w), before);
     let r = app(&w, &["snapshot"], 1, "not-a-folder");
     assert_eq!(r.strings("lines"), &[format!("this directory is not in a Mortar folder: the worktree {} has no Mortar record", w.s.f.git.repo.display())]);
     assert_eq!(r.text("owner"), "the harness that makes Mortar folders");
-    assert_eq!(r.text("next"), "run mortar snapshot inside a folder Mortar made"); assert_eq!(observe(&w), before);
+    assert_eq!(r.text("next"), "run mr snapshot inside a folder Mortar made"); assert_eq!(observe(&w), before);
 }

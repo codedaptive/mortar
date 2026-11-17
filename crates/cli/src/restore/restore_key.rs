@@ -1,4 +1,4 @@
-//! The op key of a `mortar restore`: --key, or one derived from what the command names (S-115(3)).
+//! The op key of an `mr restore`: --key, or one derived from what the command names (S-115(3)).
 
 use std::path::Path;
 

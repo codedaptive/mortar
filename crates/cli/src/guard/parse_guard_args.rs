@@ -1,4 +1,4 @@
-//! The words of `mortar guard` after its globals, read into the sub-verb they ask for.
+//! The words of `mr guard` after its globals, read into the sub-verb they ask for.
 
 use super::GuardCommand;
 

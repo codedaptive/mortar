@@ -127,7 +127,8 @@ fn member(output: &Output, key: &str) -> String {
 /// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
-    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status"] {
+    for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",
+                       "mr save", "mr join", "mr need", "mr resolve", "mr status"] {
         assert!(!next.contains(agent_verb), "next names an agent verb: {next}");
     }
     assert!(!next.contains("agent run"), "next is aimed at an agent: {next}");
@@ -191,8 +192,8 @@ fn a_request_folder_with_attempts_left_is_refused_naming_keep_and_drop() {
     assert_eq!(refused.status.code(), Some(1), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
-    assert!(next.contains("mortar folder keep"), "{out}");
-    assert!(next.contains("mortar folder drop"), "{out}");
+    assert!(next.contains("mr folder keep"), "{out}");
+    assert!(next.contains("mr folder drop"), "{out}");
     assert_harness_next(&next);
     fx.assert_request_untouched(&out);
     assert!(tries.join("try-1").exists(), "{out}");

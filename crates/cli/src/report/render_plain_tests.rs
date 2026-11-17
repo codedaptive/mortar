@@ -17,19 +17,19 @@ fn report(lines: &[&str], owner: Option<&str>, next: &str) -> Report {
 #[test]
 fn lines_then_next_and_no_fields() {
     assert_eq!(
-        render_plain(&report(&["wrote /c.json", "zones: a"], None, "mortar folder zone a p")),
-        "wrote /c.json\nzones: a\nnext: mortar folder zone a p\n"
+        render_plain(&report(&["wrote /c.json", "zones: a"], None, "mr folder zone a p")),
+        "wrote /c.json\nzones: a\nnext: mr folder zone a p\n"
     );
 }
 
 #[test]
 fn a_refusal_shows_its_owner_before_next() {
-    let mut refused = report(&["config differs in: remote"], Some("the existing config at /c.json"), "mortar init");
+    let mut refused = report(&["config differs in: remote"], Some("the existing config at /c.json"), "mr init");
     refused.exit = ExitCode::Refused;
     refused.outcome = "refused".to_string();
     assert_eq!(
         render_plain(&refused),
-        "config differs in: remote\nowner: the existing config at /c.json\nnext: mortar init\n"
+        "config differs in: remote\nowner: the existing config at /c.json\nnext: mr init\n"
     );
 }
 

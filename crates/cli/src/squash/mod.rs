@@ -1,4 +1,4 @@
-//! `mortar squash` (SPEC-cli 06): its words, its report in the cli's own words, and its runner.
+//! `mr squash` (SPEC-cli 06): its words, its report in the cli's own words, and its runner.
 
 mod parse_squash_args;
 mod run_squash;

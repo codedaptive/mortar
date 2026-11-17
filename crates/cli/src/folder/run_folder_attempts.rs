@@ -1,4 +1,4 @@
-//! run_folder_attempts: `mortar folder attempts <n> <dir>`, run in a request folder: n attempt folders of the request
+//! run_folder_attempts: `mr folder attempts <n> <dir>`, run in a request folder: n attempt folders of the request
 //! made at <dir>/try-<k>, each on try/<zone>/<request>/<k> at the request's tip (S-69).
 //! A relative <dir> is taken from the request folder's toplevel, not from the subfolder it is run in (S-127).
 //! No sibling test (S-104): it takes a real lock and runs git, the op log and folders; request_folder_refusal_tests,

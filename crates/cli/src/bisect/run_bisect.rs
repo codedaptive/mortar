@@ -1,4 +1,4 @@
-//! run_bisect: `mortar bisect <last pass> <failed> --timeout <seconds> -- <command>...`, the first failing landing
+//! run_bisect: `mr bisect <last pass> <failed> --timeout <seconds> -- <command>...`, the first failing landing
 //! on origin's first-parent line named under the land lock (SPEC-cli 06). land's bisect probes each commit in a
 //! throwaway detached worktree and leaves no bisect state; --key names the lock holder only, never passed to the
 //! op log (S-132).
@@ -10,7 +10,7 @@
 //! fail and shown "timed out"; a last passing commit off the failed one's first-parent line refused naming both; a
 //! failed commit off origin refused; a command that cannot start stops the search naming the commit; `--actor`
 //! after `--` reaches the command as one of its words; no worktree or bisect state left after a run; the land lock
-//! held by a live pid, exit 3; without a config, exit 1, next mortar init.
+//! held by a live pid, exit 3; without a config, exit 1, next mr init.
 
 use std::path::Path;
 

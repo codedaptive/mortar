@@ -1,4 +1,4 @@
-//! The --json fields every `mortar guard` report of a GuardState carries (guard_state_report and
+//! The --json fields every `mr guard` report of a GuardState carries (guard_state_report and
 //! guard_installed_report), so both name the hooks folder, each hook and guard.json's branches alike.
 
 use land::{GuardState, HookState, LandRefs};

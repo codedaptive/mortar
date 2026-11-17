@@ -1,4 +1,4 @@
-//! need_error_report: the report of a `mortar need` that folders refused or that failed.
+//! need_error_report: the report of an `mr need` that folders refused or that failed.
 //! need_error_report_tests covers the Plan and NotAFolder arms. The Lock and fallback arms run lock_report,
 //! failure_report and FolderError's Display, so they are RITs (S-101): Nagatha's integration group is to cover, with
 //! the mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository
@@ -17,10 +17,10 @@ use crate::report::{failure_report, ExitCode, Report};
 /// folders::need takes is held or cannot be taken) is lock_report. Every other error is failure_report.
 pub fn need_error_report(error: &FolderError) -> Report {
     match error {
-        FolderError::Plan(plan) => refused(plan.reason.clone(), "mortar need <a path inside the repository>"),
+        FolderError::Plan(plan) => refused(plan.reason.clone(), "mr need <a path inside the repository>"),
         FolderError::NotAFolder { path, reason } => refused(
             format!("{} is not a Mortar folder: {reason}", path.display()),
-            "make the request folder again, then mortar need",
+            "make the request folder again, then mr need",
         ),
         FolderError::Lock(lock) => lock_report("need", lock),
         other => failure_report("need", &other.to_string()),

@@ -52,7 +52,7 @@ fn another_squash_is_busy_with_the_in_flight_change_and_a_change_id_is_usage_not
     assert_eq!(r.text("busy_with"), s.squash.change_id.as_str()); assert_eq!(s.observe(), before);
     let r = s.run("land", Some(s.squash.change_id.as_str()), 4, "usage");
     let id = s.squash.change_id.as_str();
-    assert_eq!(r.strings("lines")[0], format!("\"{id}\" is a change ID; land takes the squash's commit id only (find it with mortar would-merge {id} --actor <name>)"));
+    assert_eq!(r.strings("lines")[0], format!("\"{id}\" is a change ID; land takes the squash's commit id only (find it with mr would-merge {id} --actor <name>)"));
     assert_eq!(s.observe(), before);
 }
 
@@ -82,6 +82,6 @@ fn without_config_the_new_verbs_refuse_and_point_to_init_without_mutating_the_re
     let before = s.observe();
     for verb in ["land", "would-merge"] {
         let r = s.run(verb, Some(s.squash.commit.as_str()), 1, "no-config");
-        assert!(r.text("next").contains("mortar init")); assert_eq!(s.observe(), before);
+        assert!(r.text("next").contains("mr init")); assert_eq!(s.observe(), before);
     }
 }

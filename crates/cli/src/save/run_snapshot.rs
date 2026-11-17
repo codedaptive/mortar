@@ -1,4 +1,4 @@
-//! run_snapshot: `mortar snapshot`, the harness's end-of-turn and before-gate call (SPEC-cli 05): the folder it runs
+//! run_snapshot: `mr snapshot`, the harness's end-of-turn and before-gate call (SPEC-cli 05): the folder it runs
 //! in saved to its snapshot ref (refs/mortar/snap/<zone>/<request>, or refs/mortar/trysnap/<zone>/<request>/<k> in
 //! attempt folder k: S-69), after the configured formatter, as save runs it; exit 0 also when nothing changed.
 //! No sibling test (S-104): it takes a real lock and runs git, the formatter and the op log; snapshot_target_for,

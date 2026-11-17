@@ -9,8 +9,8 @@ use crate::report::{ExitCode, Report};
 const VERB: &str = "resolve";
 const REQUEST: &str = "this request";
 
-/// No paused join is exit 0 "nothing-to-resolve", next "mortar join". Markers left are exit 2 "still-marked", each
-/// file with its marker line numbers, next "fix the files, then mortar resolve". A request ref moved since the pause
+/// No paused join is exit 0 "nothing-to-resolve", next "mr join". Markers left are exit 2 "still-marked", each
+/// file with its marker line numbers, next "fix the files, then mr resolve". A request ref moved since the pause
 /// (StateStale), a conflicted path that is a folder or that gitio refused, and a state file join did not write
 /// (StateCorrupt, which is kept) are exit 1 "refused", owned by this request, with the error's text. Every other
 /// error is join_refusal_report's report under the verb resolve.
@@ -23,7 +23,7 @@ pub fn resolve_refusal_report(error: &JoinRunError) -> Report {
                 outcome: "nothing-to-resolve".to_string(),
                 lines: vec!["no join is paused in this folder; nothing to resolve".to_string()],
                 owner: None,
-                next: "mortar join".to_string(),
+                next: "mr join".to_string(),
                 fields: Vec::new(),
             };
         }
@@ -40,19 +40,19 @@ pub fn resolve_refusal_report(error: &JoinRunError) -> Report {
                 outcome: "still-marked".to_string(),
                 lines,
                 owner: None,
-                next: "fix the files, then mortar resolve".to_string(),
+                next: "fix the files, then mr resolve".to_string(),
                 fields: Vec::new(),
             };
         }
         JoinRunError::StateStale { request_ref, expected, .. } => {
-            (vec![error.to_string()], format!("put {request_ref} back at {expected}, then mortar resolve"))
+            (vec![error.to_string()], format!("put {request_ref} back at {expected}, then mr resolve"))
         }
         JoinRunError::ConflictedPathIsFolder { .. } | JoinRunError::ConflictedPathRefused { .. } => {
-            (vec![error.to_string()], "put a file at that path, then mortar resolve".to_string())
+            (vec![error.to_string()], "put a file at that path, then mr resolve".to_string())
         }
         JoinRunError::StateCorrupt { .. } => (
             vec![error.to_string(), "the file is kept".to_string()],
-            "mend or remove that file by hand, then mortar join".to_string(),
+            "mend or remove that file by hand, then mr join".to_string(),
         ),
         _ => return Report { verb: VERB.to_string(), ..join_refusal_report(error) },
     };

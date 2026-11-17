@@ -23,7 +23,7 @@ fn a_missing_path_is_refused_naming_the_path_and_the_commit() {
                 "nothing ran".to_string(),
             ],
             owner: Some("this request".to_string()),
-            next: "mortar need <a path the repository holds>".to_string(),
+            next: "mr need <a path the repository holds>".to_string(),
             fields: vec![
                 ("path".to_string(), OutValue::Text("kit/nowhere".to_string())),
                 ("commit".to_string(), OutValue::Text("0123456789abcdef0123456789abcdef01234567".to_string())),

@@ -6,7 +6,7 @@ use oplog::OpRecord;
 use super::UndoStep;
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Done (exit 0), outcome "undone", next mortar status. Lines: the kind and id of the op `undone`; the undo's own op
+/// Done (exit 0), outcome "undone", next mr status. Lines: the kind and id of the op `undone`; the undo's own op
 /// `undo_op`; the snapshot commit that keeps the folder as it stood before the undo; then the folder step's: for
 /// SetIndex the files are untouched and the work shows as unsaved, for MoveFolder the folder is back at the tip
 /// before the rebase. Fields: undone_op, undone_kind, undo_op and snapshot.
@@ -26,7 +26,7 @@ pub fn undo_report(undone: &OpRecord, undo_op: &str, snapshot: &Oid, step: UndoS
             step_line.to_string(),
         ],
         owner: None,
-        next: "mortar status".to_string(),
+        next: "mr status".to_string(),
         fields: vec![
             ("undone_op".to_string(), OutValue::Text(undone.op_id.clone())),
             ("undone_kind".to_string(), OutValue::Text(undone.kind.clone())),

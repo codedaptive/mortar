@@ -1,5 +1,5 @@
-//! run_disk: `mortar disk`, what each Mortar folder, the object store and the refs cost on disk and what a plain
-//! mortar sweep frees (SPEC-cli 05). Takes no lock and writes nothing (S-16).
+//! run_disk: `mr disk`, what each Mortar folder, the object store and the refs cost on disk and what a plain
+//! mr sweep frees (SPEC-cli 05). Takes no lock and writes nothing (S-16).
 //! No sibling test (S-104): it runs git and reads the file system through folders' disk; config_zones_tests,
 //! no_zones_report_tests, folders_error_report_tests and disk_report_tests cover its decisions.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): disk on a zone folder and a request
@@ -19,7 +19,7 @@ use crate::upkeep::{config_zones, folders_error_report, no_zones_report};
 
 const VERB: &str = "disk";
 
-/// The idle days handed to folders' disk. A plain `mortar sweep` (no --idle-days) clears no build dir, and no
+/// The idle days handed to folders' disk. A plain `mr sweep` (no --idle-days) clears no build dir, and no
 /// document sets a default, so disk's sweep figure counts no build dir: u64::MAX days is never reached (only a folder
 /// with no files at all counts as idle, and its build bytes are 0), and the figure is what that plain sweep frees,
 /// the refs part. The build bytes are shown per folder instead.

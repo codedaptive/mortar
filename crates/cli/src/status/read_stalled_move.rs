@@ -5,12 +5,12 @@
 //! folder made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a kill after join's rebase op and before the folder move: status reports the stall (the request ref, the new
-//!   tip and the folder's old tip) and gives next mortar join; after the move status reports no stall (S-97);
+//!   tip and the folder's old tip) and gives next mr join; after the move status reports no stall (S-97);
 //! - an undo of a join rebase whose folder move was refused: status reports the undo's stall (the request ref back at
-//!   the tip before the rebase, the folder at the rebased tip) and gives next mortar undo (S-143);
+//!   the tip before the rebase, the folder at the rebased tip) and gives next mr undo (S-143);
 //! - a kill after join's rebase op and after the folder move's set_index(folder_tree), before the move itself: status
 //!   reports the stall (S-87, S-88, S-116);
-//! - a finished move followed by a staged edit is not reported as a stall (next mortar save) (S-116);
+//! - a finished move followed by a staged edit is not reported as a stall (next mr save) (S-116);
 //! - an index with unmerged entries (a paused join) is not reported as a stall;
 //! - status moves no ref and writes no file: refs, the folder's index and the op log are unchanged after it.
 

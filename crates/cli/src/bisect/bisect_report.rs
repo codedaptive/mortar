@@ -1,4 +1,4 @@
-//! The report of a `mortar bisect` that land's bisect answered (SPEC-cli 06).
+//! The report of an `mr bisect` that land's bisect answered (SPEC-cli 06).
 
 use gitio::Oid;
 use land::{BisectAnswer, BisectNotFound, BisectReport, Culprit};
@@ -50,7 +50,7 @@ pub fn bisect_report(report: &BisectReport, last_pass: &Oid, failed: &Oid) -> Re
                          or before it"
                     ),
                     format!(
-                        "repeat with an earlier passing commit: mortar bisect <last pass> {failed} --timeout \
+                        "repeat with an earlier passing commit: mr bisect <last pass> {failed} --timeout \
                          <seconds> --actor <name> -- <command>..."
                     ),
                 ),
@@ -78,11 +78,11 @@ pub fn bisect_report(report: &BisectReport, last_pass: &Oid, failed: &Oid) -> Re
 fn culprit_next(culprit: &Culprit) -> String {
     match &culprit.zone {
         Some(zone) => format!(
-            "fix the break in zone {zone} through a request (mortar folder request {zone} <request> <path> --paths \
-             <path>... --actor <name>), then mortar squash {zone} --actor <name>"
+            "fix the break in zone {zone} through a request (mr folder request {zone} <request> <path> --paths \
+             <path>... --actor <name>), then mr squash {zone} --actor <name>"
         ),
-        None => "fix the break in the zone that owns it through a request (mortar folder request <zone> <request> \
-                 <path> --paths <path>... --actor <name>), then mortar squash <zone> --actor <name>"
+        None => "fix the break in the zone that owns it through a request (mr folder request <zone> <request> \
+                 <path> --paths <path>... --actor <name>), then mr squash <zone> --actor <name>"
             .to_string(),
     }
 }

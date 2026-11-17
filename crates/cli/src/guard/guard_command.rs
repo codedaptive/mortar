@@ -1,4 +1,4 @@
-//! What one `mortar guard` line asks for: its sub-verb.
+//! What one `mr guard` line asks for: its sub-verb.
 //! A bare type (S-7); parse_guard_args_tests exercises it.
 
 /// `Install`: put guard.json and both guard hooks in place. `Status`: say whether they are, writing nothing.

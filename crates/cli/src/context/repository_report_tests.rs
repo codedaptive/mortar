@@ -34,7 +34,7 @@ fn init_outside_a_repository_is_refused_naming_the_directory() {
                     .to_string(),
             ],
             owner: Some("whoever sets up Mortar in this repository".to_string()),
-            next: "run mortar init inside the git repository".to_string(),
+            next: "run mr init inside the git repository".to_string(),
             fields: Vec::new(),
         }
     );

@@ -1,4 +1,4 @@
-//! run_undo: `mortar undo [--key <key>] [--json]`, the agent verb that undoes its folder's own last step: a save or
+//! run_undo: `mr undo [--key <key>] [--json]`, the agent verb that undoes its folder's own last step: a save or
 //! a join's rebase (S-73, S-142, S-143).
 //! No unit test (S-104): it takes the lock, snapshots, runs git and the op log; own_refs, choose_undo, undo_refusal,
 //! later_op_refusal, undo_caller, undo_report, already_undone_report, nothing_to_undo_report, failed_undo_report and
@@ -7,12 +7,12 @@
 //! made by the landing verbs in a throwaway repository:
 //! - save then undo keeps the files and shows them unsaved (the index at the branch's restored tree);
 //! - undo after a join's rebase moves the folder back to the tip before the rebase; with an edit in the way the move
-//!   is refused and left pending, status gives next mortar undo, and the next undo, save or join finishes it;
+//!   is refused and left pending, status gives next mr undo, and the next undo, save or join finishes it;
 //! - undo of a joined request (the zone branch moved) is refused, exit 1;
 //! - a ref moved since by another actor is refused, exit 1, naming the op and the actor;
 //! - nothing to undo is exit 0, its next as status would give;
 //! - undo of a resolve step is refused, exit 1, nothing changed;
-//! - the snapshot taken first is restorable with mortar restore;
+//! - the snapshot taken first is restorable with mr restore;
 //! - a repeat after a kill answers already-done, finishing the folder step the kill left;
 //! - a held join-<zone> lock is exit 3 naming the holder;
 //! - in attempt folder k, only attempt k's own save is undone, never the request's, and the reverse.
@@ -132,12 +132,12 @@ fn set_index_to_branch(run: &RequestRun) -> Result<(), Report> {
     run.git.set_index(&run.folder.toplevel, &tree).map_err(failed)
 }
 
-/// What status would give as next for this folder (attempt_next in an attempt folder); "mortar status" when it
+/// What status would give as next for this folder (attempt_next in an attempt folder); "mr status" when it
 /// cannot be read.
 fn next_as_status(context: &ShellContext, run: &RequestRun) -> String {
     match (read_status(run.folder, &run.settings, &context.actor, VERB), run.folder.record.kind) {
         (Ok(state), FolderKind::Attempt(_)) => attempt_next(&state),
         (Ok(state), FolderKind::Request | FolderKind::Zone) => status_next(&state),
-        (Err(_), _) => "mortar status".to_string(),
+        (Err(_), _) => "mr status".to_string(),
     }
 }

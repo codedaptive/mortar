@@ -1,4 +1,4 @@
-//! read_need_path: the path `mortar need` adds, cleaned and checked against the folder's commit before any lock.
+//! read_need_path: the path `mr need` adds, cleaned and checked against the folder's commit before any lock.
 //! No unit test: it runs git (S-5, S-104); need_error_report_tests and missing_path_report_tests cover the refusals
 //! it gives. Nagatha's integration group is to cover, with the mortar binary as a child process in a request folder
 //! made by the landing verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and

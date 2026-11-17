@@ -17,7 +17,7 @@ fn one_foreign_hook() {
                 "/r/.git/hooks/pre-push is a hook Mortar did not write; Mortar never overwrites one".to_string()
             ],
             owner: Some("the repository's own hooks".to_string()),
-            next: "move /r/.git/hooks/pre-push aside or fold it into your own hook by hand, then mortar guard install \
+            next: "move /r/.git/hooks/pre-push aside or fold it into your own hook by hand, then mr guard install \
                    --actor <name>"
                 .to_string(),
             fields: Vec::new(),
@@ -40,7 +40,7 @@ fn two_foreign_hooks_each_get_a_line_and_the_next_names_the_first() {
     );
     assert_eq!(
         report.next,
-        "move /r/hooks/reference-transaction aside or fold it into your own hook by hand, then mortar guard install \
+        "move /r/hooks/reference-transaction aside or fold it into your own hook by hand, then mr guard install \
          --actor <name>"
     );
 }

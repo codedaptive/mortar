@@ -1,4 +1,4 @@
-//! The report of a folder move that failed after `mortar restore` moved the refs (S-113(3)).
+//! The report of a folder move that failed after `mr restore` moved the refs (S-113(3)).
 
 use std::path::{Path, PathBuf};
 
@@ -17,7 +17,7 @@ pub fn restore_move_refusal_report(op_id: &str, moved: &[PathBuf], folder: &Path
         outcome: "refused".to_string(),
         lines,
         owner: Some(format!("the agent working in {}", folder.display())),
-        next: "clear what stops the folder's move, then repeat the same mortar restore command; the repeat finishes \
+        next: "clear what stops the folder's move, then repeat the same mr restore command; the repeat finishes \
                the move"
             .to_string(),
         fields: Vec::new(),

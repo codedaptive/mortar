@@ -1,4 +1,4 @@
-//! The report of a `mortar guard install` that left the guard in place, and of a `mortar guard status` that found it
+//! The report of an `mr guard install` that left the guard in place, and of an `mr guard status` that found it
 //! in place (guard_state_report).
 
 use land::GuardState;
@@ -11,7 +11,7 @@ use crate::report::{ExitCode, Report};
 /// `state.hooks_dir`; then that it guards refs/heads/<integration> and refs/heads/<origin> and pushes of them to
 /// <remote>, as `state.refs` names them. Next: "nothing to do: git now refuses moves of <integration> and <origin>
 /// that Mortar did not make". Fields: guard_fields(state). With no guard.json in `state` (install wrote one, so only
-/// when it vanished before it was read back) the second line says so and next is `mortar guard install --actor
+/// when it vanished before it was read back) the second line says so and next is `mr guard install --actor
 /// <name>`.
 pub fn guard_installed_report(already: bool, state: &GuardState) -> Report {
     let hooks_dir = state.hooks_dir.display();
@@ -33,7 +33,7 @@ pub fn guard_installed_report(already: bool, state: &GuardState) -> Report {
         }
         None => (
             "guard.json names no branches to guard".to_string(),
-            "mortar guard install --actor <name>".to_string(),
+            "mr guard install --actor <name>".to_string(),
         ),
     };
     Report {

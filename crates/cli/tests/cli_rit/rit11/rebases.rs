@@ -14,7 +14,7 @@ fn undo_rebase_moves_the_actual_folder_back_and_the_repeat_is_not_a_redo() {
     assert_eq!(pending.cause, cli::MoveCause::Undo); assert_eq!((pending.old, pending.new, pending.folder_tree), (new, old, None));
     // S-144: the reverse folder move restored the branch's tree, so it is saved despite the newer snapshot.
     let before = observe(&w); let status = ours(&w, &["status"], 0, "saved");
-    assert!(status.flag("saved")); assert_eq!(status.text("next"), "mortar join");
+    assert!(status.flag("saved")); assert_eq!(status.text("next"), "mr join");
     assert!(status.is_null("stalled_from")); assert!(status.is_null("stalled_to")); assert_eq!(observe(&w), before);
     let files = w.folder_state(&w.s.f.request); let start = w.s.f.records().len();
     let repeat = ours(&w, &["undo"], 0, "already-done"); assert_eq!(repeat.text("undo_op"), undo.op_id);
@@ -37,7 +37,7 @@ fn refused_reverse_move_has_undo_status_next_then_clear_and_undo_save_join_or_re
         assert_eq!(w.tip("core"), zone); assert_eq!(w.folder_state(&w.s.f.request), folder);
         let kept = ref_at(&w, SNAP).unwrap(); assert_eq!(w.s.f.blob(&kept, "src/upstream"), b"owner obstruction must survive\n");
         let before = observe(&w); let status = ours(&w, &["status"], 0, "stalled");
-        assert_eq!(status.text("next"), "mortar undo"); assert_eq!(status.text("stalled_from"), new.as_str());
+        assert_eq!(status.text("next"), "mr undo"); assert_eq!(status.text("stalled_from"), new.as_str());
         assert_eq!(status.text("stalled_to"), old.as_str());
         assert!(status.strings("lines").contains(&format!("an undo's folder move is stalled: the undo put {REQUEST} back at {old}, the folder at {new}")));
         assert_eq!(observe(&w), before);

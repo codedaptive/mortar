@@ -41,8 +41,8 @@ fn a_zone_folder_is_refused_naming_its_zone() {
     assert_eq!(
         request_folder_refusal("folder attempts", &record(FolderKind::Zone, None)),
         refused(
-            "this is the zone folder of zone core: mortar folder attempts runs in a request folder",
-            "run mortar folder attempts --actor <name> in the request's own folder"
+            "this is the zone folder of zone core: mr folder attempts runs in a request folder",
+            "run mr folder attempts --actor <name> in the request's own folder"
         )
     );
 }
@@ -52,8 +52,8 @@ fn an_attempt_folder_is_refused_naming_k_and_its_request() {
     assert_eq!(
         request_folder_refusal("folder keep", &record(FolderKind::Attempt(2), Some("fix-1"))),
         refused(
-            "this is attempt folder 2 of request fix-1 in zone core: mortar folder keep runs in a request folder",
-            "run mortar folder keep --actor <name> in the request's own folder"
+            "this is attempt folder 2 of request fix-1 in zone core: mr folder keep runs in a request folder",
+            "run mr folder keep --actor <name> in the request's own folder"
         )
     );
 }
@@ -63,8 +63,8 @@ fn an_attempt_record_naming_no_request_is_still_refused() {
     assert_eq!(
         request_folder_refusal("folder drop", &record(FolderKind::Attempt(1), None)),
         refused(
-            "this is attempt folder 1 in zone core: mortar folder drop runs in a request folder",
-            "run mortar folder drop --actor <name> in the request's own folder"
+            "this is attempt folder 1 in zone core: mr folder drop runs in a request folder",
+            "run mr folder drop --actor <name> in the request's own folder"
         )
     );
 }

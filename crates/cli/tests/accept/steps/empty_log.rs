@@ -1,4 +1,4 @@
-//! Whether `mortar log --json` reported an empty log.
+//! Whether `mr log --json` reported an empty log.
 
 use crate::json::{parse_json, JsonValue};
 

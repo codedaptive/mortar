@@ -110,7 +110,7 @@ fn rebased_is_done_and_joins_again() {
                 "the unit tests must run again".to_string(),
             ],
             owner: None,
-            next: "mortar join".to_string(),
+            next: "mr join".to_string(),
             fields: fields(vec![text("from", FROM), text("to", TO)]),
         }
     );
@@ -138,7 +138,7 @@ fn conflicted_is_exit_2_listing_the_files() {
                 "  docs/b.md".to_string(),
             ],
             owner: None,
-            next: "mortar resolve".to_string(),
+            next: "mr resolve".to_string(),
             fields: fields(vec![
                 text("commit", FROM),
                 ("files".to_string(), OutValue::Texts(vec!["src/a.rs".to_string(), "docs/b.md".to_string()])),

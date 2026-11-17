@@ -1,4 +1,4 @@
-//! The report of a `mortar would-merge` that land's would_merge answered (SPEC-cli 06).
+//! The report of an `mr would-merge` that land's would_merge answered (SPEC-cli 06).
 
 use land::{Squash, WouldMerge};
 
@@ -29,7 +29,7 @@ pub fn would_merge_report(squash: &Squash, answer: &WouldMerge) -> Report {
                 NOTHING_MOVED.to_string(),
             ],
             owner: None,
-            next: format!("mortar land {commit} --actor <name>"),
+            next: format!("mr land {commit} --actor <name>"),
             fields,
         },
         WouldMerge::No { files } => {

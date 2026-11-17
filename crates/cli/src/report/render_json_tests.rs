@@ -9,7 +9,7 @@ fn report(exit: ExitCode, outcome: &str) -> Report {
         outcome: outcome.to_string(),
         lines: vec!["one".to_string(), "two \"q\"".to_string()],
         owner: None,
-        next: "mortar init".to_string(),
+        next: "mr init".to_string(),
         fields: Vec::new(),
     }
 }
@@ -18,7 +18,7 @@ fn report(exit: ExitCode, outcome: &str) -> Report {
 fn done_report_with_null_owner() {
     assert_eq!(
         render_json(&report(ExitCode::Done, "written")),
-        "{\"verb\":\"init\",\"ok\":true,\"outcome\":\"written\",\"exit\":0,\"next\":\"mortar init\",\
+        "{\"verb\":\"init\",\"ok\":true,\"outcome\":\"written\",\"exit\":0,\"next\":\"mr init\",\
          \"lines\":[\"one\",\"two \\\"q\\\"\"],\"owner\":null}\n"
     );
 }
@@ -30,7 +30,7 @@ fn refusal_shows_owner_and_is_not_ok() {
     refused.owner = Some("the existing config".to_string());
     assert_eq!(
         render_json(&refused),
-        "{\"verb\":\"init\",\"ok\":false,\"outcome\":\"refused\",\"exit\":1,\"next\":\"mortar init\",\
+        "{\"verb\":\"init\",\"ok\":false,\"outcome\":\"refused\",\"exit\":1,\"next\":\"mr init\",\
          \"lines\":[],\"owner\":\"the existing config\"}\n"
     );
 }
@@ -66,7 +66,7 @@ fn fields_follow_owner_in_order_with_each_value_kind() {
     ];
     assert_eq!(
         render_json(&busy),
-        "{\"verb\":\"\",\"ok\":false,\"outcome\":\"busy\",\"exit\":3,\"next\":\"mortar init\",\"lines\":[],\
+        "{\"verb\":\"\",\"ok\":false,\"outcome\":\"busy\",\"exit\":3,\"next\":\"mr init\",\"lines\":[],\
          \"owner\":null,\"holder_host\":\"h\\n1\",\"holder_pid\":42,\"stale\":false,\"fresh\":true,\
          \"key\":null,\"paths\":[\"a\",\"b\"]}\n"
     );
@@ -82,7 +82,7 @@ fn a_raw_field_writes_its_values_as_they_are() {
     ];
     assert_eq!(
         render_json(&listed),
-        "{\"verb\":\"init\",\"ok\":true,\"outcome\":\"listed\",\"exit\":0,\"next\":\"mortar init\",\"lines\":[],\
+        "{\"verb\":\"init\",\"ok\":true,\"outcome\":\"listed\",\"exit\":0,\"next\":\"mr init\",\"lines\":[],\
          \"owner\":null,\"records\":[{\"op_id\":\"a\"},[1,null]],\"none\":[]}\n"
     );
 }

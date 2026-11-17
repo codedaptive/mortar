@@ -1,4 +1,4 @@
-//! The report of a `mortar sweep` that finished.
+//! The report of an `mr sweep` that finished.
 
 use folders::SweepBuildOutcome;
 

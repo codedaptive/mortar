@@ -1,4 +1,4 @@
-//! What one `mortar join` did, as join_report reads it.
+//! What one `mr join` did, as join_report reads it.
 //! A bare type (S-7); crates/cli/tests/join_report_tests.rs exercises it.
 
 use ::join::JoinAnswer;

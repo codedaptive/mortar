@@ -22,7 +22,7 @@ fn write_is_written() {
             outcome: "written".to_string(),
             lines: vec!["wrote the Mortar config /r/.git/mortar/config.json".to_string()],
             owner: None,
-            next: "mortar folder zone <zone> <path>".to_string(),
+            next: "mr folder zone <zone> <path>".to_string(),
             fields: path_field(),
         }
     );
@@ -36,7 +36,7 @@ fn replace_is_replaced_naming_the_keys() {
     assert_eq!(report.outcome, "replaced");
     assert_eq!(report.lines, vec!["replaced the Mortar config /r/.git/mortar/config.json; changed: remote, zones".to_string()]);
     assert_eq!(report.owner, None);
-    assert_eq!(report.next, "mortar folder zone <zone> <path>");
+    assert_eq!(report.next, "mr folder zone <zone> <path>");
     assert_eq!(report.fields, path_field());
 }
 
@@ -52,7 +52,7 @@ fn already_done_changes_nothing() {
             "the Mortar config /r/.git/mortar/config.json already holds these values".to_string(),
         ]
     );
-    assert_eq!(report.next, "mortar folder zone <zone> <path>");
+    assert_eq!(report.next, "mr folder zone <zone> <path>");
     assert_eq!(report.fields, path_field());
 }
 
@@ -71,7 +71,7 @@ fn refused_names_the_keys_and_the_owner() {
                 "nothing changed".to_string(),
             ],
             owner: Some("the existing config at /r/.git/mortar/config.json".to_string()),
-            next: "mortar init with the same values, or add --replace".to_string(),
+            next: "mr init with the same values, or add --replace".to_string(),
             fields: path_field(),
         }
     );

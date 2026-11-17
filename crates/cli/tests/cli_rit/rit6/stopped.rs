@@ -122,6 +122,6 @@ fn refusal(s: &Landing, r: &Report, verb: &str, old: &Oid, tip: &Oid) {
     assert_eq!(r.text("folder"), s.folder.to_str().unwrap()); assert_eq!(r.text("old"), old.as_str()); assert_eq!(r.text("new"), tip.as_str());
     assert_eq!(r.strings("paths"), &["src/file"]); assert!(r.text("owner").contains(s.folder.to_str().unwrap()));
     assert!(r.strings("lines").iter().any(|line| line == "src/file"));
-    assert_eq!(r.text("next"), format!("move each path listed out of the integration folder {}, or put it back to the folder's index copy, and leave the index as it is; then repeat the same command: mortar {verb}{} --actor <name>", s.folder.display(), if verb == "land" { format!(" {}", s.squash.commit) } else { String::new() }));
+    assert_eq!(r.text("next"), format!("move each path listed out of the integration folder {}, or put it back to the folder's index copy, and leave the index as it is; then repeat the same command: mr {verb}{} --actor <name>", s.folder.display(), if verb == "land" { format!(" {}", s.squash.commit) } else { String::new() }));
     assert!(!r.text("next").contains("git "));
 }

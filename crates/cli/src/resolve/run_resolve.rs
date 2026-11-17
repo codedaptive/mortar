@@ -1,4 +1,4 @@
-//! `mortar resolve`: finishes a folder move a kill or a refused move left (a rebase's or an undo's, S-143),
+//! `mr resolve`: finishes a folder move a kill or a refused move left (a rebase's or an undo's, S-143),
 //! snapshots the folder, resolves the join paused in it and moves the folder after the rebase that completes it, all
 //! under the zone's join lock after recover (S-50, S-64, S-86, S-87, S-88); in an attempt folder it runs nothing
 //! (S-91).

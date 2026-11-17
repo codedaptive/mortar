@@ -74,7 +74,7 @@ fn io_gives_its_path_and_the_io_text() {
 
 #[test]
 fn below_floor_gives_free_and_floor_and_never_a_sweep_figure() {
-    let sweep = SweepEstimate { bytes: 0, reason: Some("not measured by mortar folder".to_string()) };
+    let sweep = SweepEstimate { bytes: 0, reason: Some("not measured by mr folder".to_string()) };
     why(
         FolderError::BelowFloor(BelowFloor { free: 100, floor: 5000, sweep }),
         &["free disk 100 bytes is under the floor of 5000 bytes; nothing was made"],
@@ -335,7 +335,7 @@ fn no_line_holds_a_next_step() {
     ];
     for error in errors {
         for line in folder_error_why(&error) {
-            assert!(!line.contains("next step") && !line.contains("mortar "), "{line}");
+            assert!(!line.contains("next step") && !line.contains("mortar ") && !line.contains("mr "), "{line}");
         }
     }
 }

@@ -56,7 +56,7 @@ exec "$MORTAR_RIT_REAL_GIT" "$@"
     assert_eq!(rebase[0].op_id, rebase[1].op_id);
     let report = status(&f, "stalled");
     assert_eq!(report.text("stalled_from"), old.as_str()); assert_eq!(report.text("stalled_to"), new.as_str());
-    assert_eq!(report.text("next"), "mortar join"); assert_eq!(fs::read(f.lock_path()).unwrap(), holder, "status ran no recover");
+    assert_eq!(report.text("next"), "mr join"); assert_eq!(fs::read(f.lock_path()).unwrap(), holder, "status ran no recover");
     f.report(&["--json", "join"], "join", 0, "joined");
     assert_eq!(f.head(), new); assert!(!f.lock_path().exists());
     assert_eq!(fs::read(f.request.join("src/upstream")).unwrap(), b"upstream work\n");
@@ -86,5 +86,5 @@ fn rit_status_unmerged_real_index_is_conflicted_not_a_stalled_move() {
     let report = status(&f, "unsaved");
     assert_eq!(report.strings("conflicted"), &["src/file"]);
     assert!(report.is_null("stalled_from")); assert!(report.is_null("stalled_to"));
-    assert_eq!(report.text("next"), "mortar save \"<sentence>\"");
+    assert_eq!(report.text("next"), "mr save \"<sentence>\"");
 }
