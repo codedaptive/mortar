@@ -1,14 +1,15 @@
 //! restore_check_report: check_restore_join_state refused before anything moved; each refusal says why, that nothing
-//! was changed, and its one next step; git and the disk failing are failures to repeat.
+//! was changed, and its one next step; the disk failing and the errors the check never gives are failures to repeat.
+//! ZIT (S-102, rule 11): restore_check_report builds its why lines by calling undo::restore_why for real. Git failing
+//! is the RIT a_git_failure_is_a_failure_to_repeat in cli_rit/restore_git_errors.rs (S-101).
 
 use std::io;
 use std::path::PathBuf;
 
 use ::join::JoinRunError;
-use gitio::GitError;
 
-use super::restore_check_report;
-use crate::report::{ExitCode, Report};
+use cli::report::{ExitCode, Report};
+use cli::undo::restore_check_report;
 
 const STATE: &str = "/w/.git/mortar-join.json";
 
@@ -92,20 +93,6 @@ fn an_unreadable_state_file_is_a_failure_to_repeat() {
             ExitCode::Failure,
             "failed",
             &["/w/.git/mortar-join.json could not be read: boom", "nothing was changed"],
-            "repeat the same command",
-        )
-    );
-}
-
-#[test]
-fn a_git_failure_is_a_failure_to_repeat() {
-    let error = JoinRunError::Git(GitError { args: Vec::new(), code: None, stderr: "not a repository".to_string() });
-    assert_eq!(
-        restore_check_report(&error),
-        report(
-            ExitCode::Failure,
-            "failed",
-            &["git failed: git: no exit code: not a repository", "nothing was changed"],
             "repeat the same command",
         )
     );
