@@ -5,6 +5,7 @@
 //! clock or repository) are not ignored, so zone runs pick them up (rule 11).
 
 mod agent;
+mod disk;
 mod flow;
 mod guard;
 mod json;

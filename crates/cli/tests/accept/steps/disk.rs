@@ -1,5 +1,8 @@
-//! Step 5, disk (05-disk.md). ACCEPT-5 writes its body here and sets `body: Some(<its fn>)`; the step runs only
-//! when ACCEPT_MOOT_COPY is set, which is only when Bob says.
+//! Step 5, disk (05-disk.md): its body is crate::disk::run_disk. It first refuses a copy that is a registered team
+//! repository or a worktree of one (or one it cannot tell), on one failed line, measuring and writing nothing; else
+//! it makes its zone and request folders from the copy, under its own scratch, and takes the five numbers: a full
+//! checkout's bytes, both folders' bytes, mr disk's store and mr snapshot's wall time. The step runs only when
+//! ACCEPT_MOOT_COPY is set and not empty, which is only when Bob says.
 
 use super::{Gate, StepSpec};
 
@@ -8,5 +11,5 @@ pub const DISK: StepSpec = StepSpec {
     title: "disk",
     order: "ACCEPT-5",
     gate: Gate::Env { var: "ACCEPT_MOOT_COPY", meaning: "a copy of moot's repository, only when Bob says (05-disk.md)" },
-    body: None,
+    body: Some(crate::disk::run_disk),
 };
