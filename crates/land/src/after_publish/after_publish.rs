@@ -1,5 +1,5 @@
-//! after_publish: every zone moved onto the origin a publish left (SPEC-land 05-after-publish.md, S-45, S-47, S-121).
-//! No unit test (S-5): it runs git and writes the op log through move_zone; decide_zone_case_tests,
+//! after_publish: every zone moved onto the origin a publish left (SPEC-land 05-after-publish.md, S-45, S-47, S-121,
+//! S-139, S-140). No unit test (S-5): it runs git and writes the op log through move_zone; decide_zone_case_tests,
 //! squash_of_in_tests, requests_to_rebase_tests, choose_held_tests, published_records_tests, replay_records_tests,
 //! record_moves_tests and records_op_tests cover its decisions. Covered by tests/after_publish_zit:
 //! - zone_moves.rs: another_zone_is_replayed_onto_the_new_origin,
@@ -41,7 +41,9 @@ use gitio::Git;
 /// delete no op is written. A conflicted zone is left in place and listed with its files; the others still move; an
 /// error stops the call, the zones before it already moved.
 /// It takes no lock: the caller holds `land` and has run recover (S-16). The caller hands in each zone's open
-/// requests (S-45) and moves the request and zone folders itself (folders move_folder, S-47).
+/// requests (S-45) and moves the request folders itself (folders move_folder, S-47). The caller also brings each
+/// named zone's folder to its branch's tip, whatever its ZoneMove, from the newest value the branch has held whose
+/// tree equals the folder's index (S-139, S-140).
 pub fn after_publish(
     git: &Git,
     refs: &LandRefs,
