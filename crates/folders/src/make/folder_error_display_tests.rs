@@ -1,6 +1,5 @@
 //! The text of each FolderError variant.
 
-use std::io::ErrorKind;
 use std::path::PathBuf;
 
 use gitio::{GitError, Oid};
@@ -167,7 +166,7 @@ fn zone_branch_missing_names_the_branch() {
 fn io_names_the_path_and_the_error() {
     let err = FolderError::Io {
         path: PathBuf::from("/g/x"),
-        source: std::io::Error::new(ErrorKind::Other, "disk full"),
+        source: std::io::Error::other("disk full"),
     };
     assert_eq!(text(err), "/g/x: disk full");
 }
