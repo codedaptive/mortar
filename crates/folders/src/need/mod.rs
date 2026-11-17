@@ -12,7 +12,7 @@ mod gaps_tests;
 #[cfg(test)]
 mod need_path_tests;
 
-pub use add_needed::add_needed;
+pub(crate) use add_needed::add_needed;
 pub use gaps::gaps;
 pub use need::need;
 pub(crate) use need_path::need_path;

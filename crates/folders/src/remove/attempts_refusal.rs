@@ -1,6 +1,6 @@
 //! remove's attempts check: a request folder is not removed while its attempts remain (S-82). No unit test: it
-//! runs git to list the try refs and the worktrees (S-5). tests/folders/attempt_plans.rs covers what counts as an
-//! attempt left. tests/folders/attempts_remove.rs covers, in a throwaway repository: a request folder with an attempt
+//! runs git to list the try refs and the worktrees (S-5). attempts_remaining_tests covers what counts as an attempt
+//! left. tests/folders/attempts_remove.rs covers, in a throwaway repository: a request folder with an attempt
 //! branch left (no folder) is AttemptsRemain naming it, with nothing changed; one with an attempt folder left (its
 //! branch present) likewise; one with only a hand-made `try/<zone>/<request>/01` ref, which is not an attempt, is
 //! removed and that ref left; after keep or drop_attempts, remove goes ahead; an attempt folder whose branch was

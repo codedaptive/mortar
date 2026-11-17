@@ -6,8 +6,6 @@
 //! keep a request open, and the sweep picks only snap and trysnap refs, so that branch is never touched.
 //! A request branch left behind is leftover_branches' case (S-52 (1)); t3code's checkpoint refs come in as
 //! the caller's extra refs (S-53, S-54).
-//! Its tests are zone integration tests in tests/folders/attempt_plans.rs: it uses plan/attempt_number.rs for real
-//! (#1264).
 
 use gitio::Oid;
 

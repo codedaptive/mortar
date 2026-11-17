@@ -1,5 +1,4 @@
 //! What drop_attempts removes and deletes, or why it refuses, before anything is touched (S-82, S-96 (2)).
-//! Its tests are zone integration tests in tests/folders/attempt_plans.rs: it uses unsaved_attempts for real (#1264).
 
 use std::path::PathBuf;
 
