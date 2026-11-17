@@ -52,8 +52,8 @@ impl fmt::Display for FolderError {
             FolderError::AttemptsUnsaved { paths } => write!(
                 f,
                 "attempts {} are not marked saved; nothing changed; next step: have each listed folder's agent run \
-                 mortar save, then repeat; for a listed branch with no folder, make its attempt folder again on its \
-                 try branch and have its agent run mortar save there, then repeat",
+                 mr save, then repeat; for a listed branch with no folder, make its attempt folder again on its \
+                 try branch and have its agent run mr save there, then repeat",
                 paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")
             ),
             FolderError::AttemptsRemain { path, attempts } => f.write_str(&attempts_remain_text(path, attempts)),
@@ -72,7 +72,7 @@ impl fmt::Display for FolderError {
             ),
             FolderError::NotSaved { path } => write!(
                 f,
-                "{} holds work that is not saved; the folder was not moved; next step: mortar save",
+                "{} holds work that is not saved; the folder was not moved; next step: mr save",
                 path.display()
             ),
             FolderError::MoveRefused { path, paths } => write!(
@@ -95,7 +95,7 @@ impl fmt::Display for FolderError {
                 zone_branch,
             } => write!(
                 f,
-                "{} was not removed: branch {branch} is not contained in {zone_branch}; next step: mortar join",
+                "{} was not removed: branch {branch} is not contained in {zone_branch}; next step: mr join",
                 path.display()
             ),
             FolderError::ZoneFolder { path, zone } => write!(
@@ -135,14 +135,14 @@ fn not_removed_unsaved(f: &mut fmt::Formatter<'_>, path: &Path, refused: &[PathB
         return write!(
             f,
             "{} holds work that is not saved; the folder was not removed; next step: have the folder's agent run \
-             mortar save, then repeat",
+             mr save, then repeat",
             path.display()
         );
     }
     write!(
         f,
         "{} holds files the snapshot size cap{} refused: {}; they are in no snapshot, so the folder was not removed; \
-         next step: have the folder's agent move or delete them and run mortar save, then repeat",
+         next step: have the folder's agent move or delete them and run mr save, then repeat",
         path.display(),
         cap.map_or(String::new(), |n| format!(" ({n} bytes)")),
         refused.iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")

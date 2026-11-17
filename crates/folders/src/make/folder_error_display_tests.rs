@@ -178,7 +178,7 @@ fn not_saved_names_the_folder_and_the_next_step() {
     };
     assert_eq!(
         text(err),
-        "/wt/a holds work that is not saved; the folder was not moved; next step: mortar save"
+        "/wt/a holds work that is not saved; the folder was not moved; next step: mr save"
     );
 }
 
@@ -234,7 +234,7 @@ fn not_removed_unsaved_with_no_refused_file_says_save() {
     assert_eq!(
         text(err),
         "/wt/a holds work that is not saved; the folder was not removed; next step: have the folder's agent run \
-         mortar save, then repeat"
+         mr save, then repeat"
     );
 }
 
@@ -249,7 +249,7 @@ fn not_removed_unsaved_names_the_refused_files_and_the_cap() {
         text(err),
         "/wt/a holds files the snapshot size cap (1048576 bytes) refused: big.bin, data/huge.tar; they are in no \
          snapshot, so the folder was not removed; next step: have the folder's agent move or delete them and run \
-         mortar save, then repeat"
+         mr save, then repeat"
     );
 }
 
@@ -263,7 +263,7 @@ fn not_removed_unsaved_with_no_cap_leaves_the_cap_out() {
     assert_eq!(
         text(err),
         "/wt/a holds files the snapshot size cap refused: big.bin; they are in no snapshot, so the folder was not \
-         removed; next step: have the folder's agent move or delete them and run mortar save, then repeat"
+         removed; next step: have the folder's agent move or delete them and run mr save, then repeat"
     );
 }
 
@@ -277,7 +277,7 @@ fn not_joined_names_both_branches_and_the_next_step() {
     assert_eq!(
         text(err),
         "/wt/a was not removed: branch refs/heads/req/folders/WO-1 is not contained in refs/heads/zone/folders; \
-         next step: mortar join"
+         next step: mr join"
     );
 }
 
@@ -449,8 +449,8 @@ fn attempts_unsaved_names_every_folder_and_the_next_step() {
     assert_eq!(
         text(err),
         "attempts /wt/try-1, refs/heads/try/z/r/3 are not marked saved; nothing changed; next step: have each \
-         listed folder's agent run mortar save, then repeat; for a listed branch with no folder, make its attempt \
-         folder again on its try branch and have its agent run mortar save there, then repeat"
+         listed folder's agent run mr save, then repeat; for a listed branch with no folder, make its attempt \
+         folder again on its try branch and have its agent run mr save there, then repeat"
     );
 }
 

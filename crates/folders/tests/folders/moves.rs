@@ -18,7 +18,7 @@ fn unsaved_folder_is_refused_with_save_next_step_and_no_ref_index_file_or_log_ch
     let error = m.move_saved(false).unwrap_err();
     let HeldLockError::Work(error) = error else { panic!("expected work refusal: {error:?}") };
     let text = error.to_string();
-    assert!(text.contains("mortar save"), "{text}");
+    assert!(text.contains("mr save"), "{text}");
     assert!(matches!(error, FolderError::NotSaved { path } if path == m.folder));
     assert_eq!(m.observe(), before);
     assert_eq!(fs::read(m.git_dir.join("index")).unwrap(), raw_index);
