@@ -6,6 +6,10 @@
 //! even when neither path is in current files. They do NOT claim a mismatched NotABlob or path=None Overlap.
 //! State fixtures are literal on-disk reader inputs with real objects/refs, not private state/codec inclusion.
 
+// WO-join-rit-9 / S-142(1): resolve -> Oplog undo/valued log -> restore_join_state -> resolve, with real Git.
+mod restore;
+mod restore_crash;
+mod restore_support;
 mod classify;
 mod support;
 mod tree_refusals;
