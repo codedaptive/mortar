@@ -1,8 +1,7 @@
 //! guard_install: put the guard's config and both hooks in place. It runs git and does file I/O, so it has no sibling
 //! unit test (S-5); its decisions are decide_hook_writes and decide_config_write, each with its _tests.
-//! tests/guard_zit.rs covers it: fresh_install_writes_config_and_hooks, repeat_install_changes_nothing,
-//! a_foreign_pre_push_is_refused_and_nothing_written, a_foreign_reference_transaction_is_refused_and_nothing_written,
-//! install_follows_a_relative_hooks_path and install_from_a_linked_worktree_covers_the_main_repo.
+//! No test of it is in land today: its tests are owed to Nagatha as RITs (cases 1-6 and 9-11 in
+//! ledger/reports/WO-land-guard-symref-for-nagatha.md).
 
 use std::fs::{self, Permissions};
 use std::os::unix::fs::PermissionsExt;

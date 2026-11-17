@@ -70,6 +70,7 @@ fn case(name: &'static str, hook: GuardHook, input: &str, moves: Option<Vec<RefM
 fn transaction_cases() -> Vec<Case> {
     let main_ab = format!("{A} {B} refs/heads/main\n");
     let integ_ab = format!("{A} {B} refs/heads/integration\n");
+    let main_symref = format!("{Z} ref:refs/heads/x refs/heads/main");
     vec![
         case("committed allowed", tx("committed"), &main_ab, None, GuardVerdict::Allow),
         case("aborted allowed", tx("aborted"), &main_ab, None, GuardVerdict::Allow),
@@ -119,6 +120,37 @@ fn transaction_cases() -> Vec<Case> {
             None, refuse("cannot read the reference-transaction hook's input line \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb refs/heads/x\"")),
         case("short id", tx("prepared"), "abc bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb refs/heads/x", None,
             refuse("cannot read the reference-transaction hook's input line \"abc bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb refs/heads/x\"")),
+        // git 2.45+ writes a symbolic value as `ref:<target>`: read on any ref, allowed off the guarded refs, refused
+        // on them whatever the intent lists (a RefMove holds oids only).
+        case("HEAD to a symref from zero", tx("prepared"), &format!("{Z} ref:refs/heads/zone/a HEAD"), None,
+            GuardVerdict::Allow),
+        case("HEAD to a symref from an oid", tx("prepared"), &format!("{A} ref:refs/heads/zone/a HEAD"), None,
+            GuardVerdict::Allow),
+        case("HEAD from a symref to an oid", tx("prepared"), &format!("ref:refs/heads/zone/a {B} HEAD"), None,
+            GuardVerdict::Allow),
+        case("HEAD symref to symref", tx("prepared"), "ref:refs/heads/a ref:refs/heads/b HEAD", None,
+            GuardVerdict::Allow),
+        case("origin to a symref no intent", tx("prepared"), &main_symref, None,
+            refuse("only Mortar moves refs/heads/main")),
+        case("origin to a symref with intent", tx("prepared"), &main_symref,
+            Some(vec![mv("refs/heads/main", None, A)]), refuse("only Mortar moves refs/heads/main")),
+        case("integration from a symref with intent", tx("prepared"),
+            &format!("ref:refs/heads/x {B} refs/heads/integration"),
+            Some(vec![mv("refs/heads/integration", None, B)]), refuse("only Mortar moves refs/heads/integration")),
+        case("empty symref target new", tx("prepared"), &format!("{A} ref: HEAD"), None,
+            refuse(&format!("cannot read the reference-transaction hook's input line \"{A} ref: HEAD\""))),
+        case("empty symref target old", tx("prepared"), &format!("ref: {B} HEAD"), None,
+            refuse(&format!("cannot read the reference-transaction hook's input line \"ref: {B} HEAD\""))),
+        case("short id beside a symref", tx("prepared"), "abc ref:refs/heads/a HEAD", None,
+            refuse("cannot read the reference-transaction hook's input line \"abc ref:refs/heads/a HEAD\"")),
+        case("symref line then guarded oid line", tx("prepared"),
+            &format!("{Z} ref:refs/heads/x HEAD\n{A} {B} refs/heads/main\n"), None,
+            refuse("only Mortar moves refs/heads/main")),
+        // The hook lines git writes for `git worktree add -b x <dir>` with an open intent that moves another ref.
+        case("new branch from zero, unrelated intent", tx("prepared"), &format!("{Z} {A} refs/heads/x"),
+            Some(vec![mv("refs/heads/zone/other", Some(A), B)]), GuardVerdict::Allow),
+        case("HEAD to a symref, unrelated intent", tx("prepared"), &format!("{Z} ref:refs/heads/x HEAD"),
+            Some(vec![mv("refs/heads/zone/other", Some(A), B)]), GuardVerdict::Allow),
     ]
 }
 

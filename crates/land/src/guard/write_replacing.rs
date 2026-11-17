@@ -1,5 +1,6 @@
-//! write_replacing: put a file's whole new content in place in one step. It writes files, so it has no unit test (S-5);
-//! tests/guard_zit.rs covers it (fresh_install_writes_config_and_hooks, install_follows_a_relative_hooks_path).
+//! write_replacing: put a file's whole new content in place in one step. It writes files, so it has no unit test (S-5).
+//! No test of it is in land today: its tests are owed to Nagatha as RITs (cases 1 and 5 in
+//! ledger/reports/WO-land-guard-symref-for-nagatha.md).
 
 use std::ffi::OsString;
 use std::fs::{self, Permissions};

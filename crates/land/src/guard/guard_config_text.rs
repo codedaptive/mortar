@@ -1,7 +1,7 @@
 //! guard_config_text: guard.json's text for a set of branches.
-//! No sibling unit test (S-104): every test of it runs oplog's write_json_string (S-101). Covered by
-//! tests/guard_zit (fresh_install_writes_config_and_hooks, repeat_install_changes_nothing), through
-//! guard_install; its unit cases are Nagatha's RITs (owed).
+//! No sibling unit test (S-104): every test of it runs oplog's write_json_string (S-101). No test of it is in land
+//! today: its own cases, and its cases through guard_install (cases 1 and 2 in
+//! ledger/reports/WO-land-guard-symref-for-nagatha.md), are owed to Nagatha as RITs.
 
 use oplog::write_json_string;
 
