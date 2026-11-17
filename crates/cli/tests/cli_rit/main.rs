@@ -23,3 +23,4 @@ mod run_publish_tests;
 mod rit6;
 mod rit7;
 mod rit8;
+mod rit9;
