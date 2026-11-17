@@ -1,5 +1,6 @@
 //! `mortar folder zone`: a sparse zone folder from the config, its repeat, an unknown zone, a missing --actor, and
-//! --start making a new zone branch (or naming no commit).
+//! --start making a new zone branch (or naming no commit). S-149's no-start cases prove the origin tip, not HEAD,
+//! supplies a missing zone branch, and a missing origin is refused with --start next.
 //! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
 //! landing.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-104, S-109):
@@ -239,6 +240,39 @@ fn start_on_a_new_zone_makes_its_branch_at_the_commit_by_an_op_of_the_actor() {
         "no folder-branch op made zone/core: {logged:?}\n{out}"
     );
     assert_ops_by_actor(logged, &out);
+}
+
+#[test]
+fn precheck_scope_a_bare_zone_starts_at_the_origin_tip_not_the_callers_detached_head() {
+    let fx = Fixture::new(false);
+    fx.git.run(&["checkout", "--detach", "-q", fx.base.as_str()], &RunOpts::default()).unwrap();
+    let tree = fx.git.commit_info(&fx.base).unwrap().tree;
+    let origin = fx.git.commit_tree(&tree, std::slice::from_ref(&fx.base), "new origin tip\n", None, None).unwrap();
+    fx.git.run(&["update-ref", "refs/heads/main", origin.as_str()], &RunOpts::default()).unwrap();
+    assert_ne!(origin, fx.base); assert_eq!(fx.git.rev_parse("HEAD").unwrap(), Some(fx.base.clone()));
+    let before = ops(&fx.common).len();
+    let made = fx.folder(true, &["zone", "core", fx.path_arg()]); let out = text(&made);
+    assert_eq!(made.status.code(), Some(0), "{out}"); assert_eq!(member(&made, "outcome"), "made");
+    assert_harness_next(&member(&made, "next"));
+    assert_eq!(fx.git.read_ref("refs/heads/zone/core").unwrap(), Some(origin.clone()));
+    assert_eq!(fx.record().base, origin); assert_eq!(files(&fx.path), ["Cargo.toml", "src/a/a.txt"]);
+    let all = ops(&fx.common); let added = &all[before..]; assert_ops_by_actor(added, &out);
+    assert!(added.iter().any(|r| r.kind == "folder-branch" && r.phase == oplog::OpPhase::Done
+        && r.moves.iter().any(|m| m.refname == "refs/heads/zone/core" && m.old.is_none() && m.new == origin)));
+}
+
+#[test]
+fn precheck_scope_a_bare_zone_without_an_origin_or_zone_branch_refuses_naming_start_and_makes_nothing() {
+    let fx = Fixture::new(false);
+    fx.git.run(&["update-ref", "-d", "refs/heads/main"], &RunOpts::default()).unwrap();
+    assert_eq!(fx.git.read_ref("refs/heads/main").unwrap(), None);
+    let before = ops(&fx.common); let worktrees = fx.worktrees();
+    let refused = fx.folder(true, &["zone", "core", fx.path_arg()]); let out = text(&refused);
+    assert_eq!(refused.status.code(), Some(1), "{out}"); assert_eq!(member(&refused, "outcome"), "refused");
+    let next = member(&refused, "next"); assert!(next.contains("--start"), "{out}"); assert_harness_next(&next);
+    assert!(!fx.path.exists()); assert_eq!(fx.git.read_ref("refs/heads/zone/core").unwrap(), None);
+    assert_eq!(fx.git.read_ref("refs/heads/main").unwrap(), None);
+    assert_eq!(fx.worktrees(), worktrees); assert_eq!(ops(&fx.common), before);
 }
 
 #[test]

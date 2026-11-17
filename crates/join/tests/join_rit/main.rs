@@ -10,6 +10,8 @@
 mod restore;
 mod restore_crash;
 mod restore_support;
+mod precheck;
+mod precheck_crash;
 mod classify;
 mod support;
 mod tree_refusals;
