@@ -138,7 +138,7 @@ fn a_removed_guard_is_returned_and_can_be_logged_even_when_acquire_then_refuses(
     };
     let error = acquire_lock(&c.f.common, &LockName::Land, &c.me, &probe).unwrap_err();
     assert!(probe.replaced.load(Ordering::SeqCst));
-    assert_eq!(error.removed_guards(), &[c.dead_guard.clone()]);
+    assert_eq!(error.removed_guards(), std::slice::from_ref(&c.dead_guard));
     match &error {
         LockError::Held { path, holder, .. } => {
             assert_eq!(path, &c.path);
@@ -196,7 +196,7 @@ fn write_record(path: &std::path::Path, record: &LockRecord) {
 
 fn log_removals(c: &GuardCase, removed: &[LockRecord]) {
     assert!(!oplog_path(&c.f.common).exists(), "acquire returns evidence; it must not log on its own");
-    assert_eq!(removed, &[c.dead_guard.clone()]);
+    assert_eq!(removed, std::slice::from_ref(&c.dead_guard));
     let before_refs = refs(&c.f);
     let mut sequence = 0;
     let mut next_id = || { sequence += 1; format!("guard-log-{sequence}") };

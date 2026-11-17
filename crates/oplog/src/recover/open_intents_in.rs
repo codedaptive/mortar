@@ -6,7 +6,7 @@ use crate::store::{OpPhase, OpRecord};
 
 /// Each item whose record is an Intent with no later Done or Failed record of the same op_id, in log
 /// order; `record` reads an item's op record.
-pub(crate) fn open_intents_in<'a, R>(records: &'a [R], record: fn(&R) -> &OpRecord) -> Vec<&'a R> {
+pub(crate) fn open_intents_in<R>(records: &[R], record: fn(&R) -> &OpRecord) -> Vec<&R> {
     // Walking backwards, `closed` holds the op_ids closed later in the log than the record at hand.
     let mut closed: HashSet<&str> = HashSet::new();
     let mut open = Vec::new();

@@ -36,7 +36,7 @@ fn log() -> Vec<OpRecord> {
     ]
 }
 
-fn ids<'a>(found: Vec<&'a OpRecord>) -> Vec<&'a str> {
+fn ids(found: Vec<&OpRecord>) -> Vec<&str> {
     found.into_iter().map(|r| r.op_id.as_str()).collect()
 }
 

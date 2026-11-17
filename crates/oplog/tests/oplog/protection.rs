@@ -36,7 +36,7 @@ fn protected_create_and_fast_forward_apply_while_unprotected_refs_can_rewind() {
     let log = read_op_log(&f.common).unwrap();
     assert!(log.torn_lines.is_empty());
     assert_eq!(log.records.len(), 6);
-    assert_eq!(log.records.iter().map(|r| r.phase.clone()).collect::<Vec<_>>(), vec![
+    assert_eq!(log.records.iter().map(|r| r.phase).collect::<Vec<_>>(), vec![
         OpPhase::Intent, OpPhase::Done, OpPhase::Intent, OpPhase::Done, OpPhase::Intent, OpPhase::Done,
     ]);
     assert_eq!(log.records[1], created);
