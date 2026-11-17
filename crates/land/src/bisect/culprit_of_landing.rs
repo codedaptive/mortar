@@ -11,7 +11,7 @@ use super::{Culprit, CulpritError};
 /// [integration, squash] (S-58): the squash is the second parent. Any other count is NotALanding, refused
 /// before `trailers_of` is called. `trailers_of` is called once, on the squash; its error is Trailers. The
 /// Culprit names `commit`, never the squash, so it stays on origin's first-parent line.
-pub fn culprit_of_landing(
+pub(crate) fn culprit_of_landing(
     commit: &Oid,
     parents: &[Oid],
     trailers_of: impl FnOnce(&Oid) -> Result<MortarTrailers, MortarTrailerError>,
