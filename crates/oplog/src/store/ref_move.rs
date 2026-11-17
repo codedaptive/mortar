@@ -1,5 +1,5 @@
 //! One planned ref move in an op: the ref, the value it must hold first, the value to set.
-//! A bare type; encode_op_record_tests, decode_op_record_tests and decode_ref_move_tests exercise it.
+//! A bare type; encode_op_record_tests and decode_ref_move_tests exercise it.
 
 use gitio::Oid;
 

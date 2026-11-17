@@ -1,5 +1,5 @@
-//! The Mortar trailers of one message. A bare type (S-7); pick_mortar_trailers_tests,
-//! mortar_trailer_pairs_tests and carry_mortar_trailers_tests exercise it.
+//! The Mortar trailers of one message. A bare type (S-7); pick_mortar_trailers_tests and
+//! mortar_trailer_pairs_tests exercise it.
 
 use crate::change_id::ChangeId;
 

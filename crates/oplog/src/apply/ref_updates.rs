@@ -6,7 +6,7 @@ use crate::store::RefMove;
 
 /// One update per move, in order, each as given: an all-zero `new` stays a delete, `old` None stays
 /// "must not exist".
-pub fn ref_updates(moves: &[RefMove]) -> Vec<RefUpdate> {
+pub(crate) fn ref_updates(moves: &[RefMove]) -> Vec<RefUpdate> {
     moves
         .iter()
         .map(|m| RefUpdate {

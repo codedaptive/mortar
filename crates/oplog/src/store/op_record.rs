@@ -1,5 +1,5 @@
 //! One line of the op log.
-//! A bare type; encode_op_record_tests and decode_op_record_tests exercise its JSON form.
+//! A bare type; encode_op_record_tests and decode_marked_log_tests exercise its JSON form.
 
 use super::{OpPhase, OpResult, RefMove};
 

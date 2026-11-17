@@ -22,6 +22,8 @@ mod settled_or_first_error;
 #[cfg(test)]
 mod decide_recovery_tests;
 #[cfg(test)]
+mod open_intent_moves_tests;
+#[cfg(test)]
 mod open_intents_in_tests;
 #[cfg(test)]
 mod open_intents_tests;
@@ -36,14 +38,15 @@ pub use close_intent::close_intent;
 pub use decide_recovery::decide_recovery;
 pub use intent_close::IntentClose;
 pub use open_intent::open_intent;
-pub use open_intent_moves::open_intent_moves;
 pub use open_intents::open_intents;
 pub use open_marked_intents::open_marked_intents;
 pub use recover::recover;
-pub use recovery_close::recovery_close;
 pub use recovery_close_valued::recovery_close_valued;
 pub use recovery_decision::RecoveryDecision;
+
 pub(crate) use close_intent_record::close_intent_record;
+pub(crate) use open_intent_moves::open_intent_moves;
 pub(crate) use open_intents_in::open_intents_in;
 pub(crate) use recoverable_intents::recoverable_intents;
+pub(crate) use recovery_close::recovery_close;
 pub(crate) use settled_or_first_error::settled_or_first_error;

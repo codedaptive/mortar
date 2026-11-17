@@ -1,9 +1,11 @@
 //! open_intent_moves: an open intent's moves for its op_id; None once a later Done or Failed closes it, or
-//! for an op_id with no intent.
-//! These run open_intent_moves with the real open_intents, so they sit in the integration group (#1052).
+//! for an op_id with no intent. These run open_intent_moves with the real open_intents, a pure filter over
+//! the record slice, so they are unit tests (S-166).
 
 use gitio::Oid;
-use oplog::{open_intent_moves, OpPhase, OpRecord, OpResult, RefMove};
+
+use super::open_intent_moves;
+use crate::store::{OpPhase, OpRecord, OpResult, RefMove};
 
 const A: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const B: &str = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";

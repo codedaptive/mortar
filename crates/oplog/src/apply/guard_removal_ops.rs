@@ -2,7 +2,7 @@
 
 use std::path::Path;
 
-use super::guard_removal_op::guard_removal_op;
+use super::guard_removal_op;
 use crate::locks::{AcquiredLock, LockError, LockRecord};
 use crate::store::Op;
 

@@ -35,17 +35,17 @@ mod value_as_of_op_tests;
 #[cfg(test)]
 mod zero_oid_like_tests;
 
-pub use caller_op::caller_op;
 pub use check_restore_ref_names::check_restore_ref_names;
 pub use find_undo_target::find_undo_target;
-pub use last_mover::last_mover;
 pub use op_caller::OpCaller;
 pub use plan_restore::plan_restore;
-pub use plan_undo::plan_undo;
 pub use restore::restore;
 pub use undo::undo;
-pub use value_as_of_op::value_as_of_op;
 
+pub(crate) use caller_op::caller_op;
+pub(crate) use last_mover::last_mover;
 pub(crate) use name_moves::name_moves;
+pub(crate) use plan_undo::plan_undo;
 pub(crate) use value_after_move::value_after_move;
+pub(crate) use value_as_of_op::value_as_of_op;
 pub(crate) use zero_oid_like::zero_oid_like;

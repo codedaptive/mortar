@@ -8,7 +8,7 @@ use crate::store::{OplogError, RefMove};
 /// read_ref_value reads them by full name: git check-ref-format accepts a two-level name such as
 /// `heads/main`, which update-ref would write outside refs/ and read_ref_value could never read back. Only the
 /// names are checked; `old` and `new` are not.
-pub fn check_ref_moves(moves: &[RefMove]) -> Result<(), OplogError> {
+pub(crate) fn check_ref_moves(moves: &[RefMove]) -> Result<(), OplogError> {
     for m in moves {
         let reason = if m.refname.is_empty() {
             "is empty"

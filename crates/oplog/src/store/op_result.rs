@@ -1,5 +1,5 @@
 //! What came of an op, as its closing record states it.
-//! A bare type; encode_op_record_tests, decode_op_record_tests and decode_op_result_tests exercise it.
+//! A bare type; encode_op_record_tests, decode_marked_log_tests and decode_op_result_tests exercise it.
 
 use gitio::Oid;
 

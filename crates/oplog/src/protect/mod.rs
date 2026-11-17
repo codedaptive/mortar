@@ -9,6 +9,7 @@ mod protected_ref;
 mod protected_move_verdict_tests;
 
 pub use apply_protected::apply_protected;
-pub use check_protected_moves::check_protected_moves;
-pub use protected_move_verdict::protected_move_verdict;
 pub use protected_ref::ProtectedRef;
+
+pub(crate) use check_protected_moves::check_protected_moves;
+pub(crate) use protected_move_verdict::protected_move_verdict;

@@ -10,7 +10,8 @@ mod filter_history_tests;
 #[cfg(test)]
 mod history_matches_tests;
 
-pub use filter_history::filter_history;
 pub use history::history;
 pub use history_filter::HistoryFilter;
 pub use history_matches::history_matches;
+
+pub(crate) use filter_history::filter_history;

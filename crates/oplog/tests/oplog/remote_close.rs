@@ -2,11 +2,12 @@ use crate::remote_intents::remote_op;
 use crate::support::{refs, test_op, Fixture};
 use crate::values::pairs;
 use oplog::{
-    append_marked_record, apply, apply_with_values, close_intent, decode_op_log, intent_record, open_intent,
-    open_remote_intent, oplog_path, read_marked_log, read_op_log, read_valued_log, IntentClose, OpPhase,
-    OpResult, OplogError, RefMove,
+    apply, apply_with_values, close_intent, encode_marked_record, intent_record, open_intent, open_remote_intent,
+    oplog_path, read_marked_log, read_op_log, read_valued_log, IntentClose, OpPhase, OpResult, OplogError,
+    RefMove,
 };
 use std::fs;
+use std::io::Write;
 
 fn line_count(f: &Fixture) -> usize {
     fs::read_to_string(oplog_path(&f.common)).unwrap().lines().count()
@@ -14,11 +15,13 @@ fn line_count(f: &Fixture) -> usize {
 
 #[test]
 fn close_intent_done_then_failed_each_append_one_closing_record_keeping_values_and_mark() {
-    // Joins open_remote_intent / append_marked_record -> close_intent -> read_marked_log.
+    // Joins open_remote_intent / a seeded marked intent with values -> close_intent -> read_marked_log. No export
+    // appends a marked intent with values, so its encode_marked_record line is appended to the log directly.
     let f = Fixture::new();
     open_remote_intent(&f.git, &f.common, &remote_op("op-done", &f.objects), "origin").unwrap();
-    append_marked_record(&f.common, &intent_record(&remote_op("op-failed", &f.objects)), &pairs(), Some("upstream"))
-        .unwrap();
+    let seeded = encode_marked_record(&intent_record(&remote_op("op-failed", &f.objects)), &pairs(), Some("upstream"));
+    let mut log = fs::OpenOptions::new().append(true).open(oplog_path(&f.common)).unwrap();
+    writeln!(log, "{seeded}").unwrap();
     assert_eq!(line_count(&f), 2);
     let done = close_intent(&f.common, "op-done", IntentClose::Done).unwrap();
     assert_eq!(line_count(&f), 3);
@@ -104,5 +107,5 @@ fn log_mixing_old_and_marked_lines_reads_whole() {
     let plain = read_op_log(&f.common).unwrap();
     assert!(plain.torn_lines.is_empty());
     assert_eq!(plain.records, records);
-    assert_eq!(decode_op_log(&bytes).unwrap(), plain);
+    assert_eq!(fs::read(oplog_path(&f.common)).unwrap(), bytes);
 }

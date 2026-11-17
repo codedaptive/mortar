@@ -12,7 +12,7 @@ use crate::store::{OplogError, RefMove};
 /// refs/; then asks git check-ref-format about each move's ref name in order. The first refused name is
 /// `BadMove`. A GitError here is a git failure, `OplogError::Git`. Nothing is written either way: apply calls
 /// this before the intent.
-pub fn check_ref_names(git: &Git, moves: &[RefMove]) -> Result<(), OplogError> {
+pub(crate) fn check_ref_names(git: &Git, moves: &[RefMove]) -> Result<(), OplogError> {
     check_ref_moves(moves)?;
     for m in moves {
         ref_format_verdict(

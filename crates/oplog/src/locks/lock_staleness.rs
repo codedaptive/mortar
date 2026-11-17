@@ -3,7 +3,7 @@
 
 /// Whether an existing lock may be taken over.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LockStaleness {
+pub(crate) enum LockStaleness {
     Stale,
     Held,
 }

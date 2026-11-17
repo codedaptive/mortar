@@ -9,7 +9,7 @@ use crate::store::{OpPhase, OplogError, OpRecord, RefMove};
 /// before the pivot left; failing that, what the first done move of it after the pivot found (its `old`).
 /// Ok(None) means the ref was absent then. UnknownOp when no record has `op_id`; ValueUnknown when no done
 /// record moves `refname`.
-pub fn value_as_of_op(
+pub(crate) fn value_as_of_op(
     records: &[OpRecord],
     op_id: &str,
     refname: &str,

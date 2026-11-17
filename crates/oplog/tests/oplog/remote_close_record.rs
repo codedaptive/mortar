@@ -1,12 +1,12 @@
 //! Joins close_intent -> read_marked_log -> close_intent_record (open_intents_in, close_record) on a log
-//! seeded with append_marked_record: Done and Failed close the open intent with the op_id, keeping its
+//! seeded with encode_marked_record lines: Done and Failed close the open intent with the op_id, keeping its
 //! values and mark, and append that record; an op_id with no open intent is NotOpen and appends nothing.
 //! The closing record's `at` is the clock (unix_now), so it is checked against reads before and after.
 
 use crate::support::Fixture;
 use gitio::Oid;
 use oplog::{
-    append_marked_record, close_intent, oplog_path, read_marked_log, unix_now, IntentClose, MarkedRecord, OpPhase,
+    close_intent, encode_marked_record, oplog_path, read_marked_log, unix_now, IntentClose, MarkedRecord, OpPhase,
     OpRecord, OpResult, OplogError, RefMove,
 };
 use std::fs;
@@ -49,10 +49,16 @@ fn closed(op_id: &str, phase: OpPhase, result: OpResult) -> MarkedRecord {
     MarkedRecord { record: record(op_id, phase, 1763030500, Some(result)), values: vec![], remote: None }
 }
 
+/// A fixture whose log holds `log`, one encode_marked_record line each: the bytes append_marked_record appends,
+/// written directly because no export appends an arbitrary marked record.
 fn seeded(log: &[MarkedRecord]) -> Fixture {
     let f = Fixture::new();
-    for m in log {
-        append_marked_record(&f.common, &m.record, &m.values, m.remote.as_deref()).unwrap();
+    if !log.is_empty() {
+        let path = oplog_path(&f.common);
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let text: String =
+            log.iter().map(|m| encode_marked_record(&m.record, &m.values, m.remote.as_deref()) + "\n").collect();
+        fs::write(&path, text).unwrap();
     }
     f
 }

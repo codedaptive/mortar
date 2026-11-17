@@ -1,5 +1,5 @@
 //! Reads the op log file whole and decodes it, each record with its values and remote mark.
-//! No unit test: it reads a real file (S-5); crates/oplog/tests/oplog/marked_lines.rs covers the decoding. Nagatha's
+//! No unit test: it reads a real file (S-5); decode_marked_log_tests covers the decoding. Nagatha's
 //! integration group should cover: a missing file reads as an empty log; records appended by
 //! append_marked_record read back equal, with their values and marks, and in order; a file cut mid-record
 //! reads with that line in torn_lines; an unreadable path is an Io error naming the log's path.

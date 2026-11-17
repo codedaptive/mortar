@@ -1,6 +1,6 @@
 //! WO-orc-oplog-it-7b, S-44/S-30: public with_lock joins real PID probes, lock files, oplog durability and work.
 use crate::support::{refs, Fixture};
-use oplog::{acquire_lock, decode_lock_record, encode_lock_record, host_name, oplog_path, read_op_log,
+use oplog::{acquire_lock, decode_lock_record, host_name, oplog_path, read_op_log,
     release_lock, with_lock, HeldLockError, KillPidProbe, LockError, LockName, LockRecord, OpPhase, OpResult, PidProbe};
 use std::{cell::Cell, fs, path::{Path, PathBuf}, process::Command, sync::atomic::{AtomicBool, Ordering}};
 
@@ -136,7 +136,11 @@ fn dead_pid() -> u32 {
     assert!(!KillPidProbe.pid_alive(pid));
     pid
 }
-fn put(path: &Path, record: &LockRecord) { fs::create_dir_all(path.parent().unwrap()).unwrap(); fs::write(path, encode_lock_record(record).unwrap()).unwrap(); }
+/// Writes `record` as lock file text: the four `name=value` lines pid, host, key, since.
+fn put(path: &Path, record: &LockRecord) {
+    fs::create_dir_all(path.parent().unwrap()).unwrap();
+    fs::write(path, format!("pid={}\nhost={}\nkey={}\nsince={}\n", record.pid, record.host, record.key, record.since)).unwrap();
+}
 fn guard_fixture() -> (Fixture, PathBuf, PathBuf, LockRecord, LockRecord) {
     let f = Fixture::new();
     let mut one = Command::new("true").spawn().unwrap();

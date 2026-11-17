@@ -7,7 +7,7 @@ use super::{LockError, LockName};
 const MAX_ZONE_BYTES: usize = 100;
 
 /// The lock's file name. A zone that could escape the locks folder or hide the file is refused.
-pub fn lock_file_name(name: &LockName) -> Result<String, LockError> {
+pub(crate) fn lock_file_name(name: &LockName) -> Result<String, LockError> {
     match name {
         LockName::Land => Ok("land.lock".to_string()),
         LockName::Folders => Ok("folders.lock".to_string()),

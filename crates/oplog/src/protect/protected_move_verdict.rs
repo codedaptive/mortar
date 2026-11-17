@@ -13,7 +13,7 @@ use crate::store::{oid_is_zero, OplogError, RefMove};
 /// A delete is refused even of an absent ref. Otherwise an absent ref is a creation and passes, an unchanged
 /// value passes, and a move passes only when its merge base is `current`, so `current` is an ancestor of
 /// `m.new`. A rewind (merge base `m.new`) or a sideways move (another merge base, or none) is refused.
-pub fn protected_move_verdict(
+pub(crate) fn protected_move_verdict(
     m: &RefMove,
     guard: &ProtectedRef,
     current: Option<&Oid>,

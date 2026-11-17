@@ -1,5 +1,5 @@
 //! The op log file's bytes back to its records, each with its values and remote mark.
-//! Its decisions are proved by crates/oplog/tests/oplog/marked_lines.rs.
+//! Its decisions are proved by decode_marked_log_tests.
 
 use crate::store::{LineError, OplogError};
 
@@ -9,7 +9,7 @@ use super::{decode_marked_line, MarkedLog};
 /// UTF-8 cut short at the line's end) is skipped and its 1-based line number kept in torn_lines: it is a
 /// record that was never acknowledged. A last line without '\n' that decodes is kept. Any other bad line
 /// is Malformed with its line number.
-pub fn decode_marked_log(bytes: &[u8]) -> Result<MarkedLog, OplogError> {
+pub(crate) fn decode_marked_log(bytes: &[u8]) -> Result<MarkedLog, OplogError> {
     let mut log = MarkedLog::default();
     for (index, segment) in bytes.split(|b| *b == b'\n').enumerate() {
         let line = index + 1;

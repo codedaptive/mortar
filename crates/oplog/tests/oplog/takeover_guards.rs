@@ -1,10 +1,12 @@
 //! S-30: joins real dead/live PID evidence, on-disk takeover/reap guards, acquire results and caller-side op logging.
+//! The caller logs each removal by applying the takeover-guard-removal op S-30 names, written out here;
+//! guard_removal_op building that op is proved by its unit tests, src/apply/guard_removal_op_tests.rs.
 
 use super::locks::holder;
 use crate::support::{refs, Fixture};
 use oplog::{
-    acquire_lock, apply, decode_lock_record, encode_lock_record, guard_removal_op, oplog_path,
-    read_op_log, release_lock, ApplyOutcome, KillPidProbe, LockError, LockName, LockRecord, OpPhase, PidProbe,
+    acquire_lock, apply, decode_lock_record, oplog_path, read_op_log, release_lock, ApplyOutcome, KillPidProbe,
+    LockError, LockName, LockRecord, Op, OpPhase, PidProbe,
 };
 use std::fs;
 use std::path::PathBuf;
@@ -190,26 +192,38 @@ fn reap_path(c: &GuardCase) -> PathBuf {
     c.f.common.join(format!("mortar/locks/land.lock.takeover.reap-{}-100", c.dead_guard.pid))
 }
 
+/// The record as lock file text, spelled out: four `name=value` lines, pid, host, key, since.
 fn write_record(path: &std::path::Path, record: &LockRecord) {
-    fs::write(path, encode_lock_record(record).unwrap()).unwrap();
+    let text = format!("pid={}\nhost={}\nkey={}\nsince={}\n", record.pid, record.host, record.key, record.since);
+    fs::write(path, text).unwrap();
+}
+
+/// The op S-30 has the caller log for removing c's dead guard, with op ID `op_id`: no moves, kind
+/// takeover-guard-removal, actor `<pid>@<host>` of the new holder, a key that names the guard and its old holder
+/// (so a repeat is the same op), and a reason naming the guard path and the old holder's pid, host and key.
+fn removal_op(c: &GuardCase, op_id: &str, at: u64) -> Op {
+    let old = &c.dead_guard;
+    let guard = c.guard.display();
+    Op {
+        op_id: op_id.to_string(),
+        key: format!("takeover-guard-removal:{guard}:{}@{}:{}", old.pid, old.host, old.since),
+        kind: "takeover-guard-removal".to_string(),
+        actor: format!("{}@{}", c.me.pid, c.me.host),
+        reason: format!(
+            "removed the stale takeover guard {guard} left by pid {} on host {}, held for key {}",
+            old.pid, old.host, old.key
+        ),
+        at,
+        moves: Vec::new(),
+    }
 }
 
 fn log_removals(c: &GuardCase, removed: &[LockRecord]) {
     assert!(!oplog_path(&c.f.common).exists(), "acquire returns evidence; it must not log on its own");
     assert_eq!(removed, std::slice::from_ref(&c.dead_guard));
     let before_refs = refs(&c.f);
-    let mut sequence = 0;
-    let mut next_id = || { sequence += 1; format!("guard-log-{sequence}") };
-    let ops = guard_removal_op(&c.path, &c.me, removed, &mut next_id, 200);
-    assert_eq!(ops.len(), 1);
-    assert_eq!(ops[0].op_id, "guard-log-1");
-    assert_eq!(ops[0].kind, "takeover-guard-removal");
-    assert_eq!(ops[0].actor, format!("{}@{}", c.me.pid, c.me.host));
-    assert!(ops[0].moves.is_empty());
-    for detail in [c.guard.display().to_string(), c.dead_guard.pid.to_string(), c.dead_guard.host.clone(), c.dead_guard.key.clone()] {
-        assert!(ops[0].reason.contains(&detail), "missing {detail}: {}", ops[0].reason);
-    }
-    assert!(matches!(apply(&c.f.git, &c.f.common, &ops[0]).unwrap(), ApplyOutcome::Done(_)));
+    let op = removal_op(c, "guard-log-1", 200);
+    assert!(matches!(apply(&c.f.git, &c.f.common, &op).unwrap(), ApplyOutcome::Done(_)));
     let log = read_op_log(&c.f.common).unwrap();
     assert!(log.torn_lines.is_empty());
     assert_eq!(log.records.len(), 2);
@@ -217,12 +231,11 @@ fn log_removals(c: &GuardCase, removed: &[LockRecord]) {
     assert_eq!(log.records[1].phase, OpPhase::Done);
     assert_eq!(log.records[1].op_id, "guard-log-1");
     assert_eq!(log.records[1].kind, "takeover-guard-removal");
-    assert_eq!(log.records[1].reason, ops[0].reason);
+    assert_eq!(log.records[1].reason, op.reason);
     assert!(log.records[1].moves.is_empty());
     let bytes = fs::read(oplog_path(&c.f.common)).unwrap();
-    let repeated = guard_removal_op(&c.path, &c.me, removed, &mut next_id, 201);
-    assert_eq!(repeated[0].op_id, "guard-log-2");
-    assert_eq!(apply(&c.f.git, &c.f.common, &repeated[0]).unwrap(), ApplyOutcome::Repeated(log.records[1].clone()));
+    let repeated = removal_op(c, "guard-log-2", 201);
+    assert_eq!(apply(&c.f.git, &c.f.common, &repeated).unwrap(), ApplyOutcome::Repeated(log.records[1].clone()));
     assert_eq!(fs::read(oplog_path(&c.f.common)).unwrap(), bytes);
     assert_eq!(refs(&c.f), before_refs);
 }

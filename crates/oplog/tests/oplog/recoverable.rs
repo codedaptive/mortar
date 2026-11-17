@@ -1,12 +1,12 @@
 //! Joins recover -> read_marked_log -> recoverable_intents (open_intents_in) -> decide_recovery ->
-//! recovery_close_valued -> append_valued_record on a log seeded with append_marked_record: open unmarked
+//! recovery_close_valued -> append_valued_record on a log seeded with encode_marked_record lines: open unmarked
 //! intents are settled with their values in log order; marked and closed intents get nothing appended.
 //! Every seeded intent has no moves, so decide_recovery closes each one done/Moved; the closing record's
 //! `at` is the clock (unix_now), so it is checked against reads before and after.
 
 use crate::support::Fixture;
 use oplog::{
-    append_marked_record, oplog_path, read_marked_log, read_valued_log, recover, unix_now, MarkedRecord, OpPhase,
+    encode_marked_record, oplog_path, read_marked_log, read_valued_log, recover, unix_now, MarkedRecord, OpPhase,
     OpRecord, OpResult,
 };
 use std::fs;
@@ -51,10 +51,16 @@ fn done(op_id: &str, values: &[(&str, &str)], at: u64) -> MarkedRecord {
     }
 }
 
+/// A fixture whose log holds `log`, one encode_marked_record line each: the bytes append_marked_record appends,
+/// written directly because no export appends an arbitrary marked record.
 fn seeded(log: &[MarkedRecord]) -> Fixture {
     let f = Fixture::new();
-    for m in log {
-        append_marked_record(&f.common, &m.record, &m.values, m.remote.as_deref()).unwrap();
+    if !log.is_empty() {
+        let path = oplog_path(&f.common);
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let text: String =
+            log.iter().map(|m| encode_marked_record(&m.record, &m.values, m.remote.as_deref()) + "\n").collect();
+        fs::write(&path, text).unwrap();
     }
     f
 }
