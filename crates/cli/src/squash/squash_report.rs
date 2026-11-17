@@ -6,7 +6,8 @@ use crate::report::{ExitCode, OutValue, Report};
 
 const VERB: &str = "squash";
 
-/// - Made: exit 0 "squashed", the squash commit, its change ID, the zone tip it squashes and its requests.
+/// - Made: exit 0 "squashed", the squash commit, its change ID, the zone tip it squashes and its requests; next
+///   asks mortar would-merge of the squash's commit, then hands the change to review.
 /// - Same: exit 0 "already-squashed", the commit already at the squash ref; nothing written. Fields and next as Made.
 /// - Nothing: exit 0 "nothing-to-squash", the zone holds nothing origin lacks; fields zone and source.
 /// - Conflicted: exit 2 "conflict", each conflicting file on its own line, owner the zone; next brings the zone up
@@ -71,8 +72,13 @@ fn requests_line(squash: &Squash) -> String {
     format!("requests: {}", squash.requests.join(", "))
 }
 
+/// Asks would-merge of the squash's commit first, then review of the change.
 fn review_next(squash: &Squash) -> String {
-    format!("hand change {} (commit {}) to review", squash.change_id, squash.commit)
+    format!(
+        "mortar would-merge {commit} --actor <name>, then hand change {} (commit {commit}) to review",
+        squash.change_id,
+        commit = squash.commit
+    )
 }
 
 /// zone, change_id, commit and source as Text, then requests as Texts.

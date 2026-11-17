@@ -13,7 +13,8 @@ const VERB: &str = "publish";
 ///   zone's squash ref removed; field origin.
 /// - OriginMoved: exit 1 "origin-moved", someone else moved the remote's origin branch to `found`; the local origin
 ///   branch and integration are on it, the squash kept, and `folder` (the integration folder moved onto `found`,
-///   if any) is named. Owned by whoever pushed `found`; next lands the squash again. Fields found, integration
+///   if any) is named. Owned by whoever pushed `found`; next lands the squash again onto `found` with `mortar land
+///   <commit>`, then publishes. Fields found, integration
 ///   (also `found`) and folder (its path, or null).
 /// - NothingToPublish: exit 0 "nothing-to-publish", no landing waiting; no fields.
 pub fn publish_report(answer: &PublishAnswer, refs: &LandRefs, folder: Option<&Path>) -> Report {
@@ -42,7 +43,10 @@ pub fn publish_report(answer: &PublishAnswer, refs: &LandRefs, folder: Option<&P
                 integration_folder_line(folder, found),
             ],
             owner: Some(format!("whoever pushed {found} to {remote}")),
-            next: format!("land the change's squash again onto {found}, then mortar publish --actor <name>"),
+            next: format!(
+                "land the change's squash again onto {found}: mortar land <commit> --actor <name>, then mortar \
+                 publish --actor <name>"
+            ),
             fields: vec![
                 ("found".to_string(), OutValue::Text(found.to_string())),
                 ("integration".to_string(), OutValue::Text(found.to_string())),

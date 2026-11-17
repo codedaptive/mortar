@@ -24,6 +24,7 @@ use crate::guard::run_guard;
 use crate::guard_hook::run_guard_hook;
 use crate::init::run_init;
 use crate::join::run_join;
+use crate::land::run_land;
 use crate::log::run_log;
 use crate::need::run_need;
 use crate::publish::run_publish;
@@ -34,6 +35,7 @@ use crate::restore::run_restore;
 use crate::save::run_save;
 use crate::squash::run_squash;
 use crate::status::run_status;
+use crate::would_merge::run_would_merge;
 
 /// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. Agent verbs
 /// read their folder first; every verb then gets its actor (a read-only verb acts as nobody, ""); verbs that need
@@ -77,6 +79,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "guard-hook" => run_guard_hook(context, cwd),
         "init" => run_init(&context.args, cwd),
         "join" => run_join(context),
+        "land" => run_land(context, cwd),
         "log" => run_log(context, cwd),
         "need" => run_need(context),
         "publish" => run_publish(context, cwd),
@@ -86,6 +89,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "save" => run_save(context),
         "squash" => run_squash(context, cwd),
         "status" => run_status(context),
+        "would-merge" => run_would_merge(context, cwd),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
     }
 }
