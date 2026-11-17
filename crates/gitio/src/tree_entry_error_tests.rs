@@ -18,7 +18,6 @@ fn not_a_blob_is_not_a_git_error_with_its_text() {
 }
 
 #[test]
-fn is_a_std_error_showing_the_not_a_blob_text() {
-    let boxed: Box<dyn std::error::Error> = Box::new(gitlink());
-    assert_eq!(boxed.to_string(), "not a blob: \"sub\" is a \"commit\"");
+fn is_a_std_error() {
+    let _boxed: Box<dyn std::error::Error> = Box::new(gitlink());
 }

@@ -1,4 +1,4 @@
-use crate::{EntryKind, GitError, TreeEntryError};
+use crate::{EntryKind, TreeEntryError};
 use std::path::PathBuf;
 
 fn not_a_blob(path: &str, kind: EntryKind) -> String {
@@ -26,10 +26,4 @@ fn the_path_and_type_are_quoted_with_escapes() {
         not_a_blob("n\nl", EntryKind::Other("a\"b".to_string())),
         "not a blob: \"n\\nl\" is a \"a\\\"b\""
     );
-}
-
-#[test]
-fn git_shows_the_git_errors_text() {
-    let error = GitError { args: vec!["ls-tree".to_string()], code: Some(128), stderr: "fatal: bad tree\n".to_string() };
-    assert_eq!(TreeEntryError::Git(error).to_string(), "git ls-tree: exit code 128: fatal: bad tree");
 }

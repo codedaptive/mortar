@@ -1,5 +1,16 @@
-use crate::{GitError, TreeWithPathsError, TreeWithPathsRefusal};
+//! TreeWithPathsError's Display text: its refusal's and its git error's text, and as std::error::Error shows it.
+use gitio::{GitError, TreeWithPathsError, TreeWithPathsRefusal};
 use std::path::PathBuf;
+
+fn folder(path: &str) -> TreeWithPathsError {
+    TreeWithPathsError::Refused(TreeWithPathsRefusal::FolderInFrom { path: PathBuf::from(path) })
+}
+
+#[test]
+fn is_a_std_error_showing_the_refusal_text() {
+    let boxed: Box<dyn std::error::Error> = Box::new(folder("dir"));
+    assert_eq!(boxed.to_string(), "not a file entry: \"dir\" is a folder");
+}
 
 #[test]
 fn a_refusal_shows_the_refusal_text() {
