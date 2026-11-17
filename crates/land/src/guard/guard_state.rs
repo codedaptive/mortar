@@ -1,5 +1,5 @@
-//! GuardState: what guard_status found. A bare type (S-7). No test of its fields is in land today: they are owed to
-//! Nagatha as RITs (cases 1, 2, 5-7 and 9-11 in ledger/reports/WO-land-guard-symref-for-nagatha.md).
+//! GuardState: what guard_status found. A bare type (S-7). tests/land_rit/guard_installation.rs compares whole values
+//! of it from guard_status: installed, untouched and with a foreign pre-push.
 
 use std::path::PathBuf;
 

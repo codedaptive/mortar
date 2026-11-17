@@ -2,8 +2,8 @@
 //! it has no unit test (S-5). tests/land_rit/guard_codec.rs reads present files and reaches these BadConfig refusals,
 //! each naming the path, and no others: a missing, repeated or unknown key; a key that is not a string; no ':' after
 //! a key; a value that is not a string, has no closing quote or holds a raw control char; no ',' or '}' after a
-//! member; text after the object. Owed to Nagatha as a RIT: a missing guard.json giving Ok(None) (case 8 in
-//! ledger/reports/WO-land-guard-symref-for-nagatha.md).
+//! member; text after the object. tests/land_rit/guard_installation.rs checks a missing guard.json giving Ok(None)
+//! and a config with a missing key refused.
 
 use gitio::Git;
 
