@@ -16,7 +16,7 @@ impl State {
         let f = Fixture::new(); let base = f.git.read_ref("refs/heads/main").unwrap().unwrap();
         let base_tree = f.git.commit_info(&base).unwrap().tree;
         let source_tree = f.git.commit_info(&f.source).unwrap().tree;
-        let origin = f.git.commit_tree(&base_tree, &[base.clone()], "independent origin\n", None, None).unwrap();
+        let origin = f.git.commit_tree(&base_tree, std::slice::from_ref(&base), "independent origin\n", None, None).unwrap();
         let message = format!("fixture squash\n\nMortar-Change-Id: {CID}\nMortar-Zone: {zone}\n");
         let commit = f.git.commit_tree(&source_tree, &[base], &message, None, None).unwrap();
         let squash = Squash { commit, change_id: ChangeId::parse(CID).unwrap(), source: f.source.clone(), requests: vec![] };

@@ -22,10 +22,11 @@ fn refs() -> LandRefs {
 }
 
 type Answer = Result<Option<Vec<Oid>>, BisectError>;
+type Run = (Result<Vec<Oid>, BisectError>, Vec<(Oid, Oid)>);
 
 /// Runs decide_bisect_range with a reader that gives `answers` in order, returning its result and every
 /// (base, tip) pair the reader was asked, in order.
-fn run(answers: Vec<Answer>) -> (Result<Vec<Oid>, BisectError>, Vec<(Oid, Oid)>) {
+fn run(answers: Vec<Answer>) -> Run {
     let mut answers = answers.into_iter();
     let mut asked = Vec::new();
     let result = decide_bisect_range(&refs(), &oid(TIP), &oid(LAST_PASS), &oid(FAILED), |base, tip| {

@@ -61,6 +61,8 @@ pub(crate) fn push_landing(
     decided
 }
 
+type Refused = (Option<Oid>, bool, Result<PushResult, PublishError>);
+
 /// The push did not go through as asked: the remote as read again, whether the push landed (push_landed), and what
 /// decide_refused_push makes of it, given new for a remote at or past new.
 fn refused(
@@ -68,7 +70,7 @@ fn refused(
     refs: &LandRefs,
     state: &LandingState,
     failure: PublishError,
-) -> Result<(Option<Oid>, bool, Result<PushResult, PublishError>), PublishError> {
+) -> Result<Refused, PublishError> {
     let (expected, new) = (&state.origin_at_start, &state.integration);
     let remote = remote_origin(git, refs)?;
     let landed = push_landed(git, refs, remote.as_ref(), expected, new)?;

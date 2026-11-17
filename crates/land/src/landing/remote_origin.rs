@@ -12,6 +12,6 @@ use gitio::{Git, Oid};
 /// matches a pattern against refname tails, so only the entry named exactly that ref counts; a failed run is Git.
 pub(crate) fn remote_origin(git: &Git, refs: &LandRefs) -> Result<Option<Oid>, PublishError> {
     let refname = format!("refs/heads/{}", refs.origin_branch);
-    let listed = git.ls_remote(&refs.remote, &[refname.clone()]).map_err(PublishError::Git)?;
+    let listed = git.ls_remote(&refs.remote, std::slice::from_ref(&refname)).map_err(PublishError::Git)?;
     Ok(listed.into_iter().find(|(_, name)| *name == refname).map(|(oid, _)| oid))
 }

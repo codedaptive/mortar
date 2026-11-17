@@ -150,7 +150,7 @@ impl Fixture {
             "land: squash of WO-land-4\n\nMortar-Change-Id: {ID_A}\nMortar-Zone: land\nMortar-Request: WO-land-4\n"
         );
         Squash {
-            commit: self.git.commit_tree(&tree(&self.git, files), &[parent.clone()], &message, None, None).unwrap(),
+            commit: self.git.commit_tree(&tree(&self.git, files), std::slice::from_ref(parent), &message, None, None).unwrap(),
             change_id: ChangeId::parse(ID_A).unwrap(),
             source: parent.clone(),
             requests: vec!["WO-land-4".to_string()],
@@ -171,7 +171,7 @@ impl Fixture {
         run(&git_at(self.elsewhere.path.clone()), &["clone", "--quiet", bare, clone.to_str().unwrap()]);
         let other = git_at(clone);
         let tree = tree(&other, files);
-        let moved = other.commit_tree(&tree, &[parent.clone()], "other\n", None, None).unwrap();
+        let moved = other.commit_tree(&tree, std::slice::from_ref(parent), "other\n", None, None).unwrap();
         run(&other, &["push", "origin", &format!("{moved}:refs/heads/{branch}")]);
         moved
     }

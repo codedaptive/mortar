@@ -260,7 +260,7 @@ impl Fixture {
     /// A commit on `parent` whose tree holds exactly `files`, its message `subject`; the zone branch `zone` set to it.
     pub fn join_onto(&self, zone: &str, parent: &Oid, files: &[(&str, &str)], subject: &str) -> Oid {
         let message = format!("{subject}\n");
-        let commit = self.git.commit_tree(&tree(&self.git, files), &[parent.clone()], &message, None, None).unwrap();
+        let commit = self.git.commit_tree(&tree(&self.git, files), std::slice::from_ref(parent), &message, None, None).unwrap();
         self.set_ref(&format!("refs/heads/zone/{zone}"), &commit);
         commit
     }
