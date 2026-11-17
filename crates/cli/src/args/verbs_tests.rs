@@ -16,6 +16,7 @@ fn built_verbs_are_listed_alphabetically() {
             "back-out",
             "backup",
             "bisect",
+            "disk",
             "folder",
             "guard",
             "guard-hook",
@@ -24,14 +25,17 @@ fn built_verbs_are_listed_alphabetically() {
             "land",
             "log",
             "need",
+            "overlap",
             "publish",
             "rereview",
             "resolve",
             "restore",
             "restore-backup",
             "save",
+            "snapshot",
             "squash",
             "status",
+            "sweep",
             "would-merge"
         ]
     );
@@ -46,6 +50,45 @@ fn after_publish_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
     assert_eq!(
         after_publish.usage,
         "mortar after-publish <zone> [--move <zone>]... --actor <name> [--key <operation key>] [--json]"
+    );
+}
+
+#[test]
+fn snapshot_is_a_harness_verb_under_the_join_lock_that_needs_the_config() {
+    let snapshot = verb("snapshot");
+    assert_eq!(snapshot.kind, VerbKind::Harness);
+    assert_eq!(snapshot.lock, LockNeed::Join);
+    assert!(snapshot.needs_config);
+    assert_eq!(snapshot.usage, "mortar snapshot --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn overlap_is_a_harness_verb_without_lock_that_needs_the_config() {
+    let overlap = verb("overlap");
+    assert_eq!(overlap.kind, VerbKind::Harness);
+    assert_eq!(overlap.lock, LockNeed::NoLock);
+    assert!(overlap.needs_config);
+    assert_eq!(overlap.usage, "mortar overlap <zone> --actor <name> [--json]");
+}
+
+#[test]
+fn disk_is_a_harness_verb_without_lock_that_needs_the_config() {
+    let disk = verb("disk");
+    assert_eq!(disk.kind, VerbKind::Harness);
+    assert_eq!(disk.lock, LockNeed::NoLock);
+    assert!(disk.needs_config);
+    assert_eq!(disk.usage, "mortar disk --actor <name> [--json]");
+}
+
+#[test]
+fn sweep_is_a_harness_verb_under_the_folders_lock_that_needs_the_config() {
+    let sweep = verb("sweep");
+    assert_eq!(sweep.kind, VerbKind::Harness);
+    assert_eq!(sweep.lock, LockNeed::Folders);
+    assert!(sweep.needs_config);
+    assert_eq!(
+        sweep.usage,
+        "mortar sweep [--idle-days <n>] [--ref <full ref name>]... --actor <name> [--key <operation key>] [--json]"
     );
 }
 

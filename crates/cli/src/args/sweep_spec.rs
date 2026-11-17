@@ -1,0 +1,12 @@
+//! The verb table's entry for `mortar sweep`.
+//! A bare const (S-7); verbs_tests covers it.
+
+use super::{LockNeed, VerbKind, VerbSpec};
+
+pub const SWEEP_SPEC: VerbSpec = VerbSpec {
+    name: "sweep",
+    kind: VerbKind::Harness,
+    lock: LockNeed::Folders,
+    needs_config: true,
+    usage: "mortar sweep [--idle-days <n>] [--ref <full ref name>]... --actor <name> [--key <operation key>] [--json]",
+};

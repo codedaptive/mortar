@@ -1,14 +1,16 @@
-//! read_named_zones: each zone named on the after-publish line with its zone folder and its open requests, read from
-//! the worktrees' folder records before land's call (S-45, S-108).
+//! read_named_zones: each named zone with its zone folder and its open requests, read from the worktrees' folder
+//! records (S-45, S-108). Two callers: run_after_publish, for the zones on its line, before land's call; and
+//! run_overlap, for its one zone, which uses only the open requests (relabelling a failure report to its own verb).
 //! No sibling test (S-104): it runs git and reads the folders' records; status's open_requests_for_tests covers the
 //! choice of open requests.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136):
 //! - the open requests of a moved zone, request folders made by the landing verbs, are listed to rebase at their
 //!   next join, each with its snapshot commit when it has one;
 //! - a zone with no zone folder is reported as having none, and its requests are still listed;
-//! - a request sharing no commit with its zone, and a request whose zone branch is missing, stop the command before
-//!   land's call, exit 5, naming the request or the ref;
-//! - a worktree whose folder record cannot be read stops the command before land's call, naming that folder.
+//! - a request sharing no commit with its zone, and a request whose zone branch is missing, stop after-publish
+//!   before land's call, and overlap before join's overlap, exit 5, naming the request or the ref;
+//! - a worktree whose folder record cannot be read stops after-publish before land's call, and overlap before
+//!   join's overlap, naming that folder.
 
 use std::path::{Path, PathBuf};
 

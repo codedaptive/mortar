@@ -1,6 +1,9 @@
 //! The verbs the binary knows: only those that are built.
 
-use super::{LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, RESTORE_BACKUP_SPEC};
+use super::{
+    LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, DISK_SPEC, OVERLAP_SPEC,
+    RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC,
+};
 
 /// In the order the usage error lists them.
 pub const VERBS: &[VerbSpec] = &[
@@ -14,6 +17,7 @@ pub const VERBS: &[VerbSpec] = &[
     },
     BACKUP_SPEC,
     BISECT_SPEC,
+    DISK_SPEC,
     VerbSpec {
         name: "folder",
         kind: VerbKind::Harness,
@@ -75,6 +79,7 @@ pub const VERBS: &[VerbSpec] = &[
         needs_config: true,
         usage: "mortar need <path> [--key <key>] [--json]",
     },
+    OVERLAP_SPEC,
     VerbSpec {
         name: "publish",
         kind: VerbKind::Harness,
@@ -111,6 +116,7 @@ pub const VERBS: &[VerbSpec] = &[
         needs_config: true,
         usage: "mortar save \"<sentence>\" [--key <key>] [--json]",
     },
+    SNAPSHOT_SPEC,
     VerbSpec {
         name: "squash",
         kind: VerbKind::Harness,
@@ -125,6 +131,7 @@ pub const VERBS: &[VerbSpec] = &[
         needs_config: true,
         usage: "mortar status [--json]",
     },
+    SWEEP_SPEC,
     VerbSpec {
         name: "would-merge",
         kind: VerbKind::Harness,
