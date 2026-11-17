@@ -54,8 +54,13 @@ exec "$MORTAR_RIT_REAL_GIT" "$@"
     child.0.kill().unwrap(); assert_eq!(child.0.wait().unwrap().signal(), Some(9));
     assert!(!KillPidProbe.pid_alive(pid), "wait/reap the lock holder BEFORE releasing the git shim");
     release_gate(&release, b"release\n");
-    let pending = cli::read_pending_move(&f.git, &f.common, REQUEST, "join").unwrap().unwrap();
-    assert_eq!(pending.folder_tree, Some(expected_tree));
+    // Status need not call a marker-written index stalled (S-116); the next binary join must consume this tree.
+    let before_read = f.observe(); let pending = f.last_move();
+    assert_eq!(pending.record.op_id, done.record.op_id);
+    let movement = pending.record.moves.iter().find(|m| m.refname == REQUEST).unwrap();
+    assert_eq!(movement.old.as_ref(), Some(&r.old)); assert_eq!(movement.new, new);
+    assert_eq!(pending.values[0], ("folder_tree".into(), expected_tree.to_string()));
+    assert_eq!(f.observe(), before_read);
     let report = f.report(&["--json", "join"], "join", 0, "joined");
     assert_eq!(report.text("finished_move_from"), r.old.as_str());
     assert_eq!(report.text("finished_move_to"), new.as_str());

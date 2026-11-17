@@ -41,9 +41,9 @@ fn a_real_rebase_excludes_zone_only_paths_instead_of_using_the_original_folder_c
     check(w.s.f.command(&w.s.f.request, &["--json", "join"]).output().unwrap(), "join", 0, "rebased");
     assert_eq!(w.s.f.git.commit_info(&w.s.f.head()).unwrap().parents, vec![zone.clone()]);
     run(&w, &w.s.f.request, &["snapshot"], 0, "snapshotted");
-    let named = cli::read_named_zones(&w.s.f.git, &["core".into()]).unwrap();
-    let task = named[0].requests.iter().find(|r| r.name == "task").unwrap(); assert_eq!(task.base, zone);
-    assert_eq!(w.s.f.blob(&task.tip, "src/upstream"), b"upstream work\n");
+    let task_tip = ref_at(&w, SNAP).unwrap();
+    assert_eq!(w.s.f.git.commit_info(&w.s.f.head()).unwrap().parents, vec![zone]);
+    assert_eq!(w.s.f.blob(&task_tip, "src/upstream"), b"upstream work\n");
     let dir = w.s.f.git.git_dir(&w.s.f.request).unwrap();
     assert_eq!(folders::make::read_folder_record(&dir).unwrap().unwrap().base, w.s.f.base);
     let before = observe(&w); let r = app(&w, &["overlap", "core"], 0, "no-overlap");

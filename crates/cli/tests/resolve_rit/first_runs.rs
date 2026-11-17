@@ -1,5 +1,5 @@
 use crate::{json::check, paused::Paused, support::*};
-use cli::FormatterConfig;
+use crate::support::FormatterConfig;
 use std::fs;
 
 #[test]
@@ -25,7 +25,7 @@ fn rit_first_resolve_writes_exact_conflicted_bytes_after_snapshot_from_subdirect
     f.write("src/file", b"local work before marker overwrite\n"); f.write("sub/local", b"untracked work\n");
     let program = f.common.join("must-not-format.sh"); let trace = f.common.join("formatter-ran");
     script(&program, b"#!/bin/sh\nprintf 'formatter ran\n' >\"$1\"\n");
-    let mut config = f.config.clone(); config.formatter = Some(FormatterConfig {
+    let mut config = f.init_args.clone(); config.formatter = Some(FormatterConfig {
         command: vec![program.to_str().unwrap().into(), trace.to_str().unwrap().into()], timeout_seconds: 60 }); f.configure(&config);
     let expected = f.blob(&r.tree, "src/file");
     let conflict_blob = f.git.tree_entry(&r.tree, "src/file".as_ref()).unwrap().unwrap();

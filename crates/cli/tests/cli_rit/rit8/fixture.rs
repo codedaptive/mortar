@@ -8,8 +8,8 @@ pub struct World { pub s: Harness, pub b: PathBuf }
 impl World {
     pub fn new() -> Self {
         let s = Harness::new();
-        let mut config = s.f.config.clone();
-        config.zones.insert("b".into(), cli::ZoneConfig { paths: vec!["src".into(), "sub".into()] });
+        let mut config = s.f.init_args.clone();
+        config.zones.insert("b".into(), crate::support::ZoneConfig { paths: vec!["src".into(), "sub".into()] });
         s.f.configure(&config);
         let b = s.f.root.join("zone-b");
         s.app(&["folder", "zone", "b", b.to_str().unwrap(), "--start", s.f.base.as_str()], 0, "made");

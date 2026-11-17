@@ -13,7 +13,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
-use cli::{Config, ZoneConfig};
+use crate::support::{Config, ZoneConfig, write_fixture_config};
 use folders::make::read_folder_record;
 use folders::FolderKind;
 use gitio::{Git, Oid, RunOpts};
@@ -52,7 +52,7 @@ impl Fixture {
             git.run(&["branch", "zone/core", base.as_str()], &RunOpts::default()).unwrap();
         }
         let common = git.common_dir().unwrap();
-        cli::write_config(&common, &Config {
+        write_fixture_config(&git.repo, &Config {
             origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into(),
             zones: BTreeMap::from([("core".into(), ZoneConfig { paths: vec!["src".into()] })]),
             root_files: vec!["Cargo.toml".into()], build_dirs: vec![], cap_bytes: snapshot::DEFAULT_SIZE_CAP,

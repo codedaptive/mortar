@@ -47,7 +47,8 @@ impl Resolved {
         index_at(&self.w, &self.w.s.f.request, &self.old);
         assert_eq!(fs::read(self.w.s.f.request.join("src/file")).unwrap(), CHOSEN);
         assert_eq!(fs::read(self.w.s.f.request.join("sub/keep")).unwrap(), OUTSIDE);
-        assert_eq!(cli::read_pending_move(&self.w.s.f.git, &self.w.s.f.common, REQUEST, "undo").unwrap(), None);
+        let status = self.w.s.f.status();
+        assert!(status.is_null("stalled_from") && status.is_null("stalled_to"));
         assert!(!self.w.s.f.lock_path().exists());
     }
     fn undo(&self) -> String { self.assert_report(&ours(&self.w, &["undo"], 0, "undone")) }

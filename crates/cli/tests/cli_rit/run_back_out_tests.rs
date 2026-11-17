@@ -15,7 +15,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
-use cli::{Config, ZoneConfig};
+use crate::support::{Config, ZoneConfig, write_fixture_config};
 use gitio::Git;
 use crate::json::check;
 use land::{LandAnswer, LandRefs, Squash, SquashAnswer};
@@ -42,7 +42,7 @@ const GIT_ENV: [(&str, &str); 6] = [
 fn repo() -> (TestRepo, PathBuf) {
     let repo = TestRepo::new().unwrap();
     let root = repo.path.canonicalize().unwrap();
-    cli::write_config(&root.join(".git"), &Config {
+    write_fixture_config(&root, &Config {
         origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into(),
         zones: BTreeMap::from([
             ("a".into(), ZoneConfig { paths: vec!["src/a".into()] }),

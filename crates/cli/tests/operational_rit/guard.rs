@@ -1,4 +1,4 @@
-// The not-UTF-8 hook input case is a cli ZIT in tests/run_guard_hook_tests.rs.
+// The not-UTF-8 hook input case is a RIT in tests/cli_rit/run_guard_hook_tests.rs.
 use crate::{cid::CID, guard_fixture::Guard, json::check, refs::refs};
 use land::{LandAnswer, PublishAnswer, Squash};
 use oplog::{KillPidProbe, LockName, Op, OpPhase, ProtectedRef, RefMove};

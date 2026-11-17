@@ -10,8 +10,10 @@ fn undo_rebase_moves_the_actual_folder_back_and_the_repeat_is_not_a_redo() {
     assert_eq!(r.text("undo_op"), undo.op_id); assert_eq!(w.s.f.head(), old); assert_eq!(w.tip("core"), zone);
     index_at(&w, &w.s.f.request, &old); assert!(!w.s.f.request.join("src/upstream").exists());
     assert_eq!(fs::read(w.s.f.request.join("src/file")).unwrap(), b"topic work\n");
-    let pending = cli::read_pending_move(&w.s.f.git, &w.s.f.common, REQUEST, "undo").unwrap().unwrap();
-    assert_eq!(pending.cause, cli::MoveCause::Undo); assert_eq!((pending.old, pending.new, pending.folder_tree), (new, old, None));
+    let moved = w.s.f.last_move(); assert_eq!(moved.record.kind, "undo");
+    let movement = moved.record.moves.iter().find(|m| m.refname == REQUEST).unwrap();
+    assert_eq!(movement.old.as_ref(), Some(&new)); assert_eq!(movement.new, old);
+    assert!(moved.values.iter().all(|(key, _)| key != "folder_tree"));
     // S-144: the reverse folder move restored the branch's tree, so it is saved despite the newer snapshot.
     let before = observe(&w); let status = ours(&w, &["status"], 0, "saved");
     assert!(status.flag("saved")); assert_eq!(status.text("next"), "mr join");

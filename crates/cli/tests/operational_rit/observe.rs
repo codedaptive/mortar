@@ -12,7 +12,7 @@ pub fn before(f: &Fixture, folder: &Path) -> Vec<Option<Vec<u8>>> {
         fs::read(dir.join("index")).ok(), fs::read(dir.join("index.lock")).ok(),
         fs::read(record_path(f, folder)).ok(), fs::read(oplog::oplog_path(&f.common)).ok(),
         fs::read(dir.join("mortar-join.json")).ok(), fs::read(folder.join("src/file")).ok(),
-        fs::read(cli::config_path(&f.common)).ok(),
+        fs::read(f.common.join("mortar/config.json")).ok(),
     ]
 }
 

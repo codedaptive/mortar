@@ -80,7 +80,7 @@ impl Harness {
     pub fn clone_store(&self) -> (PathBuf, Git) {
         let path = self.f.root.join("fresh-clone");
         raw(&self.f.git, &["clone", "-q", "--no-local", self.bare.to_str().unwrap(), path.to_str().unwrap()]);
-        let git = self.git_at(&path); cli::write_config(&git.common_dir().unwrap(), &self.f.config).unwrap();
+        let git = self.git_at(&path); crate::support::write_fixture_config(&git.repo, &self.f.init_args).unwrap();
         (path, git)
     }
 }

@@ -57,14 +57,14 @@ fn rit_zone_save_and_missing_config_refuse_before_any_work() {
     let f = Fixture::new(); let before = f.observe();
     let zone = check(f.command(&f.zone, &["--json", "save", "Do not save zone"]).output().unwrap(), "save", 1, "refused");
     assert!(zone.lines().contains("zone folder")); assert_eq!(f.observe(), before);
-    fs::remove_file(cli::config_path(&f.common)).unwrap();
+    fs::remove_file(f.common.join("mortar/config.json")).unwrap();
     let missing = f.report(&["--json", "save", "Needs config"], "save", 1, "no-config");
     assert_eq!(missing.text("next"), "mr init"); assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
 }
 
 #[test]
 fn rit_save_lists_new_over_cap_file_with_literal_size_and_saves_tracked_changes() {
-    let f = Fixture::new(); let mut config = f.config.clone(); config.cap_bytes = 3; f.configure(&config);
+    let f = Fixture::new(); let mut config = f.init_args.clone(); config.cap_bytes = 3; f.configure(&config);
     f.write("src/large", b"1234567"); f.write("src/file", b"tracked change stays despite cap\n");
     let report = f.report(&["--json", "save", "Save capped work"], "save", 0, "saved");
     assert_eq!(report.strings("refused"), &["src/large"]); assert_eq!(report.number("cap"), 3);

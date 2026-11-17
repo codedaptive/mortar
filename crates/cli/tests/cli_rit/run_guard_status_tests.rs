@@ -18,7 +18,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
-use cli::{Config, ZoneConfig};
+use crate::support::{Config, ZoneConfig, write_fixture_config};
 use crate::json::check;
 use testkit::TestRepo;
 
@@ -29,7 +29,7 @@ const GIT_ENV: [(&str, &str); 2] = [("GIT_CONFIG_GLOBAL", "/dev/null"), ("GIT_CO
 
 /// The config naming `origin` and `integration` as its branches and origin as its remote.
 fn write_config(root: &Path, origin: &str, integration: &str) {
-    cli::write_config(&root.join(".git"), &Config {
+    write_fixture_config(root, &Config {
         origin_branch: origin.into(), integration_branch: integration.into(), remote: "origin".into(),
         zones: BTreeMap::from([("core".into(), ZoneConfig { paths: vec!["src/a".into()] })]),
         root_files: vec!["Cargo.toml".into()], build_dirs: vec![], cap_bytes: snapshot::DEFAULT_SIZE_CAP,

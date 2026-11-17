@@ -1,7 +1,7 @@
 //! Actual CLI SIGKILL after the undo/rebase Done record and before its index/folder step, then plain repeat/save.
 //! The Git boundary and durable records/files decide the result, never elapsed time or a fabricated kit answer.
 use super::fixture::*;
-use crate::support::{REQUEST, SNAP};
+use crate::support::SNAP;
 use std::fs;
 
 #[test]
@@ -56,7 +56,8 @@ fn save_after_a_real_killed_join_finishes_the_forward_move_before_saving_any_sta
     index_at(&w, &w.s.f.request, &new); assert_eq!(fs::read(w.s.f.request.join("src/upstream")).unwrap(), b"upstream work\n");
     assert_eq!(fs::read(w.s.f.request.join("src/file")).unwrap(), b"topic work\n");
     let snap = ref_at(&w, SNAP).unwrap(); assert_eq!(w.s.f.blob(&snap, "src/upstream"), b"upstream work\n");
-    let pending = cli::read_pending_move(&w.s.f.git, &w.s.f.common, REQUEST, "save").unwrap().unwrap();
-    assert_eq!(pending.cause, cli::MoveCause::Rebase); assert!(!w.s.f.lock_path().exists());
+    assert_eq!(w.s.f.last_move().record.kind, "join-rebase");
+    let status = w.s.f.status(); assert!(status.is_null("stalled_from") && status.is_null("stalled_to"));
+    assert!(!w.s.f.lock_path().exists());
     let before = observe(&w); ours(&w, &["save", "Do not commit the stale folder"], 0, "unchanged"); assert_eq!(observe(&w), before);
 }

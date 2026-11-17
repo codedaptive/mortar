@@ -79,12 +79,13 @@ fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_loca
     assert_eq!(f.blob(&new, "src/file"), b"chosen resolution\n");
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(r.zone.clone())); assert_one_rebase(f, &r.old, &new);
     assert!(!r.state.exists()); assert!(!f.lock_path().exists());
-    // CLI read_pending_move -> Oplog's valued log: the durable tree is old tip + resolved paths, not the new tip.
+    // Binary status and Oplog's valued log: the durable tree is old tip + resolved paths, not the new tip.
     let expected_tree = crate::objects::tree(f, &r.old, &[("src/file", b"chosen resolution\n")], &[], &[]);
     assert_ne!(expected_tree, f.git.commit_info(&new).unwrap().tree);
     let before_read = f.observe();
-    let pending = cli::read_pending_move(&f.git, &f.common, REQUEST, "join").unwrap().unwrap();
-    assert_eq!((pending.old, pending.new, pending.folder_tree), (r.old.clone(), new.clone(), Some(expected_tree.clone())));
+    let pending = f.status();
+    assert_eq!(pending.text("stalled_from"), r.old.as_str()); assert_eq!(pending.text("stalled_to"), new.as_str());
+    assert_eq!(f.last_move().values[0], ("folder_tree".into(), expected_tree.to_string()));
     assert_eq!(f.observe(), before_read, "reading the valued log must not write or move anything");
     let valued = oplog::read_valued_log(&f.common).unwrap();
     let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
