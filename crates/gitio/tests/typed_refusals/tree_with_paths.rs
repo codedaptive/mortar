@@ -76,7 +76,7 @@ fn an_empty_path_is_refused_as_unusable() {
 #[test]
 fn a_path_holding_a_nul_is_refused_as_unusable() {
     let nul = PathBuf::from(OsString::from_vec(b"has\0nul".to_vec()));
-    let (typed, untyped) = attempt(&[nul.clone()]);
+    let (typed, untyped) = attempt(std::slice::from_ref(&nul));
     assert_eq!(typed, Err(TreeWithPathsError::Refused(Unusable { path: nul })));
     // Debug writes the NUL as backslash-zero.
     assert_eq!(untyped, refusal("path holds a NUL: \"has\\0nul\""));

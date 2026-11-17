@@ -9,9 +9,9 @@ fn commit_info_root_one_parent_and_merge_keep_exact_tree_message_author_and_git_
     let root_tree = tree(&r.git, &[("file", b"root\n")]);
     let root = commit(&r.git, &root_tree, &[], "root subject\n\nroot body\n");
     let one_tree = tree(&r.git, &[("file", b"one\n")]);
-    let one = commit(&r.git, &one_tree, &[root.clone()], "one-parent subject\n");
+    let one = commit(&r.git, &one_tree, std::slice::from_ref(&root), "one-parent subject\n");
     let side_tree = tree(&r.git, &[("file", b"root\n"), ("side", b"side\n")]);
-    let side = commit(&r.git, &side_tree, &[root.clone()], "side\n");
+    let side = commit(&r.git, &side_tree, std::slice::from_ref(&root), "side\n");
     let merge_tree = tree(&r.git, &[("file", b"one\n"), ("side", b"side\n")]);
     let merge = commit(&r.git, &merge_tree, &[side.clone(), one.clone()], "merge subject\n\nbody\n\n");
     for (id, contents, parents, message) in [

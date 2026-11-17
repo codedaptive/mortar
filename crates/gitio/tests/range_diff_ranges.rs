@@ -25,11 +25,11 @@ fn series(new_a: &[u8]) -> Series {
     let repo = repo();
     let git = &repo.git;
     let origin0 = commit(git, &tree(git, &[("a", b"base\n")]), &[], "base\n");
-    let reviewed = commit(git, &tree(git, &[("a", b"base\nchange\n")]), &[origin0.clone()], "topic patch\n");
+    let reviewed = commit(git, &tree(git, &[("a", b"base\nchange\n")]), std::slice::from_ref(&origin0), "topic patch\n");
     let origin1_tree = tree(git, &[("a", b"base\n"), ("b", b"other\n")]);
-    let origin1 = commit(git, &origin1_tree, &[origin0.clone()], "origin moved\n");
+    let origin1 = commit(git, &origin1_tree, std::slice::from_ref(&origin0), "origin moved\n");
     let new_tree = tree(git, &[("a", new_a), ("b", b"other\n")]);
-    let new = commit(git, &new_tree, &[origin1.clone()], "topic patch\n");
+    let new = commit(git, &new_tree, std::slice::from_ref(&origin1), "topic patch\n");
     git.run(&["config", "color.ui", "always"], &RunOpts::default()).unwrap();
     Series { repo, origin0, reviewed, origin1, new }
 }

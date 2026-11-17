@@ -12,7 +12,7 @@ fn equal_ids_hash_as_one() {
 
 #[test]
 fn orders_by_hex_text() {
-    let mut ids = vec![Oid::parse(B).unwrap(), Oid::parse(A).unwrap()];
+    let mut ids = [Oid::parse(B).unwrap(), Oid::parse(A).unwrap()];
     ids.sort();
     assert_eq!(ids[0].as_str(), A);
     assert_eq!(ids[1].as_str(), B);

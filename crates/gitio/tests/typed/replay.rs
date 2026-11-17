@@ -8,9 +8,9 @@ fn replay_probe_gates_real_clean_conflict_and_error_results_without_ref_moves() 
     let base_tree = tree(&r.git, &[("file", b"base\n")]);
     let base = commit(&r.git, &base_tree, &[], "base\n");
     let topic_tree = tree(&r.git, &[("file", b"topic\n")]);
-    let topic = commit(&r.git, &topic_tree, &[base.clone()], "topic change\n");
+    let topic = commit(&r.git, &topic_tree, std::slice::from_ref(&base), "topic change\n");
     let onto_tree = tree(&r.git, &[("file", b"base\n"), ("upstream", b"upstream\n")]);
-    let onto = commit(&r.git, &onto_tree, &[base.clone()], "upstream change\n");
+    let onto = commit(&r.git, &onto_tree, std::slice::from_ref(&base), "upstream change\n");
     set_ref(&r.git, "refs/heads/main", &base);
     set_ref(&r.git, "refs/heads/topic", &topic);
     let before = r.git.run(&["for-each-ref", "--format=%(refname) %(objectname)"], &RunOpts::default()).unwrap().stdout;
@@ -44,7 +44,7 @@ fn replay_probe_gates_real_clean_conflict_and_error_results_without_ref_moves() 
     assert_eq!(blob(&r.git, &updates[0].new, "upstream"), b"upstream\n");
 
     let conflict_tree = tree(&r.git, &[("file", b"onto conflict\n")]);
-    let conflict = commit(&r.git, &conflict_tree, &[base.clone()], "conflicting upstream\n");
+    let conflict = commit(&r.git, &conflict_tree, std::slice::from_ref(&base), "conflicting upstream\n");
     assert_eq!(r.git.replay(&conflict, &conflict, &base, "refs/heads/topic").unwrap(), ReplayOutcome::Conflicted);
     let missing = Oid::parse(&"0".repeat(40)).unwrap();
     assert!(r.git.replay(&onto, &onto, &missing, "refs/heads/topic").is_err());

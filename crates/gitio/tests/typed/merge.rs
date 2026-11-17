@@ -9,9 +9,9 @@ fn merge_tree_combines_disjoint_changes_without_a_checkout() {
     let base_tree = tree(&r.git, &[("a", b"a base\n"), ("b", b"b base\n")]);
     let base = commit(&r.git, &base_tree, &[], "base\n");
     let ours_tree = tree(&r.git, &[("a", b"a changed\n"), ("b", b"b base\n")]);
-    let ours = commit(&r.git, &ours_tree, &[base.clone()], "ours\n");
+    let ours = commit(&r.git, &ours_tree, std::slice::from_ref(&base), "ours\n");
     let theirs_tree = tree(&r.git, &[("a", b"a base\n"), ("b", b"b changed\n")]);
-    let theirs = commit(&r.git, &theirs_tree, &[base.clone()], "theirs\n");
+    let theirs = commit(&r.git, &theirs_tree, std::slice::from_ref(&base), "theirs\n");
     let expected = tree(&r.git, &[("a", b"a changed\n"), ("b", b"b changed\n")]);
     assert_eq!(r.git.merge_tree(&base, None, &ours, &theirs).unwrap(), MergeTreeOutcome::Clean(expected));
     assert!(!r.path.join("a").exists());
@@ -26,9 +26,9 @@ fn merge_tree_conflict_lists_preserve_spaces_newlines_and_conflicted_content() {
     let base_tree = tree(&r.git, &[(paths[0], b"base\n"), (paths[1], b"base\n")]);
     let base = commit(&r.git, &base_tree, &[], "base\n");
     let ours_tree = tree(&r.git, &[(paths[0], b"ours\n"), (paths[1], b"ours\n")]);
-    let ours = commit(&r.git, &ours_tree, &[base.clone()], "ours\n");
+    let ours = commit(&r.git, &ours_tree, std::slice::from_ref(&base), "ours\n");
     let theirs_tree = tree(&r.git, &[(paths[0], b"theirs\n"), (paths[1], b"theirs\n")]);
-    let theirs = commit(&r.git, &theirs_tree, &[base.clone()], "theirs\n");
+    let theirs = commit(&r.git, &theirs_tree, std::slice::from_ref(&base), "theirs\n");
     match r.git.merge_tree(&base, Some(&base), &ours, &theirs).unwrap() {
         MergeTreeOutcome::Conflicted { tree, files } => {
             assert_eq!(files, paths.map(PathBuf::from).to_vec());
@@ -53,11 +53,11 @@ fn union_driver_is_honoured_only_when_the_attribute_source_contains_it() {
     let base_tree = tree(&r.git, &[("log.txt", b"base\n")]);
     let base = commit(&r.git, &base_tree, &[], "base\n");
     let ours_tree = tree(&r.git, &[("log.txt", b"ours\n")]);
-    let ours = commit(&r.git, &ours_tree, &[base.clone()], "ours\n");
+    let ours = commit(&r.git, &ours_tree, std::slice::from_ref(&base), "ours\n");
     let theirs_tree = tree(&r.git, &[("log.txt", b"theirs\n")]);
-    let theirs = commit(&r.git, &theirs_tree, &[base.clone()], "theirs\n");
+    let theirs = commit(&r.git, &theirs_tree, std::slice::from_ref(&base), "theirs\n");
     let attributes_tree = tree(&r.git, &[("log.txt", b"base\n"), (".gitattributes", b"log.txt merge=union\n")]);
-    let attributes = commit(&r.git, &attributes_tree, &[base.clone()], "attributes only\n");
+    let attributes = commit(&r.git, &attributes_tree, std::slice::from_ref(&base), "attributes only\n");
     assert!(!r.path.join(".gitattributes").exists());
     assert!(matches!(r.git.merge_tree(&base, None, &ours, &theirs).unwrap(), MergeTreeOutcome::Conflicted { .. }));
     let merged = match r.git.merge_tree(&attributes, None, &ours, &theirs).unwrap() {

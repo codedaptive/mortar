@@ -25,8 +25,8 @@ fn setup() -> Setup {
     let path = local.path.join("remote.git");
     local.git.run(&["init", "-q", "--bare", path.to_str().unwrap()], &RunOpts::default()).unwrap();
     let first = commit(&local.git, &tree(&local.git, &[("a", b"1\n")]), &[], "first\n");
-    let next = commit(&local.git, &tree(&local.git, &[("a", b"2\n")]), &[first.clone()], "next\n");
-    let other = commit(&local.git, &tree(&local.git, &[("a", b"3\n")]), &[first.clone()], "other\n");
+    let next = commit(&local.git, &tree(&local.git, &[("a", b"2\n")]), std::slice::from_ref(&first), "next\n");
+    let other = commit(&local.git, &tree(&local.git, &[("a", b"3\n")]), std::slice::from_ref(&first), "other\n");
     let bare = Git { repo: path.clone(), ..local.git.clone() };
     Setup { remote: path.to_str().unwrap().to_string(), local, bare, first, next, other }
 }
