@@ -1,5 +1,6 @@
 //! Step 5's refusal decision on the moot copy. Real files, repositories and processes: the drive (steps/disk.rs)
-//! runs it through run_disk, before anything else, on every drive with ACCEPT_MOOT_COPY set and not empty.
+//! runs it through run_disk, before anything else, on every drive with ACCEPT_MOOT_COPY set and not empty whose
+//! throwaway world was made.
 
 use std::path::{Path, PathBuf};
 
@@ -9,7 +10,7 @@ use crate::world::World;
 /// ACCEPT_MOOT_COPY canonicalized, with the number of registered repositories read, when copy_refusal finds it is
 /// neither a registered team repository nor a worktree of one. Err with the reason otherwise, and also when the
 /// variable is unset, the copy or its git common dir cannot be read, or registered_repos fails: it fails closed.
-/// It runs only plain-git reads and writes nothing.
+/// It reads the copy, its git common dir and the team manifests, and writes nothing.
 pub fn writable_copy(world: &World) -> Result<(PathBuf, usize), String> {
     let given = std::env::var_os("ACCEPT_MOOT_COPY").ok_or("ACCEPT_MOOT_COPY is not set")?;
     let given = Path::new(&given);

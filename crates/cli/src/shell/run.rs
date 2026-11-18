@@ -1,14 +1,17 @@
-//! One command line, from the words to the report the binary prints.
+//! One command line, from the words to the report the binary prints: the line is parsed and its verb run. Help is
+//! never asked here: entry::main_entry answers every line that asks for help before run is called.
 //! No unit test: it runs git through read_folder_context, load_config and the verbs (S-5); the tests in src
 //! (context/context_report_tests, args/usage_report_tests, actor_for_tests, repository_report_tests,
-//! missing_config_report_tests) cover what it reports. Nagatha's integration group is to
-//! cover, with the mortar binary as a child process in a throwaway repository: an unknown verb is exit 4 listing the verbs; `mr init` without
+//! missing_config_report_tests) cover what it reports. Nagatha's integration group is to cover, with the mortar
+//! binary as a child process in a throwaway repository: an unknown verb is exit 4 listing the verbs; `mr init` without
 //! --actor is exit 4; with --json stdout holds one JSON object and nothing else, also for a usage error; an agent verb
 //! outside a Mortar folder is refused, exit 1 (with `mr join`); a verb that needs the config is refused without
 //! one, exit 1, next "mr init", and outside any git repository is refused, exit 1, outcome "not-a-folder" for an
 //! agent verb (`mr join`) and "not-a-repository" for a harness verb that needs the config (with the first such
 //! verb); `mortar guard-hook` runs in any repository with no folder and no --actor, and --actor with it is exit 4;
-//! every report names its verb ("" when none was read).
+//! `mortar install -y` then `mortar uninstall`, with HOME a throwaway folder and outside any git repository, are
+//! exit 0 and leave HOME as it was; install or uninstall with --actor is exit 4; every report names its verb ("" when
+//! none was read).
 
 use std::path::Path;
 
@@ -27,6 +30,7 @@ use crate::folder::run_folder;
 use crate::guard::run_guard;
 use crate::guard_hook::run_guard_hook;
 use crate::init::run_init;
+use crate::install::{run_install, run_uninstall};
 use crate::join::run_join;
 use crate::land::run_land;
 use crate::log::run_log;
@@ -44,9 +48,10 @@ use crate::sweep::run_sweep;
 use crate::undo::run_undo;
 use crate::would_merge::run_would_merge;
 
-/// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. Agent verbs
-/// read their folder first; every verb then gets its actor (a read-only verb acts as nobody, ""); verbs that need
-/// the config load it and the protected list. The verb runs with the context built.
+/// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. The line is
+/// parsed; agent verbs read their folder first, and no other kind reads one (a setup verb, install or uninstall,
+/// reads no folder or config); every verb then gets its actor (a read-only or setup verb acts as nobody, ""); verbs
+/// that need the config load it and the protected list. The verb runs with the context built.
 pub fn run(argv: &[String], cwd: &Path) -> (Report, bool) {
     match parse_args(argv) {
         Err(error) => (usage_report(&error), error.json),
@@ -62,7 +67,7 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
     let verb = args.verb.name;
     let folder = match args.verb.kind {
         VerbKind::Agent => Some(read_folder_context(cwd).map_err(|error| context_report(verb, &error))?),
-        VerbKind::Harness | VerbKind::Hook | VerbKind::ReadOnly => None,
+        VerbKind::Harness | VerbKind::Hook | VerbKind::ReadOnly | VerbKind::Setup => None,
     };
     let actor = actor_for(args.verb, folder.as_ref().map(|f| &f.record), args.actor.as_deref())?;
     let config = match (args.verb.needs_config, &folder) {
@@ -78,6 +83,7 @@ fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
     Ok(ShellContext { args, actor, folder, config, protected })
 }
 
+// The verb table's help entry never reaches dispatch: main_entry answers every help line before run.
 fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
     match context.args.verb.name {
         "after-publish" => run_after_publish(context, cwd),
@@ -89,6 +95,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "guard" => run_guard(context, cwd),
         "guard-hook" => run_guard_hook(context, cwd),
         "init" => run_init(&context.args, cwd),
+        "install" => run_install(context, cwd),
         "join" => run_join(context),
         "land" => run_land(context, cwd),
         "log" => run_log(context, cwd),
@@ -105,6 +112,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "status" => run_status(context),
         "sweep" => run_sweep(context, cwd),
         "undo" => run_undo(context),
+        "uninstall" => run_uninstall(context),
         "would-merge" => run_would_merge(context, cwd),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
     }

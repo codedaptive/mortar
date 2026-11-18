@@ -20,7 +20,9 @@ fn built_verbs_are_listed_alphabetically() {
             "folder",
             "guard",
             "guard-hook",
+            "help",
             "init",
+            "install",
             "join",
             "land",
             "log",
@@ -37,6 +39,7 @@ fn built_verbs_are_listed_alphabetically() {
             "status",
             "sweep",
             "undo",
+            "uninstall",
             "would-merge"
         ]
     );

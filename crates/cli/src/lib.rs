@@ -14,7 +14,9 @@ mod entry;
 mod folder;
 mod guard;
 mod guard_hook;
+mod help;
 mod init;
+mod install;
 mod integration_folder;
 mod join;
 mod json;
@@ -39,6 +41,7 @@ mod sweep;
 mod undo;
 mod undo_reason;
 mod upkeep;
+mod version;
 mod would_merge;
 
 pub use entry::main_entry;

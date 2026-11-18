@@ -25,7 +25,27 @@ fn hook_calls_and_the_drives_calls_are_not_the_agents() {
 
 #[test]
 fn a_call_naming_no_verb_is_not_listed() {
-    assert_eq!(agent_verbs_outside_six("1\t0\tsh\tmr\t--help\n"), Vec::<String>::new());
+    assert_eq!(agent_verbs_outside_six("1\t0\tsh\tmr\n2\t0\tsh\tmr\t--json\n"), Vec::<String>::new());
+}
+
+#[test]
+fn help_and_version_calls_from_the_agent_are_not_listed() {
+    let log = "1\t0\tsh\tmr\thelp\n2\t0\tsh\tmr\thelp\tland\n3\t0\tsh\tmr\tland\t--help\n4\t0\tsh\tmortar\tfolder\t-h\n\
+               5\t0\tsh\tmr\t--version\n6\t0\tsh\tmortar\t--json\t--version\n";
+    assert_eq!(agent_verbs_outside_six(log), Vec::<String>::new());
+}
+
+#[test]
+fn a_version_flag_beside_a_verb_or_help_after_the_end_of_the_globals_is_listed() {
+    let log = "1\t0\tsh\tmr\tland\n2\t0\tsh\tmr\tland\t--version\n3\t0\tsh\tmr\t--\thelp\n";
+    assert_eq!(
+        agent_verbs_outside_six(log),
+        vec![
+            "mr land (parent sh)".to_string(),
+            "mr land --version (parent sh)".to_string(),
+            "mr -- help (parent sh)".to_string(),
+        ]
+    );
 }
 
 #[test]

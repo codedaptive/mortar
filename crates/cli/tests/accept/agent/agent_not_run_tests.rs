@@ -18,7 +18,7 @@ fn the_conflict_line_and_all_four_checks_fail_with_the_reason() {
     assert_eq!(
         lines[4],
         fail(
-            "4. every mr or mortar call of the agent's in mr.log names one of the six verbs",
+            "4. every mr or mortar call of the agent's in mr.log names one of the six verbs, or asks for help or the version",
             "not run: the set-up failed",
         )
     );

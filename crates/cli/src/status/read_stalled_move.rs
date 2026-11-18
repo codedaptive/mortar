@@ -17,7 +17,7 @@
 //! - a kill after join's rebase op and after the folder move's set_index(folder_tree), before the move itself: status
 //!   reports the stall (S-87, S-88, S-116);
 //! - a finished move followed by a staged edit is not reported as a stall (next mr save) (S-116);
-//! - an index with unmerged entries (a paused join) is not reported as a stall;
+//! - an index with unmerged entries (left by git run by hand in the folder, S-180) is not reported as a stall;
 //! - status moves no ref and writes no file: refs, the folder's index and the op log are unchanged after it.
 
 use gitio::{Git, IndexTreeError};

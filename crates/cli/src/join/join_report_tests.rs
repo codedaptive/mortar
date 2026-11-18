@@ -137,6 +137,8 @@ fn conflicted_is_exit_2_listing_the_files() {
                     .to_string(),
                 "  src/a.rs".to_string(),
                 "  docs/b.md".to_string(),
+                "mr resolve writes both sides into these files with markers; fix them, then run mr resolve again"
+                    .to_string(),
             ],
             owner: None,
             next: "mr resolve".to_string(),

@@ -1,5 +1,5 @@
-//! status_lines: one fact per line in the spec's order; empty parts add no line, except the paths, which say there
-//! are none. A stalled move's line says whether a rebase or an undo left it (S-143).
+//! status_lines: one fact per line in the spec's order; empty parts add no line, except the changed and untracked
+//! paths, which say there are none. A stalled move's line says whether a rebase or an undo left it (S-143).
 
 use std::path::PathBuf;
 
@@ -41,7 +41,7 @@ fn a_bare_state_names_the_request_says_no_paths_saved_and_zone_not_moved() {
         status_lines(&bare()),
         vec![
             "request fix-1 in zone core",
-            "no changed, untracked or conflicted paths",
+            "no changed or untracked paths",
             "everything is saved",
             "the zone has no commits this request has not taken in",
         ]
@@ -49,12 +49,25 @@ fn a_bare_state_names_the_request_says_no_paths_saved_and_zone_not_moved() {
 }
 
 #[test]
-fn each_non_empty_path_list_is_one_line_and_an_empty_one_none() {
+fn each_non_empty_path_list_is_one_line_then_the_unmerged_paths() {
     let mut state = bare();
     state.paths = StatusPaths { changed: paths(&["a.rs", "b/c.rs"]), untracked: Vec::new(), conflicted: paths(&["d"]) };
-    assert_eq!(status_lines(&state)[1..3].to_vec(), vec!["changed: a.rs, b/c.rs", "conflicted: d"]);
+    assert_eq!(
+        status_lines(&state)[1..4].to_vec(),
+        vec!["changed: a.rs, b/c.rs", "unmerged: d", "everything is saved"]
+    );
     state.paths = StatusPaths { changed: Vec::new(), untracked: paths(&["new.txt"]), conflicted: Vec::new() };
-    assert_eq!(status_lines(&state)[1], "untracked: new.txt");
+    assert_eq!(status_lines(&state)[1..3].to_vec(), vec!["untracked: new.txt", "everything is saved"]);
+}
+
+#[test]
+fn only_unmerged_paths_say_no_changed_or_untracked_then_the_unmerged_line() {
+    let mut state = bare();
+    state.paths = StatusPaths { changed: Vec::new(), untracked: Vec::new(), conflicted: paths(&["src/m.rs"]) };
+    assert_eq!(
+        status_lines(&state)[1..4].to_vec(),
+        vec!["no changed or untracked paths", "unmerged: src/m.rs", "everything is saved"]
+    );
 }
 
 #[test]

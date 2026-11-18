@@ -8,7 +8,8 @@ use crate::report::{ExitCode, OutValue};
 
 /// Joined and FastForwarded are exit 0 "joined", next "wait for the zone's tests"; Rebased is exit 0 "rebased", next
 /// "mr join", since the unit tests must run again first (S-86); Conflicted is exit 2 "conflicted", each file
-/// indented, next "mr resolve". FilesWritten, which only resolve gives, is None.
+/// indented, then a line saying mr resolve writes both sides into those files with markers to fix before running mr
+/// resolve again, next "mr resolve". FilesWritten, which only resolve gives, is None.
 pub fn answer_part(answer: &JoinAnswer, request_ref: &str) -> Option<AnswerPart> {
     const JOINED_NEXT: &str = "wait for the zone's tests";
     Some(match answer {
@@ -44,6 +45,10 @@ pub fn answer_part(answer: &JoinAnswer, request_ref: &str) -> Option<AnswerPart>
                 "conflicted: commit {commit} did not apply; no ref moved and the folder stays at the request tip"
             )];
             lines.extend(paths.iter().map(|path| format!("  {path}")));
+            lines.push(
+                "mr resolve writes both sides into these files with markers; fix them, then run mr resolve again"
+                    .to_string(),
+            );
             AnswerPart {
                 lines,
                 fields: vec![

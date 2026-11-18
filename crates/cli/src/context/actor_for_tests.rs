@@ -1,5 +1,6 @@
 //! actor_for: a hook verb with no --actor acts as "git" and refuses --actor; a read-only verb acts as nobody with or
-//! without --actor; agent verbs act as "<zone>/<request>" and refuse --actor; harness verbs require --actor.
+//! without --actor; a setup verb acts as nobody and refuses --actor; agent verbs act as "<zone>/<request>" and
+//! refuse --actor; harness verbs require --actor.
 //! ZUT: besides actor_for it uses the args verb types and the folder record, which are plain data, and
 //! args/usage_report and the verb table, which are pure.
 
@@ -106,7 +107,7 @@ fn a_harness_verb_without_actor_is_usage() {
     let report = actor_for(init(), None, None).expect_err("usage");
     assert_eq!(report.exit as i32, 4);
     assert_eq!(report.verb, "init");
-    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, init, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, would-merge".to_string()]);
+    assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, help, init, install, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, uninstall, would-merge".to_string()]);
     assert_eq!(report.next, init().usage);
 }
 
@@ -122,4 +123,26 @@ fn a_hook_verb_refuses_actor_as_usage() {
     assert_eq!(report.verb, "guard-hook");
     assert_eq!(report.lines[0], "hook verbs are run by git and take no --actor");
     assert_eq!(report.next, "mortar guard-hook <hook>");
+}
+
+const SETUP: VerbSpec = VerbSpec {
+    name: "install",
+    kind: VerbKind::Setup,
+    lock: LockNeed::NoLock,
+    needs_config: false,
+    usage: "mortar install [--json]",
+};
+
+#[test]
+fn a_setup_verb_acts_as_nobody() {
+    assert_eq!(actor_for(&SETUP, None, None), Ok(String::new()));
+}
+
+#[test]
+fn a_setup_verb_refuses_actor_as_usage() {
+    let report = actor_for(&SETUP, None, Some("bob")).expect_err("usage");
+    assert_eq!(report.exit, ExitCode::Usage);
+    assert_eq!(report.verb, "install");
+    assert_eq!(report.lines[0], "install and uninstall take no --actor");
+    assert_eq!(report.next, "mortar install [--json]");
 }

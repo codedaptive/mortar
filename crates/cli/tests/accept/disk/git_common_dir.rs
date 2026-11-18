@@ -1,7 +1,7 @@
 //! A repository's git common dir, read with plain git. Real repositories and processes: the drive (steps/disk.rs)
 //! runs it through run_disk on every drive whose ACCEPT_MOOT_COPY canonicalized, for the copy; then, once the copy's
 //! git common dir was read, for each registered repository that exists, in the order registered_repos reads them,
-//! which stops at the first read that fails (the manifests folder, a manifest or a repository): not every
+//! which stops at the first failure (ACCEPT_TEAMS, the manifests folder, a manifest or a repository): not every
 //! registered repository is necessarily read.
 
 use std::path::{Path, PathBuf};
