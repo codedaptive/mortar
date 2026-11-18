@@ -4,8 +4,8 @@
 //! ref's value before the restore (snapshot_value_to_check, S-122(3)).
 //! No unit test: it runs git and snapshot's saved_state (S-5, S-104); ref_moved_on_tests cover the moved-on decision,
 //! snapshot_value_to_check_tests the snapshot value a check compares against, restore_refusal_tests the refusal
-//! decided from its answer, the ZIT crates/cli/tests/run_restore_tests.rs restore's usage refusals, before any lock,
-//! and the ZIT crates/cli/tests/run_restore_repeat_tests.rs an unsaved request folder refusing exit 1 with nothing
+//! decided from its answer, run_restore_tests restore's usage refusals, before any lock, and the RIT
+//! crates/cli/tests/cli_rit/run_restore_repeat_tests.rs an unsaved request folder refusing exit 1 with nothing
 //! moved, a kill between oplog::restore and the folder move finished by a plain repeat (Repeated, then the move),
 //! such a repeat with work added after the kill refusing exit 1 with nothing moved, and a repeat after a later
 //! restore leaving the folder and its ref.

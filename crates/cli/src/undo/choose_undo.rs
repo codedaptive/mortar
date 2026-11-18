@@ -1,6 +1,6 @@
 //! choose_undo: which op of the log a folder's undo reverses, and what it does to the folder (S-73; S-142 items
-//! 1-3; S-148). Tested by choose_undo_tests.rs, and by the ZITs in crates/cli/tests/choose_undo_resolve_tests.rs
-//! for a resolve step and an undo of a join-rebase, decided through undo_reason's is_resolve_step and done_record.
+//! 1-3; S-148). Tested by choose_undo_tests.rs, including a resolve step and an undo of a join-rebase, decided
+//! through undo_reason's is_resolve_step and done_record.
 
 use oplog::{OpPhase, OpRecord, ValuedRecord};
 

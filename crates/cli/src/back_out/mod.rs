@@ -6,5 +6,5 @@ mod run_back_out;
 #[cfg(test)]
 mod back_out_report_tests;
 
-pub use back_out_report::back_out_report;
-pub use run_back_out::run_back_out;
+pub(crate) use back_out_report::back_out_report;
+pub(crate) use run_back_out::run_back_out;

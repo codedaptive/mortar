@@ -31,15 +31,15 @@ mod squash_error_report_tests;
 #[cfg(test)]
 mod squash_pick_report_tests;
 
-pub use change_conflict_next::CHANGE_CONFLICT_NEXT;
-pub use land_error_report::land_error_report;
-pub use landing_state_error_report::landing_state_error_report;
-pub use pick_squash_ref::pick_squash_ref;
-pub use publish_error_report::publish_error_report;
-pub use resolve_squash::resolve_squash;
-pub use squash_error_report::squash_error_report;
-pub use squash_name::SquashName;
-pub use squash_pick::SquashPick;
-pub use squash_pick_report::squash_pick_report;
+pub(crate) use change_conflict_next::CHANGE_CONFLICT_NEXT;
+pub(crate) use land_error_report::land_error_report;
+pub(crate) use landing_state_error_report::landing_state_error_report;
+pub(crate) use pick_squash_ref::pick_squash_ref;
+pub(crate) use publish_error_report::publish_error_report;
+pub(crate) use resolve_squash::resolve_squash;
+pub(crate) use squash_error_report::squash_error_report;
+pub(crate) use squash_name::SquashName;
+pub(crate) use squash_pick::SquashPick;
+pub(crate) use squash_pick_report::squash_pick_report;
 
 pub(crate) use landing_refusal::landing_refusal;

@@ -10,6 +10,6 @@ mod land_report_tests;
 #[cfg(test)]
 mod parse_land_args_tests;
 
-pub use land_report::land_report;
-pub use parse_land_args::parse_land_args;
-pub use run_land::run_land;
+pub(crate) use land_report::land_report;
+pub(crate) use parse_land_args::parse_land_args;
+pub(crate) use run_land::run_land;

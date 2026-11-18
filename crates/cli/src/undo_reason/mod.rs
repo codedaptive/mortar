@@ -16,7 +16,7 @@ mod reversed_op_tests;
 #[cfg(test)]
 mod undo_reason_tests;
 
-pub use done_record::done_record;
-pub use is_resolve_step::is_resolve_step;
-pub use reversed_op::reversed_op;
-pub use undo_reason::undo_reason;
+pub(crate) use done_record::done_record;
+pub(crate) use is_resolve_step::is_resolve_step;
+pub(crate) use reversed_op::reversed_op;
+pub(crate) use undo_reason::undo_reason;

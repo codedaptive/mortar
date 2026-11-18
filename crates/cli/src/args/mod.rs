@@ -27,24 +27,26 @@ mod no_arguments_report_tests;
 #[cfg(test)]
 mod parse_args_tests;
 #[cfg(test)]
+mod usage_report_tests;
+#[cfg(test)]
 mod verbs_tests;
 
-pub use after_publish_spec::AFTER_PUBLISH_SPEC;
-pub use backup_spec::BACKUP_SPEC;
-pub use bisect_spec::BISECT_SPEC;
-pub use disk_spec::DISK_SPEC;
+pub(crate) use after_publish_spec::AFTER_PUBLISH_SPEC;
+pub(crate) use backup_spec::BACKUP_SPEC;
+pub(crate) use bisect_spec::BISECT_SPEC;
+pub(crate) use disk_spec::DISK_SPEC;
 pub use find_verb::find_verb;
 pub use lock_need::LockNeed;
-pub use no_arguments_report::no_arguments_report;
-pub use overlap_spec::OVERLAP_SPEC;
-pub use parse_args::parse_args;
+pub(crate) use no_arguments_report::no_arguments_report;
+pub(crate) use overlap_spec::OVERLAP_SPEC;
+pub(crate) use parse_args::parse_args;
 pub use parsed_args::ParsedArgs;
-pub use restore_backup_spec::RESTORE_BACKUP_SPEC;
-pub use snapshot_spec::SNAPSHOT_SPEC;
-pub use sweep_spec::SWEEP_SPEC;
-pub use undo_spec::UNDO_SPEC;
-pub use usage_error::UsageError;
-pub use usage_report::usage_report;
+pub(crate) use restore_backup_spec::RESTORE_BACKUP_SPEC;
+pub(crate) use snapshot_spec::SNAPSHOT_SPEC;
+pub(crate) use sweep_spec::SWEEP_SPEC;
+pub(crate) use undo_spec::UNDO_SPEC;
+pub(crate) use usage_error::UsageError;
+pub(crate) use usage_report::usage_report;
 pub use verb_kind::VerbKind;
 pub use verb_spec::VerbSpec;
-pub use verbs::VERBS;
+pub(crate) use verbs::VERBS;

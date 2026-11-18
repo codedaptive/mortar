@@ -1,6 +1,8 @@
-//! parse_args: globals anywhere before `--`, the verb, the rest in order, and each usage error.
+//! parse_args: globals anywhere before `--`, the verb as the verb table's entry, the rest in order, and each usage
+//! error.
+//! ZUT (rule 11): args/find_verb and the verb table are pure and used directly.
 
-use super::{parse_args, ParsedArgs, UsageError};
+use super::{parse_args, ParsedArgs, UsageError, VERBS};
 
 fn argv(words: &[&str]) -> Vec<String> {
     words.iter().map(|w| w.to_string()).collect()
@@ -134,4 +136,15 @@ fn only_the_first_double_dash_marks_a_later_one_is_a_plain_word() {
     let parsed = ok(&["init", "--zone", "a=x", "--", "--json", "--key", "k", "--"]);
     assert_eq!(parsed.rest, strings(&["--zone", "a=x", "--json", "--key", "k", "--"]));
     assert_eq!(parsed.dash_dash, Some(2));
+}
+
+#[test]
+fn globals_before_the_verb() {
+    let parsed = ok(&["--json", "--key", "k1", "--actor", "harness", "init", "--origin", "main"]);
+    assert_eq!(parsed.verb.name, "init");
+    assert_eq!(parsed.verb, VERBS.iter().find(|verb| verb.name == "init").expect("init is in the table"));
+    assert!(parsed.json);
+    assert_eq!(parsed.key.as_deref(), Some("k1"));
+    assert_eq!(parsed.actor.as_deref(), Some("harness"));
+    assert_eq!(parsed.rest, strings(&["--origin", "main"]));
 }

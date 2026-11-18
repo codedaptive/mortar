@@ -17,9 +17,9 @@ mod need_report_tests;
 #[cfg(test)]
 mod need_with_next_tests;
 
-pub use missing_path_report::missing_path_report;
-pub use need_error_report::need_error_report;
-pub use need_report::need_report;
-pub use need_with_next::need_with_next;
-pub use read_need_path::read_need_path;
-pub use run_need::run_need;
+pub(crate) use missing_path_report::missing_path_report;
+pub(crate) use need_error_report::need_error_report;
+pub(crate) use need_report::need_report;
+pub(crate) use need_with_next::need_with_next;
+pub(crate) use read_need_path::read_need_path;
+pub(crate) use run_need::run_need;

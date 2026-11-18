@@ -35,6 +35,10 @@ mod nothing_to_undo_report_tests;
 #[cfg(test)]
 mod own_refs_tests;
 #[cfg(test)]
+mod restore_check_report_tests;
+#[cfg(test)]
+mod restore_failed_report_tests;
+#[cfg(test)]
 mod restore_why_tests;
 #[cfg(test)]
 mod undo_caller_tests;
@@ -47,20 +51,20 @@ mod undo_report_tests;
 #[cfg(test)]
 mod with_restored_tests;
 
-pub use already_undone_report::already_undone_report;
-pub use choose_undo::choose_undo;
-pub use failed_undo_report::failed_undo_report;
-pub use later_op_refusal::later_op_refusal;
-pub use nothing_to_undo_report::nothing_to_undo_report;
-pub use own_refs::own_refs;
+pub(crate) use already_undone_report::already_undone_report;
+pub(crate) use choose_undo::choose_undo;
+pub(crate) use failed_undo_report::failed_undo_report;
+pub(crate) use later_op_refusal::later_op_refusal;
+pub(crate) use nothing_to_undo_report::nothing_to_undo_report;
+pub(crate) use own_refs::own_refs;
 pub use restore_check_report::restore_check_report;
 pub use restore_failed_report::restore_failed_report;
 pub use restore_why::restore_why;
-pub use run_undo::run_undo;
-pub use undo_caller::undo_caller;
-pub use undo_choice::UndoChoice;
-pub use undo_error_report::undo_error_report;
-pub use undo_refusal::undo_refusal;
-pub use undo_report::undo_report;
-pub use undo_step::UndoStep;
-pub use with_restored::with_restored;
+pub(crate) use run_undo::run_undo;
+pub(crate) use undo_caller::undo_caller;
+pub(crate) use undo_choice::UndoChoice;
+pub(crate) use undo_error_report::undo_error_report;
+pub(crate) use undo_refusal::undo_refusal;
+pub(crate) use undo_report::undo_report;
+pub(crate) use undo_step::UndoStep;
+pub(crate) use with_restored::with_restored;

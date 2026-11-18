@@ -1,6 +1,6 @@
 //! The report of an `mr resolve` that ran to an answer (S-50, S-64, S-87).
-//! crates/cli/tests/resolve_report_tests.rs covers it (a ZIT: it calls join's answer_part and finished_move_part and
-//! report::failure_report for real).
+//! resolve_report_tests covers it (it calls join's answer_part and finished_move_part and report::failure_report,
+//! which are pure, directly).
 
 use std::path::PathBuf;
 

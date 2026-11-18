@@ -1,7 +1,7 @@
-//! save_sentence: exactly one non-blank, one-line argument is the sentence; anything else is refused with why.
-//! Integration group. The no-word and two-word cases are ZITs (S-79 as replaced, S-102): they call
-//! save_error_report and the report module for real. The one-argument cases also run snapshot::sentence_refusal
-//! for real, so they are RITs by S-101, listed in save_sentence.rs's header for Nagatha.
+//! save_sentence: one non-blank, one-line argument is the sentence; a blank or multi-line one is refused with why.
+//! Integration group. The one-argument cases run snapshot::sentence_refusal for real, so they are RITs by S-101,
+//! listed in save_sentence.rs's header for Nagatha. The no-word and two-word cases are the ZUTs in
+//! src/save/save_sentence_tests.rs.
 
 use cli::{save_sentence, ExitCode, Report};
 
@@ -21,23 +21,12 @@ fn refused(why: &str) -> Report {
     }
 }
 
-const NOT_ONE: &str = "save takes one sentence, quoted as one argument";
 const EMPTY: &str = "the sentence is empty or only whitespace";
 const BREAK: &str = "the sentence holds a line break; a commit subject is one line";
 
 #[test]
 fn one_sentence_is_the_word() {
     assert_eq!(save_sentence(&words(&["fix the parser"])), Ok("fix the parser"));
-}
-
-#[test]
-fn no_word_is_refused() {
-    assert_eq!(save_sentence(&[]), Err(refused(NOT_ONE)));
-}
-
-#[test]
-fn two_words_are_refused() {
-    assert_eq!(save_sentence(&words(&["fix", "parser"])), Err(refused(NOT_ONE)));
 }
 
 #[test]

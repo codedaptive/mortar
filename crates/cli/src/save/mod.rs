@@ -15,9 +15,13 @@ mod snapshot_target_for;
 mod zone_folder_refusal;
 
 #[cfg(test)]
+mod save_error_report_tests;
+#[cfg(test)]
 mod save_report_tests;
 #[cfg(test)]
 mod save_run_for_tests;
+#[cfg(test)]
+mod save_sentence_tests;
 #[cfg(test)]
 mod snapshot_error_report_tests;
 #[cfg(test)]
@@ -27,13 +31,13 @@ mod snapshot_target_for_tests;
 #[cfg(test)]
 mod zone_folder_refusal_tests;
 
-pub use run_save::run_save;
-pub use run_snapshot::run_snapshot;
+pub(crate) use run_save::run_save;
+pub(crate) use run_snapshot::run_snapshot;
 pub use save_error_report::save_error_report;
-pub use save_report::save_report;
-pub use save_run_for::save_run_for;
+pub(crate) use save_report::save_report;
+pub(crate) use save_run_for::save_run_for;
 pub use save_sentence::save_sentence;
-pub use snapshot_error_report::snapshot_error_report;
-pub use snapshot_report::snapshot_report;
-pub use snapshot_target_for::snapshot_target_for;
-pub use zone_folder_refusal::zone_folder_refusal;
+pub(crate) use snapshot_error_report::snapshot_error_report;
+pub(crate) use snapshot_report::snapshot_report;
+pub(crate) use snapshot_target_for::snapshot_target_for;
+pub(crate) use zone_folder_refusal::zone_folder_refusal;

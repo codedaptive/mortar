@@ -1,13 +1,14 @@
 //! resolve_move_refusal_report: edits on paths the zone changed are exit 1 owned by the folder, naming the paths and
 //! the snapshot that keeps them (S-87(4)); anything else is move_refusal_report's report under the verb resolve.
-//! ZIT (S-79 as replaced: the line is the file): it calls move_refusal_report for real.
+//! ZUT (rule 11): join/move_refusal_report is pure and used directly.
 
 use std::path::PathBuf;
 
 use folders::FolderError;
 use gitio::Oid;
 
-use cli::{resolve_move_refusal_report, ExitCode, Report};
+use super::resolve_move_refusal_report;
+use crate::report::{ExitCode, Report};
 
 const OLD: &str = "1111111111111111111111111111111111111111";
 const NEW: &str = "2222222222222222222222222222222222222222";

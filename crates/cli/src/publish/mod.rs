@@ -6,5 +6,5 @@ mod run_publish;
 #[cfg(test)]
 mod publish_report_tests;
 
-pub use publish_report::publish_report;
-pub use run_publish::run_publish;
+pub(crate) use publish_report::publish_report;
+pub(crate) use run_publish::run_publish;

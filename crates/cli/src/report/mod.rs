@@ -21,10 +21,10 @@ mod render_json_tests;
 mod render_plain_tests;
 
 pub use exit_code::ExitCode;
-pub use failure_report::failure_report;
-pub use is_zero_oid::is_zero_oid;
+pub(crate) use failure_report::failure_report;
+pub(crate) use is_zero_oid::is_zero_oid;
 pub use out_value::OutValue;
-pub use prints_nothing::prints_nothing;
+pub(crate) use prints_nothing::prints_nothing;
 pub use render_json::render_json;
 pub use render_plain::render_plain;
 pub use report::Report;

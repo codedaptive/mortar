@@ -1,7 +1,8 @@
 //! status_report: the report of `mr status`, assembled from its parts; attempt_status_report builds on it for
 //! an attempt folder.
-//! No sibling unit test: it calls status_lines, status_fields, status_next and status_outcome, so its tests are the
-//! ZIT crates/cli/tests/status_report_tests.rs, which also renders both forms (S-104).
+//! status_report_tests covers a clean folder and one with every part as the whole Report, calling status_lines,
+//! status_fields, status_next and status_outcome inside; the ZITs in crates/cli/tests/status_report_tests.rs render
+//! both forms, which runs oplog's JSON writer (held for the Q-cross-crate-pure ruling).
 
 use super::{status_fields, status_lines, status_next, status_outcome, StatusState};
 use crate::report::{ExitCode, Report};

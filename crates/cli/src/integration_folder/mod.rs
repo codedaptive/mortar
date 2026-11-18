@@ -24,13 +24,13 @@ mod last_integration_old_tests;
 #[cfg(test)]
 mod note_finished_move_tests;
 
-pub use finish_stopped_move::finish_stopped_move;
-pub use finished_move::FinishedMove;
-pub use folder_move_refusal_report::folder_move_refusal_report;
-pub use integration_folder::integration_folder;
-pub use integration_folder_line::integration_folder_line;
-pub use integration_move_stopped::integration_move_stopped;
-pub use last_integration_old::last_integration_old;
-pub use move_block::MoveBlock;
-pub use move_integration_folder::move_integration_folder;
-pub use note_finished_move::note_finished_move;
+pub(crate) use finish_stopped_move::finish_stopped_move;
+pub(crate) use finished_move::FinishedMove;
+pub(crate) use folder_move_refusal_report::folder_move_refusal_report;
+pub(crate) use integration_folder::integration_folder;
+pub(crate) use integration_folder_line::integration_folder_line;
+pub(crate) use integration_move_stopped::integration_move_stopped;
+pub(crate) use last_integration_old::last_integration_old;
+pub(crate) use move_block::MoveBlock;
+pub(crate) use move_integration_folder::move_integration_folder;
+pub(crate) use note_finished_move::note_finished_move;

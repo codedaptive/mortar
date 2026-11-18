@@ -13,8 +13,8 @@ mod sweep_build_failure_report_tests;
 #[cfg(test)]
 mod sweep_report_tests;
 
-pub use parse_sweep_args::parse_sweep_args;
-pub use run_sweep::run_sweep;
-pub use sweep_args::SweepArgs;
-pub use sweep_build_failure_report::sweep_build_failure_report;
-pub use sweep_report::sweep_report;
+pub(crate) use parse_sweep_args::parse_sweep_args;
+pub(crate) use run_sweep::run_sweep;
+pub(crate) use sweep_args::SweepArgs;
+pub(crate) use sweep_build_failure_report::sweep_build_failure_report;
+pub(crate) use sweep_report::sweep_report;

@@ -14,7 +14,7 @@ mod guard_hook_from_args_tests;
 #[cfg(test)]
 mod guard_hook_report_tests;
 
-pub use decide_with_intent::decide_with_intent;
-pub use guard_hook_from_args::guard_hook_from_args;
-pub use guard_hook_report::guard_hook_report;
-pub use run_guard_hook::run_guard_hook;
+pub(crate) use decide_with_intent::decide_with_intent;
+pub(crate) use guard_hook_from_args::guard_hook_from_args;
+pub(crate) use guard_hook_report::guard_hook_report;
+pub(crate) use run_guard_hook::run_guard_hook;

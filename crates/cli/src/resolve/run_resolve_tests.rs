@@ -1,7 +1,7 @@
 //! run_resolve: an attempt folder is the S-91 refusal with nothing run, and an argument is resolve's usage; both
 //! return before any lock or git run.
-//! ZIT (S-79 as replaced: the line is the file): it calls request_run_for, attempt_refusal and usage_report for real.
-//! The context is built by hand; Git::new runs nothing.
+//! ZUT (rule 11): request_run_for, attempt_refusal and usage_report are pure and used directly. The context is
+//! built by hand; Git::new runs nothing.
 
 use std::collections::BTreeMap;
 use std::path::PathBuf;
@@ -9,7 +9,12 @@ use std::path::PathBuf;
 use folders::{FolderKind, FolderRecord};
 use gitio::Oid;
 
-use cli::{find_verb, run_resolve, Config, ExitCode, FolderContext, ParsedArgs, Report, ShellContext};
+use super::run_resolve;
+use crate::args::{find_verb, ParsedArgs};
+use crate::config::Config;
+use crate::context::FolderContext;
+use crate::report::{ExitCode, Report};
+use crate::shell::ShellContext;
 
 fn context(kind: FolderKind, rest: Vec<String>) -> ShellContext {
     let record = FolderRecord {

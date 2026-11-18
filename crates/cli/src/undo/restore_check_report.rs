@@ -1,8 +1,8 @@
 //! restore_check_report: the report of `mr undo` when join's check_restore_join_state refused a restore of a paused
 //! join, before anything moved (S-148, S-155). The match lists every variant with no wildcard (S-128 (4)).
-//! No sibling restore_check_report_tests.rs (S-104): every test runs restore_why inside, so they are ZITs in
-//! crates/cli/tests/restore_check_report_tests.rs, and the Git case, a_git_failure_is_a_failure_to_repeat, runs
-//! gitio's GitError Display, a RIT in crates/cli/tests/cli_rit/restore_git_errors.rs (S-101).
+//! restore_check_report_tests covers each refusal and failure, running restore_why, which is pure on those errors,
+//! inside. The Git case, a_git_failure_is_a_failure_to_repeat, runs gitio's GitError Display, a RIT in
+//! crates/cli/tests/cli_rit/restore_git_errors.rs (S-101).
 
 use ::join::JoinRunError;
 

@@ -19,10 +19,10 @@ mod parse_bisect_args_tests;
 #[cfg(test)]
 mod probe_line_tests;
 
-pub use bisect_args::BisectArgs;
-pub use bisect_error_report::bisect_error_report;
-pub use bisect_report::bisect_report;
-pub use culprit_line::culprit_line;
-pub use parse_bisect_args::parse_bisect_args;
-pub use probe_line::probe_line;
-pub use run_bisect::run_bisect;
+pub(crate) use bisect_args::BisectArgs;
+pub(crate) use bisect_error_report::bisect_error_report;
+pub(crate) use bisect_report::bisect_report;
+pub(crate) use culprit_line::culprit_line;
+pub(crate) use parse_bisect_args::parse_bisect_args;
+pub(crate) use probe_line::probe_line;
+pub(crate) use run_bisect::run_bisect;

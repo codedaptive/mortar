@@ -1,6 +1,7 @@
 //! file_has_marker: whether a file's bytes carry a marker (S-147: is the first `mr` on PATH a copy of Mortar). It
-//! reads the file and never runs it. No sibling test (S-104): it reads the file system. The ZIT
-//! crates/cli/tests/file_has_marker_tests.rs covers it on files it makes itself.
+//! reads the file and never runs it. No sibling test (S-5, S-104): its job is reading files. marker_in_chunks_tests
+//! cover the search, the 64 KiB straddle included. Its real-file cases (marker present or absent, straddling a read,
+//! a directory, a missing path, a symlink) are listed for Nagatha's RITs through `mr guard install` (S-169).
 
 use std::fs::{self, File};
 use std::io::Read;

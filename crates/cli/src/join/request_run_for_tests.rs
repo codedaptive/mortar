@@ -1,0 +1,97 @@
+//! request_run_for: an attempt folder is the S-91 refusal for join and for resolve; an argument is the verb's usage.
+//! A request folder giving its ref, lock, snapshot target and op key is the ZIT in
+//! crates/cli/tests/request_run_for_tests.rs.
+//! ZUT (rule 11): join/attempt_refusal and args/usage_report are pure and used directly; both return before any
+//! lower crate is called.
+
+use std::collections::BTreeMap;
+use std::path::PathBuf;
+
+use folders::{FolderKind, FolderRecord};
+use gitio::Oid;
+
+use super::request_run_for;
+use crate::args::{find_verb, ParsedArgs};
+use crate::config::Config;
+use crate::context::FolderContext;
+use crate::report::{ExitCode, Report};
+use crate::shell::ShellContext;
+
+fn context(kind: FolderKind, rest: Vec<String>) -> ShellContext {
+    let record = FolderRecord {
+        kind,
+        zone: "core".to_string(),
+        request: Some("fix-1".to_string()),
+        base: Oid::parse(&"a".repeat(40)).expect("a valid oid"),
+        work_order_paths: Vec::new(),
+        needed_paths: Vec::new(),
+        parent: Some("zone/core".to_string()),
+    };
+    let config = Config {
+        origin_branch: "main".to_string(),
+        integration_branch: "integration".to_string(),
+        remote: "origin".to_string(),
+        zones: BTreeMap::new(),
+        root_files: Vec::new(),
+        build_dirs: Vec::new(),
+        cap_bytes: 5_242_880,
+        floor_bytes: 0,
+        formatter: None,
+    };
+    ShellContext {
+        args: ParsedArgs {
+            verb: find_verb("join").expect("join is a verb"),
+            rest,
+            dash_dash: None,
+            json: false,
+            key: None,
+            actor: None,
+        },
+        actor: "core/fix-1".to_string(),
+        folder: Some(FolderContext {
+            toplevel: PathBuf::from("/w/fix-1"),
+            git_dir: PathBuf::from("/r/.git/worktrees/fix-1"),
+            common: PathBuf::from("/r/.git"),
+            record,
+        }),
+        config: Some(config),
+        protected: Vec::new(),
+    }
+}
+
+fn attempt_refused(verb: &str) -> Report {
+    Report {
+        verb: verb.to_string(),
+        exit: ExitCode::Refused,
+        outcome: "refused".to_string(),
+        lines: vec![
+            format!("this is attempt folder 3 of request fix-1: mr {verb} runs in the request's own folder"),
+            "nothing ran".to_string(),
+        ],
+        owner: Some("this request".to_string()),
+        next: "keep or drop the attempts, then mr join in the request's folder".to_string(),
+        fields: Vec::new(),
+    }
+}
+
+#[test]
+fn join_in_an_attempt_folder_is_refused() {
+    let context = context(FolderKind::Attempt(3), Vec::new());
+    assert_eq!(request_run_for(&context, "join").unwrap_err(), attempt_refused("join"));
+}
+
+#[test]
+fn resolve_in_an_attempt_folder_is_refused() {
+    let context = context(FolderKind::Attempt(3), Vec::new());
+    assert_eq!(request_run_for(&context, "resolve").unwrap_err(), attempt_refused("resolve"));
+}
+
+#[test]
+fn an_argument_is_the_verbs_usage() {
+    let context = context(FolderKind::Request, vec!["now".to_string()]);
+    let report = request_run_for(&context, "join").unwrap_err();
+    assert_eq!(report.exit, ExitCode::Usage);
+    assert_eq!(report.verb, "join");
+    assert_eq!(report.lines[0], "join takes no arguments");
+    assert_eq!(report.next, "mr join [--key <operation key>] [--json]");
+}

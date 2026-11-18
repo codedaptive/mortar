@@ -9,6 +9,6 @@ mod parse_squash_args_tests;
 #[cfg(test)]
 mod squash_report_tests;
 
-pub use parse_squash_args::parse_squash_args;
-pub use run_squash::run_squash;
-pub use squash_report::squash_report;
+pub(crate) use parse_squash_args::parse_squash_args;
+pub(crate) use run_squash::run_squash;
+pub(crate) use squash_report::squash_report;

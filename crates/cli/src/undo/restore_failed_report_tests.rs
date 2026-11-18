@@ -1,7 +1,7 @@
 //! restore_failed_report: restore_join_state refused after the oplog undo moved the ref (S-155 Q2); every error is a
 //! refusal naming both ops, then why, with mr undo next to finish the restore.
-//! ZIT (S-102, rule 11): restore_failed_report builds its why lines by calling undo::restore_why for real. Git
-//! failing is the RIT a_git_failure_is_a_refusal_too in cli_rit/restore_git_errors.rs (S-101).
+//! ZUT (rule 11): restore_failed_report builds its why lines by calling undo::restore_why, which is pure on these
+//! errors, directly. Git failing is the RIT a_git_failure_is_a_refusal_too in cli_rit/restore_git_errors.rs (S-101).
 
 use std::io;
 use std::path::PathBuf;
@@ -9,8 +9,8 @@ use std::path::PathBuf;
 use ::join::JoinRunError;
 use gitio::Oid;
 
-use cli::report::{ExitCode, OutValue, Report};
-use cli::undo::restore_failed_report;
+use super::restore_failed_report;
+use crate::report::{ExitCode, OutValue, Report};
 
 const STATE: &str = "/w/.git/mortar-join.json";
 const FIRST: &str = "op op-7 was undone by op op-12; the paused join was not put back";

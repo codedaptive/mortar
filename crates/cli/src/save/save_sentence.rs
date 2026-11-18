@@ -6,9 +6,8 @@
 //! a_whitespace_sentence_is_refused, a_newline_is_refused and a_carriage_return_is_refused.
 //! They check the returned sentence, snapshot's blank/line-break reasons and each refusal's exit 1,
 //! "nothing ran" and next `mr save "<one line saying what changed>"`.
-//! That tests file also holds the ZITs no_word_is_refused and two_words_are_refused for the one-argument check;
-//! they do not call snapshot's check and run only the cli's own save_error_report.
-//! No sibling save_sentence_tests.rs (S-104): every test of this file is a ZIT or a RIT.
+//! The sibling save_sentence_tests.rs holds the ZUTs no_word_is_refused and two_words_are_refused for the
+//! one-argument check; they do not call snapshot's check and run only the cli's own save_error_report.
 
 use snapshot::{sentence_refusal, SnapshotError};
 

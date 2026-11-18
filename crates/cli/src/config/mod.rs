@@ -48,16 +48,16 @@ mod take_number_tests;
 mod take_strings_tests;
 
 pub use config::Config;
-pub use config_error::ConfigError;
-pub use config_path::config_path;
-pub use decode_config::decode_config;
-pub use encode_config::encode_config;
+pub(crate) use config_error::ConfigError;
+pub(crate) use config_path::config_path;
+pub(crate) use decode_config::decode_config;
+pub(crate) use encode_config::encode_config;
 pub use formatter_config::FormatterConfig;
-pub use protected_refs::protected_refs;
-pub use read_config::read_config;
+pub(crate) use protected_refs::protected_refs;
+pub(crate) use read_config::read_config;
 pub use snapshot_settings::SnapshotSettings;
-pub use snapshot_settings_for::snapshot_settings_for;
-pub use write_config::write_config;
+pub(crate) use snapshot_settings_for::snapshot_settings_for;
+pub(crate) use write_config::write_config;
 pub use zone_config::ZoneConfig;
 
 pub(crate) use config_json_value::ConfigJsonValue;

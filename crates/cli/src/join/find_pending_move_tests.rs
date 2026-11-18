@@ -1,8 +1,9 @@
 //! find_pending_move: a done join-rebase that is the request ref's last mover, with the branch at its new tip, is a
 //! pending folder move carrying the folder_tree that op recorded, if any (cause Rebase); a done undo of a join-rebase
 //! op, last mover with the branch at its new tip, is one too, from the rebased tip back (cause Undo, no tree, S-143).
-//! The undo cases a resolve step, a missing or only-failed reversed op decide are ZITs in
-//! crates/cli/tests/find_pending_move_resolve_tests.rs.
+//! An undo whose reversed op's Done record carries join_state (a resolve step, S-148) is none; one whose reversed op
+//! carries folder_tree only, has no Done record in the log, or only failed, is the move back.
+//! ZUT (rule 11): undo_reason's reversed_op, done_record and is_resolve_step are pure and used directly.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, RefMove, ValuedRecord};
@@ -215,4 +216,37 @@ fn an_undo_that_leaves_no_move_back_pending_is_none() {
     for (case, records, branch_at) in cases {
         assert_eq!(find_pending_move(&records, REQUEST, Some(&oid(branch_at))), None, "{case}");
     }
+}
+
+/// The resolve's final join-rebase op-5: the move from OLD to the rebased tip NEW, carrying "join_state".
+fn resolve_5() -> ValuedRecord {
+    with_values(rebase_5(), &[("folder_tree", TREE), ("join_state", "{\"paused\":true}")])
+}
+
+#[test]
+fn an_undo_of_a_resolve_step_is_none() {
+    let records = [resolve_5(), undo(UNDO_OF_REBASE, Some(NEW))];
+    assert_eq!(find_pending_move(&records, REQUEST, Some(&oid(OLD))), None);
+}
+
+#[test]
+fn an_undo_of_a_plain_join_rebase_carrying_folder_tree_only_is_the_move_back() {
+    let records = [with_values(rebase_5(), &[("folder_tree", TREE)]), undo(UNDO_OF_REBASE, Some(NEW))];
+    assert_eq!(find_pending_move(&records, REQUEST, Some(&oid(OLD))), Some(undone()));
+}
+
+#[test]
+fn an_undo_whose_reversed_op_is_missing_from_the_log_is_the_move_back() {
+    let records = [undo(UNDO_OF_REBASE, Some(NEW))];
+    assert_eq!(find_pending_move(&records, REQUEST, Some(&oid(OLD))), Some(undone()));
+}
+
+#[test]
+fn an_undo_whose_reversed_resolve_step_only_failed_is_the_move_back() {
+    let failed = with_values(
+        record("op-5", "join-rebase", OpPhase::Failed, REQUEST, Some(OLD), NEW),
+        &[("join_state", "{}")],
+    );
+    let records = [rebase_5(), failed, undo(UNDO_OF_REBASE, Some(NEW))];
+    assert_eq!(find_pending_move(&records, REQUEST, Some(&oid(OLD))), Some(undone()));
 }

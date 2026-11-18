@@ -21,11 +21,11 @@ mod path_warning_for_tests;
 #[cfg(test)]
 mod same_build_tests;
 
-pub use file_has_marker::file_has_marker;
-pub use first_on_path::first_on_path;
-pub use marker_in_chunks::marker_in_chunks;
-pub use mortar_marker::MORTAR_MARKER;
-pub use mr_path_warning::mr_path_warning;
-pub use path_entries::path_entries;
-pub use path_warning_for::path_warning_for;
-pub use same_build::same_build;
+pub(crate) use file_has_marker::file_has_marker;
+pub(crate) use first_on_path::first_on_path;
+pub(crate) use marker_in_chunks::marker_in_chunks;
+pub(crate) use mortar_marker::MORTAR_MARKER;
+pub(crate) use mr_path_warning::mr_path_warning;
+pub(crate) use path_entries::path_entries;
+pub(crate) use path_warning_for::path_warning_for;
+pub(crate) use same_build::same_build;

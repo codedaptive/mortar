@@ -1,15 +1,16 @@
 //! resolve_report: the first run's files written is exit 2 with the files, skipped paths and submodules; a rebase
 //! reports as join does plus the snapshot's ref and commit; a conflict on a later commit reports as join does;
 //! a finished folder move comes first; a joined answer, which resolve never gives, is a failure.
-//! ZIT (S-79 as replaced: the line is the file): it calls join's answer_part and finished_move_part and
-//! report::failure_report for real.
+//! ZUT (rule 11): join's answer_part and finished_move_part and report::failure_report are pure and used directly.
 
 use std::path::PathBuf;
 
 use ::join::JoinAnswer;
 use gitio::Oid;
 
-use cli::{resolve_report, ExitCode, MoveCause, OutValue, PendingMove, Report, ResolveOutcome};
+use super::{resolve_report, ResolveOutcome};
+use crate::join::{MoveCause, PendingMove};
+use crate::report::{ExitCode, OutValue, Report};
 
 const ONE: &str = "1111111111111111111111111111111111111111";
 const TWO: &str = "2222222222222222222222222222222222222222";
