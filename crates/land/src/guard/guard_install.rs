@@ -25,11 +25,12 @@ use crate::LandRefs;
 const HOOK_MODE: u32 = 0o755;
 
 /// Installs the guard for `refs`: guard.json under the common dir, and the reference-transaction and pre-push hooks
-/// in the folder git runs hooks from (core.hooksPath honoured; linked worktrees share it, so every folder is
-/// covered). A hook Mortar did not write is refused as ForeignHook, the first in GUARD_HOOK_NAMES order, before
-/// anything is written. guard.json is rewritten only when its bytes differ, and written before the hooks so a hook
-/// never runs without its config. Missing hooks are written; Mortar's own get their mode set and are otherwise left.
-/// Repeat-safe.
+/// in the folder git runs hooks from (core.hooksPath honoured). The caller must run check_hooks_path first: a relative
+/// core.hooksPath gets hooks only where git looks from this worktree, leaving the other folders unguarded; only an
+/// unset or absolute one is shared by all. A hook Mortar did not write is refused as ForeignHook, the first in
+/// GUARD_HOOK_NAMES order, before anything is written.
+/// guard.json is rewritten only when its bytes differ, and written before the hooks so a hook never runs without its
+/// config. Missing hooks are written; Mortar's own get their mode set and are otherwise left. Repeat-safe.
 pub fn guard_install(git: &Git, refs: &LandRefs) -> Result<(), GuardError> {
     let hooks_dir = git.hooks_path().map_err(GuardError::Git)?;
     let common = git.common_dir().map_err(GuardError::Git)?;
