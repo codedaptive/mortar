@@ -1,8 +1,7 @@
 //! restore_failed_report: the report of `mr undo` when join's restore_join_state refused after the oplog undo had
 //! already moved the ref (S-148, S-155 Q2).
 //! restore_failed_report_tests covers each refusal, running restore_why, which is pure on those errors, inside.
-//! The Git case, a_git_failure_is_a_refusal_too, runs gitio's GitError Display, a RIT in
-//! crates/cli/tests/cli_rit/restore_git_errors.rs (S-101).
+//! The Git case, a_git_failure_is_a_refusal_too, runs gitio's GitError Display there too (S-171).
 
 use ::join::JoinRunError;
 

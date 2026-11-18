@@ -1,15 +1,21 @@
 //! context_report: a worktree without a record is refused "not-a-folder" naming it; a bad record is refused naming
-//! the file. The cases whose lines carry gitio's or folders' own text (outside a repository, an unreadable record,
-//! another folder error, git failing) are ZITs in crates/cli/tests/context_report_tests.rs.
-//! ZUT (rule 11): the error values are built as data; neither case reaches another file's code.
+//! the file; outside a repository is refused "not-a-folder" with git's line; an unreadable record, any other folder
+//! error and git failing are failures.
+//! ZUT (rule 11, S-171): the error values are built as data; the lines that carry gitio's or folders' own text come
+//! from their exported, pure Display impls, and report::failure_report is used directly.
 
 use std::path::PathBuf;
 
 use folders::record::RecordError;
 use folders::FolderError;
+use gitio::GitError;
 
 use super::{context_report, ContextError};
-use crate::report::ExitCode;
+use crate::report::{ExitCode, Report};
+
+fn git_error(code: Option<i32>, stderr: &str) -> GitError {
+    GitError { args: vec!["rev-parse".to_string(), "--show-toplevel".to_string()], code, stderr: stderr.to_string() }
+}
 
 #[test]
 fn a_worktree_without_a_record_is_not_a_folder_naming_it() {
@@ -39,4 +45,58 @@ fn a_record_mortar_did_not_write_is_refused_naming_the_file() {
         "the folder record /r/.git/worktrees/a/mortar-folder.json is not one Mortar writes: zone is missing"
     );
     assert_eq!(report.owner.as_deref(), Some("the harness that makes Mortar folders"));
+}
+
+#[test]
+fn outside_a_repository_is_not_a_folder() {
+    let error = ContextError::NotARepository {
+        dir: PathBuf::from("/tmp/elsewhere"),
+        error: git_error(Some(128), "fatal: not a git repository\n"),
+    };
+    assert_eq!(
+        context_report("save", &error),
+        Report {
+            verb: "save".to_string(),
+            exit: ExitCode::Refused,
+            outcome: "not-a-folder".to_string(),
+            lines: vec![
+                "this directory is not in a Mortar folder: /tmp/elsewhere is in no git repository".to_string(),
+                "git rev-parse --show-toplevel: exit code 128: fatal: not a git repository".to_string(),
+            ],
+            owner: Some("the harness that makes Mortar folders".to_string()),
+            next: "run mr save inside a folder Mortar made".to_string(),
+            fields: Vec::new(),
+        }
+    );
+}
+
+#[test]
+fn a_record_that_cannot_be_read_is_a_failure() {
+    let error = ContextError::Record(FolderError::Io {
+        path: PathBuf::from("/r/.git/mortar-folder.json"),
+        source: std::io::Error::new(std::io::ErrorKind::PermissionDenied, "denied"),
+    });
+    let report = context_report("save", &error);
+    assert_eq!(report.exit, ExitCode::Failure);
+    assert_eq!(report.outcome, "failed");
+    assert_eq!(report.next, "repeat the same command");
+}
+
+#[test]
+fn another_folder_error_is_a_failure() {
+    let error = ContextError::Record(FolderError::BranchExists { branch: "req/a/b".to_string() });
+    assert_eq!(context_report("save", &error).exit, ExitCode::Failure);
+}
+
+#[test]
+fn git_failing_is_a_failure_naming_the_run() {
+    let report = context_report("save", &ContextError::Git(git_error(None, "killed")));
+    assert_eq!(report.exit as i32, 5);
+    assert_eq!(
+        report.lines,
+        vec![
+            "git rev-parse --show-toplevel: no exit code: killed".to_string(),
+            "nothing half-done is left".to_string(),
+        ]
+    );
 }

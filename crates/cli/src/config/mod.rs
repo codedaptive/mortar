@@ -47,18 +47,18 @@ mod take_number_tests;
 #[cfg(test)]
 mod take_strings_tests;
 
-pub use config::Config;
+pub(crate) use config::Config;
 pub(crate) use config_error::ConfigError;
 pub(crate) use config_path::config_path;
 pub(crate) use decode_config::decode_config;
 pub(crate) use encode_config::encode_config;
-pub use formatter_config::FormatterConfig;
+pub(crate) use formatter_config::FormatterConfig;
 pub(crate) use protected_refs::protected_refs;
 pub(crate) use read_config::read_config;
-pub use snapshot_settings::SnapshotSettings;
+pub(crate) use snapshot_settings::SnapshotSettings;
 pub(crate) use snapshot_settings_for::snapshot_settings_for;
 pub(crate) use write_config::write_config;
-pub use zone_config::ZoneConfig;
+pub(crate) use zone_config::ZoneConfig;
 
 pub(crate) use config_json_value::ConfigJsonValue;
 pub(crate) use decode_formatter::decode_formatter;

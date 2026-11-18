@@ -3,7 +3,7 @@
 use crate::config::Config;
 
 /// Every key of `config.zones` in map order; None when the map is empty. Given an empty zone list, folders picks
-/// every zone's replay records (refs/mortar/replayed/) for deletion (stale_replayed_refs), so an empty list is never
+/// every zone's replay records (refs/mortar/replayed/) for deletion (inside folders), so an empty list is never
 /// handed out: the caller refuses with no_zones_report instead.
 pub fn config_zones(config: &Config) -> Option<Vec<String>> {
     if config.zones.is_empty() {

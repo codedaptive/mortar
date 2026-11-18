@@ -1,6 +1,7 @@
-//! lock_report: a held lock or a takeover is busy naming the holder; contention is busy; a bad zone is refused. The
-//! file system and unknown host failures are ZITs in crates/cli/tests/lock_report_tests.rs.
-//! ZUT (rule 11): the lock errors are built as data; none of these cases reaches another file's code.
+//! lock_report: a held lock or a takeover is busy naming the holder; contention is busy; a bad zone is refused; a
+//! file system error and an unknown host are failures.
+//! ZUT (rule 11, S-171): the lock errors are built as data; the failures run oplog's exported, pure Display and
+//! report::failure_report directly.
 
 use std::path::PathBuf;
 
@@ -78,4 +79,21 @@ fn a_bad_zone_name_is_refused() {
     let report = lock_report("join", &LockError::BadName("../x".to_string()));
     assert_eq!(report.exit, ExitCode::Refused);
     assert_eq!(report.lines, vec!["the zone \"../x\" cannot name a lock file; nothing ran".to_string()]);
+}
+
+#[test]
+fn a_file_system_error_is_a_failure() {
+    let error = LockError::Io {
+        path: PathBuf::from("/r/.git/mortar/locks"),
+        source: std::io::Error::other("disk full"),
+        removed_guards: Vec::new(),
+    };
+    let report = lock_report("join", &error);
+    assert_eq!(report.exit, ExitCode::Failure);
+    assert_eq!(report.outcome, "failed");
+}
+
+#[test]
+fn an_unknown_host_is_a_failure() {
+    assert_eq!(lock_report("join", &LockError::HostUnknown("no hostname".to_string())).exit as i32, 5);
 }

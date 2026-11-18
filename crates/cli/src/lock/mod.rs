@@ -10,5 +10,5 @@ mod lock_name_for_tests;
 mod lock_report_tests;
 
 pub(crate) use lock_name_for::lock_name_for;
-pub use lock_report::lock_report;
+pub(crate) use lock_report::lock_report;
 pub(crate) use locked_act::locked_act;

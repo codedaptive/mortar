@@ -86,5 +86,5 @@ pub(crate) use status_lines::status_lines;
 pub(crate) use status_next::status_next;
 pub(crate) use status_outcome::status_outcome;
 pub(crate) use status_phase::StatusPhase;
-pub use status_report::status_report;
-pub use status_state::StatusState;
+pub(crate) use status_report::status_report;
+pub(crate) use status_state::StatusState;
