@@ -1,7 +1,8 @@
 //! A request verb's setup, before its lock: arguments, the folder's kind, its request and the run's inputs.
 //! Shell API: run_join and run_resolve call it.
-//! crates/cli/tests/request_run_for_tests.rs covers it (a ZIT: it calls no_arguments_report, attempt_refusal and
-//! failure_report for real); it runs no git, since Git::new runs nothing.
+//! request_run_for_tests covers an attempt folder's refusal and an argument's usage, which return first; the ZIT
+//! in crates/cli/tests/request_run_for_tests.rs covers a request folder's run, which calls folders' request_branch.
+//! It runs no git, since Git::new runs nothing.
 
 use folders::plan::request_branch;
 use gitio::Git;

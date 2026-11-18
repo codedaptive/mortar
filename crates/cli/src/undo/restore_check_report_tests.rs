@@ -1,15 +1,16 @@
 //! restore_check_report: check_restore_join_state refused before anything moved; each refusal says why, that nothing
 //! was changed, and its one next step; the disk failing and the errors the check never gives are failures to repeat.
-//! ZIT (S-102, rule 11): restore_check_report builds its why lines by calling undo::restore_why for real. Git failing
-//! is the RIT a_git_failure_is_a_failure_to_repeat in cli_rit/restore_git_errors.rs (S-101).
+//! ZUT (rule 11): restore_check_report builds its why lines by calling undo::restore_why, which is pure on these
+//! errors, directly. Git failing is the RIT a_git_failure_is_a_failure_to_repeat in cli_rit/restore_git_errors.rs
+//! (S-101).
 
 use std::io;
 use std::path::PathBuf;
 
 use ::join::JoinRunError;
 
-use cli::report::{ExitCode, Report};
-use cli::undo::restore_check_report;
+use super::restore_check_report;
+use crate::report::{ExitCode, Report};
 
 const STATE: &str = "/w/.git/mortar-join.json";
 

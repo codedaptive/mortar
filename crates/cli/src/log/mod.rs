@@ -18,10 +18,12 @@ mod log_lines_tests;
 mod log_report_tests;
 #[cfg(test)]
 mod matching_records_tests;
+#[cfg(test)]
+mod run_log_tests;
 
-pub use encoded_records::encoded_records;
-pub use log_filters::log_filters;
-pub use log_lines::log_lines;
-pub use log_report::log_report;
-pub use matching_records::matching_records;
-pub use run_log::run_log;
+pub(crate) use encoded_records::encoded_records;
+pub(crate) use log_filters::log_filters;
+pub(crate) use log_lines::log_lines;
+pub(crate) use log_report::log_report;
+pub(crate) use matching_records::matching_records;
+pub(crate) use run_log::run_log;

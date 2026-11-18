@@ -20,12 +20,12 @@ mod parse_init_args_tests;
 #[cfg(test)]
 mod parse_zone_flag_tests;
 
-pub use decide_init::decide_init;
-pub use init_decision::InitDecision;
-pub use init_options::InitOptions;
-pub use init_report::init_report;
-pub use parse_init_args::parse_init_args;
-pub use run_init::run_init;
+pub(crate) use decide_init::decide_init;
+pub(crate) use init_decision::InitDecision;
+pub(crate) use init_options::InitOptions;
+pub(crate) use init_report::init_report;
+pub(crate) use parse_init_args::parse_init_args;
+pub(crate) use run_init::run_init;
 
 pub(crate) use init_flag_value::init_flag_value;
 pub(crate) use parse_zone_flag::parse_zone_flag;

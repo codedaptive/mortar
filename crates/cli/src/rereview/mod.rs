@@ -13,7 +13,7 @@ mod rereview_error_report_tests;
 #[cfg(test)]
 mod rereview_report_tests;
 
-pub use parse_rereview_args::parse_rereview_args;
-pub use rereview_error_report::rereview_error_report;
-pub use rereview_report::rereview_report;
-pub use run_rereview::run_rereview;
+pub(crate) use parse_rereview_args::parse_rereview_args;
+pub(crate) use rereview_error_report::rereview_error_report;
+pub(crate) use rereview_report::rereview_report;
+pub(crate) use run_rereview::run_rereview;

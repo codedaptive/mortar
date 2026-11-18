@@ -1,5 +1,5 @@
 //! What a request verb (join, resolve) reads once, before its lock.
-//! A bare type (S-7); request_run_for makes it, and crates/cli/tests/request_run_for_tests.rs exercises it.
+//! A bare type (S-7); request_run_for makes it, and the ZIT in crates/cli/tests/request_run_for_tests.rs exercises it.
 
 use gitio::Git;
 use oplog::LockName;

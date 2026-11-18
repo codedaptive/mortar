@@ -6,5 +6,5 @@ mod run_disk;
 #[cfg(test)]
 mod disk_report_tests;
 
-pub use disk_report::disk_report;
-pub use run_disk::run_disk;
+pub(crate) use disk_report::disk_report;
+pub(crate) use run_disk::run_disk;

@@ -1,5 +1,7 @@
 //! The report of a resolve that join::resolve refused.
-//! crates/cli/tests/resolve_refusal_report_tests.rs covers it (a ZIT: it calls join_refusal_report for real).
+//! resolve_refusal_report_tests covers no paused join and markers left; the ZITs in
+//! crates/cli/tests/resolve_refusal_report_tests.rs cover the refusals that carry join's own text (they call
+//! join_refusal_report and join's Display for real).
 
 use ::join::JoinRunError;
 

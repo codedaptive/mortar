@@ -1,15 +1,15 @@
 //! run_log: `mr log [--ref <r>] [--actor <a>] [--key <k>]`, the read-only verb that lists the op log's records
 //! (S-114).
-//! No unit test: it runs git for the common dir and reads the op log file (S-5, S-104); log_filters_tests,
-//! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, and the ZIT
-//! crates/cli/tests/run_log_tests.rs its usage refusals before any read and, for one op in a real log, the plain
+//! It runs git for the common dir and reads the op log file (S-5, S-104); log_filters_tests,
+//! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, run_log_tests its usage refusals
+//! before any read, and the RIT crates/cli/tests/cli_rit/run_log_tests.rs, for one op in a real log, the plain
 //! listing with no "records" lines and the --json "records" line, for a line with no values or remote mark and for
 //! one carrying both. Nagatha's integration group is to cover, with the mortar binary as a child process in a
 //! throwaway repository with ops in its log (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a real log read with each filter (--ref, --actor, --key) lists the matching ops, and with two filters their AND;
 //! - with no filter it lists every op; a filter nothing matches is exit 0, outcome empty;
-//! - --json "records" are the log's own lines for those ops, byte for byte, values and remote mark included;
+//! - with several ops in the log, --json "records" are the log's own lines for those ops, byte for byte;
 //! - log writes nothing: refs, the op log and the lock folder are unchanged after it;
 //! - run outside any git repository it is refused, exit 1, outcome not-a-repository.
 

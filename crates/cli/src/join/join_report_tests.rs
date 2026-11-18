@@ -1,5 +1,5 @@
 //! join_report: each join answer as its exact report, after the save's lines and fields.
-//! ZIT (S-79 as replaced: the line is the file): it calls join/save_part for real.
+//! ZUT (rule 11): join/save_part is pure and used directly.
 
 use std::path::PathBuf;
 
@@ -7,7 +7,8 @@ use ::join::JoinAnswer;
 use gitio::Oid;
 use snapshot::SaveOutcome;
 
-use cli::{join_report, ExitCode, JoinOutcome, OutValue, Report};
+use super::{join_report, JoinOutcome};
+use crate::report::{ExitCode, OutValue, Report};
 
 const REQUEST: &str = "refs/heads/req/core/fix-1";
 const ZONE: &str = "refs/heads/zone/core";

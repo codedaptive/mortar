@@ -1,6 +1,7 @@
-//! resolve_refusal_report: no paused join is exit 0; markers left are exit 2 with each file's marker lines; a stale
-//! state, a conflicted path that is a folder or refused, and a corrupt state are exit 1 owned by this request; the
-//! rest are join_refusal_report's reports under the verb resolve. The expected lines are join's own refusal texts.
+//! resolve_refusal_report: a stale state, a conflicted path that is a folder or refused, and a corrupt state are
+//! exit 1 owned by this request; the rest are join_refusal_report's reports under the verb resolve. The expected
+//! lines are join's own refusal texts. No paused join (exit 0) and markers left (exit 2) are the ZUTs in
+//! src/resolve/resolve_refusal_report_tests.rs.
 //! The two join lines that name a command (the stale state, the folder path) accept today's text or the same text
 //! with its backticked command as `mr` (S-133), so join's rename lands before or after the cli's.
 //! ZIT (S-79 as replaced: the line is the file): it calls join_refusal_report for real.
@@ -8,7 +9,7 @@
 use std::io::Error;
 use std::path::PathBuf;
 
-use ::join::{JoinRunError, MarkedFile};
+use ::join::JoinRunError;
 use gitio::Oid;
 
 use cli::{resolve_refusal_report, ExitCode, Report};
@@ -91,46 +92,6 @@ fn other_join_lines_do_not_match() {
     ] {
         assert!(!join_line_matches(actual, today), "{actual:?} must not match");
     }
-}
-
-#[test]
-fn no_paused_join_is_nothing_to_resolve() {
-    assert_eq!(
-        resolve_refusal_report(&JoinRunError::NothingToResolve { state: PathBuf::from(STATE) }),
-        Report {
-            verb: "resolve".to_string(),
-            exit: ExitCode::Done,
-            outcome: "nothing-to-resolve".to_string(),
-            lines: vec!["no join is paused in this folder; nothing to resolve".to_string()],
-            owner: None,
-            next: "mr join".to_string(),
-            fields: Vec::new(),
-        }
-    );
-}
-
-#[test]
-fn markers_left_name_each_file_and_its_lines() {
-    let files = vec![
-        MarkedFile { path: PathBuf::from("src/a.rs"), lines: vec![3, 7, 12] },
-        MarkedFile { path: PathBuf::from("b.txt"), lines: vec![1] },
-    ];
-    assert_eq!(
-        resolve_refusal_report(&JoinRunError::StillMarked(files)),
-        Report {
-            verb: "resolve".to_string(),
-            exit: ExitCode::Conflict,
-            outcome: "still-marked".to_string(),
-            lines: vec![
-                "conflict markers remain in these files; no commit was made and no ref moved:".to_string(),
-                "  src/a.rs (lines 3, 7, 12)".to_string(),
-                "  b.txt (lines 1)".to_string(),
-            ],
-            owner: None,
-            next: "fix the files, then mr resolve".to_string(),
-            fields: Vec::new(),
-        }
-    );
 }
 
 #[test]

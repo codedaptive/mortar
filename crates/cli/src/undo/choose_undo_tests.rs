@@ -1,6 +1,10 @@
 //! choose_undo over histories given as data: the last done op of the folder's actor, kind not "snapshot", that moved
-//! any of the folder's own refs or the zone branch, and what undo does with it (S-73; S-142 items 1-3).
+//! any of the folder's own refs or the zone branch, and what undo does with it (S-73; S-142 items 1-3). A join-rebase
+//! recording the paused join (a resolve step, S-148) restores it, and an undo of one is already undone with that
+//! step; an undo of a join-rebase missing from the log is already undone with the folder step.
+//! ZUT (rule 11): undo_reason's is_resolve_step and done_record are pure and used directly.
 
+use ::join::JOIN_STATE;
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, OpResult, RefMove, ValuedRecord};
 
@@ -215,4 +219,51 @@ fn step_carries_the_chosen_records_index_in_the_slice() {
         op("op-4", "save", "orc/someone-else", OpPhase::Done, &[REQ]),
     ];
     assert_eq!(choose(&records), UndoChoice::Step { index: 2, step: UndoStep::SetIndex });
+}
+
+#[test]
+fn a_join_rebase_with_a_join_state_restores_the_paused_join() {
+    let mut resolve = done("op-2", "join-rebase", &[REQ]);
+    resolve.values = vec![(JOIN_STATE.to_string(), "{}".to_string())];
+    let records = [done("op-1", "save", &[REQ]), resolve];
+    assert_eq!(choose(&records), UndoChoice::Step { index: 1, step: UndoStep::RestoreJoin });
+}
+
+#[test]
+fn a_join_rebase_with_a_join_state_and_a_folder_tree_restores_the_paused_join() {
+    let mut resolve = done("op-2", "join-rebase", &[REQ]);
+    resolve.values = vec![
+        ("folder_tree".to_string(), "4b825dc642cb6eb9a060e54bf8d69288fbee4904".to_string()),
+        (JOIN_STATE.to_string(), "{}".to_string()),
+    ];
+    let records = [done("op-1", "save", &[REQ]), resolve];
+    assert_eq!(choose(&records), UndoChoice::Step { index: 1, step: UndoStep::RestoreJoin });
+}
+
+#[test]
+fn an_undo_of_a_resolve_step_is_already_undone_with_the_restore_step() {
+    let mut resolve = done("op-1", "join-rebase", &[REQ]);
+    resolve.values = vec![(JOIN_STATE.to_string(), "{}".to_string())];
+    let records = [resolve, undo_op("op-2", "undo of join-rebase op op-1")];
+    assert_eq!(
+        choose(&records),
+        UndoChoice::AlreadyUndone {
+            undo_op: "op-2".to_string(),
+            reversed_op: "op-1".to_string(),
+            step: UndoStep::RestoreJoin,
+        }
+    );
+}
+
+#[test]
+fn an_undo_of_a_join_rebase_missing_from_the_log_is_already_undone_with_the_folder_step() {
+    let records = [done("op-1", "save", &[REQ]), undo_op("op-2", "undo of join-rebase op op-9")];
+    assert_eq!(
+        choose(&records),
+        UndoChoice::AlreadyUndone {
+            undo_op: "op-2".to_string(),
+            reversed_op: "op-9".to_string(),
+            step: UndoStep::MoveFolder,
+        }
+    );
 }

@@ -11,9 +11,9 @@ mod config_refusal_tests;
 #[cfg(test)]
 mod missing_config_report_tests;
 
-pub use load_config::load_config;
-pub use missing_config_report::missing_config_report;
-pub use run::run;
+pub(crate) use load_config::load_config;
+pub(crate) use missing_config_report::missing_config_report;
+pub(crate) use run::run;
 pub use shell_context::ShellContext;
 
 pub(crate) use config_refusal::config_refusal;

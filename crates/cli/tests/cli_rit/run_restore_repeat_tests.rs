@@ -1,14 +1,15 @@
 //! CLI restore's crash-repeat, unsaved-work and repeat-after-a-later-restore outcomes, and a crash-repeat refusing
-//! work added after the kill (S-122(3)). This is a ZIT (S-119); the crash-repeat, repeat-after-a-later-restore and
-//! work-added-after-the-kill cases are red-first.
+//! work added after the kill (S-122(3)).
+//! RIT (S-135, S-136): the mortar binary runs as a child in a throwaway repository (testkit's TestRepo) with a zone
+//! folder, a request folder and the config `mr init` writes (zone core=src, floor 0, the default build dir, S-109),
+//! reaching folders, snapshot, gitio and oplog below cli; Nagatha's from landing. The crash cases kill the worker
+//! (`run_restore_repeat_tests::restore_worker`, run by testkit's test_child) at testkit's git crash gate.
 
-use std::collections::BTreeMap;
 use std::fs;
 use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
-use cli::{Config, ZoneConfig};
 use folders::{DfFreeDisk, FolderSetup, SweepEstimate};
 use gitio::{Git, Oid, RunOpts};
 use oplog::{KillPidProbe, OpPhase};
@@ -60,11 +61,11 @@ impl Fixture {
         folders::make_zone_folder(&setup(&zone), "core", &paths, Some(&base)).unwrap();
         oplog::recover(&git, &common).unwrap();
         folders::make_request_folder(&setup(&request), "core", "task", &paths).unwrap();
-        cli::write_config(&common, &Config {
-            origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into(),
-            zones: BTreeMap::from([("core".into(), ZoneConfig { paths })]), root_files: vec![],
-            build_dirs: vec![], cap_bytes: snapshot::DEFAULT_SIZE_CAP, floor_bytes: 0, formatter: None,
-        }).unwrap();
+        let output = command(&repo.path, &repo.path, &git).args([
+            "--actor", "harness", "init", "--origin", "main", "--integration", "integration", "--remote", "origin",
+            "--zone", "core=src", "--floor-bytes", "0",
+        ]).output().unwrap();
+        assert!(output.status.success(), "init: {output:?}");
         fs::write(request.join("src/file"), b"checkpoint\n").unwrap();
         let output = command(&repo.path, &request, &git).args(["save", "Checkpoint"]).output().unwrap();
         assert!(output.status.success(), "checkpoint save: {output:?}");
@@ -106,7 +107,7 @@ fn repeat_after_ref_transaction_finishes_the_folder_move_once() {
     // The wrapper's text holds no paths, so a quote in PATH, TMPDIR or the shim's name cannot break it; the
     // values come by environment. Its PATH leaves out shimbin, so the kill shim's own `git` is the real one.
     write_git_shim(&shimbin.join("git"), b"#!/bin/sh\nPATH=\"$MORTAR_TEST_GIT_PATH\" exec \"$MORTAR_TEST_GIT_SHIM\" \"$@\"\n").unwrap();
-    let mut worker = test_child("restore_worker").unwrap();
+    let mut worker = test_child("run_restore_repeat_tests::restore_worker").unwrap();
     worker.env("MORTAR_TEST_ROOT", &fx.repo.path).env("MORTAR_TEST_REQUEST", &fx.request)
         .env("MORTAR_TEST_CHECKPOINT", &fx.checkpoint).env("MORTAR_TEST_SHIMBIN", &shimbin)
         .env("MORTAR_TEST_GIT_PATH", std::env::var_os("PATH").unwrap()).env("MORTAR_TEST_GIT_SHIM", &shim)
@@ -139,7 +140,7 @@ fn crash_repeat_with_work_added_after_the_kill_refuses_and_moves_nothing() {
     fs::create_dir(&shimbin).unwrap();
     write_git_kill_shim(&shim).unwrap();
     write_git_shim(&shimbin.join("git"), b"#!/bin/sh\nPATH=\"$MORTAR_TEST_GIT_PATH\" exec \"$MORTAR_TEST_GIT_SHIM\" \"$@\"\n").unwrap();
-    let mut worker = test_child("restore_worker").unwrap();
+    let mut worker = test_child("run_restore_repeat_tests::restore_worker").unwrap();
     worker.env("MORTAR_TEST_ROOT", &fx.repo.path).env("MORTAR_TEST_REQUEST", &fx.request)
         .env("MORTAR_TEST_CHECKPOINT", &fx.checkpoint).env("MORTAR_TEST_SHIMBIN", &shimbin)
         .env("MORTAR_TEST_GIT_PATH", std::env::var_os("PATH").unwrap()).env("MORTAR_TEST_GIT_SHIM", &shim)

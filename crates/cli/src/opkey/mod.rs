@@ -8,5 +8,5 @@ mod hash_key_tests;
 #[cfg(test)]
 mod op_key_tests;
 
-pub use hash_key::hash_key;
-pub use op_key::op_key;
+pub(crate) use hash_key::hash_key;
+pub(crate) use op_key::op_key;

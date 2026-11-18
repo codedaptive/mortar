@@ -1,6 +1,6 @@
 //! StatusState: everything `mr status` reports about one request folder, read before the report is made.
 //! A bare type (S-7); status_next_tests, status_outcome_tests, status_lines_tests and status_fields_tests build
-//! it, and crates/cli/tests/status_report_tests.rs renders it.
+//! it, status_report_tests reports it, and crates/cli/tests/status_report_tests.rs renders it.
 
 use std::path::PathBuf;
 

@@ -6,7 +6,9 @@ mod locked_act;
 
 #[cfg(test)]
 mod lock_name_for_tests;
+#[cfg(test)]
+mod lock_report_tests;
 
-pub use lock_name_for::lock_name_for;
+pub(crate) use lock_name_for::lock_name_for;
 pub use lock_report::lock_report;
-pub use locked_act::locked_act;
+pub(crate) use locked_act::locked_act;

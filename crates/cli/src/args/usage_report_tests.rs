@@ -1,7 +1,8 @@
 //! usage_report: exit 4, the reason then the verbs, and the verb's usage (or the verb list) as next.
-//! ZIT (S-79 as replaced: the line is the file): it calls args/find_verb for real.
+//! ZUT (rule 11): args/find_verb and the verb table are pure and used directly.
 
-use cli::{usage_report, ExitCode, Report, UsageError};
+use super::{usage_report, UsageError};
+use crate::report::{ExitCode, Report};
 
 const INIT_USAGE: &str = "mr init --actor <name> --origin <branch> --integration <branch> --remote <name> \
 [--zone <zone>=<path>[,<path>...]]... [--root-file <path>]... [--build-dir <path>]... [--cap-bytes <n>] \

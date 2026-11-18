@@ -1,5 +1,5 @@
 //! The report of the folder move after a resolve that folders::move_folder refused (S-87(4)).
-//! crates/cli/tests/resolve_move_refusal_report_tests.rs covers it (a ZIT: it calls move_refusal_report for real).
+//! resolve_move_refusal_report_tests covers it (it calls move_refusal_report, which is pure, directly).
 
 use folders::FolderError;
 use gitio::Oid;

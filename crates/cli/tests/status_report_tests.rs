@@ -1,5 +1,5 @@
-//! status_report: a clean, saved, joined folder and a folder with every part, as the whole Report and rendered
-//! both ways.
+//! status_report: a clean, saved, joined folder and a folder with every part, rendered both ways. The same two
+//! folders as the whole Report are the ZUTs in src/status/status_report_tests.rs.
 //! ZIT (S-79 as replaced): status_report calls status_lines, status_fields, status_next and status_outcome for real;
 //! render_plain and render_json render both forms.
 
@@ -9,7 +9,7 @@ use ::join::PausedJoin;
 use gitio::{Oid, StatusPaths};
 use snapshot::RefusedFile;
 
-use cli::{render_json, render_plain, status_report, ExitCode, MoveCause, OutValue, PendingMove, Report, StatusState};
+use cli::{render_json, render_plain, status_report, MoveCause, PendingMove, StatusState};
 
 const OLD: &str = "1111111111111111111111111111111111111111";
 const NEW: &str = "2222222222222222222222222222222222222222";
@@ -21,18 +21,6 @@ fn oid(hex: &str) -> Oid {
 
 fn paths(names: &[&str]) -> Vec<PathBuf> {
     names.iter().map(PathBuf::from).collect()
-}
-
-fn texts(names: &[&str]) -> OutValue {
-    OutValue::Texts(names.iter().map(|name| name.to_string()).collect())
-}
-
-fn field(name: &str, value: OutValue) -> (String, OutValue) {
-    (name.to_string(), value)
-}
-
-fn text(value: &str) -> OutValue {
-    OutValue::Text(value.to_string())
 }
 
 fn clean() -> StatusState {
@@ -81,97 +69,6 @@ fn full() -> StatusState {
         ],
         gaps: vec!["docs/guide.txt".to_string(), "tools/gen.rs".to_string()],
     }
-}
-
-#[test]
-fn a_clean_saved_joined_folder_waits_for_the_zones_tests() {
-    assert_eq!(
-        status_report(&clean()),
-        Report {
-            verb: "status".to_string(),
-            exit: ExitCode::Done,
-            outcome: "joined".to_string(),
-            lines: vec![
-                "request fix-1 in zone core".to_string(),
-                "no changed, untracked or conflicted paths".to_string(),
-                "everything is saved".to_string(),
-                "the zone has no commits this request has not taken in".to_string(),
-                "the request is joined to the zone".to_string(),
-            ],
-            owner: None,
-            next: "wait for the zone's tests".to_string(),
-            fields: vec![
-                field("zone", text("core")),
-                field("request", text("fix-1")),
-                field("changed", texts(&[])),
-                field("untracked", texts(&[])),
-                field("conflicted", texts(&[])),
-                field("saved", OutValue::Bool(true)),
-                field("refused", texts(&[])),
-                field("cap", OutValue::Null),
-                field("zone_moved", OutValue::Bool(false)),
-                field("joined", OutValue::Bool(true)),
-                field("paused_commit", OutValue::Null),
-                field("paused_files", texts(&[])),
-                field("stalled_from", OutValue::Null),
-                field("stalled_to", OutValue::Null),
-                field("overlaps", texts(&[])),
-                field("overlap_paths", texts(&[])),
-                field("gaps", texts(&[])),
-            ],
-        }
-    );
-}
-
-#[test]
-fn a_folder_with_every_part_reports_each_and_is_stalled_first() {
-    assert_eq!(
-        status_report(&full()),
-        Report {
-            verb: "status".to_string(),
-            exit: ExitCode::Done,
-            outcome: "stalled".to_string(),
-            lines: vec![
-                "request fix-1 in zone core".to_string(),
-                "changed: src/a.rs, src/b.rs".to_string(),
-                "untracked: notes.txt".to_string(),
-                "conflicted: src/c.rs".to_string(),
-                "there is work not yet saved".to_string(),
-                "not saved: data/big.bin is 2000000 bytes, over the size cap of 1048576 bytes".to_string(),
-                "the zone has commits this request has not taken in".to_string(),
-                "a join is paused at commit 3333333333333333333333333333333333333333 with conflicted files: \
-                 src/c.rs, src/d.rs"
-                    .to_string(),
-                "a folder move is stalled: refs/heads/req/core/fix-1 stands at \
-                 2222222222222222222222222222222222222222, the folder at 1111111111111111111111111111111111111111"
-                    .to_string(),
-                "overlaps with fix-2: src/b.rs".to_string(),
-                "overlaps with fix-3: src/a.rs, src/b.rs".to_string(),
-                "gaps (needed outside the work order): docs/guide.txt, tools/gen.rs".to_string(),
-            ],
-            owner: None,
-            next: "mr join".to_string(),
-            fields: vec![
-                field("zone", text("core")),
-                field("request", text("fix-1")),
-                field("changed", texts(&["src/a.rs", "src/b.rs"])),
-                field("untracked", texts(&["notes.txt"])),
-                field("conflicted", texts(&["src/c.rs"])),
-                field("saved", OutValue::Bool(false)),
-                field("refused", texts(&["data/big.bin"])),
-                field("cap", OutValue::Number(1_048_576)),
-                field("zone_moved", OutValue::Bool(true)),
-                field("joined", OutValue::Bool(false)),
-                field("paused_commit", text(PAUSED)),
-                field("paused_files", texts(&["src/c.rs", "src/d.rs"])),
-                field("stalled_from", text(OLD)),
-                field("stalled_to", text(NEW)),
-                field("overlaps", texts(&["fix-2", "fix-3"])),
-                field("overlap_paths", texts(&["src/a.rs", "src/b.rs"])),
-                field("gaps", texts(&["docs/guide.txt", "tools/gen.rs"])),
-            ],
-        }
-    );
 }
 
 #[test]

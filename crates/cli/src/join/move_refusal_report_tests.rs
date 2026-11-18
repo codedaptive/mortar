@@ -1,8 +1,8 @@
 //! move_refusal_report: files in the way, a branch elsewhere and every other variant folder_refusal refuses are exit 1
 //! owned by the folder, after the lines of what was already done; a lock is lock_report's report and a git, op log or
-//! disk probe error a failure, with those lines first. folders' own Display text is never printed. ZIT (S-79 as
-//! replaced: the line is the file): it calls report::failure_report, lock::lock_report, folder::folder_refusal and
-//! folder::folder_error_why for real.
+//! disk probe error a failure, with those lines first. folders' own Display text is never printed. ZUT (rule 11):
+//! report::failure_report, lock::lock_report, folder::folder_refusal and folder::folder_error_why are pure and used
+//! directly.
 
 use std::path::PathBuf;
 
@@ -10,7 +10,8 @@ use folders::FolderError;
 use gitio::Oid;
 use oplog::LockError;
 
-use cli::{move_refusal_report, ExitCode, Report};
+use super::move_refusal_report;
+use crate::report::{ExitCode, Report};
 
 const OLD: &str = "1111111111111111111111111111111111111111";
 const NEW: &str = "2222222222222222222222222222222222222222";

@@ -50,3 +50,6 @@ mod status_joined_tests;
 mod run_need_tests;
 mod run_guard_hook_tests;
 mod status_attempt_folder_tests;
+mod run_log_tests;
+mod run_restore_tests;
+mod run_restore_repeat_tests;

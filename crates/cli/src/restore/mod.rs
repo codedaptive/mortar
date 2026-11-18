@@ -31,19 +31,21 @@ mod restore_refusal_tests;
 #[cfg(test)]
 mod restore_report_tests;
 #[cfg(test)]
+mod run_restore_tests;
+#[cfg(test)]
 mod snapshot_value_to_check_tests;
 
-pub use folder_on_ref::FolderOnRef;
-pub use folders_on_refs::folders_on_refs;
-pub use folders_to_move::folders_to_move;
-pub use move_restored_folders::move_restored_folders;
-pub use ref_moved_on::ref_moved_on;
-pub use restore_error_report::restore_error_report;
-pub use restore_key::restore_key;
-pub use restore_lock::restore_lock;
-pub use restore_move_refusal_report::restore_move_refusal_report;
-pub use restore_moves::restore_moves;
-pub use restore_refusal::restore_refusal;
-pub use restore_report::restore_report;
-pub use run_restore::run_restore;
-pub use snapshot_value_to_check::snapshot_value_to_check;
+pub(crate) use folder_on_ref::FolderOnRef;
+pub(crate) use folders_on_refs::folders_on_refs;
+pub(crate) use folders_to_move::folders_to_move;
+pub(crate) use move_restored_folders::move_restored_folders;
+pub(crate) use ref_moved_on::ref_moved_on;
+pub(crate) use restore_error_report::restore_error_report;
+pub(crate) use restore_key::restore_key;
+pub(crate) use restore_lock::restore_lock;
+pub(crate) use restore_move_refusal_report::restore_move_refusal_report;
+pub(crate) use restore_moves::restore_moves;
+pub(crate) use restore_refusal::restore_refusal;
+pub(crate) use restore_report::restore_report;
+pub(crate) use run_restore::run_restore;
+pub(crate) use snapshot_value_to_check::snapshot_value_to_check;

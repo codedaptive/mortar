@@ -1,5 +1,5 @@
-//! request_run_for: an attempt folder is the S-91 refusal for join and for resolve; a request folder gives its ref,
-//! its zone's join lock, the snapshot target and the derived op key; an argument is the verb's usage.
+//! request_run_for: a request folder gives its ref, its zone's join lock, the snapshot target and the derived op key.
+//! An attempt folder's refusal and an argument's usage are the ZUTs in src/join/request_run_for_tests.rs.
 //! ZIT (S-79 as replaced: the line is the file): it calls join/attempt_refusal and args/usage_report for real.
 
 use std::collections::BTreeMap;
@@ -10,7 +10,7 @@ use gitio::Oid;
 use oplog::LockName;
 use snapshot::SnapshotTarget;
 
-use cli::{find_verb, request_run_for, Config, ExitCode, FolderContext, ParsedArgs, Report, ShellContext};
+use cli::{find_verb, request_run_for, Config, FolderContext, ParsedArgs, ShellContext};
 
 fn context(kind: FolderKind, rest: Vec<String>) -> ShellContext {
     let record = FolderRecord {
@@ -54,33 +54,6 @@ fn context(kind: FolderKind, rest: Vec<String>) -> ShellContext {
     }
 }
 
-fn attempt_refused(verb: &str) -> Report {
-    Report {
-        verb: verb.to_string(),
-        exit: ExitCode::Refused,
-        outcome: "refused".to_string(),
-        lines: vec![
-            format!("this is attempt folder 3 of request fix-1: mr {verb} runs in the request's own folder"),
-            "nothing ran".to_string(),
-        ],
-        owner: Some("this request".to_string()),
-        next: "keep or drop the attempts, then mr join in the request's folder".to_string(),
-        fields: Vec::new(),
-    }
-}
-
-#[test]
-fn join_in_an_attempt_folder_is_refused() {
-    let context = context(FolderKind::Attempt(3), Vec::new());
-    assert_eq!(request_run_for(&context, "join").unwrap_err(), attempt_refused("join"));
-}
-
-#[test]
-fn resolve_in_an_attempt_folder_is_refused() {
-    let context = context(FolderKind::Attempt(3), Vec::new());
-    assert_eq!(request_run_for(&context, "resolve").unwrap_err(), attempt_refused("resolve"));
-}
-
 #[test]
 fn a_request_folder_gives_its_ref_lock_target_and_key() {
     let context = context(FolderKind::Request, Vec::new());
@@ -98,14 +71,4 @@ fn a_request_folder_gives_its_ref_lock_target_and_key() {
         }
     );
     assert_eq!(run.git.repo, PathBuf::from("/w/fix-1"));
-}
-
-#[test]
-fn an_argument_is_the_verbs_usage() {
-    let context = context(FolderKind::Request, vec!["now".to_string()]);
-    let report = request_run_for(&context, "join").unwrap_err();
-    assert_eq!(report.exit, ExitCode::Usage);
-    assert_eq!(report.verb, "join");
-    assert_eq!(report.lines[0], "join takes no arguments");
-    assert_eq!(report.next, "mr join [--key <operation key>] [--json]");
 }

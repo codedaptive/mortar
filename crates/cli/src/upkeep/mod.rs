@@ -12,6 +12,6 @@ mod folders_error_report_tests;
 #[cfg(test)]
 mod no_zones_report_tests;
 
-pub use config_zones::config_zones;
-pub use folders_error_report::folders_error_report;
-pub use no_zones_report::no_zones_report;
+pub(crate) use config_zones::config_zones;
+pub(crate) use folders_error_report::folders_error_report;
+pub(crate) use no_zones_report::no_zones_report;

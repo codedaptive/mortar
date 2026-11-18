@@ -1,8 +1,9 @@
 //! first_on_path: the program a shell would run for a bare name, found the way the shell looks it up (S-133 (1): `mr
 //! guard install` asks which `mr` comes first), over path_entries' reading of PATH (S-147). The current directory is
 //! passed in, so tests never change the process's shared one.
-//! No sibling test (S-104): it reads the file system. The ZIT crates/cli/tests/first_on_path_tests.rs covers it on
-//! files it makes itself.
+//! No sibling test (S-5, S-104): its job is reading files. path_entries_tests cover the reading of PATH (unset, empty,
+//! empty and relative entries). Its real-file cases (order, execute bits, symlinks, directories, missing dirs, the
+//! cwd for empty entries) are listed for Nagatha's RITs through `mr guard install` (S-169).
 
 use std::ffi::OsStr;
 use std::fs;
