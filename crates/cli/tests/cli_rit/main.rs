@@ -1,9 +1,6 @@
 //! RIT of the mortar child binary with folders, snapshot, join, gitio and oplog. Every case owns a disposable
-//! repository, except the cases of restore_git_errors.
-//! It also holds the cli RITs moved by S-135 and S-136, owned by Nagatha from landing: each run_* module drives the
-//! mortar binary against real git and the crates below cli. restore_git_errors calls cli's restore_why,
-//! restore_check_report and restore_failed_report directly, with gitio's GitError Display run for real: no binary, no
-//! repository.
+//! repository. It also holds the cli RITs moved by S-135 and S-136, owned by Nagatha from landing: each run_* module
+//! drives the mortar binary against real git and the crates below cli.
 mod json;
 mod support;
 mod saves;
@@ -31,7 +28,6 @@ mod rit11;
 mod rit12;
 mod guard_path;
 mod guard_symref;
-mod restore_git_errors;
 #[allow(dead_code)]
 #[path = "../operational_rit/observe.rs"]
 mod observe;

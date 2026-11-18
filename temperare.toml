@@ -1,0 +1,14 @@
+# Mortar's rule file for tm check (objective tatertot Stage 2, item 2.1; Orc-Codeteam-jj #3016, #3034).
+# The same clippy settings as the check slot's line today: every warning is an error, over all targets, except the
+# two lints S-138 allows (result_large_err: refusals carry their reasons and next steps by design; module_inception:
+# files and folders are named after their symbol and module path, charter rule 2).
+version = 1
+owner = "orc"
+
+[[rule]]
+id = "clippy-warnings"
+engine = "clippy"
+check = "warnings"
+severity = "error"
+params = { allow = ["clippy::result_large_err", "clippy::module_inception"] }
+fix = "Fix the warning in your own crate, or allow it at the line with a comment saying why (S-138)."
