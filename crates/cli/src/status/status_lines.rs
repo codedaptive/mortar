@@ -5,27 +5,28 @@ use std::path::PathBuf;
 use super::StatusState;
 use crate::join::MoveCause;
 
-/// Where the folder stands, one fact per line: the request and its zone; the changed, untracked and conflicted
-/// paths (one line per non-empty list, or one line saying there are none); whether everything is saved, then each
-/// file the size cap refused in save's wording; whether the zone has commits this request has not taken in, then
-/// whether the request is joined; a paused join with its conflicted files; a stalled folder move (S-85), worded for
-/// the rebase or the undo that left it (S-143); each overlapping request with the shared paths (S-45); and the gaps.
+/// Where the folder stands, one fact per line: the request and its zone; the changed and untracked paths (one line
+/// per non-empty list, or one line saying there are none), then git's unmerged paths when there are any (the
+/// `paths.conflicted` list, worded "unmerged" so that "conflicted" names only a paused join); whether everything is
+/// saved, then each file the size cap refused in save's wording; whether the zone has commits this request has not
+/// taken in, then whether the request is joined; a paused join with its conflicted files; a stalled folder move
+/// (S-85), worded for the rebase or the undo that left it (S-143); each overlapping request with the shared paths
+/// (S-45); and the gaps.
 /// Ids are written by `as_str`.
 pub fn status_lines(state: &StatusState) -> Vec<String> {
     let mut lines = vec![format!("request {} in zone {}", state.request, state.zone)];
-    let path_lines: Vec<String> = [
-        ("changed", &state.paths.changed),
-        ("untracked", &state.paths.untracked),
-        ("conflicted", &state.paths.conflicted),
-    ]
-    .iter()
-    .filter(|(_, list)| !list.is_empty())
-    .map(|(kind, list)| format!("{kind}: {}", joined(list)))
-    .collect();
+    let path_lines: Vec<String> = [("changed", &state.paths.changed), ("untracked", &state.paths.untracked)]
+        .iter()
+        .filter(|(_, list)| !list.is_empty())
+        .map(|(kind, list)| format!("{kind}: {}", joined(list)))
+        .collect();
     if path_lines.is_empty() {
-        lines.push("no changed, untracked or conflicted paths".to_string());
+        lines.push("no changed or untracked paths".to_string());
     }
     lines.extend(path_lines);
+    if !state.paths.conflicted.is_empty() {
+        lines.push(format!("unmerged: {}", joined(&state.paths.conflicted)));
+    }
     lines.push(if state.saved { "everything is saved" } else { "there is work not yet saved" }.to_string());
     lines.extend(state.refused.iter().map(|file| {
         format!(

@@ -1,7 +1,8 @@
 //! `mortar guard install`: a fresh repository gets guard.json and both hooks, executable, each the guard's one-line
 //! script; a repeat says already-installed and changes no byte; a foreign pre-push is refused (exit 1) with nothing
 //! written; no --actor, no sub-verb and an unknown sub-verb are usage errors (exit 4) with guard's usage line as next;
-//! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is honoured.
+//! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused
+//! (exit 1) with nothing written.
 //! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
 //! landing.
 //! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
@@ -182,12 +183,20 @@ fn guard_install_from_a_linked_worktree_puts_the_hooks_in_the_main_repository() 
 }
 
 #[test]
-fn guard_install_honours_a_relative_core_hooks_path() {
+fn guard_install_refuses_a_relative_core_hooks_path() {
     let (_repo, root) = repo();
     run_git(&root, &["config", "core.hooksPath", "myhooks"]);
-    let report = check(install(&root, &root), "guard", 0, "installed");
-    let hooks = root.join("myhooks");
-    assert_hooks_written(&hooks);
+    let report = check(install(&root, &root), "guard", 1, "refused");
+    assert_eq!(
+        report.strings("lines")[0],
+        "core.hooksPath is \"myhooks\", not an absolute path: git resolves a relative hooks path in each folder, so \
+         one install cannot guard them all"
+    );
+    assert_eq!(
+        report.text("next"),
+        "unset core.hooksPath or set it to an absolute path, then mr guard install --actor <name>"
+    );
+    assert!(!root.join("myhooks").exists());
     assert!(!root.join(".git/hooks/pre-push").exists());
-    assert_eq!(report.text("hooks_dir"), shown(&hooks));
+    assert!(!root.join(".git/mortar/guard.json").exists());
 }

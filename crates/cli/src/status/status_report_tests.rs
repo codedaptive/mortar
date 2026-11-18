@@ -95,7 +95,7 @@ fn a_clean_saved_joined_folder_waits_for_the_zones_tests() {
             outcome: "joined".to_string(),
             lines: vec![
                 "request fix-1 in zone core".to_string(),
-                "no changed, untracked or conflicted paths".to_string(),
+                "no changed or untracked paths".to_string(),
                 "everything is saved".to_string(),
                 "the zone has no commits this request has not taken in".to_string(),
                 "the request is joined to the zone".to_string(),
@@ -137,7 +137,7 @@ fn a_folder_with_every_part_reports_each_and_is_stalled_first() {
                 "request fix-1 in zone core".to_string(),
                 "changed: src/a.rs, src/b.rs".to_string(),
                 "untracked: notes.txt".to_string(),
-                "conflicted: src/c.rs".to_string(),
+                "unmerged: src/c.rs".to_string(),
                 "there is work not yet saved".to_string(),
                 "not saved: data/big.bin is 2000000 bytes, over the size cap of 1048576 bytes".to_string(),
                 "the zone has commits this request has not taken in".to_string(),
@@ -182,7 +182,7 @@ fn a_clean_folder_renders_plain_and_json() {
     assert_eq!(
         render_plain(&report),
         "request fix-1 in zone core\n\
-         no changed, untracked or conflicted paths\n\
+         no changed or untracked paths\n\
          everything is saved\n\
          the zone has no commits this request has not taken in\n\
          the request is joined to the zone\n\
@@ -191,7 +191,7 @@ fn a_clean_folder_renders_plain_and_json() {
     assert_eq!(
         render_json(&report),
         "{\"verb\":\"status\",\"ok\":true,\"outcome\":\"joined\",\"exit\":0,\"next\":\"wait for the zone's tests\",\
-         \"lines\":[\"request fix-1 in zone core\",\"no changed, untracked or conflicted paths\",\
+         \"lines\":[\"request fix-1 in zone core\",\"no changed or untracked paths\",\
          \"everything is saved\",\"the zone has no commits this request has not taken in\",\
          \"the request is joined to the zone\"],\"owner\":null,\"zone\":\"core\",\"request\":\"fix-1\",\
          \"changed\":[],\"untracked\":[],\"conflicted\":[],\"saved\":true,\"refused\":[],\"cap\":null,\
@@ -208,7 +208,7 @@ fn a_full_folder_renders_plain_and_json() {
         "request fix-1 in zone core\n\
          changed: src/a.rs, src/b.rs\n\
          untracked: notes.txt\n\
-         conflicted: src/c.rs\n\
+         unmerged: src/c.rs\n\
          there is work not yet saved\n\
          not saved: data/big.bin is 2000000 bytes, over the size cap of 1048576 bytes\n\
          the zone has commits this request has not taken in\n\
@@ -225,7 +225,7 @@ fn a_full_folder_renders_plain_and_json() {
         render_json(&report),
         "{\"verb\":\"status\",\"ok\":true,\"outcome\":\"stalled\",\"exit\":0,\"next\":\"mr join\",\
          \"lines\":[\"request fix-1 in zone core\",\"changed: src/a.rs, src/b.rs\",\"untracked: notes.txt\",\
-         \"conflicted: src/c.rs\",\"there is work not yet saved\",\
+         \"unmerged: src/c.rs\",\"there is work not yet saved\",\
          \"not saved: data/big.bin is 2000000 bytes, over the size cap of 1048576 bytes\",\
          \"the zone has commits this request has not taken in\",\
          \"a join is paused at commit 3333333333333333333333333333333333333333 with conflicted files: src/c.rs, \

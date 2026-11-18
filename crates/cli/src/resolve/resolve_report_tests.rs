@@ -153,6 +153,8 @@ fn a_conflict_on_a_later_commit_reports_as_join_does() {
                  folder stays at the request tip"
                     .to_string(),
                 "  src/c.rs".to_string(),
+                "mr resolve writes both sides into these files with markers; fix them, then run mr resolve again"
+                    .to_string(),
             ],
             owner: None,
             next: "mr resolve".to_string(),

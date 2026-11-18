@@ -7,5 +7,5 @@ pub const AGENT_CHECKS: [&str; 5] = [
     "1. zone a holds the agent's two edits, and src/a/a.txt keeps both sides' lines with no markers",
     "2. mr log --json shows the agent's actor a/r1 on save, join and resolve ops",
     "3. every git call in git.log whose parent is not mr or mortar is a read",
-    "4. every mr or mortar call of the agent's in mr.log names one of the six verbs",
+    "4. every mr or mortar call of the agent's in mr.log names one of the six verbs, or asks for help or the version",
 ];

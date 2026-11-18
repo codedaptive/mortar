@@ -15,6 +15,10 @@ land = { path = "../land" }
 [dev-dependencies]
 testkit = { path = "../testkit" }
 
+# build.rs reads HEAD through gitio to embed MORTAR_COMMIT for `--version`.
+[build-dependencies]
+gitio = { path = "../gitio" }
+
 [[bin]]
 name = "mortar"
 path = "src/main.rs"

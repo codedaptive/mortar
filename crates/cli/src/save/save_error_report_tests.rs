@@ -110,8 +110,7 @@ fn a_head_without_a_change_id_is_refused_naming_the_commit() {
             ExitCode::Refused,
             "refused",
             &[
-                "HEAD 0123456789abcdef0123456789abcdef01234567 is this request's but carries no Mortar-Change-Id \
-                 (S-34)",
+                "HEAD 0123456789abcdef0123456789abcdef01234567 is this request's but carries no Mortar-Change-Id",
                 "no commit was written; the snapshot ref may have moved",
             ],
             Some("the commit 0123456789abcdef0123456789abcdef01234567"),
@@ -214,7 +213,7 @@ fn an_index_not_set_is_a_failure_a_repeat_mends() {
                 "saved commit 0123456789abcdef0123456789abcdef01234567 but the folder's index was not set: git \
                  read-tree HEAD: exit code 128: fatal: index.lock exists",
                 "the files are untouched and the index is the old one, or the saved tree without its skip-worktree \
-                 bits if the sparse-checkout reapply failed; a repeat sets it (S-41, S-125)",
+                 bits if the sparse-checkout reapply failed; a repeat sets it",
             ],
             None,
             "repeat the same command",

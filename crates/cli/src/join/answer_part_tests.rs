@@ -97,6 +97,8 @@ fn conflicted_lists_each_file_and_resolves_next() {
                     .to_string(),
                 "  src/a.rs".to_string(),
                 "  b.txt".to_string(),
+                "mr resolve writes both sides into these files with markers; fix them, then run mr resolve again"
+                    .to_string(),
             ],
             fields: vec![
                 text("commit", COMMIT),

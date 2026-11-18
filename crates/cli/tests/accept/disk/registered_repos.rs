@@ -3,21 +3,16 @@
 
 use std::path::{Path, PathBuf};
 
-use super::{git_common_dir, manifest_repos, Registered};
+use super::{git_common_dir, manifest_repos, teams_folder, Registered};
 use crate::world::World;
 
-/// Where codeteam keeps its team manifests when ACCEPT_TEAMS does not name another folder.
-const TEAMS: &str = "/Users/bob/devlop/team-codeteam-jj/design/codeteam-jj/teams";
-
-/// Every `repo = "<path>"` line (manifest_repos) of every `*.toml` in the manifests folder (ACCEPT_TEAMS when set
-/// and not empty, else TEAMS), the manifests in sorted order. A path that exists is canonicalized, with its git
-/// common dir; one that does not is kept as given with no common dir. Err, naming what failed, when the folder or a
-/// manifest cannot be read, or an existing path or its common dir cannot be read: the refusal fails closed. No repo
-/// line anywhere is Ok and empty (copy_refusal then refuses).
+/// Every `repo = "<path>"` line (manifest_repos) of every `*.toml` in the manifests folder (ACCEPT_TEAMS, set and
+/// not empty), the manifests in sorted order. A path that exists is canonicalized, with its git common dir; one
+/// that does not is kept as given with no common dir. Err, naming what failed, when ACCEPT_TEAMS is unset or empty
+/// (teams_folder), the folder or a manifest cannot be read, or an existing path or its common dir cannot be read:
+/// the refusal fails closed. No repo line anywhere is Ok and empty (copy_refusal then refuses).
 pub fn registered_repos(world: &World) -> Result<Vec<Registered>, String> {
-    let folder = std::env::var_os("ACCEPT_TEAMS")
-        .filter(|value| !value.is_empty())
-        .map_or_else(|| PathBuf::from(TEAMS), PathBuf::from);
+    let folder = teams_folder(std::env::var_os("ACCEPT_TEAMS"))?;
     let mut registered = Vec::new();
     for manifest in manifests(&folder)? {
         let text = std::fs::read_to_string(&manifest)

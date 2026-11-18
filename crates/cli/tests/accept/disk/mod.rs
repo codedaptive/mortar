@@ -18,6 +18,7 @@ mod registered;
 mod registered_repos;
 mod reply_number;
 mod run_disk;
+mod teams_folder;
 mod time_snapshot;
 mod tree_bytes;
 mod tree_file;
@@ -39,6 +40,8 @@ mod parse_ls_tree_tests;
 mod plan_checkout_tests;
 #[cfg(test)]
 mod reply_number_tests;
+#[cfg(test)]
+mod teams_folder_tests;
 
 pub use actor_mr::actor_mr;
 pub use byte_text::byte_text;
@@ -56,6 +59,7 @@ pub use registered::Registered;
 pub use registered_repos::registered_repos;
 pub use reply_number::reply_number;
 pub use run_disk::run_disk;
+pub use teams_folder::teams_folder;
 pub use time_snapshot::time_snapshot;
 pub use tree_bytes::tree_bytes;
 pub use tree_file::TreeFile;

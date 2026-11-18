@@ -16,6 +16,14 @@ fn options_before_the_verb_are_skipped() {
 }
 
 #[test]
+fn key_and_actor_and_their_values_are_skipped() {
+    assert_eq!(mr_verb(&argv(&["mr", "--key", "k", "save"])), Some("save"));
+    assert_eq!(mr_verb(&argv(&["mr", "--actor", "a/r1", "save"])), Some("save"));
+    assert_eq!(mr_verb(&argv(&["mr", "--key=k", "save"])), Some("save"));
+    assert_eq!(mr_verb(&argv(&["mr", "--actor=a/r1", "join"])), Some("join"));
+}
+
+#[test]
 fn a_call_with_only_options_or_nothing_names_no_verb() {
     assert_eq!(mr_verb(&argv(&["mr", "--help"])), None);
     assert_eq!(mr_verb(&argv(&["mr"])), None);

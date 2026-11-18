@@ -12,11 +12,13 @@ const NEXT_SENTENCE: &str = "mr save \"<one line saying what changed>\"";
 /// The step after a HEAD save cannot use.
 const NEXT_HEAD: &str = "check out the request's branch in this folder, then mr save again";
 
-/// Refused (exit 1): a bad sentence, an unborn or detached HEAD, a HEAD of this request without a change ID, a
-/// refused path that is not UTF-8. Busy (exit 3): the branch moved while save ran (the snapshot ref may have
-/// moved), or the snapshot ref moved (nothing moved). Done (exit 0): the op was already done (S-71: a repeat of a
-/// finished command is 0). Failure (exit 5): every other error, through failure_report; IndexNotSet says the files
-/// are untouched and a repeat sets the index (S-41).
+/// Refused (exit 1): a bad sentence, an unborn or detached HEAD, a HEAD of this request without a change ID (S-34:
+/// save will not make a second ID for the request), a refused path that is not UTF-8. Busy (exit 3): the branch
+/// moved while save ran (the snapshot ref may have moved), or the snapshot ref moved (nothing moved). Done (exit 0):
+/// the op was already done (S-71: a repeat of a finished command is 0). Failure (exit 5): every other error, through
+/// failure_report; IndexNotSet says the files are untouched and a repeat sets the index (S-41), skip-worktree bits
+/// included when the sparse-checkout reapply failed (S-125). The printed lines cite no ruling numbers: users read
+/// them, and the rulings are for maintainers.
 pub fn save_error_report(error: &SnapshotError) -> Report {
     match error {
         SnapshotError::BadSentence { reason } => {
@@ -30,7 +32,7 @@ pub fn save_error_report(error: &SnapshotError) -> Report {
         }
         SnapshotError::ChangeIdMissing { head } => refused(
             vec![
-                format!("HEAD {head} is this request's but carries no Mortar-Change-Id (S-34)"),
+                format!("HEAD {head} is this request's but carries no Mortar-Change-Id"),
                 "no commit was written; the snapshot ref may have moved".to_string(),
             ],
             Some(format!("the commit {head}")),
@@ -63,7 +65,7 @@ pub fn save_error_report(error: &SnapshotError) -> Report {
             lines: vec![
                 format!("saved commit {commit} but the folder's index was not set: {error}"),
                 "the files are untouched and the index is the old one, or the saved tree without its skip-worktree \
-                 bits if the sparse-checkout reapply failed; a repeat sets it (S-41, S-125)"
+                 bits if the sparse-checkout reapply failed; a repeat sets it"
                     .to_string(),
             ],
             ..failure_report("save", "")

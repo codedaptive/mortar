@@ -9,6 +9,7 @@ mod guard_in_place;
 mod guard_installed_report;
 mod guard_refs_for;
 mod guard_state_report;
+mod hooks_path_report;
 mod install_outcome;
 mod parse_guard_args;
 mod run_guard;
@@ -31,6 +32,8 @@ mod guard_refs_for_tests;
 #[cfg(test)]
 mod guard_state_report_tests;
 #[cfg(test)]
+mod hooks_path_report_tests;
+#[cfg(test)]
 mod install_outcome_tests;
 #[cfg(test)]
 mod parse_guard_args_tests;
@@ -45,6 +48,7 @@ pub(crate) use guard_in_place::guard_in_place;
 pub(crate) use guard_installed_report::guard_installed_report;
 pub(crate) use guard_refs_for::guard_refs_for;
 pub(crate) use guard_state_report::guard_state_report;
+pub(crate) use hooks_path_report::hooks_path_report;
 pub(crate) use install_outcome::install_outcome;
 pub(crate) use parse_guard_args::parse_guard_args;
 pub(crate) use run_guard::run_guard;

@@ -1,8 +1,8 @@
 //! The verbs the binary knows: only those that are built.
 
 use super::{
-    LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, DISK_SPEC, OVERLAP_SPEC,
-    RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC,
+    LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, DISK_SPEC, HELP_SPEC, INSTALL_SPEC,
+    OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC, UNINSTALL_SPEC,
 };
 
 /// In the order the usage error lists them.
@@ -41,6 +41,7 @@ pub const VERBS: &[VerbSpec] = &[
         needs_config: false,
         usage: "mortar guard-hook (reference-transaction <state> | pre-push <remote> <url>)",
     },
+    HELP_SPEC,
     VerbSpec {
         name: "init",
         kind: VerbKind::Harness,
@@ -51,6 +52,7 @@ pub const VERBS: &[VerbSpec] = &[
                 [--cap-bytes <n>] [--floor-bytes <n>] [--formatter <word>]... [--formatter-timeout <seconds>] \
                 [--replace] [--json]",
     },
+    INSTALL_SPEC,
     VerbSpec {
         name: "join",
         kind: VerbKind::Agent,
@@ -133,6 +135,7 @@ pub const VERBS: &[VerbSpec] = &[
     },
     SWEEP_SPEC,
     UNDO_SPEC,
+    UNINSTALL_SPEC,
     VerbSpec {
         name: "would-merge",
         kind: VerbKind::Harness,
