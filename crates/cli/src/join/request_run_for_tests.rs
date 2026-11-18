@@ -1,14 +1,15 @@
-//! request_run_for: an attempt folder is the S-91 refusal for join and for resolve; an argument is the verb's usage.
-//! A request folder giving its ref, lock, snapshot target and op key is the ZIT in
-//! crates/cli/tests/request_run_for_tests.rs.
-//! ZUT (rule 11): join/attempt_refusal and args/usage_report are pure and used directly; both return before any
-//! lower crate is called.
+//! request_run_for: a request folder gives its ref, its zone's join lock, the snapshot target and the derived op key;
+//! an attempt folder is the S-91 refusal for join and for resolve; an argument is the verb's usage.
+//! ZUT (rule 11, S-171): join/attempt_refusal, args/usage_report and opkey's op_key are used directly; the request
+//! folder case runs folders::plan::request_branch, exported and pure on data. Git::new runs nothing.
 
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use folders::{FolderKind, FolderRecord};
 use gitio::Oid;
+use oplog::LockName;
+use snapshot::SnapshotTarget;
 
 use super::request_run_for;
 use crate::args::{find_verb, ParsedArgs};
@@ -94,4 +95,23 @@ fn an_argument_is_the_verbs_usage() {
     assert_eq!(report.verb, "join");
     assert_eq!(report.lines[0], "join takes no arguments");
     assert_eq!(report.next, "mr join [--key <operation key>] [--json]");
+}
+
+#[test]
+fn a_request_folder_gives_its_ref_lock_target_and_key() {
+    let context = context(FolderKind::Request, Vec::new());
+    let run = request_run_for(&context, "join").expect("a request folder runs");
+    assert_eq!(run.request_ref, "refs/heads/req/core/fix-1");
+    assert_eq!(run.lock, LockName::Join("core".to_string()));
+    assert_eq!(run.key, "join-ae50f85dfaa45ab9");
+    assert_eq!(
+        run.target,
+        SnapshotTarget {
+            zone: "core".to_string(),
+            request: "fix-1".to_string(),
+            attempt: None,
+            actor: "core/fix-1".to_string(),
+        }
+    );
+    assert_eq!(run.git.repo, PathBuf::from("/w/fix-1"));
 }

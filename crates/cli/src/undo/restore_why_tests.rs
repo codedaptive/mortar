@@ -1,5 +1,6 @@
 //! restore_why: each JoinRunError a restore of a paused join can give has its own why lines, built from its fields;
-//! the errors a restore never gives share one line. The Git case is the RIT in cli_rit/restore_git_errors.rs (S-101).
+//! the errors a restore never gives share one line; git failing gives git's own text. ZUT (S-171): the Git case runs
+//! gitio's GitError Display, which is exported, pure and below cli.
 
 use std::ffi::OsStr;
 use std::io;
@@ -7,7 +8,7 @@ use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
 
 use ::join::JoinRunError;
-use gitio::Oid;
+use gitio::{GitError, Oid};
 
 use super::restore_why;
 
@@ -112,4 +113,14 @@ fn errors_a_restore_never_gives_share_one_line() {
     ] {
         assert_eq!(why(error), vec![NEVER]);
     }
+}
+
+#[test]
+fn a_git_failure_gives_git_s_own_text() {
+    let error = JoinRunError::Git(GitError {
+        args: vec!["rev-parse".to_string(), "x".to_string()],
+        code: Some(128),
+        stderr: "fatal: bad\n".to_string(),
+    });
+    assert_eq!(why(error), vec!["git failed: git rev-parse x: exit code 128: fatal: bad"]);
 }

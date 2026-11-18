@@ -30,6 +30,8 @@ mod find_pending_move_tests;
 #[cfg(test)]
 mod finished_move_part_tests;
 #[cfg(test)]
+mod join_refusal_report_tests;
+#[cfg(test)]
 mod join_report_tests;
 #[cfg(test)]
 mod join_save_subject_tests;
@@ -39,6 +41,8 @@ mod move_refusal_report_tests;
 mod request_run_for_tests;
 #[cfg(test)]
 mod save_part_tests;
+#[cfg(test)]
+mod snapshot_failure_tests;
 
 pub(crate) use answer_part::answer_part;
 pub(crate) use answer_part_value::AnswerPart;
@@ -47,15 +51,15 @@ pub(crate) use find_pending_move::find_pending_move;
 pub(crate) use finish_pending_move::finish_pending_move;
 pub(crate) use finished_move_part::finished_move_part;
 pub(crate) use join_outcome::JoinOutcome;
-pub use join_refusal_report::join_refusal_report;
+pub(crate) use join_refusal_report::join_refusal_report;
 pub(crate) use join_report::join_report;
 pub(crate) use join_save_subject::join_save_subject;
-pub use move_cause::MoveCause;
+pub(crate) use move_cause::MoveCause;
 pub(crate) use move_refusal_report::move_refusal_report;
-pub use pending_move::PendingMove;
+pub(crate) use pending_move::PendingMove;
 pub(crate) use read_pending_move::read_pending_move;
-pub use request_run::RequestRun;
-pub use request_run_for::request_run_for;
+pub(crate) use request_run::RequestRun;
+pub(crate) use request_run_for::request_run_for;
 pub(crate) use run_join::run_join;
 pub(crate) use save_part::save_part;
-pub use snapshot_failure::snapshot_failure;
+pub(crate) use snapshot_failure::snapshot_failure;

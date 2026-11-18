@@ -4,7 +4,7 @@
 //! Shell API: run_status calls it.
 //! No unit test: it runs git and reads the folder's files (S-5, S-104); status_next_tests, status_outcome_tests,
 //! status_lines_tests, status_fields_tests, is_joined_tests and move_stalled_tests cover the decisions made from
-//! what it reads, and status_report_tests and the ZITs in crates/cli/tests/status_report_tests.rs the report.
+//! what it reads, and status_report_tests the report, in both rendered forms.
 //! Nagatha's integration group is to cover, with the mortar binary as a child process in a request folder made by
 //! the landing verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):

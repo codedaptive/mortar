@@ -17,6 +17,6 @@ mod run_resolve_tests;
 
 pub(crate) use resolve_move_refusal_report::resolve_move_refusal_report;
 pub(crate) use resolve_outcome::ResolveOutcome;
-pub use resolve_refusal_report::resolve_refusal_report;
+pub(crate) use resolve_refusal_report::resolve_refusal_report;
 pub(crate) use resolve_report::resolve_report;
 pub(crate) use run_resolve::run_resolve;

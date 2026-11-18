@@ -6,12 +6,12 @@
 //! `mr bisect` (run_bisect), `mr backup` (run_backup), `mr restore-backup` (run_restore_backup),
 //! `mr land` (run_land), `mr after-publish` (run_after_publish), `mr snapshot` (run_snapshot),
 //! `mr sweep` (run_sweep) and `mr undo` (run_undo) call it, and so will each later verb that moves a ref.
-//! No unit test: it takes a real lock file and runs git and the op log (S-5); lock_report_tests, the ZITs in
-//! crates/cli/tests/lock_report_tests.rs and failure_report_tests cover what it reports. Nagatha's integration
-//! group is to cover, with the mortar binary as a child process in a throwaway repository and `mr join`: a lock
-//! held by a live pid is exit 3 naming the holder's pid, host and since, and the act does not run; an open intent
-//! left in the op log is settled by recover before the act runs; the lock file is gone after the act, whether it
-//! was done or refused; an act's refusal comes back as its own report.
+//! No unit test: it takes a real lock file and runs git and the op log (S-5); lock_report_tests and
+//! failure_report_tests cover what it reports. Nagatha's integration group is to cover, with the mortar binary as a
+//! child process in a throwaway repository and `mr join`: a lock held by a live pid is exit 3 naming the holder's
+//! pid, host and since, and the act does not run; an open intent left in the op log is settled by recover before
+//! the act runs; the lock file is gone after the act, whether it was done or refused; an act's refusal comes back
+//! as its own report.
 
 use std::path::Path;
 

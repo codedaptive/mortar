@@ -1,11 +1,11 @@
 //! snapshot_failure: a snapshot error is a failure for the verb passed, naming the error in its Display form.
-//! Integration group. A ZIT (S-79 as replaced: the line is the file): it calls report::failure_report for real.
-//! By S-101 also a RIT case, since it runs snapshot's Display for real; listed in
-//! crates/cli/src/join/snapshot_failure.rs's header.
+//! ZUT (rule 11, S-171): the error is built as data; its line comes from snapshot's exported, pure Display, and
+//! report::failure_report is used directly.
 
 use snapshot::SnapshotError;
 
-use cli::{snapshot_failure, ExitCode, Report};
+use super::snapshot_failure;
+use crate::report::{ExitCode, Report};
 
 #[test]
 fn a_bad_target_is_a_failure_naming_it() {

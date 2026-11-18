@@ -1,6 +1,7 @@
 //! join_refusal_report: each refusal the caller can act on is exit 1 with its owner and next step; the rest are
 //! failures. The expected lines are join's own refusal texts.
-//! ZIT (S-79 as replaced: the line is the file): it calls report::failure_report for real.
+//! ZUT (rule 11, S-171): the errors are built as data; their lines come from join's exported, pure Display impls,
+//! and report::failure_report is used directly.
 
 use std::io::{Error, ErrorKind};
 use std::path::PathBuf;
@@ -8,7 +9,8 @@ use std::path::PathBuf;
 use ::join::{JoinError, JoinRunError};
 use gitio::Oid;
 
-use cli::{join_refusal_report, ExitCode, Report};
+use super::join_refusal_report;
+use crate::report::{ExitCode, Report};
 
 const COMMIT: &str = "1111111111111111111111111111111111111111";
 

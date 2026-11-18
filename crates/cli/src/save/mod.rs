@@ -33,10 +33,10 @@ mod zone_folder_refusal_tests;
 
 pub(crate) use run_save::run_save;
 pub(crate) use run_snapshot::run_snapshot;
-pub use save_error_report::save_error_report;
+pub(crate) use save_error_report::save_error_report;
 pub(crate) use save_report::save_report;
 pub(crate) use save_run_for::save_run_for;
-pub use save_sentence::save_sentence;
+pub(crate) use save_sentence::save_sentence;
 pub(crate) use snapshot_error_report::snapshot_error_report;
 pub(crate) use snapshot_report::snapshot_report;
 pub(crate) use snapshot_target_for::snapshot_target_for;

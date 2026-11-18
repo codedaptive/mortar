@@ -1,8 +1,7 @@
-//! status_report: a clean, saved, joined folder and a folder with every part, as the whole Report. Both rendered
-//! with render_plain and render_json (which run oplog's JSON writer) are ZITs in
-//! crates/cli/tests/status_report_tests.rs.
-//! ZUT (rule 11): status_report calls status_lines, status_fields, status_next and status_outcome, which are pure,
-//! directly.
+//! status_report: a clean, saved, joined folder and a folder with every part, as the whole Report and rendered with
+//! render_plain and render_json.
+//! ZUT (rule 11, S-171): status_report calls status_lines, status_fields, status_next and status_outcome, which are
+//! pure, directly; render_json runs oplog::write_json_string, exported and pure on the text.
 
 use std::path::PathBuf;
 
@@ -12,7 +11,7 @@ use snapshot::RefusedFile;
 
 use super::{status_report, StatusState};
 use crate::join::{MoveCause, PendingMove};
-use crate::report::{ExitCode, OutValue, Report};
+use crate::report::{render_json, render_plain, ExitCode, OutValue, Report};
 
 const OLD: &str = "1111111111111111111111111111111111111111";
 const NEW: &str = "2222222222222222222222222222222222222222";
@@ -174,5 +173,73 @@ fn a_folder_with_every_part_reports_each_and_is_stalled_first() {
                 field("gaps", texts(&["docs/guide.txt", "tools/gen.rs"])),
             ],
         }
+    );
+}
+
+#[test]
+fn a_clean_folder_renders_plain_and_json() {
+    let report = status_report(&clean());
+    assert_eq!(
+        render_plain(&report),
+        "request fix-1 in zone core\n\
+         no changed, untracked or conflicted paths\n\
+         everything is saved\n\
+         the zone has no commits this request has not taken in\n\
+         the request is joined to the zone\n\
+         next: wait for the zone's tests\n"
+    );
+    assert_eq!(
+        render_json(&report),
+        "{\"verb\":\"status\",\"ok\":true,\"outcome\":\"joined\",\"exit\":0,\"next\":\"wait for the zone's tests\",\
+         \"lines\":[\"request fix-1 in zone core\",\"no changed, untracked or conflicted paths\",\
+         \"everything is saved\",\"the zone has no commits this request has not taken in\",\
+         \"the request is joined to the zone\"],\"owner\":null,\"zone\":\"core\",\"request\":\"fix-1\",\
+         \"changed\":[],\"untracked\":[],\"conflicted\":[],\"saved\":true,\"refused\":[],\"cap\":null,\
+         \"zone_moved\":false,\"joined\":true,\"paused_commit\":null,\"paused_files\":[],\"stalled_from\":null,\
+         \"stalled_to\":null,\"overlaps\":[],\"overlap_paths\":[],\"gaps\":[]}\n"
+    );
+}
+
+#[test]
+fn a_full_folder_renders_plain_and_json() {
+    let report = status_report(&full());
+    assert_eq!(
+        render_plain(&report),
+        "request fix-1 in zone core\n\
+         changed: src/a.rs, src/b.rs\n\
+         untracked: notes.txt\n\
+         conflicted: src/c.rs\n\
+         there is work not yet saved\n\
+         not saved: data/big.bin is 2000000 bytes, over the size cap of 1048576 bytes\n\
+         the zone has commits this request has not taken in\n\
+         a join is paused at commit 3333333333333333333333333333333333333333 with conflicted files: src/c.rs, \
+         src/d.rs\n\
+         a folder move is stalled: refs/heads/req/core/fix-1 stands at 2222222222222222222222222222222222222222, \
+         the folder at 1111111111111111111111111111111111111111\n\
+         overlaps with fix-2: src/b.rs\n\
+         overlaps with fix-3: src/a.rs, src/b.rs\n\
+         gaps (needed outside the work order): docs/guide.txt, tools/gen.rs\n\
+         next: mr join\n"
+    );
+    assert_eq!(
+        render_json(&report),
+        "{\"verb\":\"status\",\"ok\":true,\"outcome\":\"stalled\",\"exit\":0,\"next\":\"mr join\",\
+         \"lines\":[\"request fix-1 in zone core\",\"changed: src/a.rs, src/b.rs\",\"untracked: notes.txt\",\
+         \"conflicted: src/c.rs\",\"there is work not yet saved\",\
+         \"not saved: data/big.bin is 2000000 bytes, over the size cap of 1048576 bytes\",\
+         \"the zone has commits this request has not taken in\",\
+         \"a join is paused at commit 3333333333333333333333333333333333333333 with conflicted files: src/c.rs, \
+         src/d.rs\",\
+         \"a folder move is stalled: refs/heads/req/core/fix-1 stands at 2222222222222222222222222222222222222222, \
+         the folder at 1111111111111111111111111111111111111111\",\
+         \"overlaps with fix-2: src/b.rs\",\"overlaps with fix-3: src/a.rs, src/b.rs\",\
+         \"gaps (needed outside the work order): docs/guide.txt, tools/gen.rs\"],\"owner\":null,\
+         \"zone\":\"core\",\"request\":\"fix-1\",\"changed\":[\"src/a.rs\",\"src/b.rs\"],\
+         \"untracked\":[\"notes.txt\"],\"conflicted\":[\"src/c.rs\"],\"saved\":false,\"refused\":[\"data/big.bin\"],\
+         \"cap\":1048576,\"zone_moved\":true,\"joined\":false,\
+         \"paused_commit\":\"3333333333333333333333333333333333333333\",\"paused_files\":[\"src/c.rs\",\"src/d.rs\"],\
+         \"stalled_from\":\"1111111111111111111111111111111111111111\",\
+         \"stalled_to\":\"2222222222222222222222222222222222222222\",\"overlaps\":[\"fix-2\",\"fix-3\"],\
+         \"overlap_paths\":[\"src/a.rs\",\"src/b.rs\"],\"gaps\":[\"docs/guide.txt\",\"tools/gen.rs\"]}\n"
     );
 }

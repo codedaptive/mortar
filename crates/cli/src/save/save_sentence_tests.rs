@@ -1,6 +1,7 @@
-//! save_sentence: no word and two words are refused with why. The one-argument cases run snapshot::sentence_refusal
-//! for real, so they stay in crates/cli/tests/save_sentence_tests.rs, held for Nagatha (S-101).
-//! ZUT (rule 11): save_error_report and the report module are pure and used directly.
+//! save_sentence: one non-blank, one-line argument is the sentence; no word, two words, a blank or a multi-line one
+//! is refused with why.
+//! ZUT (rule 11, S-171): the one-argument cases run snapshot::sentence_refusal, exported and pure on the text; the
+//! report module is pure and used directly.
 
 use super::save_sentence;
 use crate::report::{ExitCode, Report};
@@ -22,6 +23,8 @@ fn refused(why: &str) -> Report {
 }
 
 const NOT_ONE: &str = "save takes one sentence, quoted as one argument";
+const EMPTY: &str = "the sentence is empty or only whitespace";
+const BREAK: &str = "the sentence holds a line break; a commit subject is one line";
 
 #[test]
 fn no_word_is_refused() {
@@ -31,4 +34,29 @@ fn no_word_is_refused() {
 #[test]
 fn two_words_are_refused() {
     assert_eq!(save_sentence(&words(&["fix", "parser"])), Err(refused(NOT_ONE)));
+}
+
+#[test]
+fn one_sentence_is_the_word() {
+    assert_eq!(save_sentence(&words(&["fix the parser"])), Ok("fix the parser"));
+}
+
+#[test]
+fn an_empty_sentence_is_refused() {
+    assert_eq!(save_sentence(&words(&[""])), Err(refused(EMPTY)));
+}
+
+#[test]
+fn a_whitespace_sentence_is_refused() {
+    assert_eq!(save_sentence(&words(&["   "])), Err(refused(EMPTY)));
+}
+
+#[test]
+fn a_newline_is_refused() {
+    assert_eq!(save_sentence(&words(&["a\nb"])), Err(refused(BREAK)));
+}
+
+#[test]
+fn a_carriage_return_is_refused() {
+    assert_eq!(save_sentence(&words(&["a\rb"])), Err(refused(BREAK)));
 }

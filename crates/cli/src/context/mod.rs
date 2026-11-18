@@ -18,9 +18,9 @@ mod repository_error_tests;
 mod repository_report_tests;
 
 pub(crate) use actor_for::actor_for;
-pub use context_error::ContextError;
-pub use context_report::context_report;
-pub use folder_context::FolderContext;
+pub(crate) use context_error::ContextError;
+pub(crate) use context_report::context_report;
+pub(crate) use folder_context::FolderContext;
 pub(crate) use read_folder_context::read_folder_context;
 
 pub(crate) use repository_error::repository_error;
