@@ -29,6 +29,7 @@ mod rit8;
 mod rit9;
 mod rit11;
 mod rit12;
+mod guard_path;
 mod guard_symref;
 mod restore_git_errors;
 #[allow(dead_code)]

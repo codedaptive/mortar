@@ -1,4 +1,4 @@
-//! Joins cli::run_would_merge/resolve_squash with land::read_squash/would_merge and real Git/oplog locks.
+//! Joins the `mr would-merge` binary command with Land's squash lookup/merge check and real Git/Oplog locks.
 use super::fixture::Landing;
 use crate::support::raw;
 
