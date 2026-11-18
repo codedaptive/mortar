@@ -6,7 +6,7 @@ use crate::store::{close_record, OpPhase, OpRecord, OpResult};
 
 /// Updated: done, Moved. Stale: failed, naming the refused ref and `actual`, the value it held (None:
 /// absent). `actual` is read only for Stale.
-pub fn close_after_update(
+pub(crate) fn close_after_update(
     intent: &OpRecord,
     outcome: &UpdateRefsOutcome,
     actual: Option<Oid>,

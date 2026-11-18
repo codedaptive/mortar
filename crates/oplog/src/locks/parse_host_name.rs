@@ -3,7 +3,7 @@
 use super::LockError;
 
 /// The trimmed host name, or HostUnknown when the output is not one clean word.
-pub fn parse_host_name(stdout: &[u8]) -> Result<String, LockError> {
+pub(crate) fn parse_host_name(stdout: &[u8]) -> Result<String, LockError> {
     let text = std::str::from_utf8(stdout)
         .map_err(|_| LockError::HostUnknown("hostname output is not UTF-8".to_string()))?;
     let name = text.trim();

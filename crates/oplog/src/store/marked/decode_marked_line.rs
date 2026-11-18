@@ -1,5 +1,5 @@
 //! One op log line back to a record, its values and its remote mark, telling a torn write from a bad line.
-//! Its decisions are proved through decode_marked_log by crates/oplog/tests/oplog/marked_lines.rs.
+//! Its decisions are proved through decode_marked_log by decode_marked_log_tests.
 
 use crate::store::{
     decode_op_result, decode_op_values, decode_ref_move, object_fields, parse_json, take_string,

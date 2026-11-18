@@ -6,7 +6,7 @@ use super::{write_json_string, OpPhase, OpRecord, OpResult, RefMove};
 
 /// One line of JSON, no trailing newline, keys in the order op_id, key, kind, actor, reason, at, phase,
 /// moves, result; `result` is left out when None. Every string is escaped, so any record encodes.
-pub fn encode_op_record(r: &OpRecord) -> String {
+pub(crate) fn encode_op_record(r: &OpRecord) -> String {
     let mut out = String::from("{");
     string_member(&mut out, "op_id", &r.op_id);
     out.push(',');

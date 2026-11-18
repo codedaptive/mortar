@@ -1,5 +1,5 @@
 //! The op log as read: its records, and the lines skipped as torn writes.
-//! A bare type; decode_op_log_tests exercises it.
+//! A bare type; plain_log_tests exercises it.
 
 use super::OpRecord;
 

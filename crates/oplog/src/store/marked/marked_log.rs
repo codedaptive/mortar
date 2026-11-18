@@ -1,5 +1,5 @@
 //! The op log as read, each record with its values and remote mark, and the lines skipped as torn writes.
-//! A bare type; crates/oplog/tests/oplog/marked_lines.rs exercises it through decode_marked_log.
+//! A bare type; decode_marked_log_tests exercises it through decode_marked_log.
 
 use super::MarkedRecord;
 

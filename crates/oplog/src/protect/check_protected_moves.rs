@@ -17,7 +17,7 @@ use crate::store::{oid_is_zero, read_ref_value, OplogError, RefMove};
 ///
 /// apply_protected runs check_ref_moves first, so names here are full refs/ names; git check-ref-format runs
 /// later, in apply. Nothing is written here.
-pub fn check_protected_moves(
+pub(crate) fn check_protected_moves(
     git: &Git,
     moves: &[RefMove],
     protected: &[ProtectedRef],

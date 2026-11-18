@@ -4,7 +4,7 @@ use crate::store::{move_changes, OpPhase, OpRecord};
 
 /// The latest done record at an index above `after` with a move of `refname` that changes the ref; None when
 /// no logged op moved it there.
-pub fn last_mover<'a>(records: &'a [OpRecord], after: usize, refname: &str) -> Option<&'a OpRecord> {
+pub(crate) fn last_mover<'a>(records: &'a [OpRecord], after: usize, refname: &str) -> Option<&'a OpRecord> {
     records
         .iter()
         .enumerate()

@@ -3,7 +3,7 @@
 use crate::store::OplogError;
 
 /// Ok when git found `refname` well formed; otherwise `BadMove` naming it.
-pub fn ref_format_verdict(refname: &str, well_formed: bool) -> Result<(), OplogError> {
+pub(crate) fn ref_format_verdict(refname: &str, well_formed: bool) -> Result<(), OplogError> {
     if well_formed {
         return Ok(());
     }

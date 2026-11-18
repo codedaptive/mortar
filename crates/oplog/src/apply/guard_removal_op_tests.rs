@@ -1,4 +1,5 @@
-//! guard_removal_op: one op per removed guard, in order, each naming the new holder, the guard and its old holder.
+//! guard_removal_op: one op per removed guard, in order, each naming the new holder, the guard and its old holder;
+//! op IDs come from the caller's counter, call after call, and a repeat of a removal keeps its key.
 
 use std::path::{Path, PathBuf};
 
@@ -116,4 +117,30 @@ fn removals_carried_by_a_refusal_give_their_ops() {
             ),
         ]
     );
+}
+
+#[test]
+fn a_caller_counter_numbers_each_call_and_a_repeated_removal_keeps_its_key() {
+    let removed = [old_guard(1763030400)];
+    let mut sequence = 0;
+    let mut next_id = || {
+        sequence += 1;
+        format!("guard-log-{sequence}")
+    };
+    let ops = guard_removal_op(Path::new(LOCK), &me(), &removed, &mut next_id, 200);
+    assert_eq!(ops.len(), 1);
+    assert_eq!(ops[0].op_id, "guard-log-1");
+    assert_eq!(ops[0].kind, "takeover-guard-removal");
+    assert_eq!(ops[0].actor, "4321@mac-b");
+    assert!(ops[0].moves.is_empty());
+    for detail in ["/repo/.git/mortar/locks/land.lock.takeover", "1234", "mac-b", "land:zone-a"] {
+        assert!(ops[0].reason.contains(detail), "missing {detail}: {}", ops[0].reason);
+    }
+    let repeated = guard_removal_op(Path::new(LOCK), &me(), &removed, &mut next_id, 201);
+    assert_eq!(repeated[0].op_id, "guard-log-2");
+    assert_eq!(
+        repeated[0].key,
+        "takeover-guard-removal:/repo/.git/mortar/locks/land.lock.takeover:1234@mac-b:1763030400"
+    );
+    assert_eq!(repeated[0].key, ops[0].key);
 }

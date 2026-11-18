@@ -8,7 +8,7 @@ use crate::store::{close_record, OpPhase, OpRecord, OpResult, OplogError, RefMov
 /// Done closes the intent as done/Moved, Failed as failed/NotMoved naming each planned ref and its actual
 /// value in move order, both at `at`; Mixed is OplogError::Mixed naming the intent's op_id and key and each
 /// move with its actual value.
-pub fn recovery_close(
+pub(crate) fn recovery_close(
     intent: &OpRecord,
     decision: RecoveryDecision,
     at: u64,

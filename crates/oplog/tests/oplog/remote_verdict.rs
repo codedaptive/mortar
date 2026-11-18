@@ -1,11 +1,11 @@
 //! Joins open_remote_intent -> read_marked_log -> remote_intent_verdict (find_done_in, open_intents_in) on a
-//! log seeded with append_marked_record: a done key is Repeated, an open marked intent with the key is
+//! log seeded with encode_marked_record lines: a done key is Repeated, an open marked intent with the key is
 //! AlreadyOpen, both appending nothing; failed records, unmarked intents, closed intents and other keys
 //! leave the verdict empty, so a new marked intent is Opened.
 
 use crate::support::Fixture;
 use oplog::{
-    append_marked_record, open_remote_intent, oplog_path, read_marked_log, MarkedRecord, Op, OpPhase, OpRecord,
+    encode_marked_record, open_remote_intent, oplog_path, read_marked_log, MarkedRecord, Op, OpPhase, OpRecord,
     OpResult, RemoteIntentOutcome,
 };
 use std::fs;
@@ -46,11 +46,16 @@ fn op_k() -> Op {
     }
 }
 
-/// A fixture whose log holds `log`, line by line.
+/// A fixture whose log holds `log`, one encode_marked_record line each (no log file for an empty `log`): the
+/// bytes append_marked_record appends, written directly because no export appends an arbitrary marked record.
 fn seeded(log: &[MarkedRecord]) -> Fixture {
     let f = Fixture::new();
-    for m in log {
-        append_marked_record(&f.common, &m.record, &m.values, m.remote.as_deref()).unwrap();
+    if !log.is_empty() {
+        let path = oplog_path(&f.common);
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let text: String =
+            log.iter().map(|m| encode_marked_record(&m.record, &m.values, m.remote.as_deref()) + "\n").collect();
+        fs::write(&path, text).unwrap();
     }
     f
 }

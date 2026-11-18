@@ -5,7 +5,7 @@ use super::{encode_op_record, write_json_string, OpRecord};
 /// encode_op_record(r) unchanged when `values` is empty, so no `values` key is written.
 /// Otherwise that line with one more member last, before its closing '}':
 /// `"values":[{"name":"...","value":"..."},...]`, the pairs in the given order, every string escaped.
-pub fn encode_valued_record(r: &OpRecord, values: &[(String, String)]) -> String {
+pub(crate) fn encode_valued_record(r: &OpRecord, values: &[(String, String)]) -> String {
     let mut out = encode_op_record(r);
     if values.is_empty() {
         return out;

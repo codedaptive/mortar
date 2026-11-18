@@ -54,19 +54,20 @@ mod takeover_guard_path_tests;
 
 pub use acquire_lock::acquire_lock;
 pub use acquired_lock::AcquiredLock;
-pub use decide_lock_staleness::decide_lock_staleness;
 pub use decode_lock_record::decode_lock_record;
-pub use encode_lock_record::encode_lock_record;
 pub use host_name::host_name;
 pub use kill_pid_probe::KillPidProbe;
-pub use kill_status_alive::kill_status_alive;
 pub use lock_error::LockError;
-pub use lock_file_name::lock_file_name;
 pub use lock_name::LockName;
 pub use lock_path::lock_path;
 pub use lock_record::LockRecord;
-pub use lock_staleness::LockStaleness;
-pub use parse_host_name::parse_host_name;
 pub use pid_probe::PidProbe;
 pub use release_lock::release_lock;
+
+pub(crate) use decide_lock_staleness::decide_lock_staleness;
+pub(crate) use encode_lock_record::encode_lock_record;
+pub(crate) use kill_status_alive::kill_status_alive;
+pub(crate) use lock_file_name::lock_file_name;
+pub(crate) use lock_staleness::LockStaleness;
+pub(crate) use parse_host_name::parse_host_name;
 pub(crate) use takeover_guard_path::takeover_guard_path;

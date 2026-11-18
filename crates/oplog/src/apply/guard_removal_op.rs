@@ -12,7 +12,7 @@ use crate::store::Op;
 /// `takeover-guard-removal:<guard path>:<old pid>@<old host>:<old since>`, where the guard path is
 /// `takeover_guard_path(lock_path)` and "old" is the removed guard's holder, so a repeat of the same removal
 /// gives the same key. The reason names the guard path and the old holder's pid, host and key.
-pub fn guard_removal_op(
+pub(crate) fn guard_removal_op(
     lock_path: &Path,
     me: &LockRecord,
     removed_guards: &[LockRecord],

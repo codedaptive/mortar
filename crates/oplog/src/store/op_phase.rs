@@ -1,5 +1,5 @@
 //! Where an op stands in the log: announced, finished, or refused.
-//! A bare type; encode_op_record_tests and decode_op_record_tests exercise each phase's JSON name.
+//! A bare type; encode_op_record_tests and decode_valued_log_tests exercise each phase's JSON name.
 
 /// JSON `"intent"` | `"done"` | `"failed"`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

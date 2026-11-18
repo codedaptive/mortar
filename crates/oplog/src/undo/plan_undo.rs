@@ -12,7 +12,7 @@ use crate::store::{move_changes, OplogError, OpRecord, RefMove};
 /// whose value is not what the op left returns MovedSince, naming the latest later done op that moved it, or
 /// none when no logged op did. `target` is an index into `records`, as find_undo_target gives; an index out of
 /// range panics.
-pub fn plan_undo(
+pub(crate) fn plan_undo(
     records: &[OpRecord],
     target: usize,
     current: &[(String, Option<Oid>)],

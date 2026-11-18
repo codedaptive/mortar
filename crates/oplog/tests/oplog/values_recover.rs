@@ -1,7 +1,7 @@
 use crate::support::{kill_worker, operation, test_op, Fixture};
 use crate::values::pairs;
 use oplog::{
-    apply, apply_with_values, decode_op_log, history, open_intent, oplog_path, read_op_log, read_valued_log,
+    apply, apply_with_values, history, open_intent, oplog_path, read_op_log, read_valued_log,
     recover, ApplyOutcome, HistoryFilter, OpPhase, OpResult, RefMove, ValuedOutcome,
 };
 use std::fs;
@@ -66,7 +66,10 @@ fn log_mixing_lines_with_and_without_values_reads_whole() {
     assert!(plain.torn_lines.is_empty());
     let records: Vec<_> = log.records.iter().map(|v| v.record.clone()).collect();
     assert_eq!(plain.records, records);
-    assert_eq!(decode_op_log(&bytes).unwrap(), plain);
+    let copy = Fixture::new();
+    fs::create_dir_all(oplog_path(&copy.common).parent().unwrap()).unwrap();
+    fs::write(oplog_path(&copy.common), &bytes).unwrap();
+    assert_eq!(read_op_log(&copy.common).unwrap(), plain);
     let filtered = history(&f.common, &HistoryFilter::Actor("valued-caller".into())).unwrap();
     let ids: Vec<String> = filtered.into_iter().map(|r| r.op_id).collect();
     assert_eq!(ids, ["op-2", "op-2"]);

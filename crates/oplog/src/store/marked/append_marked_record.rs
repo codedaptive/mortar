@@ -13,7 +13,7 @@ use crate::store::{log_line, oplog_path, OpRecord, OplogError};
 
 /// Writes log_line(r, values, remote, the file's last byte) with O_APPEND in one write, fsyncs the file,
 /// then fsyncs the `<common>/mortar/` folder.
-pub fn append_marked_record(
+pub(crate) fn append_marked_record(
     common: &Path,
     r: &OpRecord,
     values: &[(String, String)],
