@@ -1,9 +1,11 @@
 //! guard: installs and reads Mortar's git hooks and decides that only Mortar moves integration and origin
 //! (SPEC-land 06).
 
+mod check_hooks_path;
 mod classify_hook;
 mod decide_config_write;
 mod decide_hook_writes;
+mod decide_hooks_path;
 mod guard_config_path;
 mod guard_config_text;
 mod guard_decide;
@@ -18,6 +20,9 @@ mod guard_state;
 mod guard_status;
 mod guard_verdict;
 mod hook_state;
+mod hooks_path_error;
+mod hooks_path_error_display;
+mod hooks_path_error_source;
 mod parse_guard_config;
 mod read_guard_config;
 mod read_hooks;
@@ -31,6 +36,8 @@ mod decide_config_write_tests;
 #[cfg(test)]
 mod decide_hook_writes_tests;
 #[cfg(test)]
+mod decide_hooks_path_tests;
+#[cfg(test)]
 mod guard_config_path_tests;
 #[cfg(test)]
 mod guard_decide_tests;
@@ -41,8 +48,13 @@ mod guard_error_source_tests;
 #[cfg(test)]
 mod guard_hook_script_tests;
 #[cfg(test)]
+mod hooks_path_error_display_tests;
+#[cfg(test)]
+mod hooks_path_error_source_tests;
+#[cfg(test)]
 mod parse_guard_config_tests;
 
+pub use check_hooks_path::check_hooks_path;
 pub use guard_decide::guard_decide;
 pub use guard_error::GuardError;
 pub use guard_hook::GuardHook;
@@ -51,4 +63,5 @@ pub use guard_state::GuardState;
 pub use guard_status::guard_status;
 pub use guard_verdict::GuardVerdict;
 pub use hook_state::HookState;
+pub use hooks_path_error::HooksPathError;
 pub use read_guard_config::read_guard_config;
