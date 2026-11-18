@@ -1,4 +1,4 @@
-//! Joins cli::run_land with land::land, folders::move_folder, gitio and oplog; shell refusals use real locks/config.
+//! Joins the `mr land` binary command with Land, Folders, Gitio and Oplog; shell refusals use real locks/config.
 use super::fixture::Landing;
 use crate::support::raw;
 use oplog::{KillPidProbe, LockName, LockRecord};
