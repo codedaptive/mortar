@@ -1,10 +1,10 @@
-//! ZoneCase: what to do with one zone after a publish. A declaration only (S-7); decide_zone_case_tests exercises
-//! each variant.
+//! ZoneCase: what to do with one zone after a publish. A declaration only; decide_zone_case_tests exercises each
+//! variant.
 
 use gitio::Oid;
 
 /// Current: the zone already holds origin, or the published squash's source is at or behind a source already
-/// published for the zone (S-121 (3)); the zone branch does not move. Advance: the zone has nothing of its own past
+/// published for the zone; the zone branch does not move. Advance: the zone has nothing of its own past
 /// origin's reach, so one op puts it on origin. Replay: the zone's commits after `base` are replayed onto origin.
 /// NoSquashOf and SquashOfNotInZone: the publishing zone's squash names no zone tip, or one the zone holds neither
 /// itself nor as its recorded replay.

@@ -1,6 +1,7 @@
-//! How a probe reads: one line naming the commit and the outcome, with "timed out" for a timeout (S-78).
-//! No sibling unit test (S-104): every test of it runs gitio's Oid Display (S-101). Covered by tests/bisect_zit
-//! (a_timed_out_probe_counts_as_a_fail, through the report's text); its unit cases are Nagatha's RITs (owed).
+//! How a probe reads: one line naming the commit and the outcome, with "timed out" for a timeout.
+//! No sibling unit test: every test of it runs gitio's Oid Display. Covered by tests/bisect_zit
+//! (a_timed_out_probe_counts_as_a_fail, through the report's text); its unit cases are repo integration tests
+//! (RITs): tests/land_rit/owed_displays.rs covers them.
 
 use std::fmt;
 use std::time::Duration;

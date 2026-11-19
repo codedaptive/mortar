@@ -1,6 +1,6 @@
-//! SquashError: why a squash, would_merge or read_squash was refused. A declaration only (S-7);
+//! SquashError: why a squash, would_merge or read_squash was refused. A declaration only;
 //! squash_error_display_tests exercise the texts of RefMissing, OpFailed and OpRepeated, tests/land_rit those of
-//! Git, Oplog, Trailers and ChangeId; the AttrSourceMissing and Unrelated texts are Nagatha's RITs (owed, S-101).
+//! Git, Oplog, Trailers, ChangeId, AttrSourceMissing and Unrelated.
 //! The TrailerMissing, TrailerMalformed and RequestsMalformed texts name a commit (gitio's Oid Display), so
 //! tests/squash_zit/read_squash_cases.rs reads them in a real repository, checking the TrailerMissing and
 //! TrailerMalformed texts for the trailer name and the advice. squash_error_error_tests exercise its source,

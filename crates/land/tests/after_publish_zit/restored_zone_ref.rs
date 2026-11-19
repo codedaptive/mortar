@@ -1,8 +1,8 @@
-//! A zone ref restored behind its replay record (#2). Zone `land` is squashed at A1 and the squash kept;
+//! A zone ref restored behind its replay record. Zone `land` is squashed at A1 and the squash kept;
 //! after_publish(b, others=[land]) replays A1 onto b's origin as A1' and records A1 = A1' (fixture replayed). Zone
 //! `land` is then set back to A1, the state an oplog restore of that one ref leaves: the record still names A1'.
 //! Zone `c`, its own new file on the base, publishes; after_publish(c, others=[land]) replays A1 again, as A1'' on
-//! c's origin, and must rewrite the record to A1'' (S-121 W: every clean replay writes its records). Then land's
+//! c's origin, and must rewrite the record to A1'' (every clean replay writes its records). Then land's
 //! kept squash publishes, and after_publish(land) takes A1'' through the record, puts the zone on origin and
 //! deletes the record. Origin is never rewritten.
 

@@ -1,6 +1,6 @@
 //! push_landing: publish's step 1, the leased push of the landed commit to the remote's origin branch, inside its
-//! own op's intent so MORTAR_OP rides on it and the guard's pre-push check finds the move listed (S-60).
-//! No sibling unit test (S-5): it writes the op log, pushes and reads the remote. Its decisions are push_refusal,
+//! own op's intent so MORTAR_OP rides on it and the guard's pre-push check finds the move listed.
+//! No sibling unit test: it writes the op log, pushes and reads the remote. Its decisions are push_refusal,
 //! decide_refused_push and push_intent_close (push_refusal_tests, decide_refused_push_tests,
 //! push_intent_close_tests); push_landed says whether the push landed; publish_push_op builds the intent it opens.
 //! Covered by tests/publish_zit: publishing.rs publish_moves_the_remote_then_the_local_origin_and_cleans_up,
@@ -29,7 +29,7 @@ use std::path::Path;
 /// Moved. The intent is closed once, through close_intent with push_intent_close: done exactly when the push landed
 /// (pushed, or the remote at or past new). An error opening the intent is returned with nothing written; an error
 /// re-reading the remote, fetching it or closing the intent is returned with the intent left open: in flight
-/// (S-103), and the next publish's settle_push_intent closes it from the remote.
+/// and the next publish's settle_push_intent closes it from the remote.
 pub(crate) fn push_landing(
     git: &Git,
     common: &Path,

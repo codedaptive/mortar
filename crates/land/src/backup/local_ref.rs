@@ -1,5 +1,5 @@
-//! local_ref: the local ref a backup ref restores to, the inverse of backup_ref (SPEC-land 08). local_ref_tests
-//! cover it, BACKUP_PREFIXES with it.
+//! local_ref: the local ref a backup ref restores to, the inverse of backup_ref. local_ref_tests cover it,
+//! BACKUP_PREFIXES with it.
 
 use crate::backup::BACKUP_PREFIXES;
 

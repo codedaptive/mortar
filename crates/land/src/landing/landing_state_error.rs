@@ -1,4 +1,4 @@
-//! LandingStateError: why the landing state file could not be read, written or removed. A bare type (S-7);
+//! LandingStateError: why the landing state file could not be read, written or removed. A bare type;
 //! landing_state_error_display_tests and landing_state_error_source_tests exercise each variant.
 
 use std::io;

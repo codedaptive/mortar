@@ -1,4 +1,4 @@
-//! after_publish -> actual Gitio movement and Oplog Intent/Done; zone_move_op is reached only publicly (S-109).
+//! after_publish -> actual Gitio movement and Oplog Intent/Done; zone_move_op is reached only publicly.
 use crate::{owed_ops::{locked, raw, refs}, push_fixture::{Prepared, ACTOR, ZONE}};
 use land::{PublishAnswer, ZoneMove, ZoneRequests};
 use oplog::{OpPhase, OpRecord, OpResult, RefMove};

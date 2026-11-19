@@ -1,6 +1,6 @@
-//! back_out: moves integration back to where the landing found it (SPEC-land 03-land.md, S-56, S-59), through
-//! back_out_onto with no origin given; back_out_onto's doc is the contract.
-//! No unit test (S-5): it is one call; covered by the landing_zit test
+//! back_out: moves integration back to where the landing found it, through back_out_onto
+//! with no origin given; back_out_onto's doc is the contract.
+//! No unit test: it is one call; covered by the landing_zit test
 //! back_out_restores_integration_then_has_nothing_to_back_out.
 
 use crate::landing::{back_out_onto, BackOutAnswer, LandError};

@@ -1,5 +1,5 @@
-//! published_records (rule D): the source's own record deleted whatever its value, a behind record deleted, a record
-//! not behind kept, records order kept, and each delete's new value the all-zero id of its value's length.
+//! published_records: the source's own record deleted whatever its value, a behind record deleted, a record not
+//! behind kept, records order kept, and each delete's new value the all-zero id of its value's length.
 
 use super::{published_records, ZoneRecord};
 use gitio::Oid;

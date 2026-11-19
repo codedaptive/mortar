@@ -1,5 +1,5 @@
 //! check_hooks_path: read core.hooksPath from git and refuse a value git would resolve per worktree.
-//! It runs git, so it has no sibling unit test (S-5); its decision is decide_hooks_path, with decide_hooks_path_tests.
+//! It runs git, so it has no sibling unit test; its decision is decide_hooks_path, with decide_hooks_path_tests.
 //! tests/land_rit/check_hooks_path.rs runs it on throwaway repositories: unset, absolute and `~/` values pass,
 //! relative and empty values are refused, a broken config is a Git failure, and none of them writes anything.
 

@@ -10,12 +10,12 @@ use testkit::TestRepo;
 
 /// The zone every case squashes; its branch is `refs/heads/zone/land`.
 pub const ZONE: &str = "land";
-/// The ref land keeps the zone's squash at (S-57).
+/// The ref land keeps the zone's squash at, `refs/mortar/squash/<zone>` for this zone.
 pub const SQUASH_REF: &str = "refs/mortar/squash/land";
 /// The actor every case's squash records.
 pub const ACTOR: &str = "zit@host";
 
-/// Git's config isolated (#1416) and a fixed identity and dates, so commits need no user config and every run
+/// Git's config isolated and a fixed identity and dates, so commits need no user config and every run
 /// builds the same ones.
 fn git_env() -> Vec<(OsString, OsString)> {
     [

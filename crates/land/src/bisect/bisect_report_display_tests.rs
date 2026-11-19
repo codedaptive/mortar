@@ -1,5 +1,6 @@
 //! Report texts for the NotFound answers with no probes. The culprit lines and the probe lines name a commit or a
-//! change ID (gitio's and oplog's Display), so they are RITs owed to Nagatha (S-101).
+//! change ID (gitio's and oplog's Display), so they are repo integration tests (RITs):
+//! tests/land_rit/owed_displays.rs covers them.
 
 use super::{BisectAnswer, BisectNotFound, BisectReport};
 

@@ -1,4 +1,4 @@
-//! Cases 1 to 4: a fast-forward landing, a merge landing after origin moved, a conflict that moves nothing, and a
+//! Landing: a fast-forward landing, a merge landing after origin moved, a conflict that moves nothing, and a
 //! second landing answered Busy while the first one's repeat answers Landed without touching the op log.
 
 use crate::fixture::{

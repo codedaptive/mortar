@@ -1,6 +1,6 @@
 //! Display for BackupError: each refusal names what it carries and says what moved. The Host, Git and Oplog arms
-//! print oplog's or gitio's own text, so their cases run another crate's Display: they are RITs owed to Nagatha
-//! (S-101) and are not here.
+//! print oplog's or gitio's own text, so their cases run another crate's Display: they are repo integration tests
+//! (RITs), in tests/land_rit/owed_displays.rs, and are not here.
 
 use super::BackupError;
 use gitio::PushRefusal;

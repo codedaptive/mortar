@@ -1,4 +1,4 @@
-//! WO-land-rit-3: AfterPublishError::fmt -> actual Gitio, Oplog and Join formatters (S-101).
+//! AfterPublishError::fmt -> actual Gitio, Oplog and Join formatters.
 //! Each expectation is literal protocol text, not the nested formatter's answer.
 use gitio::{GitError, Oid};
 use join::JoinError;

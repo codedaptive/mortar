@@ -23,8 +23,8 @@ fn zero_requests_is_an_empty_list() {
 
 #[test]
 fn one_request_is_read() {
-    let message = with_trailers("land: 1 requests\n\n- WO-land-5: add squash\n");
-    assert_eq!(squash_message_requests(&message), Some(strings(&["WO-land-5"])));
+    let message = with_trailers("land: 1 requests\n\n- r1: add squash\n");
+    assert_eq!(squash_message_requests(&message), Some(strings(&["r1"])));
 }
 
 #[test]
@@ -61,6 +61,6 @@ fn a_request_line_without_a_colon_space_is_none() {
 
 #[test]
 fn a_request_line_is_read_to_its_first_colon_space_only() {
-    let message = with_trailers("land: 1 requests\n\n- WO-land-7: fix: the guard; docs: a line\n");
-    assert_eq!(squash_message_requests(&message), Some(strings(&["WO-land-7"])));
+    let message = with_trailers("land: 1 requests\n\n- r1: fix: the guard; docs: a line\n");
+    assert_eq!(squash_message_requests(&message), Some(strings(&["r1"])));
 }

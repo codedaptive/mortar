@@ -1,5 +1,5 @@
-//! restore_plan: each backup ref on the remote against the local store, before anything is fetched (SPEC-land 08).
-//! No sibling unit test (S-104): every test of it runs local_ref from another land file (S-102). Covered by
+//! restore_plan: each backup ref on the remote against the local store, before anything is fetched.
+//! No sibling unit test: every test of it runs local_ref from another land file. Covered by
 //! tests/backup_zit through restore_backup: a ref absent locally is Created
 //! (a_backup_restores_every_ref_into_a_fresh_store); one at the backup's id is Same and one at another id Differs
 //! (restore_lists_a_differing_ref_without_moving_it_and_an_equal_one_as_same); a backed-up heads/main gives no entry

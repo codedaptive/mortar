@@ -10,8 +10,8 @@ fn a_zone_branch_maps_under_the_prefix() {
 #[test]
 fn a_request_branch_keeps_its_nested_path() {
     assert_eq!(
-        backup_ref("refs/mortar-backup/h1/", "refs/heads/req/land/WO-8"),
-        "refs/mortar-backup/h1/heads/req/land/WO-8"
+        backup_ref("refs/mortar-backup/h1/", "refs/heads/req/land/r1"),
+        "refs/mortar-backup/h1/heads/req/land/r1"
     );
 }
 

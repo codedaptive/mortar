@@ -1,4 +1,4 @@
-//! Backup: what one backup run did on the remote. A declaration only (S-7); backup_answer_tests and
+//! Backup: what one backup run did on the remote. A declaration only; backup_answer_tests and
 //! the backup integration tests (backup_zit) exercise it.
 //! Not named backup.rs: that file holds the function of the same name.
 

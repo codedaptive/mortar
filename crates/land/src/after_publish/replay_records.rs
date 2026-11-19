@@ -1,5 +1,4 @@
-//! replay_records: the replay record moves a clean replay of a zone makes (rule W, S-121). replay_records_tests
-//! covers it.
+//! replay_records: the replay record moves a clean replay of a zone makes. replay_records_tests covers it.
 
 use crate::after_publish::{replay_record_ref, ZoneRecord};
 use join::MappedCommit;

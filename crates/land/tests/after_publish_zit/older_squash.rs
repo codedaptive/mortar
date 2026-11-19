@@ -1,4 +1,4 @@
-//! An older squash published after a newer one of the same zone (S-121 (3)). Current: S1 at A1, then S2 at A2 on
+//! An older squash published after a newer one of the same zone. Current: S1 at A1, then S2 at A2 on
 //! A1; S2 publishes and the zone is put on its origin; then S1 lands, as a merge, and publishes (fixture
 //! superseded). S1's source A1 is behind A2, the source of S2, which the zone already holds through origin, so
 //! after_publish(land) answers Current, moves nothing and writes no op. Refused: S at A2 is made and kept, the zone

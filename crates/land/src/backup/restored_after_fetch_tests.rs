@@ -31,7 +31,7 @@ fn missing_source_is_vanished() {
 #[test]
 fn fetched_with_no_copy_read_is_vanished() {
     assert_eq!(
-        restored_after_fetch("refs/heads/req/land/WO-8".to_string(), FetchRefOutcome::Fetched, None),
-        Restored::Vanished { refname: "refs/heads/req/land/WO-8".to_string() }
+        restored_after_fetch("refs/heads/req/land/r1".to_string(), FetchRefOutcome::Fetched, None),
+        Restored::Vanished { refname: "refs/heads/req/land/r1".to_string() }
     );
 }

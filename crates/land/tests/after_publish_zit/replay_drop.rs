@@ -1,5 +1,5 @@
 //! A zone whose replay drops a commit that becomes empty still moves, and records the dropped commit as the commit
-//! it collapsed into (S-121 W). Zone `land` holds A1 (d.txt added) then A2 (PUBLISHED_FILES' changes), and its
+//! it collapsed into. Zone `land` holds A1 (d.txt added) then A2 (PUBLISHED_FILES' changes), and its
 //! squash, source A2, is kept; zone `b` adds the same d.txt with b.txt, so on b's origin A1 replays to nothing and
 //! is dropped. after_publish(b, others=[land]) moves zone `land` to A2' on b's origin and records A1 = b's origin
 //! and A2 = A2'; when land's own squash publishes, after_publish(land) puts the zone on origin and deletes both

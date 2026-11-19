@@ -14,7 +14,7 @@ fn a_zone_branch_maps_back() {
 fn each_backed_up_prefix_maps_back() {
     let pairs = [
         ("refs/mortar-backup/h1/heads/zone/land", "refs/heads/zone/land"),
-        ("refs/mortar-backup/h1/heads/req/land/WO-8", "refs/heads/req/land/WO-8"),
+        ("refs/mortar-backup/h1/heads/req/land/r1", "refs/heads/req/land/r1"),
         ("refs/mortar-backup/h1/mortar/snap/s1", "refs/mortar/snap/s1"),
         ("refs/mortar-backup/h1/mortar/squash/land", "refs/mortar/squash/land"),
     ];
@@ -68,7 +68,7 @@ fn local_ref_maps_many_hand_written_backup_names_back() {
         ("refs/heads/zone/land", "refs/mortar-backup/h1/heads/zone/land"),
         ("refs/heads/zone/team/land", "refs/mortar-backup/h1/heads/zone/team/land"),
         ("refs/heads/req/a", "refs/mortar-backup/h1/heads/req/a"),
-        ("refs/heads/req/land/WO-land-8", "refs/mortar-backup/h1/heads/req/land/WO-land-8"),
+        ("refs/heads/req/land/r1", "refs/mortar-backup/h1/heads/req/land/r1"),
         ("refs/mortar/snap/a", "refs/mortar-backup/h1/mortar/snap/a"),
         ("refs/mortar/snap/land/2026-11-14", "refs/mortar-backup/h1/mortar/snap/land/2026-11-14"),
         ("refs/mortar/squash/land", "refs/mortar-backup/h1/mortar/squash/land"),

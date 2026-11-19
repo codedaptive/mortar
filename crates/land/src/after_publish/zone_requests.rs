@@ -1,5 +1,5 @@
-//! ZoneRequests: one zone and its open requests, as after_publish's caller hands them in (S-45). A declaration only
-//! (S-7); tests/after_publish_zit (zone_moves.rs) exercises it in every case.
+//! ZoneRequests: one zone and its open requests, as after_publish's caller hands them in. A declaration only;
+//! tests/after_publish_zit (zone_moves.rs) exercises it in every case.
 
 use join::OpenRequest;
 

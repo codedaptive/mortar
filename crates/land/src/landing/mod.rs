@@ -1,5 +1,5 @@
-//! landing: land a squash on integration, back it out (SPEC-land 03) and publish it (SPEC-land 04), with the landing
-//! state `<common>/mortar/landing.json` (S-59) that land writes before its op and back_out and publish read.
+//! landing: land a squash on integration, back it out and publish it, with the landing
+//! state `<common>/mortar/landing.json` that land writes before its op and back_out and publish read.
 
 mod advance_origin;
 mod back_out;

@@ -1,4 +1,4 @@
-//! Mortar's own binary search for the first failing landing (S-61), over a probe the caller supplies.
+//! Mortar's own binary search for the first failing landing, over a probe the caller supplies.
 
 use gitio::Oid;
 
@@ -7,7 +7,7 @@ use super::{BisectNotFound, BisectVerdict};
 /// The commit of `candidates` that fails while the one before it passes.
 ///
 /// `candidates` are the commits after `last_pass` up to and including the failed one, oldest first: origin's
-/// first parents, one per landing (S-61); the last is the failed commit. `passes(c)` is one probe: Ok(true)
+/// first parents, one per landing; the last is the failed commit. `passes(c)` is one probe: Ok(true)
 /// means the caller's command exits 0 at `c`.
 ///
 /// The ends are checked before the search: with no candidates, `last_pass` is the failed commit and its one

@@ -1,4 +1,4 @@
-//! Naming the culprit from a landing commit: its squash's change ID and zone (S-57, S-58).
+//! Naming the culprit from a landing commit: its squash's change ID and zone.
 
 use gitio::Oid;
 use oplog::{MortarTrailerError, MortarTrailers};
@@ -8,7 +8,7 @@ use super::{Culprit, CulpritError};
 /// The Culprit for landing `commit`, whose parents in git's order are `parents`.
 ///
 /// One parent is a fast-forward landing: the squash is `commit` itself. Two are a merge landing with parents
-/// [integration, squash] (S-58): the squash is the second parent. Any other count is NotALanding, refused
+/// [integration, squash]: the squash is the second parent. Any other count is NotALanding, refused
 /// before `trailers_of` is called. `trailers_of` is called once, on the squash; its error is Trailers. The
 /// Culprit names `commit`, never the squash, so it stays on origin's first-parent line.
 pub(crate) fn culprit_of_landing(

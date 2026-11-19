@@ -1,4 +1,4 @@
-//! PriorSquash: the commit already at a zone's squash ref. A declaration only (S-7); choose_change_id_tests
+//! PriorSquash: the commit already at a zone's squash ref. A declaration only; choose_change_id_tests
 //! exercises it.
 
 use gitio::{CommitInfo, Oid};

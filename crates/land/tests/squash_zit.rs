@@ -1,7 +1,7 @@
-//! Zone integration tests of land::squash and land::would_merge (SPEC-land 01-squash.md §Tests; case 5 and the new
-//! change ID after origin took the squash are from its squash rules), each case in its own throwaway repository:
-//! squash_cases (cases 1, 3, 5), resquash (case 2) and would_merge_cases (case 4); read_squash_cases reads a
-//! squash back with land::read_squash and its refusals.
+//! Zone integration tests of land::squash and land::would_merge, each case in its own throwaway repository:
+//! squash_cases (a squash over a newer origin, a conflict, a zone at origin), resquash (the change ID kept on a
+//! re-squash and new once origin took the squash) and would_merge_cases (Yes, and No with the conflicted files);
+//! read_squash_cases reads a squash back with land::read_squash and its refusals.
 
 #[path = "squash_zit/fixture.rs"]
 mod fixture;

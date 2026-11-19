@@ -1,7 +1,7 @@
 //! How a re-review failure reads: git's failure, the trailer failure as it is, or the refusal naming its commits.
-//! No sibling unit test (S-104): every test of it runs gitio's Oid Display or another crate's error Display
-//! (S-101). No ZIT reaches it yet; tests/land_rit covers the Git and
-//! Trailers texts; the NotSameChange and NoParent texts are Nagatha's RITs (owed).
+//! No sibling unit test: every test of it runs gitio's Oid Display or another crate's error Display.
+//! No ZIT reaches it yet; tests/land_rit covers the Git and Trailers texts (displays.rs) and the NotSameChange and
+//! NoParent texts (owed_displays.rs).
 
 use std::fmt;
 

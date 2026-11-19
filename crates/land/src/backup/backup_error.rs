@@ -1,4 +1,4 @@
-//! BackupError: why a backup or restore_backup was refused. A declaration only (S-7);
+//! BackupError: why a backup or restore_backup was refused. A declaration only;
 //! backup_error_display_tests exercises the texts of BadHost, Refused, OpFailed and OpRepeated,
 //! backup_error_error_tests its source, backup_prefix_tests BadHost.
 

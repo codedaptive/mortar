@@ -1,4 +1,4 @@
-//! WouldMerge: whether a squash merges cleanly into integration. A declaration only (S-7);
+//! WouldMerge: whether a squash merges cleanly into integration. A declaration only;
 //! would_merge_from_tests exercises both variants.
 
 use std::path::PathBuf;

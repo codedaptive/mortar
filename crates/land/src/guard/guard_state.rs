@@ -1,4 +1,4 @@
-//! GuardState: what guard_status found. A bare type (S-7). tests/land_rit/guard_installation.rs compares whole values
+//! GuardState: what guard_status found. A bare type. tests/land_rit/guard_installation.rs compares whole values
 //! of it from guard_status: installed, untouched and with a foreign pre-push.
 
 use std::path::PathBuf;

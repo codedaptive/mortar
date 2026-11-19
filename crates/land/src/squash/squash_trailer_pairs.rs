@@ -1,5 +1,5 @@
-//! squash_trailer_pairs: the trailers of a squash commit (S-57) as the pairs gitio's with_trailers writes.
-//! No sibling unit test (S-104): every test of it runs oplog's mortar_trailer_pairs for real (S-101).
+//! squash_trailer_pairs: the trailers of a squash commit as the pairs gitio's with_trailers writes.
+//! No sibling unit test: every test of it runs oplog's mortar_trailer_pairs for real.
 //! tests/squash_zit/squash_cases.rs a_squash_keeps_origins_newer_change_and_adds_only_the_zones and
 //! tests/land_rit/trailers.rs
 //! rit_squash_writes_change_id_zone_and_squash_of_in_that_exact_order_without_a_request_trailer assert all three

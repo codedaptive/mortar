@@ -1,6 +1,8 @@
 //! Failure texts for the variants whose text is bisect's own alone: OriginMissing. NotOnOrigin, OffTheLine and
 //! ProbeCouldNotRun print a commit (gitio's Oid Display), and Git and Culprit print their inner error, so their
-//! texts are RITs owed to Nagatha (S-101).
+//! texts are repo integration tests (RITs): tests/land_rit/owed_displays.rs covers NotOnOrigin, OffTheLine and
+//! ProbeCouldNotRun; Culprit's CulpritError text is covered there (NotALanding) and in tests/land_rit/displays.rs
+//! (Trailers); Git's is not yet written.
 
 use super::BisectError;
 

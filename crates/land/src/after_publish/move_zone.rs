@@ -1,6 +1,6 @@
 //! move_zone: one zone after a publish, put on or replayed onto origin, or left in place when it conflicts, with its
-//! replay records written, carried and deleted in the op that moves it (S-121).
-//! No unit test: it runs git and writes the op log (S-5); decide_zone_case_tests, published_records_tests,
+//! replay records written, carried and deleted in the op that moves it.
+//! No unit test: it runs git and writes the op log; decide_zone_case_tests, published_records_tests,
 //! replay_records_tests, record_moves_tests, records_op_tests and requests_to_rebase_tests cover its decisions.
 //! Covered by tests/after_publish_zit (zone_moves.rs): every case moves its zones through it, and
 //! another_zone_is_replayed_onto_the_new_origin reads the record a replay writes; (replayed_source.rs) the
@@ -29,8 +29,8 @@ use std::path::Path;
 /// after the case's base onto origin commit by commit (join's replay_mapped, merge attributes read from origin);
 /// conflicted, nothing moves and the answer names the commit and files. Advance and a clean Replay move the zone
 /// branch in one op that also moves its replay records (record_moves): the publishing zone's records at or behind
-/// the published source deleted (published_records, rule D), and a clean replay's records written for every
-/// replayed commit and carried forward (replay_records, rule W). Current moves no branch; the publishing zone's
+/// the published source deleted (published_records), and a clean replay's records written for every
+/// replayed commit and carried forward (replay_records). Current moves no branch; the publishing zone's
 /// deletes, when there are any, go in one records-only op (records_op), and otherwise no op is written. Another
 /// zone deletes no record. Origin and what it reaches are never rewritten.
 pub(crate) fn move_zone(

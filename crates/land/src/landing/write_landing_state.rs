@@ -1,5 +1,5 @@
 //! write_landing_state: writes `<common>/mortar/landing.json`; a killed process leaves the old state or the new one.
-//! No unit test (S-5): it creates a folder and writes and renames real files.
+//! No unit test: it creates a folder and writes and renames real files.
 //! Covered by the landing_zit tests a_squash_on_origin_fast_forwards_integration_to_the_squash (landing.json
 //! holds exactly the state), a_squash_behind_a_moved_origin_lands_as_a_merge_commit and
 //! killed_between_state_and_op_recovers_and_the_repeat_lands_the_states_commit (landing.json written, integration

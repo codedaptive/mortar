@@ -1,4 +1,4 @@
-//! write_replacing: put a file's whole new content in place in one step. It writes files, so it has no unit test (S-5).
+//! write_replacing: put a file's whole new content in place in one step. It writes files, so it has no unit test.
 //! tests/land_rit/guard_codec.rs and guard_installation.rs check the guard.json bytes it writes;
 //! guard_installation.rs also checks the hook contents and exec bits.
 

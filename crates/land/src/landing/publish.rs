@@ -1,6 +1,6 @@
-//! publish: puts a landing on the remote and then on the local origin branch (SPEC-land 04-publish.md, S-16, S-29,
-//! S-59, S-60). It takes no lock: the caller holds `land` and has run recover (S-16).
-//! No unit test (S-5): it reads the landing state, runs git against the remote and writes the op log;
+//! publish: puts a landing on the remote and then on the local origin branch. It takes no lock: the caller holds
+//! `land` and has run recover.
+//! No unit test: it reads the landing state, runs git against the remote and writes the op log;
 //! decide_publish_tests covers its decisions. Covered by the publish_zit tests
 //! publish_moves_the_remote_then_the_local_origin_and_cleans_up,
 //! a_remote_moved_by_someone_else_is_fetched_backed_out_onto_and_lands_again,
@@ -24,7 +24,7 @@ use std::path::Path;
 /// origin_at_start and new = its integration, the local origin tip decides (decide_publish), the remote read only
 /// when the local origin is at expected. A remote at or past new (push_landed: new is its ancestor, so our push
 /// landed and someone pushed on top) counts as at new. Once read, a push intent for this move left open by an
-/// earlier run is closed from it first (settle_push_intent, S-103): done when the remote is at or past new, else
+/// earlier run is closed from it first (settle_push_intent): done when the remote is at or past new, else
 /// failed. Cleanup and BackOut read no remote: the run that moved the local origin had closed its push intent
 /// already. Then: push new leased at expected, move the local origin to new, delete the zone's squash ref and remove
 /// the state: Published { origin: new }. A remote already at or past new skips the push; a local origin already at

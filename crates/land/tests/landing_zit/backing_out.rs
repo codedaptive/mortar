@@ -1,4 +1,4 @@
-//! Case 5: back_out after a merge landing restores integration, and a second back_out has nothing to back out.
+//! Backing out: back_out after a merge landing restores integration, and a second back_out has nothing to back out.
 
 use crate::fixture::{refs, Fixture, ACTOR, ID_A, ORIGIN_FILES, SQUASH_FILES};
 use land::{back_out, land, BackOutAnswer, LandAnswer};

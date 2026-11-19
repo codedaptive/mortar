@@ -1,6 +1,6 @@
 //! finish_publish: publish's clean-up once the local origin is at the published commit: the zone's squash ref and
-//! the landing state go (SPEC-land 04-publish.md, S-57, S-59).
-//! No unit test (S-5): it reads and deletes a ref through the op log and removes a file. Covered by the publish_zit
+//! the landing state go.
+//! No unit test: it reads and deletes a ref through the op log and removes a file. Covered by the publish_zit
 //! tests publish_moves_the_remote_then_the_local_origin_and_cleans_up (squash ref and landing.json gone, a done
 //! publish-squash record) and killed_between_the_steps_recovers_and_the_repeat_publishes_once (the repeat after the
 //! kill leaves landing.json gone).

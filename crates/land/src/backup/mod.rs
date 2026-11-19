@@ -1,4 +1,4 @@
-//! backup: in-flight refs pushed to a backup namespace on the remote, and restored (SPEC-land 08).
+//! backup: in-flight refs pushed to a backup namespace on the remote, and restored.
 
 mod backup_error;
 mod backup_error_display;

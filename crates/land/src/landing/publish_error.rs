@@ -1,4 +1,4 @@
-//! PublishError: why publish was refused. A bare type (S-7);
+//! PublishError: why publish was refused. A bare type;
 //! publish_error_display_tests exercises the PushRefused, RemoteMissing and PushIntent texts, tests/publish_zit
 //! (state_display) the State text, publish_error_source_tests its source.
 

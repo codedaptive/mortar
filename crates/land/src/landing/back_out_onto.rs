@@ -1,7 +1,7 @@
-//! back_out_onto: moves integration back to an origin, by default where the landing found it (SPEC-land 03-land.md,
-//! 04-publish.md, S-56, S-59). It takes no lock: the caller holds `land` and has run recover (S-16). The squash
-//! commit and its ref are untouched, so the squash goes back to its zone with the same change ID.
-//! No unit test (S-5): it runs git, reads and removes the landing state and writes the op log; decide_back_out_tests
+//! back_out_onto: moves integration back to an origin, by default where the landing found it. It takes no lock:
+//! the caller holds `land` and has run recover. The squash commit and its ref are untouched, so the squash goes
+//! back to its zone with the same change ID.
+//! No unit test: it runs git, reads and removes the landing state and writes the op log; decide_back_out_tests
 //! and landing_applied_tests cover its decisions. Covered by the landing_zit test
 //! back_out_restores_integration_then_has_nothing_to_back_out and the publish_zit test
 //! a_remote_moved_by_someone_else_is_fetched_backed_out_onto_and_lands_again (integration put on the fetched origin).

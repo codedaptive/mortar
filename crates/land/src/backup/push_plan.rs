@@ -1,5 +1,5 @@
-//! PushPlan: the one push a backup run makes. A declaration only (S-7); plan_backup_tests and backup_answer_tests
-//! exercise it.
+//! PushPlan: the one push a backup run makes. A declaration only; plan_backup_tests and backup_answer_tests exercise
+//! it.
 
 use gitio::PushRef;
 

@@ -1,5 +1,5 @@
-//! What bisect answers. A bare type (S-7); bisect_report_display_tests exercise its NotFound texts; the Culprit
-//! text is one of Nagatha's RITs (owed, S-101).
+//! What bisect answers. A bare type; bisect_report_display_tests exercise its NotFound texts; the Culprit texts
+//! are repo integration tests (RITs): tests/land_rit/owed_displays.rs covers them.
 
 use super::{BisectNotFound, Culprit};
 

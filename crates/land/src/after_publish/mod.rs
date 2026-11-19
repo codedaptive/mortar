@@ -1,7 +1,6 @@
-//! after_publish: each zone put on or replayed onto the origin a publish left, with its open requests to rebase
-//! (SPEC-land 05-after-publish.md).
+//! after_publish: each zone put on or replayed onto the origin a publish left, with its open requests to rebase.
 
-// The module is named after the function it holds (small-files rule 2), which shares the folder's name.
+// The module is named after the function it holds, which shares the folder's name.
 #[allow(clippy::module_inception)]
 mod after_publish;
 mod after_publish_error;

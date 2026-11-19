@@ -1,7 +1,7 @@
-//! backup: this host's in-flight refs mirrored to `refs/mortar-backup/<host>/` on the remote (SPEC-land 08). It
-//! takes no lock: the caller holds `land` and has run oplog recover (S-16), so no recover races its open intent.
+//! backup: this host's in-flight refs mirrored to `refs/mortar-backup/<host>/` on the remote. It takes no lock:
+//! the caller holds `land` and has run oplog recover, so no recover races its open intent.
 //! It never touches the remote's origin or integration branch, nor any ref outside the host's backup namespace.
-//! No unit test: it runs git and writes the op log (S-5); plan_backup_tests, backup_answer_tests and
+//! No unit test: it runs git and writes the op log; plan_backup_tests, backup_answer_tests and
 //! backup_op_tests cover its decisions. tests/backup_zit.rs covers it in a throwaway repository with a bare remote:
 //! a_backup_restores_every_ref_into_a_fresh_store, a_second_backup_pushes_nothing,
 //! a_ref_deleted_locally_is_deleted_from_the_backup, refs_outside_the_four_prefixes_are_never_backed_up and

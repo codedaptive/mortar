@@ -1,5 +1,5 @@
-//! after_publish: every zone moved onto the origin a publish left (SPEC-land 05-after-publish.md, S-45, S-47, S-121,
-//! S-139, S-140). No unit test (S-5): it runs git and writes the op log through move_zone; decide_zone_case_tests,
+//! after_publish: every zone moved onto the origin a publish left. No unit test: it runs git and writes the op log
+//! through move_zone; decide_zone_case_tests,
 //! squash_of_in_tests, requests_to_rebase_tests, choose_held_tests, published_records_tests, replay_records_tests,
 //! record_moves_tests and records_op_tests cover its decisions. Covered by tests/after_publish_zit:
 //! - zone_moves.rs: another_zone_is_replayed_onto_the_new_origin,
@@ -32,18 +32,18 @@ use gitio::Git;
 /// was just published) and each of `others` in order onto it, one ZoneMove each, the published zone first. The
 /// published zone with no join since its squash (or since the recorded replay of its squash's source) is put on
 /// origin; one with later joins has those replayed onto origin; either move deletes, in the same op, every replay
-/// record of the zone at or behind its squash's source (S-121). Another zone has its own commits replayed onto
+/// record of the zone at or behind its squash's source. Another zone has its own commits replayed onto
 /// origin, or is put on it when it has none. Every clean replay records, in the op that moves its zone, the zone
 /// commit standing for each commit it replayed. A zone already on origin answers Current, so a repeat is safe and
 /// moves nothing. The published zone also answers Current, its branch unmoved, when its squash's source is at or
 /// behind one already published; a records-only op then deletes the record keyed by that source and, only when the
-/// zone holds that source (itself or through a record), the records at or behind it (S-129), and with nothing to
+/// zone holds that source (itself or through a record), the records at or behind it, and with nothing to
 /// delete no op is written. A conflicted zone is left in place and listed with its files; the others still move; an
 /// error stops the call, the zones before it already moved.
-/// It takes no lock: the caller holds `land` and has run recover (S-16). The caller hands in each zone's open
-/// requests (S-45) and moves the request folders itself (folders move_folder, S-47). The caller also brings each
+/// It takes no lock: the caller holds `land` and has run recover. The caller hands in each zone's open
+/// requests and moves the request folders itself (folders move_folder). The caller also brings each
 /// named zone's folder to its branch's tip, whatever its ZoneMove, from the newest value the branch has held whose
-/// tree equals the folder's index (S-139, S-140).
+/// tree equals the folder's index.
 pub fn after_publish(
     git: &Git,
     refs: &LandRefs,

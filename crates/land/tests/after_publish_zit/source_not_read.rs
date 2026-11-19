@@ -1,4 +1,4 @@
-//! The squash source is not read when the zone holds its record (#6). Zone `land` is squashed at A1 and the squash
+//! The squash source is not read when the zone holds its record. Zone `land` is squashed at A1 and the squash
 //! kept; after_publish(b, others=[land]) replays A1 onto b's origin as A1' and records A1 = A1' (fixture replayed).
 //! The kept squash lands as a merge and publishes; after_publish(land), run through a git that logs every argument
 //! list (shims tracer), takes A1' through the record without naming A1 to git as an object: the only arguments

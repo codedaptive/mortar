@@ -1,4 +1,4 @@
-//! Restored: what restore_backup did with one backup ref. A declaration only (S-7); restored_after_fetch_tests and the
+//! Restored: what restore_backup did with one backup ref. A declaration only; restored_after_fetch_tests and the
 //! backup integration tests (backup_zit) exercise it.
 
 use gitio::Oid;

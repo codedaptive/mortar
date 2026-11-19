@@ -1,5 +1,5 @@
 //! The publish deletes every replay record of its zone at or behind its source, in the op that moves the zone, and
-//! in a records-only op when the zone is Current (S-121 D). Replay: zone `land` holds A1 then A2, squashed at A2
+//! in a records-only op when the zone is Current. Replay: zone `land` holds A1 then A2, squashed at A2
 //! and kept; after_publish(b, others=[land]) replays both onto b's origin and records A1 = A1', A2 = A2' (fixture
 //! replayed_chain); A3 joins on A2'; the squash lands as a merge and publishes; after_publish(land) replays only A3
 //! onto origin and, in one done op, moves the zone, deletes A2's record (the published source) and A1's (A1' is

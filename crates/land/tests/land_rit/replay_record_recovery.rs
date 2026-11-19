@@ -1,4 +1,4 @@
-//! WO-land-rit-4 (S-109, S-119, S-121, S-129): public land::after_publish -> oplog::{undo, restore}.
+//! Public land::after_publish -> oplog::{undo, restore}.
 //! A kept squash consumes the replay record an earlier publish wrote; undo restores both of its op's refs,
 //! and restore to the earlier replay op recreates the record and zone tip. Local and remote origin stay published.
 //! Existing support owns/removes the disposable repository and its nested bare remote; no private Land API is used.

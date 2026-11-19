@@ -1,6 +1,7 @@
 //! Every way a re-review can fail.
-//! A bare type (S-7); rereview_error_source_tests exercises each variant, and same_change_tests and
-//! plan_rereview_tests the refusals; the refusals' texts are Nagatha's RITs (owed).
+//! A bare type; rereview_error_source_tests exercises each variant, and same_change_tests and
+//! plan_rereview_tests the refusals; the texts are repo integration tests (RITs): tests/land_rit/displays.rs covers
+//! Git and Trailers, tests/land_rit/owed_displays.rs the refusals NotSameChange and NoParent.
 
 use gitio::{GitError, Oid};
 use oplog::{ChangeId, MortarTrailerError};

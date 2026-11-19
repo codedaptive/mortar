@@ -1,4 +1,4 @@
-//! SquashAnswer: what a squash did. A declaration only (S-7); tests/squash_zit.rs exercises each variant.
+//! SquashAnswer: what a squash did. A declaration only; tests/squash_zit.rs exercises each variant.
 
 use crate::squash::Squash;
 use gitio::Oid;

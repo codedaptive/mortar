@@ -1,5 +1,5 @@
 //! zone_move_op: the op that moves a zone branch after a publish, and the zone's replay records with it.
-//! No sibling unit test (S-104): every test of it runs gitio's Oid Display in the key and reason (S-101). Covered by
+//! No sibling unit test: every test of it runs gitio's Oid Display in the key and reason. Covered by
 //! tests/after_publish_zit (zone_moves.rs): another_zone_is_replayed_onto_the_new_origin reads its zone move and
 //! record write from the log, the_publishing_zone_with_no_later_joins_is_put_on_origin its kind and move, and
 //! a_repeat_moves_nothing counts its records; (replay_provenance.rs)
@@ -7,7 +7,8 @@
 //! (record_consumed.rs) the_publish_that_consumes_the_record_deletes_it reads the record it deleted, and
 //! a_repeat_after_the_consuming_publish_moves_nothing counts its records; (records_deleted.rs)
 //! a_replaying_publish_deletes_the_records_at_or_behind_its_source_and_writes_its_own_in_one_op reads every move
-//! of the one op; its unit cases are Nagatha's RITs (owed).
+//! of the one op; its key and reason are repo integration tests (RITs): tests/land_rit/after_publish_ops.rs covers
+//! them.
 
 use gitio::Oid;
 use oplog::{Op, RefMove};

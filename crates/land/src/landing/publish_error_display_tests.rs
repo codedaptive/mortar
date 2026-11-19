@@ -1,6 +1,7 @@
 //! Display for PublishError's own refusals (PushRefused, RemoteMissing, PushIntent), each as literal text naming what
 //! it carries and saying nothing was published or pushed; PushIntent's OpPhase is built as data and not printed. The
-//! Land arm, which prints LandError's Oid text, is a Nagatha RIT (owed, S-101); the State arm, which runs
+//! Land arm, which prints LandError's Oid text, is a repo integration test (RIT): tests/land_rit/owed_displays.rs
+//! covers it; the State arm, which runs
 //! LandingStateError's Display, is tested in tests/publish_zit (state_display); the Squash, Git and Oplog arms embed
 //! another error's text and have no case here.
 

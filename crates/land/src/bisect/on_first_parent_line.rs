@@ -1,4 +1,4 @@
-//! Whether last_pass is on failed's first-parent line, read from that line's own commits (S-78).
+//! Whether last_pass is on failed's first-parent line, read from that line's own commits.
 
 use gitio::Oid;
 

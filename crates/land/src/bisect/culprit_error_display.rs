@@ -1,6 +1,6 @@
 //! How a culprit failure reads: the commit that is not a landing with its parent count, or the trailer error.
-//! No sibling unit test (S-104): every test of it runs gitio's Oid Display or oplog's error Display (S-101). No ZIT
-//! reaches it yet; tests/land_rit covers the Trailers text; the NotALanding text is Nagatha's RIT (owed).
+//! No sibling unit test: every test of it runs gitio's Oid Display or oplog's error Display. No ZIT reaches it yet;
+//! tests/land_rit covers the Trailers text, and tests/land_rit/owed_displays.rs the NotALanding text.
 
 use std::fmt;
 
@@ -12,7 +12,7 @@ impl fmt::Display for CulpritError {
             CulpritError::NotALanding { commit, parents } => write!(
                 f,
                 "{commit} is not a landing: it has {parents} parents, and a landing has one (a fast-forward) \
-                 or two (a merge, S-58)"
+                 or two (a merge)"
             ),
             CulpritError::Trailers(e) => write!(f, "{e}"),
         }

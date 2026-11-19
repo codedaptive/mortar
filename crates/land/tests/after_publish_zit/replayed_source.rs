@@ -45,7 +45,7 @@ fn a_request_joined_after_the_replay_is_replayed_onto_origin() {
     let fx = Fixture::new();
     let Replayed { land_squash, a1_replayed, .. } = replayed_a1(&fx);
     let joined = fx.join_onto(PUBLISHED, &a1_replayed, &JOINED_FILES, "joined after the replay");
-    let open = request("WO-land-17", &a1_replayed, &joined);
+    let open = request("r1", &a1_replayed, &joined);
     let origin = land_and_publish(&fx, &land_squash);
     let moves = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![open.clone()]), &[], ACTOR);
     assert!(moves.is_ok(), "{moves:?}");

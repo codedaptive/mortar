@@ -1,5 +1,5 @@
 //! read_held: what the publishing zone holds for its squash source, and the source's replay record.
-//! No unit test: it only reads git (S-5); choose_held_tests covers every branch of the choice. Covered by
+//! No unit test: it only reads git; choose_held_tests covers every branch of the choice. Covered by
 //! tests/after_publish_zit (zone_moves.rs): the_publishing_zone_with_no_later_joins_is_put_on_origin and
 //! the_publishing_zone_with_a_later_join_is_replayed_onto_origin (the source in the zone); (replayed_source.rs)
 //! the_publishing_zone_whose_source_an_earlier_publish_replayed_is_put_on_origin and
@@ -14,7 +14,7 @@ use crate::after_publish::{choose_held, replay_record_ref, AfterPublishError, Sq
 use gitio::{Git, Oid};
 
 /// Reads the record `replay_record_ref(zone, source)` and, when there is one, whether `tip` holds its commit. A held
-/// record is the answer and the source itself is never read (rule R, S-121). Only without a held record: whether
+/// record is the answer and the source itself is never read. Only without a held record: whether
 /// `source` exists and, when it does, whether `tip` holds it; the existence read guards the ancestry read, which git
 /// refuses for a missing object. Answers Found with `source` and choose_held's pick. A failed git run is Git.
 pub(crate) fn read_held(git: &Git, zone: &str, source: &Oid, tip: &Oid) -> Result<SquashOfRead, AfterPublishError> {

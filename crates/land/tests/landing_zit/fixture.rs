@@ -10,7 +10,7 @@ use testkit::TestRepo;
 
 /// The change ID of the first squash in every case.
 pub const ID_A: &str = "klmnopqrstuvwxyzklmnopqrstuvwxyz";
-/// The change ID of a second squash (case 4).
+/// The change ID of a second squash (the second landing answered Busy).
 pub const ID_B: &str = "zyxwvutsrqponmlkzyxwvutsrqponmlk";
 /// The committer date of the test's own Git.
 pub const DATE: &str = "2000-01-01T00:00:00+00:00";
@@ -112,13 +112,13 @@ impl Fixture {
     /// A squash of zone `land` on `parent` holding `files`, its message carrying the Mortar trailers.
     pub fn squash(&self, parent: &Oid, files: &[(&str, &str)], id: &str) -> Squash {
         let message = format!(
-            "land: squash of WO-land-3\n\nMortar-Change-Id: {id}\nMortar-Zone: land\nMortar-Request: WO-land-3\n"
+            "land: squash of r1\n\nMortar-Change-Id: {id}\nMortar-Zone: land\nMortar-Request: r1\n"
         );
         Squash {
             commit: self.git.commit_tree(&tree(&self.git, files), std::slice::from_ref(parent), &message, None, None).unwrap(),
             change_id: ChangeId::parse(id).unwrap(),
             source: parent.clone(),
-            requests: vec!["WO-land-3".to_string()],
+            requests: vec!["r1".to_string()],
         }
     }
 

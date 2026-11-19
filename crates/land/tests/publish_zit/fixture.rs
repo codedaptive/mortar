@@ -147,13 +147,13 @@ impl Fixture {
     /// A squash of zone `land` on `parent` holding `files`, its message carrying the Mortar trailers.
     pub fn squash(&self, parent: &Oid, files: &[(&str, &str)]) -> Squash {
         let message = format!(
-            "land: squash of WO-land-4\n\nMortar-Change-Id: {ID_A}\nMortar-Zone: land\nMortar-Request: WO-land-4\n"
+            "land: squash of r1\n\nMortar-Change-Id: {ID_A}\nMortar-Zone: land\nMortar-Request: r1\n"
         );
         Squash {
             commit: self.git.commit_tree(&tree(&self.git, files), std::slice::from_ref(parent), &message, None, None).unwrap(),
             change_id: ChangeId::parse(ID_A).unwrap(),
             source: parent.clone(),
-            requests: vec!["WO-land-4".to_string()],
+            requests: vec!["r1".to_string()],
         }
     }
 

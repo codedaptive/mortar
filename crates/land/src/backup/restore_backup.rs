@@ -1,7 +1,7 @@
-//! restore_backup: a host's backup on the remote brought back into the local store (SPEC-land 08). The actor is
-//! forced by oplog's Op.actor (crates/oplog/src/store/op.rs): the op that creates the refs needs one; SPEC-land
-//! 08-backup.md names it in restore_backup's signature.
-//! No unit test: it runs git and writes the op log (S-5); restored_after_fetch_tests, restore_op_tests and
+//! restore_backup: a host's backup on the remote brought back into the local store. The actor is forced by
+//! oplog's Op.actor (crates/oplog/src/store/op.rs): the op that creates the refs needs one, so restore_backup's
+//! signature takes it.
+//! No unit test: it runs git and writes the op log; restored_after_fetch_tests, restore_op_tests and
 //! restore_applied_tests cover its decisions, and the backup integration tests (backup_zit) cover the run and
 //! restore_plan.
 
@@ -14,7 +14,7 @@ use gitio::{FetchRefOutcome, Git, Oid};
 use oplog::{apply, new_op_id, unix_now};
 
 /// Restores `host`'s backup (`refs/mortar-backup/<host>/`) from `refs.remote`. The caller holds lock `land` and
-/// has run oplog recover (S-16). Only backup refs that map back under the four backed-up prefixes count. A local
+/// has run oplog recover. Only backup refs that map back under the four backed-up prefixes count. A local
 /// ref already at the backup's id is Same; one at another id is Differs and is not moved. Each ref absent locally
 /// is fetched to the same backup name here; one gone from the remote by then is Vanished and nothing is created
 /// for it. The fetched ones are created, each at the id its fetched copy holds, by one op through apply (kind

@@ -1,6 +1,5 @@
-//! fetch_origin: brings the remote's moved origin branch home: fetches it and fast-forwards the local origin onto it
-//! (SPEC-land 04-publish.md, S-29).
-//! No unit test (S-5): it fetches from the remote and moves a ref through the op log. Covered by the publish_zit test
+//! fetch_origin: brings the remote's moved origin branch home: fetches it and fast-forwards the local origin onto it.
+//! No unit test: it fetches from the remote and moves a ref through the op log. Covered by the publish_zit test
 //! a_remote_moved_by_someone_else_is_fetched_backed_out_onto_and_lands_again (local main at the other clone's commit).
 
 use crate::landing::{integration_op, landing_applied, PublishError};

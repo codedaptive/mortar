@@ -1,4 +1,4 @@
-//! PublishError::State prints "publish: " and LandingStateError's text; a ZIT: it runs that file's Display (S-102).
+//! PublishError::State prints "publish: " and LandingStateError's text; a ZIT: it runs that file's Display.
 
 use land::{LandingStateError, PublishError};
 use std::path::PathBuf;

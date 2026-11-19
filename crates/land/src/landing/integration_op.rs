@@ -1,8 +1,8 @@
 //! integration_op: the op that moves one ref for a landing, its back-out or a publish.
-//! No sibling unit test (S-104): every test of it runs gitio's Oid Display and oplog's ChangeId Display in the key and
-//! reason (S-101). Covered by tests/landing_zit (landing.rs,
+//! No sibling unit test: every test of it runs gitio's Oid Display and oplog's ChangeId Display in the key and
+//! reason. Covered by tests/landing_zit (landing.rs,
 //! a_squash_on_origin_fast_forwards_integration_to_the_squash: the land op's kind and move); its unit
-//! cases are Nagatha's RITs (owed).
+//! cases are repo integration tests (RITs): tests/land_rit/owed_ops.rs covers them.
 
 use gitio::Oid;
 use oplog::{ChangeId, Op, RefMove};

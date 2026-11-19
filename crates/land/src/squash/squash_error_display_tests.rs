@@ -1,7 +1,7 @@
 //! Display for SquashError's refusals: each names what it carries and says what moved.
 //! The Git, Oplog, Trailers and ChangeId texts embed gitio's or oplog's own failure text, so tests/land_rit
 //! covers them. The AttrSourceMissing and Unrelated texts name a commit (gitio's Oid Display), so
-//! they are RITs owed (S-101).
+//! tests/land_rit/owed_displays.rs covers them too.
 
 use super::SquashError;
 use oplog::{OpPhase, OpRecord, OpResult};

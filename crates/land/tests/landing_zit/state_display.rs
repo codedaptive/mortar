@@ -1,4 +1,4 @@
-//! LandError::State prints "landing: " and LandingStateError's text; a ZIT: it runs that file's Display (S-102).
+//! LandError::State prints "landing: " and LandingStateError's text; a ZIT: it runs that file's Display.
 
 use land::{LandError, LandingStateError};
 use std::path::PathBuf;

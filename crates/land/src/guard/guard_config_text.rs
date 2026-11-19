@@ -1,6 +1,6 @@
 //! guard_config_text: guard.json's text for a set of branches.
-//! No sibling unit test (S-104): every test of it runs oplog's write_json_string (S-101). tests/land_rit/guard_codec.rs
-//! checks its exact bytes through guard_install and round-trips many names through read_guard_config.
+//! No sibling unit test: every test of it runs oplog's write_json_string. tests/land_rit/guard_codec.rs checks
+//! its exact bytes through guard_install and round-trips many names through read_guard_config.
 //! tests/land_rit/guard_installation.rs checks that a repeat install leaves guard.json as it was.
 
 use oplog::write_json_string;

@@ -1,4 +1,4 @@
-//! squash_ref: the zone's name under refs/mortar/squash/ (S-57).
+//! squash_ref: the zone's name under refs/mortar/squash/.
 
 use super::squash_ref;
 

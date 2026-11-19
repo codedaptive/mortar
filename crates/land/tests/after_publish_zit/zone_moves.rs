@@ -1,9 +1,8 @@
-//! The cases of SPEC-land 05-after-publish.md §Tests, and a repeat: after land's own squash, land and publish of
-//! zone `land`, another zone is replayed onto the new origin with its open requests listed to rebase; the publishing
-//! zone with no join since its squash is put on origin, and one with a later join has only that join replayed onto
-//! origin; the replayed zone's op also writes the replay record of each commit it replayed; a zone whose commit
-//! conflicts with the published squash is left in place and listed with its file while another zone in the same
-//! call still moves; a repeat answers Current for every zone and writes no op. Every case
+//! After land's own squash, land and publish of zone `land`, another zone is replayed onto the new origin with its open
+//! requests listed to rebase; the publishing zone with no join since its squash is put on origin, and one with a later
+//! join has only that join replayed onto origin; the replayed zone's op also writes the replay record of each commit it
+//! replayed; a zone whose commit conflicts with the published squash is left in place and listed with its file while
+//! another zone in the same call still moves; a repeat answers Current for every zone and writes no op. Every case
 //! checks that origin, local and remote, is where publish left it.
 
 use crate::fixture::{
@@ -30,7 +29,7 @@ fn another_zone_is_replayed_onto_the_new_origin() {
     let fx = Fixture::new();
     let published_tip = fx.join_onto(PUBLISHED, &fx.base, &PUBLISHED_FILES, "published work");
     let b_tip = fx.join_onto("b", &fx.base, &B_FILES, "b work");
-    let b_request = request("WO-b-1", &b_tip, &b_tip);
+    let b_request = request("r1", &b_tip, &b_tip);
     let origin = fx.publish();
     let moves = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![]), &[zone("b", vec![b_request.clone()])], ACTOR)
         .unwrap();
@@ -43,7 +42,7 @@ fn another_zone_is_replayed_onto_the_new_origin() {
     assert_eq!(fx.files(new), ["a.txt", "b.txt", "p.txt"]);
     assert_eq!(fx.file(new, "b.txt"), "b\n");
     assert_eq!(fx.file(new, "a.txt"), "one\nTWO\nthree\n");
-    // Zone b's op moves the zone, then writes the replay record of its one replayed commit, absent before (S-121 W).
+    // Zone b's op moves the zone, then writes the replay record of its one replayed commit, absent before.
     let b_record = RefMove { refname: record_ref("b", &b_tip), old: None, new: new.clone() };
     let b_moves = [zone_move("refs/heads/zone/b", &b_tip, new), vec![b_record]].concat();
     assert_eq!(done_moves(&fx), vec![zone_move("refs/heads/zone/land", &published_tip, &origin), b_moves]);
@@ -54,7 +53,7 @@ fn another_zone_is_replayed_onto_the_new_origin() {
 fn the_publishing_zone_with_no_later_joins_is_put_on_origin() {
     let fx = Fixture::new();
     let tip = fx.join_onto(PUBLISHED, &fx.base, &PUBLISHED_FILES, "published work");
-    let open = request("WO-land-9", &tip, &tip);
+    let open = request("r1", &tip, &tip);
     let origin = fx.publish();
     let moves = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![open.clone()]), &[], ACTOR).unwrap();
     assert_eq!(
@@ -72,7 +71,7 @@ fn the_publishing_zone_with_a_later_join_is_replayed_onto_origin() {
     let squashed = fx.join_onto(PUBLISHED, &fx.base, &PUBLISHED_FILES, "published work");
     let origin = fx.publish();
     let later = fx.join_onto(PUBLISHED, &squashed, &LATER_FILES, "later join");
-    let open = request("WO-land-9", &later, &later);
+    let open = request("r1", &later, &later);
     let moves = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![open.clone()]), &[], ACTOR).unwrap();
     let [ZoneMove::Moved { zone: name, old, new, rebase }] = moves.as_slice() else {
         panic!("the published zone must move: {moves:?}");

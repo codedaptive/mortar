@@ -1,4 +1,4 @@
-//! Cases 6 and 7: a merge landing killed by SIGKILL before or after its one update-ref (the testkit crash shim,
+//! A merge landing killed by SIGKILL before or after its one update-ref (the testkit crash shim,
 //! held by the kill gate rather than timing), then oplog::recover, then the same land again.
 //! The worker commits with its own committer date, so a repeat that built the merge again would answer a different
 //! commit from the one the landing state names.
@@ -96,7 +96,7 @@ fn land_worker() {
         commit: Oid::parse(&var("MORTAR_TEST_SQUASH")).unwrap(),
         change_id: ChangeId::parse(&var("MORTAR_TEST_CHANGE_ID")).unwrap(),
         source: Oid::parse(&var("MORTAR_TEST_SOURCE")).unwrap(),
-        requests: vec!["WO-land-3".to_string()],
+        requests: vec!["r1".to_string()],
     };
     let mut git = Git::new(&path);
     git.program = path.join(SHIM);

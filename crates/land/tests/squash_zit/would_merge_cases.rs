@@ -1,4 +1,4 @@
-//! Case 4: would_merge says Yes when the squash merges into integration and No with the conflicted files; neither
+//! would_merge says Yes when the squash merges into integration and No with the conflicted files; neither
 //! moves the integration branch.
 
 use crate::fixture::{made, refs, Fixture, ACTOR, ZONE};
@@ -8,7 +8,7 @@ use std::path::PathBuf;
 #[test]
 fn would_merge_says_yes_when_integration_is_origin() {
     let fx = Fixture::new();
-    let z = fx.commit_on(&fx.base, &[("f", "zone\n")], "zone f", Some("WO-a"));
+    let z = fx.commit_on(&fx.base, &[("f", "zone\n")], "zone f", Some("r1"));
     fx.set_branch("zone/land", &z);
     let squash = made(squash(&fx.land_git(), &refs(), ZONE, ACTOR).unwrap());
 
@@ -23,7 +23,7 @@ fn would_merge_says_no_with_the_conflicted_files() {
     let fx = Fixture::new();
     let i = fx.commit_on(&fx.base, &[("f", "integration\n")], "integration f", None);
     fx.set_branch("integration", &i);
-    let z = fx.commit_on(&fx.base, &[("f", "zone\n")], "zone f", Some("WO-a"));
+    let z = fx.commit_on(&fx.base, &[("f", "zone\n")], "zone f", Some("r1"));
     fx.set_branch("zone/land", &z);
     let squash = made(squash(&fx.land_git(), &refs(), ZONE, ACTOR).unwrap());
 

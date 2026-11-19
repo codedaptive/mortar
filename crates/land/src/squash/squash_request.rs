@@ -1,4 +1,4 @@
-//! SquashRequest: one request's line of a squash message. A declaration only (S-7); squash_requests_tests
+//! SquashRequest: one request's line of a squash message. A declaration only; squash_requests_tests
 //! and squash_message_tests exercise it.
 
 /// A Mortar-Request value and the subjects of its commits, oldest first.

@@ -1,4 +1,4 @@
-//! The replay record consumed by the publish it serves (S-118 (1)). Zone `land` is squashed at A1 and the squash
+//! The replay record consumed by the publish it serves. Zone `land` is squashed at A1 and the squash
 //! kept; zone `b` is squashed, landed and published first, and after_publish(b, others=[land]) replays A1 onto b's
 //! origin as A1' and records `refs/mortar/replayed/land/<A1>` = A1' (fixture replayed). The kept squash, naming A1
 //! in its Mortar-Squash-Of, then lands as a merge and publishes. after_publish(land) moves zone `land` past A1 and

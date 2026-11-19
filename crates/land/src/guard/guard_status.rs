@@ -1,5 +1,5 @@
 //! guard_status: whether the guard is installed, read without writing. It runs git and reads files, so it has no
-//! unit test (S-5). tests/land_rit/guard_installation.rs compares its whole GuardState after installs, for an
+//! unit test. tests/land_rit/guard_installation.rs compares its whole GuardState after installs, for an
 //! untouched repo, and for a foreign pre-push.
 
 use gitio::Git;
