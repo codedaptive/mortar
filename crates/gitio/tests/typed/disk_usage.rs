@@ -39,7 +39,7 @@ fn a_blob_shared_with_another_tip_is_not_counted() {
     let kept = commit(&r.git, &contents, &[common], "kept child\n");
     set_ref(&r.git, SELECTED, &selected);
     set_ref(&r.git, "refs/heads/main", &kept);
-    // The other tip directly holds the same tree, so only the unique selected commit can count here.
+    // The selected commit's parent, which the other tip reaches, holds the same tree, so only the selected commit counts.
     assert_eq!(r.git.disk_usage_only(&[SELECTED]).unwrap(), loose_size(&r, &selected));
 }
 
@@ -79,7 +79,7 @@ fn a_linked_worktrees_detached_head_and_its_ancestors_are_other_roots() {
 }
 
 #[test]
-fn older_shared_blob_and_parentless_shared_tree_obey_upper_bound_not_exact_reclamation() {
+fn objects_shared_only_off_the_walk_edge_are_counted_in_full() {
     let r = repo();
     let old_tree = tree(&r.git, &[("old", b"payload once held in old history\n")]);
     let old = commit(&r.git, &old_tree, &[], "old\n");
@@ -89,17 +89,18 @@ fn older_shared_blob_and_parentless_shared_tree_obey_upper_bound_not_exact_recla
     let selected = commit(&r.git, &old_tree, &[], "parentless reuse\n");
     set_ref(&r.git, SELECTED, &selected);
     let blob = r.git.tree_entry(&old_tree, "old".as_ref()).unwrap().unwrap();
-    let min = loose_size(&r, &selected);
-    let max = min + loose_size(&r, &old_tree) + loose_size(&r, &blob);
-    let bytes = r.git.disk_usage_only(&[SELECTED]).unwrap();
-    assert!((min..=max).contains(&bytes), "disk usage may overcount objects shared only through older history: {bytes}, {min}..={max}");
-    // Re-adding the old blob atop the current kept tip is the other documented overcount shape.
+    // No parent holds the old tree and blob on the walk edge; reclaimable bytes are smaller.
+    assert_eq!(r.git.disk_usage_only(&[SELECTED]).unwrap(), loose_size(&r, &selected) + loose_size(&r, &old_tree) + loose_size(&r, &blob), "parentless old tree");
     let readded_tree = tree(&r.git, &[("current", b"current kept files\n"), ("old", b"payload once held in old history\n")]);
     let readded = commit(&r.git, &readded_tree, &[kept], "re-add old\n");
     set_ref(&r.git, SELECTED, &readded);
-    let min = loose_size(&r, &readded) + loose_size(&r, &readded_tree);
-    let bytes = r.git.disk_usage_only(&[SELECTED]).unwrap();
-    assert!((min..=min + loose_size(&r, &blob)).contains(&bytes), "readded upper bound: {bytes}");
+    // The parent on the walk edge lacks the old blob; reclaimable bytes are smaller.
+    assert_eq!(r.git.disk_usage_only(&[SELECTED]).unwrap(), loose_size(&r, &readded) + loose_size(&r, &readded_tree) + loose_size(&r, &blob), "re-added old blob");
+    let selected = commit(&r.git, &current_tree, &[], "parentless current tree\n");
+    set_ref(&r.git, SELECTED, &selected);
+    let current_blob = r.git.tree_entry(&current_tree, "current".as_ref()).unwrap().unwrap();
+    // No parent holds the current tree and blob on the walk edge; reclaimable bytes are smaller.
+    assert_eq!(r.git.disk_usage_only(&[SELECTED]).unwrap(), loose_size(&r, &selected) + loose_size(&r, &current_tree) + loose_size(&r, &current_blob), "parentless current tip tree");
 }
 
 #[test]
