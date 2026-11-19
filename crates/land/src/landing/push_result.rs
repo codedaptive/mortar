@@ -1,4 +1,4 @@
-//! PushResult: what push_landing's push came to. A bare type; the publish_zit test
+//! PushResult: what push_landing's push came to. A bare type, checked through publish's answer: in tests/publish_zit/publishing.rs,
 //! publish_moves_the_remote_then_the_local_origin_and_cleans_up exercises Pushed and
 //! a_remote_moved_while_the_push_was_refused_answers_origin_moved Moved.
 
