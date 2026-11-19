@@ -1,12 +1,12 @@
 //! Display for PublishError's own refusals (PushRefused, RemoteMissing, PushIntent), each as literal text naming what
 //! it carries and saying nothing was published or pushed; PushIntent's OpPhase is built as data and not printed. The
-//! Land arm prefixes LandError's text with "publish: "; the State arm, which runs
-//! LandingStateError's Display, is tested in tests/publish_zit (state_display); the Squash, Git and Oplog arms embed
-//! another error's text and have no case here.
+//! Land and State arms prefix LandError's and LandingStateError's text with "publish: "; the Squash, Git and Oplog
+//! arms embed another error's text and have no case here.
 
-use super::{LandError, PublishError};
+use super::{LandError, LandingStateError, PublishError};
 use gitio::{Oid, PushRefusal};
 use oplog::OpPhase;
+use std::path::PathBuf;
 
 fn a() -> Oid { Oid::parse("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa").unwrap() }
 
@@ -53,4 +53,11 @@ fn push_intent_names_the_record_and_says_what_to_do_whether_open_or_done() {
 #[test]
 fn land_is_prefixed_with_publish() {
     assert_eq!(PublishError::Land(LandError::NoZone { commit: a() }).to_string(), "publish: squash commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa carries no Mortar-Zone trailer, so its landing cannot name the zone; nothing was moved");
+}
+
+#[test]
+fn state_is_prefixed_with_publish() {
+    let inner = LandingStateError::Corrupt { path: PathBuf::from("/r/mortar/landing.json"), reason: "x".to_string() };
+    let text = PublishError::State(inner).to_string();
+    assert_eq!(text, "publish: landing state /r/mortar/landing.json is not a state land wrote: x");
 }

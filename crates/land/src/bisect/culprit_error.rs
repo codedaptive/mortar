@@ -1,6 +1,6 @@
 //! Every way naming a landing's culprit can fail.
 //! A bare type; culprit_error_source_tests and culprit_of_landing_tests exercise each variant;
-//! Display texts: culprit_error_display_tests cover NotALanding, tests/land_rit Trailers.
+//! Display texts: culprit_error_display_tests cover NotALanding and Trailers.
 
 use gitio::Oid;
 use oplog::MortarTrailerError;

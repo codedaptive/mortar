@@ -1,6 +1,5 @@
 //! Failure texts for OriginMissing, NotOnOrigin, OffTheLine and ProbeCouldNotRun. Culprit prints CulpritError's
-//! text: culprit_error_display_tests cover NotALanding and tests/land_rit/displays.rs Trailers; Git's is not yet
-//! written.
+//! text: culprit_error_display_tests cover NotALanding and Trailers; Git's is not yet written.
 
 use gitio::Oid;
 
