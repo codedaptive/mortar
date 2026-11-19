@@ -1,4 +1,4 @@
-//! real_index_git: the Git value save sets the folder's index with, so it reaches the folder's own index (S-33).
+//! real_index_git: the Git value save sets the folder's index with, so it reaches the folder's own index.
 
 use gitio::Git;
 

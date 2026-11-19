@@ -1,4 +1,4 @@
-//! #1179/S-76: public run_in_group -> real spawn, literal argv/cwd, raw stderr and kernel reap/group outcomes.
+//! Public run_in_group -> real spawn, literal argv/cwd, raw stderr and kernel reap/group outcomes.
 use crate::support::Fixture;
 use oplog::{KillPidProbe, PidProbe};
 use snapshot::{run_in_group, GroupRunEnd};

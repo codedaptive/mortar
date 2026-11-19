@@ -14,11 +14,11 @@ fn git(env: Vec<(OsString, OsString)>) -> Git {
 #[test]
 fn index_file_is_removed_and_the_others_keep_their_order() {
     let found = real_index_git(&git(vec![
-        pair("GIT_AUTHOR_NAME", "bilby"),
+        pair("GIT_AUTHOR_NAME", "agent-a"),
         pair("GIT_INDEX_FILE", "/tmp/other-index"),
         pair("LANG", "C"),
     ]));
-    assert_eq!(found.env, vec![pair("GIT_AUTHOR_NAME", "bilby"), pair("LANG", "C")]);
+    assert_eq!(found.env, vec![pair("GIT_AUTHOR_NAME", "agent-a"), pair("LANG", "C")]);
 }
 
 #[test]
@@ -39,8 +39,8 @@ fn only_the_exact_key_is_removed() {
 
 #[test]
 fn env_without_index_file_is_unchanged() {
-    let found = real_index_git(&git(vec![pair("LANG", "C"), pair("GIT_AUTHOR_NAME", "bilby")]));
-    assert_eq!(found.env, vec![pair("LANG", "C"), pair("GIT_AUTHOR_NAME", "bilby")]);
+    let found = real_index_git(&git(vec![pair("LANG", "C"), pair("GIT_AUTHOR_NAME", "agent-a")]));
+    assert_eq!(found.env, vec![pair("LANG", "C"), pair("GIT_AUTHOR_NAME", "agent-a")]);
 }
 
 #[test]

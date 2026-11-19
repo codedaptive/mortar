@@ -1,9 +1,9 @@
 //! folder_tree: a folder's HEAD commit, the tree of its files as a snapshot saves them, and the files the size cap
 //! left out.
-//! No unit test: it only runs git and reads file sizes, and holds no decision of its own (S-5);
+//! No unit test: it only runs git and reads file sizes, and holds no decision of its own;
 //! snapshot_excludes_tests covers the excludes it passes, and cap_candidates, cap_refusals, capped_excludes, cap_mismatch, empty_tree and
 //! candidate_size are its decisions and have their tests.
-//! Nagatha's integration tests cover it through snapshot, in a throwaway repository:
+//! The integration tests in tests/snapshot cover it through snapshot, in a throwaway repository:
 //! - build output directories (top-level and nested target/, node_modules/, .build/), .gitignored files and a caller
 //!   exclude are left out of the tree, and similar names are kept:
 //!   tests/snapshot/sparse_excludes.rs::ignored_build_outputs_and_caller_excludes_stay_out_but_similar_names_are_saved;

@@ -5,14 +5,14 @@ use crate::SnapshotTarget;
 fn request_then_zone() {
     let target = SnapshotTarget {
         zone: "snapshot".to_string(),
-        request: "WO-snapshot-1".to_string(),
+        request: "r1".to_string(),
         attempt: None,
-        actor: "bilby".to_string(),
+        actor: "agent-a".to_string(),
     };
     assert_eq!(
         snapshot_trailers(&target),
         vec![
-            ("Mortar-Request".to_string(), "WO-snapshot-1".to_string()),
+            ("Mortar-Request".to_string(), "r1".to_string()),
             ("Mortar-Zone".to_string(), "snapshot".to_string()),
         ]
     );

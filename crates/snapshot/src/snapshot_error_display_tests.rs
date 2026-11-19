@@ -1,5 +1,6 @@
 // Arms whose text comes from gitio's or oplog's Display (Git, Oplog, ChangeIdMissing, Trailers, ChangeId, IndexNotSet,
-// a Stale result holding an Oid) are not tested here: their text runs another crate's code, so they are cross-zone (rule 11).
+// a Stale result holding an Oid) are not tested here: their text is another crate's, so the repo integration tests in
+// tests/snapshot_display_rit.rs cover them.
 use crate::SnapshotError;
 use oplog::{OpPhase, OpRecord, OpResult};
 use std::ffi::OsStr;
@@ -11,7 +12,7 @@ fn record(phase: OpPhase, result: Option<OpResult>) -> OpRecord {
         op_id: "op-7".to_string(),
         key: "save refs/heads/x op-7".to_string(),
         kind: "save".to_string(),
-        actor: "bilby".to_string(),
+        actor: "agent-a".to_string(),
         reason: "save".to_string(),
         at: 1700000000,
         phase,

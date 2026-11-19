@@ -1,7 +1,7 @@
 //! saved_state: whether a folder's files equal the target's last snapshot, with the folder's tree (built without a
 //! formatter) and the files the size cap refused.
 //! No unit test: it only runs git, reads file sizes and composes decide_snapshot and folder_tree's cap decisions
-//! (cap_candidates, cap_refusals, capped_excludes, cap_mismatch), which have their own tests (S-5). is_saved's
+//! (cap_candidates, cap_refusals, capped_excludes, cap_mismatch), which have their own tests. is_saved's
 //! integration tests reach it through is_saved (is_saved.rs names them), and directly in
 //! tests/snapshot/saved_state_cases.rs::saved_state_tracks_the_snapshot_ref_and_lists_the_refused_new_file_without_moving_ref_or_log:
 //! - no snapshot yet: saved false, and tree is the tree the next snapshot of the unchanged folder records;
@@ -28,7 +28,7 @@ use std::path::Path;
 /// built without a formatter (snapshot_formatted runs one first, so with a formatter its tree can differ).
 /// Writes tree objects (folder_tree does, through gitio's snapshot_tree) but moves no ref and appends no op record.
 /// The cli's status and the caller of folders' remove are to read it: remove takes `saved` and the refused paths
-/// and refuses unless `saved` is true and no file was refused (S-32). That rule is not applied here.
+/// and refuses unless `saved` is true and no file was refused. That rule is not applied here.
 pub fn saved_state(
     git: &Git,
     folder: &Path,

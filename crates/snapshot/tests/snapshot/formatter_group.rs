@@ -1,4 +1,4 @@
-//! SPEC-snapshot WO-snapshot-4, S-37/S-38: real shell descendants, held stderr and post-exit write fencing.
+//! Real shell descendants, held stderr and post-exit write fencing.
 //! FIFO control/EOF and kernel process state prove outcomes; no elapsed-time assertion, sleep or polling.
 use crate::support::{assert_snapshot_written, blob, fifo_hang_guard, write, Fixture};
 use oplog::{KillPidProbe, PidProbe};
@@ -105,7 +105,7 @@ fn exercise_group(mode: &str, limit: Duration) {
     assert_eq!(fs::read(f.common.join("index")).unwrap(), index_before);
 }
 
-/// WO-orc-snapshot-it-8: direct run_in_group caller, sharing the proven real FIFO/group fixture.
+/// Direct run_in_group caller, sharing the proven real FIFO/group fixture.
 pub(super) fn exercise_public_runner(mode: &str, limit: Duration) {
     let f = Fixture::new(&[]);
     let group = group_fixture(&f, mode, limit);

@@ -1,5 +1,5 @@
 //! snapshot: save a folder's files as a commit on the target's snapshot ref, with no formatter.
-//! No unit test: it only calls snapshot_formatted with no formatter (S-5). Its integration cases are those
+//! No unit test: it only calls snapshot_formatted with no formatter. Its integration cases are those
 //! snapshot_formatted's header lists that need no formatter: a first snapshot, an unchanged folder, chaining,
 //! RefMoved, and a 6 MB file refused.
 

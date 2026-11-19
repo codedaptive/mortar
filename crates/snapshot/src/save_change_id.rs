@@ -1,4 +1,4 @@
-//! save_change_id: whether a save reuses HEAD's change ID (S-34).
+//! save_change_id: whether a save reuses HEAD's change ID.
 
 use crate::{SnapshotError, SnapshotTarget};
 use gitio::Oid;

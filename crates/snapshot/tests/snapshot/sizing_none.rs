@@ -1,4 +1,4 @@
-//! WO-orc-snapshot-it-6 / #711: metadata absence/directory outcomes on NEW candidates, not paths exempted by HEAD.
+//! Metadata absence/directory outcomes on NEW candidates, not paths exempted by HEAD.
 use crate::support::{blob, write, Fixture};
 use snapshot::snapshot;
 use std::fs;
