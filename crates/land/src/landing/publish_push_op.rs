@@ -4,7 +4,7 @@
 //! publish_moves_the_remote_then_the_local_origin_and_cleans_up: the publish-push records and their move;
 //! an_open_push_intent_after_the_push_is_closed_done_on_the_repeat and
 //! an_open_push_intent_before_the_push_is_closed_failed_and_pushed_again: an intent opened under this key form);
-//! its unit case is a repo integration test (RIT): tests/land_rit/owed_ops.rs covers it.
+//! its unit case is an integration test of the crate's public surface: tests/land_rit/owed_ops.rs covers it.
 //! push_landing opens the intent with oplog's open_remote_intent and closes it with close_intent; settle_push_intent
 //! finds one left open by its key.
 

@@ -1,5 +1,5 @@
 //! How a re-review failure reads: git's failure, the trailer failure as it is, or the refusal naming its commits.
-//! rereview_error_display_tests cover the Git, Trailers, NotSameChange and NoParent texts. No ZIT reaches it yet.
+//! rereview_error_display_tests cover the Git, Trailers, NotSameChange and NoParent texts. No integration test reaches it yet.
 
 use std::fmt;
 
