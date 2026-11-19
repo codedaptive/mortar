@@ -2,8 +2,6 @@
 //! Past the 150-line limit because it is the crate's only bridge: one line per file of a flat crate, and nothing else.
 
 mod absent_paths;
-mod attr_check_request;
-mod blob_bytes_request;
 mod changed_files_request;
 mod check_exit;
 mod check_ref_format_request;
@@ -20,8 +18,6 @@ mod first_parent_list_request;
 mod folder_move_outcome;
 mod folder_move_requests;
 mod git;
-mod git_attr_check;
-mod git_blob_bytes;
 mod git_changed_files;
 mod git_check_ref_format;
 mod git_command;
@@ -113,7 +109,6 @@ mod push_refusal;
 mod push_request;
 mod range_diff_ranges_request;
 mod range_diff_request;
-mod read_attr_check;
 mod read_check_ref_format;
 mod read_commit_info;
 mod read_disk_usage;
@@ -222,10 +217,6 @@ pub use worktree::Worktree;
 #[cfg(test)]
 mod absent_paths_tests;
 #[cfg(test)]
-mod attr_check_request_tests;
-#[cfg(test)]
-mod blob_bytes_request_tests;
-#[cfg(test)]
 mod changed_files_request_tests;
 #[cfg(test)]
 mod check_exit_tests;
@@ -327,8 +318,6 @@ mod push_request_tests;
 mod range_diff_ranges_request_tests;
 #[cfg(test)]
 mod range_diff_request_tests;
-#[cfg(test)]
-mod read_attr_check_tests;
 #[cfg(test)]
 mod read_check_ref_format_tests;
 #[cfg(test)]
