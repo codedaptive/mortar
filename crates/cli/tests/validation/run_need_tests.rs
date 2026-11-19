@@ -3,7 +3,7 @@
 //! wording) before need writes its record, cone or refs. need's next step reads only what status_next needs, so an
 //! unreadable record of another folder (read for status's overlaps) does not turn a completed need into a failure.
 //! Validation test: the mortar binary runs as a child in a throwaway repository, reaching folders, gitio and
-//! oplog below cli; the cli lane owns it. More need RITs are in tests/operational_rit/need.rs.
+//! oplog below cli; the cli lane owns it. More need validation tests are in tests/validation/need.rs.
 
 use crate::need_fixture::Need;
 use crate::observe::{before, peer, record_path};

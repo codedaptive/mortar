@@ -2,7 +2,7 @@ use crate::support::*;
 use std::fs;
 
 #[test]
-fn rit_join_saves_unsaved_work_then_fast_forwards_zone_and_repeat_is_inert() {
+fn validation_join_saves_unsaved_work_then_fast_forwards_zone_and_repeat_is_inert() {
     let f = Fixture::new(); f.write("src/file", b"unsaved join work\n"); let start = f.records().len();
     let report = f.report(&["--json", "join"], "join", 0, "joined");
     let head = f.head(); assert!(report.flag("saved_written")); assert_eq!(report.text("saved_commit"), head.as_str());
@@ -20,7 +20,7 @@ fn rit_join_saves_unsaved_work_then_fast_forwards_zone_and_repeat_is_inert() {
 }
 
 #[test]
-fn rit_join_rebases_diverged_zone_moves_real_folder_and_reports_pending_move_even_when_already_finished() {
+fn validation_join_rebases_diverged_zone_moves_real_folder_and_reports_pending_move_even_when_already_finished() {
     let f = Fixture::new(); let old = f.save_topic(); let zone = f.advance_zone(false);
     let old_info = f.git.commit_info(&old).unwrap();
     let report = f.report(&["--json", "join"], "join", 0, "rebased"); let new = f.head();
@@ -43,7 +43,7 @@ fn rit_join_rebases_diverged_zone_moves_real_folder_and_reports_pending_move_eve
 }
 
 #[test]
-fn rit_conflicting_join_lists_files_and_real_state_with_no_branch_or_folder_movement() {
+fn validation_conflicting_join_lists_files_and_real_state_with_no_branch_or_folder_movement() {
     let f = Fixture::new(); let old = f.save_topic(); let zone = f.advance_zone(true); let log = f.log();
     let report = f.report(&["--json", "join"], "join", 2, "conflicted");
     assert_eq!(report.text("next"), "mr resolve"); assert_eq!(report.text("commit"), old.as_str());
@@ -56,7 +56,7 @@ fn rit_conflicting_join_lists_files_and_real_state_with_no_branch_or_folder_move
 }
 
 #[test]
-fn rit_join_arguments_are_usage_without_work_and_missing_zone_is_owned_refusal_with_lock_released() {
+fn validation_join_arguments_are_usage_without_work_and_missing_zone_is_owned_refusal_with_lock_released() {
     let f = Fixture::new(); let before = f.observe();
     let usage = f.report(&["--json", "join", "unexpected"], "join", 4, "usage");
     assert!(usage.lines().contains("join takes no arguments")); assert_eq!(usage.text("next"), "mr join [--key <operation key>] [--json]");
@@ -68,7 +68,7 @@ fn rit_join_arguments_are_usage_without_work_and_missing_zone_is_owned_refusal_w
 }
 
 #[test]
-fn rit_pending_folder_move_refuses_over_local_work_then_finishes_after_work_is_moved_aside() {
+fn validation_pending_folder_move_refuses_over_local_work_then_finishes_after_work_is_moved_aside() {
     let f = Fixture::new(); let (old, new, _) = f.pending_rebase();
     f.write("src/upstream", b"local obstruction must survive\n");
     let refused = f.report(&["--json", "join"], "join", 1, "refused");

@@ -2,8 +2,9 @@
 //! In order: `--key` given is a usage report (install records no op, so a key would be ignored); then arguments
 //! parse_install_args cannot read are a usage report; then HOME unset or empty is a refusal. Only then does it
 //! read PATH, the project (its one git call), this binary's path and the terminal, and hand them to install_in.
-//! No sibling test: it reads the process's environment and stdin; Nagatha's RITs through the binary cover it
-//! (`mr install -y` with HOME a temporary folder, `--key` and `--mode mcp` exit 4, the picker on a terminal).
+//! No sibling test: it reads the process's environment and stdin. Its cases are validation tests through the binary
+//! to write (not written here): `mr install -y` with HOME a temporary folder, `--key` and `--mode mcp` exit 4, the
+//! picker on a terminal.
 
 use std::io::{self, BufRead, IsTerminal, Write};
 use std::path::{Path, PathBuf};

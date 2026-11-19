@@ -2,7 +2,7 @@
 //! checked first.
 //! No unit test: it reads the op log and runs git; its decisions are oplog's (find_done_record,
 //! check_restore_ref_names, plan_restore), covered there, and restore_refusal_tests cover what restore decides from
-//! the moves. The repo integration tests are to cover, with the mortar binary as a child process in a throwaway
+//! the moves. The validation tests are to cover, with the mortar binary as a child process in a throwaway
 //! repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a restore that would delete a folder's ref refuses exit 1.
 //!   The validation test crates/cli/tests/validation/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder

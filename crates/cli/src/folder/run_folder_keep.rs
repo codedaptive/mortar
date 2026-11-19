@@ -6,7 +6,7 @@
 //! attempts by a folder-keep op of the actor; an unsaved attempt, and unsaved work in the request folder, refused
 //! exit 1 with nothing changed; an orphan attempt re-made and the keep of another finished in one command; a keep
 //! killed between its op and the request folder's move finished by a plain repeat, outcome already-done.
-//! Repo integration tests to write (cross-zone, not written here): the request branch moved on after the attempts were
+//! Validation tests to write (not written here): the request branch moved on after the attempts were
 //! cut, and a try branch moved under the op, the cli's why and next; an orphan with no trysnap ref, exit 1 naming its
 //! folder; a file the snapshot cap refuses in an attempt counts as unsaved; a join-<zone> lock held by a live pid,
 //! exit 3.

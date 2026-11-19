@@ -6,7 +6,7 @@
 //! folder context, lock, recover or snapshot are read, from the help's data alone, so it changes nothing and works
 //! in any directory.
 //! No sibling unit test: it reads the process's arguments and directory and prints; cli's unit tests
-//! cover the reports. The repo integration tests are to cover, with the binary as a child process in a throwaway
+//! cover the reports. The validation tests are to cover, with the binary as a child process in a throwaway
 //! repository: `mr init --actor h --origin main --integration integration --remote origin` writes the
 //! config, exit 0, stdout ending "next: mr folder zone <zone> <path>"; the same again is exit 0
 //! "already-done" with the file byte-identical; other values are exit 1 naming the keys; --replace rewrites,

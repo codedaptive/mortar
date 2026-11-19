@@ -5,7 +5,7 @@
 //! crates/cli/tests/validation/run_folder_drop_tests.rs covers it through the binary: saved attempts dropped by an op of the actor
 //! with the request unmoved and their snapshots kept; a branch-only attempt whose trysnap tree equals its tip's tree
 //! dropped; one with no trysnap ref refused exit 1 naming its branch, nothing changed.
-//! Repo integration tests to write (cross-zone, not written here): a try branch moved under the op, the cli's why and
+//! Validation tests to write (not written here): a try branch moved under the op, the cli's why and
 //! next; an orphan attempt folder with no trysnap ref, exit 1 naming the folder; a join-<zone> lock held by a live pid,
 //! exit 3.
 

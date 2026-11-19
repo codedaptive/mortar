@@ -4,7 +4,7 @@
 //! crates/cli/tests/validation/run_need_tests.rs covers, with the mortar binary in a throwaway repository:
 //! a wrong argument count is usage without work; a missing zone branch refuses before writing
 //! (need_with_a_missing_zone_branch_refuses_before_writing); an unreadable record of another folder does not change a
-//! completed need (need_does_not_read_other_folders_for_its_next_step). The repo integration tests are to cover, with
+//! completed need (need_does_not_read_other_folders_for_its_next_step). The validation tests are to cover, with
 //! the mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository
 //! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - need adds a path to the folder's cone and its record, exit 0;

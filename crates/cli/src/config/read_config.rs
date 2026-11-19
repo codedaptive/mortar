@@ -1,5 +1,5 @@
 //! Reads the config from the repository's git common dir.
-//! No unit test: it reads a real file; decode_config_tests covers the decoding. The repo integration
+//! No unit test: it reads a real file; decode_config_tests covers the decoding. The zone integration
 //! tests are to cover: a common dir with no config reads None; a config written by write_config reads back
 //! equal; a file holding text that is not a config is refused with a reason naming the file.
 

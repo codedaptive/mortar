@@ -4,7 +4,7 @@
 //! No sibling test: it takes a real lock and runs git, the formatter and the op log; snapshot_target_for,
 //! snapshot_settings_for, op_key, zone_folder_refusal, snapshot_report and snapshot_error_report are its decisions
 //! and have their tests.
-//! Repo integration tests to write (cross-zone, not written here), with the mortar binary as a child
+//! Validation tests to write (not written here), with the mortar binary as a child
 //! process in folders made by the landing verbs in a throwaway repository:
 //! - snapshot in a sparse request folder writes the request's snap ref, exit 0, outcome snapshotted;
 //! - snapshot with nothing changed since the last one is exit 0, outcome unchanged, and moves no ref;

@@ -4,7 +4,7 @@
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_squash_args_tests,
 //! squash_report_tests and landing's squash_error_report_tests cover its decisions. The validation test
 //! crates/cli/tests/validation/run_squash_tests.rs covers it through the binary.
-//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid,
+//! Validation tests to write (not written here): the land lock held by a live pid,
 //! exit 3; without a config, exit 1, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
 //! OpRepeated texts when git or the op log fails for real; the acceptance checks of squash.
 

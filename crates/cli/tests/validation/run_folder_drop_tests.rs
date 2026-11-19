@@ -2,7 +2,7 @@
 //! branch-only attempt whose trysnap tree equals its tip's tree dropped; one with no trysnap ref refused
 //! naming its branch, with nothing changed.
 //! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
-//! Repo integration tests to write (cross-zone, not written here):
+//! Validation tests to write (not written here):
 //! - a try branch moved under the op (AttemptRefsLeft): the cli's why and next, never folders' FolderError Display
 //!   text;
 //! - an orphan attempt folder with no trysnap ref (OrphanWithoutSnapshot): exit 1 naming the folder, nothing changed;

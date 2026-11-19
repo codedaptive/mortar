@@ -2,7 +2,7 @@
 //! branch at the request's tip; run in a zone folder it is refused, and n = 0 is a usage error. A relative <dir> is
 //! taken from the request folder, not the subfolder it is run in, and one that normalizes inside it is a usage error.
 //! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
-//! Repo integration tests to write (cross-zone, not written here):
+//! Validation tests to write (not written here):
 //! - a folders lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks);
 //! - free disk under the floor at attempt j: exit 1 with the cli's own facts, never folders' BelowFloor Display text,
 //!   and a repeat making the rest;

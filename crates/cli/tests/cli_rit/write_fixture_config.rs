@@ -7,7 +7,7 @@ use crate::json::check;
 /// An empty build-dir list uses init's documented default: these fixtures create no build output to exclude.
 pub fn write_fixture_config(root: &Path, config: &Config) -> Result<(), String> {
     // End global parsing first: a formatter argument such as "--" or "--json" belongs to init's value words.
-    let mut words = vec!["--json".to_string(), "--actor".into(), "rit-config".into(), "init".into(), "--".into(), "--replace".into()];
+    let mut words = vec!["--json".to_string(), "--actor".into(), "validation-config".into(), "init".into(), "--".into(), "--replace".into()];
     for (flag, value) in [
         ("--origin", config.origin_branch.clone()), ("--integration", config.integration_branch.clone()),
         ("--remote", config.remote.clone()), ("--cap-bytes", config.cap_bytes.to_string()),

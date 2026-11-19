@@ -1,7 +1,7 @@
 //! run_status: `mr status [--json]`, the agent verb that says where a request or attempt folder stands and
 //! its next step.
 //! No unit test: it runs git through read_status; status_report_tests and the other status ZUTs
-//! cover what it reports. The repo integration tests are to cover, with
+//! cover what it reports. The validation tests are to cover, with
 //! the mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository
 //! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - in an attempt folder: exit 0, attempt k's own branch and snapshot, next mr save or the wait for

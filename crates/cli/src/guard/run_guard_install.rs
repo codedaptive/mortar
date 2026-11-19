@@ -15,10 +15,10 @@
 //! and in a second linked worktree made afterwards git update-ref of integration is refused through the installed
 //! reference-transaction hook (which runs `mortar guard-hook`) with the guard's why, owner and next, while an
 //! unprotected ref moves.
-//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
+//! Validation tests to write (not written here): the land lock held by a live pid, exit
 //! 3 (oplog's locks); GuardError::Git in the cli's own words; after `mr guard install`, git commit and push against
 //! integration and origin are refused through the installed hook and Mortar's own moves pass (land's guard_decide);
-//! tests/operational_rit/guard_fixture.rs to install through `mr guard install` instead of land::guard_install;
+//! tests/validation/guard_fixture.rs to install through `mr guard install` instead of land::guard_install;
 //! through the binary, a foreign `mr` first on a scratch PATH makes `mr guard install` exit 0 "installed" with the
 //! PATH warning as the last line before next, and this build's bin dir first on PATH gives no warning; a copied
 //! Mortar binary, not this path, first on PATH gives no warning; a myrepos-like `mr` beside Mortar gives the warning

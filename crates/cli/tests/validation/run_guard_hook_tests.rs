@@ -4,7 +4,7 @@
 //! and a prepared one, guarded line or not, fails on the op log (exit 5), with no ref moved.
 //! Validation test: each test runs the mortar binary with the hook's words and input, as git would, in a
 //! throwaway repository whose guard land::guard_install put in; the cli lane owns it.
-//! The installed-hook and marked-op cases are RITs in tests/operational_rit/guard.rs.
+//! The installed-hook and marked-op cases are in tests/validation/guard.rs.
 
 use std::fs;
 

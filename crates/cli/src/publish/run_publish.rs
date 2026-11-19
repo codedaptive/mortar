@@ -11,7 +11,7 @@
 //! No sibling test: it takes a real lock and runs git, the op log and land; publish_report_tests,
 //! note_finished_move_tests and landing's publish_error_report_tests cover its decisions. The validation test
 //! crates/cli/tests/validation/run_publish_tests.rs covers it through the binary.
-//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
+//! Validation tests to write (not written here): the land lock held by a live pid, exit
 //! 3; without a config, exit 1, next mr init; the PublishError texts through a real remote (PushRefused by a
 //! remote hook, RemoteMissing, a PushIntent left open); the acceptance checks of publish (with mr
 //! land); the stopped-move finish (a kill after land's op and before the folder move, then a plain repeat moves the

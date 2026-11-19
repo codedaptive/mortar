@@ -4,7 +4,7 @@
 //! No sibling test: it takes a real lock and runs git and land; parse_would_merge_args_tests,
 //! would_merge_report_tests and landing's pick_squash_ref_tests, squash_pick_report_tests and
 //! squash_error_report_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here): would-merge yes and no, by change ID
+//! Validation tests to write (not written here): would-merge yes and no, by change ID
 //! and by commit; a change ID no squash ref carries, exit 1; two squash refs carrying one change ID, exit 1; a
 //! squash ref holding a commit read_squash refuses; the land lock held by a live pid, exit 3; without a config,
 //! exit 1, next mr init.

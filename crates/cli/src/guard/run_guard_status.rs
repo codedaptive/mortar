@@ -6,7 +6,7 @@
 //! exit 0 "installed" naming the three branches; a foreign reference-transaction exit 1 "foreign-hook" naming its
 //! path; a guard.json that is not a guard config exit 1 "refused" naming the file; a guard.json for other branches
 //! than the config exit 0 "not-installed" naming both.
-//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
+//! Validation tests to write (not written here): the land lock held by a live pid, exit
 //! 3 (oplog's locks); GuardError::Git in the cli's own words.
 
 use std::path::Path;

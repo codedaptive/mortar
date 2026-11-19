@@ -4,7 +4,7 @@
 //! op log.
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_bisect_args_tests,
 //! bisect_report_tests, bisect_error_report_tests, probe_line_tests and culprit_line_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here): a culprit found at a fast-forward
+//! Validation tests to write (not written here): a culprit found at a fast-forward
 //! landing and at a merge landing, its change ID and zone named; a culprit landing without trailers; not found
 //! because the failed commit passes, and because the last passing commit fails; a timed-out probe counted as a
 //! fail and shown "timed out"; a last passing commit off the failed one's first-parent line refused naming both; a

@@ -3,7 +3,7 @@
 //! listed, never moved. --key names the lock holder only, never passed to the op log.
 //! No sibling test: it takes a real lock and runs git, the op log and land;
 //! parse_restore_backup_args_tests, restore_backup_report_tests and backup_error_report_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here): backup then restore-backup round trip
+//! Validation tests to write (not written here): backup then restore-backup round trip
 //! into a fresh clone; restore-backup with a local ref at another commit (Differs, left as it is); restore-backup of
 //! a host with no backup; the land lock held by a live pid, exit 3; without a config, exit 1.
 

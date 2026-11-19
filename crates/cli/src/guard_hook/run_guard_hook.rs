@@ -5,7 +5,7 @@
 //! Validation tests in tests/validation/run_guard_hook_tests.rs: hook input on stdin that is not UTF-8 is refused
 //! (exit 1), with nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let
 //! through (exit 0, nothing printed) and a prepared one fails on the op log (exit 5).
-//! The RITs in tests/operational_rit/guard.rs cover, with the mortar binary installed as the hook
+//! The validation tests in tests/validation/guard.rs cover, with the mortar binary installed as the hook
 //! (the fixture installs it with land::guard_install, the code under `mr guard install`) in a throwaway
 //! repository, git run with
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1:

@@ -2,7 +2,7 @@
 //! Takes no lock and writes nothing.
 //! No sibling test: it runs git and reads the folders' records through read_named_zones and join's overlap;
 //! parse_overlap_args_tests, overlap_report_tests and overlap_error_report_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here), with the mortar binary as a child
+//! Validation tests to write (not written here), with the mortar binary as a child
 //! process in request folders made by the landing verbs in a throwaway repository:
 //! - overlap with two requests touching one file lists the pair and that path, exit 0, outcome overlaps;
 //! - requests touching different files give no pair, exit 0, outcome no-overlap;

@@ -4,7 +4,7 @@
 //! restore_key_tests, restore_refusal_tests, restore_error_report_tests, restore_report_tests and
 //! restore_move_refusal_report_tests cover its decisions, run_restore_tests its usage refusals before any lock or
 //! git, and the validation test crates/cli/tests/validation/run_restore_tests.rs a ref name git refuses (BadMove, exit 1).
-//! The repo integration tests are to cover, with the mortar binary as a child process in a throwaway repository
+//! The validation tests are to cover, with the mortar binary as a child process in a throwaway repository
 //! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip;
 //! - a zone folder on zone/<z> is listed and not moved;
