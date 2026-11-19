@@ -1,6 +1,6 @@
 //! Git::changed_files: the paths that differ between two commits. It only runs git, so it has no unit tests;
-//! Nagatha's integration test "changed_files listing both sides of a rename and paths with spaces and newlines" is
-//! to cover it.
+//! tests/typed/commits_and_refs.rs covers it: both sides of a rename, paths with spaces, newlines and a leading
+//! dash, and nothing for a commit against itself.
 
 use crate::changed_files_request::changed_files_request;
 use crate::read_nul_paths::read_nul_paths;

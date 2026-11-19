@@ -1,6 +1,6 @@
 //! Git::replay: replay a branch's commits onto a new base, moving no ref. It only runs git, so it has no unit tests;
-//! Nagatha's integration test "replay giving the update for a clean replay with the ref unmoved, Conflicted for a
-//! conflict, and an error for a bad range" is to cover it.
+//! tests/typed/replay.rs covers it where git has replay: the update for a clean replay, Conflicted for a conflict,
+//! an error for a bad range, and no ref moved by any of them.
 
 use crate::read_replay::read_replay;
 use crate::replay_request::replay_request;

@@ -1,4 +1,4 @@
-//! TestRepo::new performs real setup I/O; tests/support.rs covers init and drop (S-5).
+//! TestRepo::new performs real setup I/O; tests/support.rs covers init and drop.
 
 use crate::TestRepo;
 use std::io;

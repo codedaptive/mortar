@@ -1,5 +1,6 @@
-//! Git::update_refs: move several refs at once, all or none. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "update_refs refusing on a stale expected value with nothing moved" is to cover it.
+//! Git::update_refs: move several refs at once, all or none. It only runs git, so it has no unit tests;
+//! tests/update_refs.rs covers it: a clean move of several refs, and a stale expected value answering Stale naming
+//! the ref with nothing moved.
 
 use crate::classify_update_refs::classify_update_refs;
 use crate::update_refs_stdin::update_refs_stdin;

@@ -1,6 +1,5 @@
-//! Git::attr_check: the `merge` attribute of paths as a commit sets it. It only runs git, so it has no unit tests;
-//! Nagatha's integration test "attr_check reading merge=union, -merge, merge and unspecified from a commit's
-//! attributes, not the folder's" is to cover it.
+//! Git::attr_check: the `merge` attribute of paths as a commit sets it. It only runs git, so it has no unit tests. No
+//! test covers it yet.
 
 use crate::attr_check_request::attr_check_request;
 use crate::read_attr_check::read_attr_check;

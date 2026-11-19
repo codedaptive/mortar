@@ -1,4 +1,4 @@
-//! WO-orc-gitio-it-5 (#692/#733/#759): real commit_info records and S-43's empty-date passthrough.
+//! Real commit_info records and the empty-date passthrough.
 use crate::fixture::{commit, repo, tree};
 use gitio::{Oid, Person, RunOpts};
 
@@ -35,7 +35,7 @@ fn commit_info_root_one_parent_and_merge_keep_exact_tree_message_author_and_git_
 
 #[test]
 fn commit_info_keeps_an_empty_author_date_and_the_rest_of_the_real_commit_readable() {
-    // Joins an actual malformed commit -> real git output -> S-43 metadata passthrough, without repairing its date.
+    // Joins an actual malformed commit -> real git output -> metadata passthrough, without repairing its date.
     // Snapshot/save need its tree and parents; the refusal belongs to join replay, not commit_info.
     let r = repo();
     let contents = tree(&r.git, &[("file", b"preserved\n")]);

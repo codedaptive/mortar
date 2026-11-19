@@ -1,5 +1,5 @@
 //! Optional explicit cleanup reports errors; TempDir also cleans up on drop.
-//! Real-directory behavior is covered by tests/support.rs (S-5).
+//! Real-directory behavior is covered by tests/support.rs.
 
 use crate::TestRepo;
 use std::io;

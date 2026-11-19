@@ -1,7 +1,7 @@
 //! Git::folder_move: move a folder's index and files from one tree to another (a two-tree merge), never its HEAD.
-//! It only runs git, so it has no unit tests; Nagatha's integration test "folder_move moving a folder between two
-//! trees and keeping a local edit the move does not touch; refusing, with nothing changed, over a local edit, a staged
-//! change and an untracked, not ignored file in the way" is to cover it.
+//! It only runs git, so it has no unit tests; join's tests/resolution/folder_trees.rs covers a move between two
+//! trees answering Moved and keeping a local edit the move does not touch; folders' tests/folders/moves.rs covers
+//! its refusals over an unstaged, a staged and an untracked file in the way.
 //! Three git runs: a refresh of the index's stat data; the check, a dry run with sparse checkout off, because in a
 //! sparse folder the real run writes over an untracked, not ignored file in the cone that the dry run refuses; then
 //! the move, only when the check finds nothing in the way.

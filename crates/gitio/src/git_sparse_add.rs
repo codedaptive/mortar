@@ -1,5 +1,6 @@
-//! Git::sparse_add: widen a folder's sparse paths. It only runs git, so it has no unit tests; Nagatha's integration
-//! test "sparse_add widening a sparse_set folder and filling the added folders" is to cover it.
+//! Git::sparse_add: widen a folder's sparse paths. It only runs git, so it has no unit tests; folders'
+//! tests/folders/need.rs (need_widens_real_cone_and_record_repeat_is_inert_and_repeated_make_keeps_needed_paths) covers
+//! it: the sparse-checkout list widens to the added folder, and that folder is filled.
 
 use crate::sparse_add_request::sparse_add_request;
 use crate::{Git, GitError};

@@ -1,4 +1,4 @@
-//! Shared test-only repository and child-process support (S-22).
+//! Shared test-only repository and child-process support.
 //! Consumers use this crate only through dev-dependencies; no production crate is linked here.
 
 mod run_with_kill_gate;

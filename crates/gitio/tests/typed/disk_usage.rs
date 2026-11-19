@@ -1,4 +1,4 @@
-//! #1179/S-75: disk_usage_only joins real Git walks, refs and linked HEADs; loose sizes are independent bounds.
+//! disk_usage_only joins real Git walks, refs and linked HEADs; loose sizes are independent bounds.
 use crate::fixture::{commit, repo, set_ref, tree};
 use crate::support::GitRepo;
 use gitio::{Git, Oid, RunOpts};
@@ -92,7 +92,7 @@ fn older_shared_blob_and_parentless_shared_tree_obey_upper_bound_not_exact_recla
     let min = loose_size(&r, &selected);
     let max = min + loose_size(&r, &old_tree) + loose_size(&r, &blob);
     let bytes = r.git.disk_usage_only(&[SELECTED]).unwrap();
-    assert!((min..=max).contains(&bytes), "S75 permits historical sharing overcount: {bytes}, {min}..={max}");
+    assert!((min..=max).contains(&bytes), "disk usage may overcount objects shared only through older history: {bytes}, {min}..={max}");
     // Re-adding the old blob atop the current kept tip is the other documented overcount shape.
     let readded_tree = tree(&r.git, &[("current", b"current kept files\n"), ("old", b"payload once held in old history\n")]);
     let readded = commit(&r.git, &readded_tree, &[kept], "re-add old\n");

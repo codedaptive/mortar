@@ -1,4 +1,4 @@
-//! A real-git crash boundary, paired with run_with_kill_gate. Covered by tests/kill_gate.rs (S-5).
+//! A real-git crash boundary, paired with run_with_kill_gate. Covered by tests/kill_gate.rs.
 
 use crate::write_git_shim;
 use std::io;

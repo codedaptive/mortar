@@ -1,7 +1,7 @@
 //! Git::disk_usage_only: the disk bytes a set of refs alone holds. The run itself has no unit test; tests/typed/
 //! disk_usage.rs covers it: a ref with unique objects counts them; objects shared with another ref are not counted;
 //! a ref HEAD (or a linked worktree's HEAD) points at or contains counts 0; an unknown ref is refused naming it; an
-//! empty list answers 0; the S-75 upper bound (objects shared only through older history are counted).
+//! empty list answers 0; the documented upper bound (objects shared only through older history are counted).
 
 use crate::disk_usage_only_request::disk_usage_only_request;
 use crate::read_disk_usage::read_disk_usage;
@@ -17,10 +17,11 @@ impl Git {
     /// objects count 0. Reflogs are not walked (`--all` does not read them): an object only a reflog holds is
     /// counted, though git keeps it until that reflog entry expires and gc prunes it.
     ///
-    /// An upper bound, accepted for S-52(4) by S-75: not an exact set difference, as git marks as shared only the trees
-    /// of the other refs' commits where its walk stops, so an object the given refs share with other refs only through
-    /// older history is counted (a blob re-added from an old commit; the tree of a parentless commit whose tree
-    /// another ref's tip also has).
+    /// An upper bound, accepted: an exact walk over every other ref's objects costs far more, for a figure that only
+    /// guides a sweep. It is not an exact set difference, as git marks as shared only the trees of the other refs'
+    /// commits where its walk stops, so an object the given refs share with other refs only through older history is
+    /// counted (a blob re-added from an old commit; the tree of a parentless commit whose tree another ref's tip also
+    /// has).
     ///
     /// `--disk-usage` arrived in git 2.31, below the 2.40 floor, so there is no version check.
     ///

@@ -1,5 +1,6 @@
-//! Git::rev_parse: resolve a rev to a commit id. It only runs git, so it has no unit tests; Nagatha's integration
-//! test "rev_parse finding a commit, peeling a tag and answering None for a missing rev" is to cover it.
+//! Git::rev_parse: resolve a rev to a commit id. It only runs git, so it has no unit tests; tests/typed/
+//! commits_and_refs.rs `rev_parse_peels_annotated_tag_and_list_refs_respects_prefix` covers it: a branch's commit,
+//! an annotated tag peeled to its commit, and None for a missing ref and for `--help`.
 
 use crate::read_rev_parse::read_rev_parse;
 use crate::rev_parse_request::rev_parse_request;

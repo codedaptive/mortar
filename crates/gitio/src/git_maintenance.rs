@@ -1,5 +1,8 @@
-//! Git::maintenance: pack the repository's loose objects. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "maintenance packing a repository's loose objects" is to cover it.
+//! Git::maintenance: pack the repository's loose objects. It only runs git, so it has no unit tests; folders'
+//! tests/folders/sweeps.rs
+//! (sweep_deletes_closed_snapshot_joined_leftover_and_extra_but_keeps_open_unjoined_and_checked_out) checks only that
+//! sweep_refs runs it, through a shim that records the call and then runs real git. No test checks that it packs loose
+//! objects yet.
 
 use crate::maintenance_request::maintenance_request;
 use crate::{Git, GitError};

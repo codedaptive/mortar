@@ -1,5 +1,6 @@
-//! Git::list_refs: the refs under a prefix with their ids. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "list_refs listing the refs under a prefix, and every ref for an empty prefix" is to cover it.
+//! Git::list_refs: the refs under a prefix with their ids. It only runs git, so it has no unit tests;
+//! tests/typed/commits_and_refs.rs covers it: the refs under a prefix, none under a missing one, every ref for an
+//! empty prefix, and an annotated tag left unpeeled.
 
 use crate::list_refs_request::list_refs_request;
 use crate::read_ref_list::read_ref_list;

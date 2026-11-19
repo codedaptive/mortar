@@ -1,4 +1,4 @@
-//! WO-orc-gitio-it-6 #1019, SPEC-gitio-3/S-50: tree_with_paths joins real object/index operations.
+//! tree_with_paths joins real object/index operations.
 use crate::fixture::{blob, commit, repo, set_ref, tree};
 use crate::support::GitRepo;
 use gitio::{Git, MergeTreeOutcome, Oid, RunOpts};

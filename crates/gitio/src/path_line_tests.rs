@@ -4,7 +4,7 @@ use std::path::Path;
 
 #[test]
 fn absolute_line_is_the_path() {
-    assert_eq!(path_line(b"/tmp/wo-gitio-2b-capture/.git\n").unwrap(), Path::new("/tmp/wo-gitio-2b-capture/.git"));
+    assert_eq!(path_line(b"/tmp/capture/.git\n").unwrap(), Path::new("/tmp/capture/.git"));
 }
 
 #[test]

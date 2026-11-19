@@ -1,6 +1,5 @@
-//! Git::sparse_list: the folders a sparse folder holds. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "sparse_list reading back sparse_set and sparse_add folders with quoted names, and refusing a
-//! non-cone folder" is to cover it.
+//! Git::sparse_list: the folders a sparse folder holds. It only runs git, so it has no unit tests; no gitio test
+//! calls it, and crates/cli/tests/operational_rit/need.rs reads the cone back with it after `mortar need`.
 
 use crate::read_sparse_list::read_sparse_list;
 use crate::sparse_list_request::sparse_list_request;

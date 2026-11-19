@@ -1,5 +1,4 @@
-//! Git::blob_bytes: one blob's content. It only runs git, so it has no unit tests; Nagatha's integration test
-//! "blob_bytes reading a blob holding NUL bytes unchanged; a tree id is git's error" is to cover it.
+//! Git::blob_bytes: one blob's content. It only runs git, so it has no unit tests. No test covers it yet.
 
 use crate::blob_bytes_request::blob_bytes_request;
 use crate::{Git, GitError, Oid};

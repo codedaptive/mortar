@@ -5,7 +5,7 @@ use crate::{GitError, RunOpts};
 use std::ffi::OsString;
 
 /// `interpret-trailers --parse --no-divider` with the message on stdin. A `---` line does not end the message, so
-/// trailers below it are read: these are commit messages, never patches (S-10). A message holding a NUL is refused
+/// trailers below it are read: these are commit messages, never patches. A message holding a NUL is refused
 /// naming it.
 pub(crate) fn trailers_parse_request(message: &str) -> Result<(Vec<OsString>, RunOpts), GitError> {
     no_nul("message", message.as_bytes())?;

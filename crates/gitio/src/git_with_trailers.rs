@@ -1,5 +1,5 @@
-//! Git::with_trailers: a message with trailers added. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "with_trailers adding trailers that trailers then reads back" is to cover it.
+//! Git::with_trailers: a message with trailers added. It only runs git, so it has no unit tests;
+//! tests/typed/trailers.rs covers it: trailers added below a body divider that Git::trailers reads back.
 
 use crate::read_message::read_message;
 use crate::trailers_add_request::trailers_add_request;

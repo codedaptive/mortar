@@ -1,4 +1,4 @@
-//! WO-orc-gitio-it-4, S-33 and S-125: Git::set_index sets a folder's index to a tree without touching files or HEAD, keeping sparse folders' skip-worktree bits.
+//! Git::set_index sets a folder's index to a tree without touching files or HEAD, keeping sparse folders' skip-worktree bits.
 use crate::fixture::{commit, repo, set_ref, tree};
 use crate::support::GitRepo;
 use gitio::{Git, Oid, RunOpts};

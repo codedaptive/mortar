@@ -1,6 +1,6 @@
-//! Git::check_ref_format: whether a ref name is well formed. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "check_ref_format accepting a full ref name and answering false for a malformed one" is to
-//! cover it.
+//! Git::check_ref_format: whether a ref name is well formed. It only runs git, so it has no unit tests; oplog's
+//! tests/oplog/ref_names.rs (apply_refuses_a_name_git_check_ref_format_rejects_before_writing_an_intent) covers it:
+//! apply refuses a name git rejects, as BadMove, before writing an intent.
 
 use crate::check_ref_format_request::check_ref_format_request;
 use crate::read_check_ref_format::read_check_ref_format;

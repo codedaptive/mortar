@@ -1,4 +1,4 @@
-//! Executable test-shim file I/O; tests/support.rs runs a shim that delegates to real git (S-5).
+//! Executable test-shim file I/O; tests/support.rs runs a shim that delegates to real git.
 
 use std::fs;
 use std::io;

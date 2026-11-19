@@ -1,6 +1,6 @@
-//! Git::worktree_remove: remove a worktree and its folder. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "worktree_remove refusing a modified worktree without force and removing it with force" is to
-//! cover it.
+//! Git::worktree_remove: remove a worktree and its folder. It only runs git, so it has no unit tests;
+//! tests/typed/worktrees.rs `worktree_lifecycle_sparse_paths_and_discovery_share_the_real_common_store` covers it:
+//! a modified worktree refused without force with its edit kept, then removed with its folder by force.
 
 use crate::worktree_remove_request::worktree_remove_request;
 use crate::{Git, GitError};

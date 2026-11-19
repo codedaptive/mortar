@@ -1,5 +1,6 @@
-//! Git::rev_list: the commits between two commits, oldest first. It only runs git, so it has no unit tests;
-//! Nagatha's integration test "rev_list oldest first over a merge, empty for base == tip" is to cover it.
+//! Git::rev_list: the commits between two commits, oldest first. It only runs git, so it has no unit tests; land's
+//! tests/squash_zit/squash_cases.rs (a_squash_keeps_origins_newer_change_and_adds_only_the_zones) covers it through
+//! squash: the squash message lists the zone's one commit.
 
 use crate::read_oid_lines::read_oid_lines;
 use crate::rev_list_request::rev_list_request;

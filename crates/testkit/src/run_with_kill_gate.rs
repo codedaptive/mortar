@@ -1,4 +1,4 @@
-//! Actual child reaping before releasing a git crash wrapper; tests/kill_gate.rs covers the join (S-5).
+//! Actual child reaping before releasing a git crash wrapper; tests/kill_gate.rs covers the join.
 
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};

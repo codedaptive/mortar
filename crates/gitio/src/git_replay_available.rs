@@ -1,6 +1,7 @@
 //! Git::replay_available: whether this git has a replay that `replay` can use. It only runs git with a fixed argv,
-//! so it has no unit tests; read_replay_probe_tests cover the reading, and Nagatha's integration test
-//! "replay_available answering true on the installed git" is to cover the run.
+//! so it has no unit tests; read_replay_probe_tests cover the reading, and tests/typed/replay.rs and
+//! tests/typed/replay_attributes.rs cover the run: its answer matches whether the installed git's `replay -h` lists
+//! `--ref-action`.
 
 use crate::read_replay_probe::read_replay_probe;
 use crate::{Git, GitError, RunOpts};

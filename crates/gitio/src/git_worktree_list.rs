@@ -1,6 +1,6 @@
 //! Git::worktree_list: the repository's worktrees. It only runs git with a fixed argv, so it has no unit tests;
-//! read_worktree_list_tests cover the reading, and Nagatha's integration test "worktree_list showing the main
-//! folder, a detached locked worktree and a prunable one" is to cover the run.
+//! read_worktree_list_tests cover the reading, and tests/typed/worktrees.rs covers the run: the main folder, a
+//! branch worktree, a detached locked one and a prunable one.
 
 use crate::read_worktree_list::read_worktree_list;
 use crate::{Git, GitError, RunOpts, Worktree};
