@@ -1,7 +1,7 @@
-//! Land RITs: published WO-orc-land-rit-1 interfaces and WO-land-rit-2's owed cross-kit cases.
+//! Land RITs: public interfaces and cross-kit cases.
 //! Real Gitio/Oplog Display/JSON/trailers through public Land APIs; every parent owns a disposable TestRepo.
-//! WO-land-rit-3: after_publish -> Gitio/Oplog metadata/Display, and S-103 actual interrupted publish -> recover/repeat.
-//! WO-land-rit-4: after_publish's consumed replay record and zone tip recovered by public Oplog undo/restore.
+//! after_publish -> Gitio/Oplog metadata/Display, and actual interrupted publish -> recover/repeat.
+//! after_publish's consumed replay record and zone tip recovered by public Oplog undo/restore.
 //! push_kill's ignored entry is a subprocess only; its parents prove actual SIGKILL and kernel reap.
 mod displays;
 mod support;
@@ -9,6 +9,7 @@ mod trailers;
 mod owed_displays;
 mod guard_codec;
 mod guard_installation;
+mod check_hooks_path;
 mod owed_ops;
 mod state_codec;
 mod after_publish_displays;

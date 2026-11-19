@@ -1,5 +1,5 @@
 //! RIT of the mortar child binary with folders, snapshot, join, gitio and oplog. Every case owns a disposable
-//! repository. It also holds the cli RITs moved by S-135 and S-136, owned by Nagatha from landing: each run_* module
+//! repository. It also holds the cli RITs: each run_* module
 //! drives the mortar binary against real git and the crates below cli.
 mod json;
 mod support;
@@ -27,7 +27,6 @@ mod rit9;
 mod rit11;
 mod rit12;
 mod guard_path;
-mod guard_symref;
 #[allow(dead_code)]
 #[path = "../operational_rit/observe.rs"]
 mod observe;
