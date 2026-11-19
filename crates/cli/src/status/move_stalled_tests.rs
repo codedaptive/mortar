@@ -1,5 +1,5 @@
 //! move_stalled: an index still at the old tip's tree, or at the op's recorded folder_tree, is a stall; an index at
-//! the new tip's tree, at any other tree (staged edits), or with no tree (an unmerged index) is not (S-85, S-97, S-116).
+//! the new tip's tree, at any other tree (staged edits), or with no tree (an unmerged index) is not.
 
 use gitio::Oid;
 

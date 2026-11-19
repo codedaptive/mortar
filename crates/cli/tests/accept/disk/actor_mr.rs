@@ -1,4 +1,4 @@
-//! Runs a harness verb as the drive's actor in the moot copy or the request folder. Real processes: the drive
+//! Runs a harness verb as the drive's actor in the repository copy or the request folder. Real processes: the drive
 //! (steps/disk.rs) runs `mr init` through it on every drive that passes the refusal and reads the plan with the
 //! copy's HEAD on a branch; `mr folder zone` only after the init line held, `mr folder request` only after the zone
 //! line held; `mr disk` and `mr snapshot` only on drives whose two folders were made.

@@ -1,4 +1,4 @@
-//! Step 4, the agent test (04-agent.md): run_agent, its wrappers and agent run, its checks in order, and the pure
+//! Step 4, the agent test: run_agent, its wrappers and agent run, its checks in order, and the pure
 //! readings of the wrappers' logs and the op log.
 
 mod actor_kinds;

@@ -1,4 +1,4 @@
-//! uninstall_failure: The report of an uninstall the disk failed (spec 07, "mr uninstall").
+//! uninstall_failure: The report of an uninstall the disk failed.
 //! Pure: builds the report from its arguments; uninstall_failure_tests pins its text.
 
 use std::path::PathBuf;

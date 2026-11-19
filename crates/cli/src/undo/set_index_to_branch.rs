@@ -1,5 +1,5 @@
-//! set_index_to_branch: an undo's SetIndex folder step, the folder's index set to its branch's tree (S-73, S-142).
-//! No unit test (S-104): it runs git, snapshot or the op log; its decisions have their tests.
+//! set_index_to_branch: an undo's SetIndex folder step, the folder's index set to its branch's tree.
+//! No unit test: it runs git, snapshot or the op log; its decisions have their tests.
 
 use crate::join::RequestRun;
 use crate::report::{failure_report, Report};

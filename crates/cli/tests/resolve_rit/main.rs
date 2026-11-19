@@ -1,5 +1,5 @@
-//! WO-orc-cli-rit-2 #1369: mortar child -> snapshot/join/folders/oplog, S-50/S-64/S-87/S-88/S-91.
-//! WO-cli-rit-3 adds durable folder_tree refusal/retry, valued-op reads and resolve-kill -> next-join catch-up.
+//! Mortar child -> snapshot/join/folders/oplog.
+//! Also durable folder_tree refusal/retry, valued-op reads and resolve-kill -> next-join catch-up.
 //! Each parent owns a throwaway repository. Status/need remain outside this target.
 //! Existing binary fixture/JSON parser are read-only shared sources, not copies or concurrent CLI2s edits.
 #[allow(dead_code)]

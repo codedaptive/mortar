@@ -1,4 +1,4 @@
-//! parse_picker_answer: The harnesses a person picked at install's prompt (spec 07 item 4).
+//! parse_picker_answer: The harnesses a person picked at install's prompt.
 
 use super::{HarnessSpec, HARNESSES};
 

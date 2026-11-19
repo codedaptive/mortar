@@ -54,17 +54,17 @@ fn report(exit: ExitCode, outcome: &str, lines: &[&str], owner: Option<&str>, ne
 }
 
 fn failed(what: &str) -> Report {
-    report(ExitCode::Failure, "failed", &[what, "nothing half-done is left"], None, "repeat the same command")
+    report(ExitCode::Failure, "failed", &[what], None, "repeat the same command")
 }
 
 #[test]
 fn an_unborn_head_is_refused_naming_the_folder() {
     assert_eq!(
-        snapshot_error_report(&SnapshotError::UnbornHead { folder: PathBuf::from("/w/orc-r1") }),
+        snapshot_error_report(&SnapshotError::UnbornHead { folder: PathBuf::from("/w/a-r1") }),
         report(
             ExitCode::Refused,
             "refused",
-            &["HEAD of the folder /w/orc-r1 has no commit", "nothing was snapshotted"],
+            &["HEAD of the folder /w/a-r1 has no commit", "nothing was snapshotted"],
             Some("the folder's HEAD"),
             NEXT_HEAD,
         )
@@ -74,11 +74,11 @@ fn an_unborn_head_is_refused_naming_the_folder() {
 #[test]
 fn a_detached_head_is_refused_naming_the_folder() {
     assert_eq!(
-        snapshot_error_report(&SnapshotError::DetachedHead { folder: PathBuf::from("/w/orc-r1") }),
+        snapshot_error_report(&SnapshotError::DetachedHead { folder: PathBuf::from("/w/a-r1") }),
         report(
             ExitCode::Refused,
             "refused",
-            &["HEAD of the folder /w/orc-r1 names no branch", "nothing was snapshotted"],
+            &["HEAD of the folder /w/a-r1 names no branch", "nothing was snapshotted"],
             Some("the folder's HEAD"),
             NEXT_HEAD,
         )
@@ -219,7 +219,7 @@ fn a_head_without_a_change_id_is_a_failure_naming_the_commit() {
 
 #[test]
 fn a_moved_branch_is_a_failure_naming_what_happened() {
-    let stale = OpResult::Stale { refname: "refs/heads/orc/r1".to_string(), actual: Some(oid()) };
+    let stale = OpResult::Stale { refname: "refs/heads/a/r1".to_string(), actual: Some(oid()) };
     assert_eq!(
         snapshot_error_report(&SnapshotError::BranchMoved(record(Some(stale)))),
         failed("the folder's branch moved while snapshot ran")

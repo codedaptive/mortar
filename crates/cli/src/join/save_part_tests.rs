@@ -1,5 +1,5 @@
 //! save_part: the finished move, the save and the refused files, as lines and as --json fields in their order.
-//! ZUT (rule 11): join/finished_move_part is pure and used directly.
+//! ZUT: join/finished_move_part is pure and used directly.
 
 use std::path::PathBuf;
 

@@ -1,5 +1,5 @@
-//! Actual killed-move and unmerged-index status boundaries (S-85, S-116 positive cases).
-//! Orc#1651 explicitly permits the staged-after-finished case to wait until WO-cli-2g lands.
+//! Actual killed-move and unmerged-index status boundaries (positive cases).
+//! The staged-after-finished case is not covered here.
 use crate::{observe::*, support::*};
 use gitio::{IndexTreeError, RunOpts};
 use oplog::{KillPidProbe, OpPhase, PidProbe};

@@ -11,7 +11,7 @@ fn rit_need_expands_real_cone_records_gap_and_repeats_once_with_status_next() {
     assert_eq!(first.text("path"), "sub"); assert!(first.flag("gap"));
     assert_eq!(n.paths(), vec!["sub"]); assert_eq!(fs::read(n.folder.join("sub/keep")).unwrap(), b"keep\n");
     assert_eq!(n.f.git.sparse_list(&n.folder).unwrap(), vec![PathBuf::from("src"), PathBuf::from("sub")]);
-    // A fresh folder: its branch at its base and its tree the tip's, so it reads saved with no work yet (S-145).
+    // A fresh folder: its branch at its base and its tree the tip's, so it reads saved with no work yet.
     let current = status_at(&n.f, &n.folder, "saved");
     assert_eq!(current.strings("gaps"), &["sub"]); assert_eq!(first.text("next"), current.text("next"));
     assert_eq!(raw(&n.f.git, &["for-each-ref", "--format=%(refname) %(objectname)"]), refs);

@@ -1,7 +1,6 @@
 //! split_usage_forms: one line per top-level alternative of the first "( a | b )" group, with the text before and
-//! after it and single spaces; a bar inside brackets or a nested group does not split; no group is one line
-//! (SPEC-cli 08, "A verb's help").
-//! ZUT (rule 11): split_usage_forms is pure; every input is a literal.
+//! after it and single spaces; a bar inside brackets or a nested group does not split; no group is one line.
+//! Unit test: split_usage_forms is pure; every input is a literal.
 
 use super::split_usage_forms;
 

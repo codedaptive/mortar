@@ -1,11 +1,11 @@
-//! Finishes the folder move of a request's last join rebase (S-86) or of an undo of a plain join rebase that put the
-//! rebased branch back (S-143), if one is pending: a kill or a refused move left it, or it is done and repeats as a
-//! no-op. An undo of a resolve step is no pending move: undo set the index itself and kept the files (S-148).
-//! Shell API: run_join, run_resolve, run_save and run_undo call it.
+//! Finishes the folder move of a request's last join rebase or of an undo of a plain join rebase that put the
+//! rebased branch back, if one is pending: a kill or a refused move left it, or it is done and repeats as a
+//! no-op. An undo of a resolve step is no pending move: undo set the index itself and kept the files.
+//! Shell API: run_join, run_resolve, run_save, run_undo and undo's folder_step call it.
 //! It passes the op's recorded folder_tree as move_folder's index_tree, None for a plain join's rebase and for an
-//! undo's move (S-87(3), S-89).
-//! No unit test: it reads the op log, snapshots and moves the folder with git (S-5); find_pending_move_tests covers
-//! the decision and move_refusal_report_tests its refusal. Nagatha's integration group is to
+//! undo's move.
+//! No unit test: it reads the op log, snapshots and moves the folder with git; find_pending_move_tests covers
+//! the decision and move_refusal_report_tests its refusal. The repo integration tests are to
 //! cover, with the mortar binary as a child process in a throwaway repository and a request folder: a kill after
 //! join's rebase op and before the folder move (the branch ahead of the folder) is finished by the next join before
 //! it saves, with the finished move in its report and the folder's work in the request's snapshot ref; a local edit
@@ -17,22 +17,30 @@
 //! rebase; after an undo of a resolve step the next save, join or resolve moves no folder files.
 
 use folders::move_folder;
-use snapshot::snapshot;
+use snapshot::{snapshot, SnapshotError};
 
-use super::{move_refusal_report, read_pending_move, snapshot_failure, PendingMove, RequestRun};
+use super::{move_refusal_report, moved_before, read_pending_move, PendingMove, RequestRun};
 use crate::report::Report;
 
-/// The pending move, finished: snapshot the folder's work first (S-74), then move the folder from the move's old tip
+/// Undo's verb: its reports name no ref the snapshot moved, so its refused move carries no moved line.
+const UNDO: &str = "undo";
+
+/// The pending move, finished: snapshot the folder's work first, then move the folder from the move's old tip
 /// to its new one, saved true from that snapshot, with the op's folder_tree as the index tree (None for a plain
-/// join's rebase and for an undo's move). None when no move is pending. A failed read or snapshot is failure_report
-/// and a refused move move_refusal_report, each for `verb`.
-pub fn finish_pending_move(run: &RequestRun, verb: &str) -> Result<Option<PendingMove>, Report> {
+/// join's rebase and for an undo's move). Gives the move and whether its snapshot moved the snapshot ref; (None,
+/// false) when no move is pending. A failed read is failure_report and a refused move move_refusal_report, each for
+/// `verb`; a refused move whose snapshot wrote starts with moved_before's line for the snapshot ref, except under undo.
+/// A failed snapshot is what `on_snapshot_error` makes of it.
+pub fn finish_pending_move(
+    run: &RequestRun,
+    verb: &str,
+    on_snapshot_error: &dyn Fn(SnapshotError) -> Report,
+) -> Result<(Option<PendingMove>, bool), Report> {
     let Some(pending) = read_pending_move(&run.git, &run.folder.common, &run.request_ref, verb)? else {
-        return Ok(None);
+        return Ok((None, false));
     };
     let (excludes, cap) = (&run.settings.excludes, run.settings.cap_bytes);
-    snapshot(&run.git, &run.folder.toplevel, &run.target, excludes, cap)
-        .map_err(|error| snapshot_failure(verb, error))?;
+    let taken = snapshot(&run.git, &run.folder.toplevel, &run.target, excludes, cap).map_err(on_snapshot_error)?;
     move_folder(
         &run.git,
         &run.folder.toplevel,
@@ -42,6 +50,9 @@ pub fn finish_pending_move(run: &RequestRun, verb: &str) -> Result<Option<Pendin
         &run.target.actor,
         pending.folder_tree.as_ref(),
     )
-    .map_err(|error| Report { verb: verb.to_string(), ..move_refusal_report(&error, Vec::new()) })?;
-    Ok(Some(pending))
+    .map_err(|error| {
+        let moved = moved_before(false, taken.written && verb != UNDO, &run.request_ref);
+        Report { verb: verb.to_string(), ..move_refusal_report(&error, Vec::new(), moved.as_deref()) }
+    })?;
+    Ok((Some(pending), taken.written))
 }

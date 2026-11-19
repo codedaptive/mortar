@@ -1,8 +1,8 @@
 //! restore_moves: the moves an `mr restore` makes, read before it runs so the folders on those refs can be
-//! checked first (S-113(2)).
-//! No unit test: it reads the op log and runs git (S-5, S-104); its decisions are oplog's (find_done_record,
+//! checked first.
+//! No unit test: it reads the op log and runs git; its decisions are oplog's (find_done_record,
 //! check_restore_ref_names, plan_restore), covered there, and restore_refusal_tests cover what restore decides from
-//! the moves. Nagatha's integration group is to cover, with the mortar binary as a child process in a throwaway
+//! the moves. The repo integration tests are to cover, with the mortar binary as a child process in a throwaway
 //! repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a restore that would delete a folder's ref refuses exit 1.
 //!   The RIT crates/cli/tests/cli_rit/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder

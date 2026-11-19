@@ -1,4 +1,4 @@
-//! The report of an `mr publish` that land's publish answered (SPEC-cli 06).
+//! The report of an `mr publish` that land's publish answered.
 
 use std::path::Path;
 

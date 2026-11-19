@@ -1,10 +1,10 @@
 //! run_would_merge: `mr would-merge <commit or change ID>`, whether a squash would merge cleanly into the
-//! integration tip, under the land lock (SPEC-cli 06). No ref moves and no commit is written (git's trial merge
+//! integration tip, under the land lock. No ref moves and no commit is written (git's trial merge
 //! writes tree objects nothing keeps); --key names the lock holder only, never passed to the op log.
-//! No sibling test (S-104): it takes a real lock and runs git and land; parse_would_merge_args_tests,
+//! No sibling test: it takes a real lock and runs git and land; parse_would_merge_args_tests,
 //! would_merge_report_tests and landing's pick_squash_ref_tests, squash_pick_report_tests and
 //! squash_error_report_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): would-merge yes and no, by change ID
+//! Repo integration tests to write (cross-zone, not written here): would-merge yes and no, by change ID
 //! and by commit; a change ID no squash ref carries, exit 1; two squash refs carrying one change ID, exit 1; a
 //! squash ref holding a commit read_squash refuses; the land lock held by a live pid, exit 3; without a config,
 //! exit 1, next mr init.

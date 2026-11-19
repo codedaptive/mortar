@@ -1,5 +1,5 @@
-//! attempt_refusal: attempt folder 3 is the S-91 refusal for join and for resolve; request and zone folders give
-//! none.
+//! attempt_refusal: attempt folder 3 is the attempt-folder refusal for join and for resolve; request and zone
+//! folders give none.
 
 use folders::{FolderKind, FolderRecord};
 use gitio::Oid;

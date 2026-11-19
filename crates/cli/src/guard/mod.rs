@@ -1,4 +1,4 @@
-//! `mr guard` (SPEC-cli 06): its words, the config's branches as land's LandRefs, whether the guard is in place,
+//! `mr guard`: its words, the config's branches as land's LandRefs, whether the guard is in place,
 //! its reports and refusals in the cli's own words, and the runners of install and status.
 
 mod foreign_hook_report;

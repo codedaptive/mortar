@@ -1,9 +1,9 @@
-//! failure_report: exit 5, what failed then that nothing half-done is left, and a repeat as next.
+//! failure_report: exit 5, what failed as its one line, and a repeat as next.
 
 use super::{failure_report, ExitCode, Report};
 
 #[test]
-fn a_failure_says_nothing_is_half_done_and_to_repeat() {
+fn a_failure_names_what_failed_and_to_repeat() {
     assert_eq!(
         failure_report("init", "cannot write /r/.git/mortar/config.json: disk full"),
         Report {
@@ -12,7 +12,6 @@ fn a_failure_says_nothing_is_half_done_and_to_repeat() {
             outcome: "failed".to_string(),
             lines: vec![
                 "cannot write /r/.git/mortar/config.json: disk full".to_string(),
-                "nothing half-done is left".to_string(),
             ],
             owner: None,
             next: "repeat the same command".to_string(),

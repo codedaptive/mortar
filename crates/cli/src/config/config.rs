@@ -1,11 +1,11 @@
-//! Mortar's settings for one repository (S-70).
-//! A bare type (S-7); decode_config_tests, encode_config_tests and protected_refs_tests exercise it.
+//! Mortar's settings for one repository.
+//! A bare type; decode_config_tests, encode_config_tests and protected_refs_tests exercise it.
 
 use std::collections::BTreeMap;
 
 use super::{FormatterConfig, ZoneConfig};
 
-/// The three branch and remote names are non-empty; Mortar holds no default names (S-56). `zones` is keyed
+/// The three branch and remote names are non-empty; Mortar holds no default names. `zones` is keyed
 /// by zone name. `cap_bytes` is the snapshot size cap, `floor_bytes` the free-disk floor; `formatter` None
 /// means the team runs none.
 #[derive(Debug, Clone, PartialEq, Eq)]

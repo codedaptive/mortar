@@ -1,4 +1,4 @@
-//! usage_forms: a verb's usage as one line per form, for its help (SPEC-cli 08, "A verb's help").
+//! usage_forms: a verb's usage as one line per form, for its help.
 
 use super::split_usage_forms;
 use crate::args::find_verb;

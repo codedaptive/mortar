@@ -1,5 +1,5 @@
 //! find_zone_old: the commit a zone folder stands on, found by its index's tree among the values its zone branch has
-//! held (S-140).
+//! held.
 
 use gitio::Oid;
 

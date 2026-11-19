@@ -63,7 +63,7 @@ fn a_git_failure_is_a_failure_in_the_clis_words() {
             verb: "guard".to_string(),
             exit: ExitCode::Failure,
             outcome: "failed".to_string(),
-            lines: vec!["git could not read core.hooksPath".to_string(), "nothing half-done is left".to_string()],
+            lines: vec!["git could not read core.hooksPath".to_string()],
             owner: None,
             next: "repeat the same command".to_string(),
             fields: Vec::new(),

@@ -1,5 +1,4 @@
-//! with_restored: an `mr undo` report of a resolve step with the paused join that restore_join_state put back
-//! (S-148, S-155).
+//! with_restored: an `mr undo` report of a resolve step with the paused join that restore_join_state put back.
 
 use ::join::RestoredJoin;
 

@@ -1,5 +1,5 @@
 //! Tests of plan_skills: each thing that can stand at a skill path, the record's say, the wiring note and the
-//! refusal (spec 07 items 4 and 5). The text is "foobar", whose FNV-1a 64 is the published 85944171f73967e8.
+//! refusal. The text is "foobar", whose FNV-1a 64 is the published 85944171f73967e8.
 
 use std::path::PathBuf;
 

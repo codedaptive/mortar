@@ -1,5 +1,5 @@
 //! after_publish_report: the report of an after-publish that land answered, each named zone's move and folder in
-//! order (S-139, S-140).
+//! order.
 
 use std::path::PathBuf;
 
@@ -12,7 +12,7 @@ use crate::report::{ExitCode, OutValue, Report};
 const VERB: &str = "after-publish";
 
 /// The folder parts of next, in their fixed order: paths in the way, unmerged entries, an index matching no zone
-/// commit, a git failure. Each says how to clear the folder so that a repeat can finish it (S-137 (4), S-140).
+/// commit, a git failure. Each says how to clear the folder so that a repeat can finish it.
 const FOLDER_PARTS: [&str; 4] = [
     "move each path listed as in the way out of its zone folder, or put it back to that folder's index copy, and \
      leave the index as it is",

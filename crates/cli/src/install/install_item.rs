@@ -1,5 +1,5 @@
-//! One line of install's or uninstall's report (spec 07 item 8).
-//! A bare type (S-7); item_line_tests and item_json_tests exercise it.
+//! One line of install's or uninstall's report.
+//! A bare type; item_line_tests and item_json_tests exercise it.
 
 use std::path::PathBuf;
 

@@ -3,7 +3,7 @@
 use land::{Probe, ProbeOutcome};
 
 /// The commit probed and how the test command ended there: passed, failed with its exit code, failed by a signal,
-/// or timed out after its limit in whole seconds, which counts as a fail (S-78).
+/// or timed out after its limit in whole seconds, which counts as a fail.
 pub fn probe_line(probe: &Probe) -> String {
     let commit = &probe.commit;
     match &probe.outcome {

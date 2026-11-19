@@ -1,9 +1,9 @@
 //! find_pending_move: a done join-rebase that is the request ref's last mover, with the branch at its new tip, is a
 //! pending folder move carrying the folder_tree that op recorded, if any (cause Rebase); a done undo of a join-rebase
-//! op, last mover with the branch at its new tip, is one too, from the rebased tip back (cause Undo, no tree, S-143).
-//! An undo whose reversed op's Done record carries join_state (a resolve step, S-148) is none; one whose reversed op
+//! op, last mover with the branch at its new tip, is one too, from the rebased tip back (cause Undo, no tree).
+//! An undo whose reversed op's Done record carries join_state (a resolve step) is none; one whose reversed op
 //! carries folder_tree only, has no Done record in the log, or only failed, is the move back.
-//! ZUT (rule 11): undo_reason's reversed_op, done_record and is_resolve_step are pure and used directly.
+//! ZUT: undo_reason's reversed_op, done_record and is_resolve_step are pure and used directly.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, RefMove, ValuedRecord};

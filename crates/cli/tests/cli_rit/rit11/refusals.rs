@@ -46,7 +46,7 @@ fn resolve_undo_finishes_its_real_pending_folder_move_first_and_a_refused_move_u
     assert!(!w.s.f.local().git_dir(&w.s.f.request).unwrap().join("mortar-join.json").exists());
     let pending = w.s.f.status(); assert_eq!(pending.text("stalled_to"), w.s.f.head().as_str());
     assert!(w.s.f.last_move().values.iter().any(|(key, _)| key == "folder_tree"));
-    // S-143 (5) 4: undo finishes the resolve's pending folder move before oplog undo; sub/keep stands in its way.
+    // Undo finishes the resolve's pending folder move before oplog undo; sub/keep stands in its way.
     let (snap_before, before) = (ref_at(&w, SNAP), observe(&w)); let r = ours(&w, &["undo"], 1, "refused");
     assert_eq!(r.strings("lines"), &["the folder could not move; these files stand in the way:", "  sub/keep", "the request branch already stands at the new tip; the next mr join, mr resolve, mr save or mr undo finishes the move first"]);
     assert_eq!(r.text("owner"), "this request's folder"); assert_eq!(r.text("next"), "move those files out of the way, then mr join");
@@ -62,7 +62,7 @@ fn resolve_undo_finishes_its_real_pending_folder_move_first_and_a_refused_move_u
 #[test]
 fn nothing_to_undo_has_status_next_and_does_not_write_an_op_or_take_a_snapshot() {
     let w = World::new(); let before = observe(&w);
-    // S-145: a pristine folder equals its branch tip but has no work of its own yet; neither join nor wait.
+    // A pristine folder equals its branch tip but has no work of its own yet; neither join nor wait.
     let status = ours(&w, &["status"], 0, "saved"); assert!(status.flag("saved"));
     let r = ours(&w, &["undo"], 0, "nothing-to-undo");
     assert_eq!(r.strings("lines"), &["nothing to undo: no save, rebase or resolve of this folder is in the op log"]);

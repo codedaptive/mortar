@@ -6,7 +6,7 @@ use crate::report::{failure_report, ExitCode, Report};
 
 /// `text` is `error` as the op log words it (its Display, passed in by the caller), which already says what to do.
 /// UnknownOp, ValueUnknown, BadMove and Protected are exit 1 "refused" with `text` as the one line and a next
-/// step that runs now (S-112): UnknownOp "mr log"; ValueUnknown "mr log --ref <ref>"; BadMove and Protected
+/// step that runs now: UnknownOp "mr log"; ValueUnknown "mr log --ref <ref>"; BadMove and Protected
 /// in words, Protected owned by its protector. Anything else is the op log or git failing: failure_report.
 pub fn restore_error_report(error: &OplogError, text: &str) -> Report {
     let (next, owner) = match error {

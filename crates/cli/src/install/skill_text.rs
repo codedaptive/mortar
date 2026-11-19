@@ -1,4 +1,4 @@
-//! skill_text: the skill file install writes as `SKILL.md` (SPEC-cli 07 item 6, words in 07-install-skill.md),
+//! skill_text: the skill file install writes as `SKILL.md` (words in 07-install-skill.md),
 //! compiled into the binary so it matches the installed version. It holds all of the words, the last Rules bullet
 //! (`mr help`, `mr <verb> --help`) included.
 

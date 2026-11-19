@@ -1,5 +1,5 @@
 //! Why the current directory's Mortar folder cannot be read.
-//! A bare type (S-7); context_report_tests (NotARepository, NotAFolder, Record, Git) exercises each variant.
+//! A bare type; context_report_tests (NotARepository, NotAFolder, Record, Git) exercises each variant.
 
 use std::path::PathBuf;
 

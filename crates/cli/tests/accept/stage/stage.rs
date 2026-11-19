@@ -1,4 +1,4 @@
-//! ACCEPT-1's set-up as the steps carry it. Data only: stage_new makes it.
+//! Step 1's set-up as the steps carry it. Data only: stage_new makes it.
 
 use std::path::PathBuf;
 

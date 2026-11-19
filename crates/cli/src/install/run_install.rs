@@ -1,4 +1,4 @@
-//! run_install: `mr install`: reads its arguments and the process's environment, then install_in (spec 07).
+//! run_install: `mr install`: reads its arguments and the process's environment, then install_in.
 //! In order: `--key` given is a usage report (install records no op, so a key would be ignored); then arguments
 //! parse_install_args cannot read are a usage report; then HOME unset or empty is a refusal. Only then does it
 //! read PATH, the project (its one git call), this binary's path and the terminal, and hand them to install_in.

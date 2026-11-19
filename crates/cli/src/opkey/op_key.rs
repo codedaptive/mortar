@@ -1,6 +1,6 @@
-//! The op key a verb passes to the op log and the lock (spec: Operation key).
-//! save's and undo's keys go to the lock holder only (S-90); so do snapshot's, sweep's, guard's and the landing
-//! verbs' keys, since their calls draw their own op keys (S-132).
+//! The op key a verb passes to the op log and the lock.
+//! save's and undo's keys go to the lock holder only; so do snapshot's, sweep's, guard's and the landing
+//! verbs' keys, since their calls draw their own op keys.
 //! Shell API: `mr folder` (run_folder's runners), `mr join` and `mr resolve` (through request_run_for),
 //! `mr save` and `mr undo` (through save_run_for), `mr need` (run_need), `mr guard`
 //! (run_guard_install, run_guard_status), `mr squash` (run_squash),

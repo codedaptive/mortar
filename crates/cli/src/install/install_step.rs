@@ -1,5 +1,5 @@
-//! One write install makes, decided before any is made (spec 07 item 7).
-//! A bare type (S-7); the planning tests and step_record_tests exercise it.
+//! One write install makes, decided before any is made.
+//! A bare type; the planning tests and step_record_tests exercise it.
 
 use std::path::PathBuf;
 

@@ -36,7 +36,7 @@ pub fn guard_commit(world: &World, checks: &mut Checks, number: u8, branch: &str
 
 /// `git worktree add --force <root>/checkout-<branch> <branch>` in the working repository; --force because work has
 /// main checked out, which git otherwise will not check out twice. It runs with the guard on, which lets it through:
-/// the checkout's reference-transaction line leaves `refs/heads/<branch>` at the same value (S-153). One set-up line;
+/// the checkout's reference-transaction line leaves `refs/heads/<branch>` at the same value. One set-up line;
 /// when git fails, that line fails and no checkout is returned: the checkout is the set-up, the commit is the check.
 fn checkout(world: &World, checks: &mut Checks, number: u8, branch: &str) -> Result<PathBuf, String> {
     let path = world.root.join(format!("checkout-{branch}"));

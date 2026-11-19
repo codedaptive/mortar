@@ -14,8 +14,8 @@ use crate::report::{ExitCode, OutValue, Report};
 /// the folder's index copy, leaving the index as it is; for MoveBlock::Other it is to clear what stops the folder,
 /// leaving its index as it is. Either way the next ends with `repeat`, the same command run again, which finishes
 /// the move when the folder was cleared as the next says (a clear that resets the index to HEAD leaves no stall for
-/// the repeat to see, and the files are then their owner's, unreported: S-137 (3), (4)); it names no git command
-/// (S-112). Fields: the folder, old and new as text, and for Paths the paths as texts.
+/// the repeat to see, and the files are then their owner's, unreported); it names no git command.
+/// Fields: the folder, old and new as text, and for Paths the paths as texts.
 pub fn folder_move_refusal_report(
     verb: &str,
     done: &str,

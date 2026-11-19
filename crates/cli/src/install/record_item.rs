@@ -1,5 +1,5 @@
-//! One item of install's record, `~/.local/state/mortar/install.json` (spec 07 item 7).
-//! A bare type (S-7); encode_record_tests, decode_record_tests and plan_uninstall_tests exercise it.
+//! One item of install's record, `~/.local/state/mortar/install.json`.
+//! A bare type; encode_record_tests, decode_record_tests and plan_uninstall_tests exercise it.
 
 use std::path::PathBuf;
 

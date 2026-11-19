@@ -46,7 +46,7 @@ exec "$MORTAR_RIT_REAL_GIT" "$@"
     let valued = oplog::read_valued_log(&f.common).unwrap();
     let done = valued.records.iter().find(|v| v.record.kind == "join-rebase" && v.record.phase == OpPhase::Done).unwrap();
     let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
-    // WO-join-9 is on main: pin both complete values in order, including the pre-resolve state text.
+    // Pin both complete values in order, including the pre-resolve state text.
     assert_eq!(done.values, vec![folder_value, ("join_state".to_string(), state_before)]);
     assert_eq!(oplog::open_intent(&f.common, &done.record.op_id).unwrap(), None);
     let snap = f.git.read_ref(SNAP).unwrap().unwrap();
@@ -54,7 +54,7 @@ exec "$MORTAR_RIT_REAL_GIT" "$@"
     child.0.kill().unwrap(); assert_eq!(child.0.wait().unwrap().signal(), Some(9));
     assert!(!KillPidProbe.pid_alive(pid), "wait/reap the lock holder BEFORE releasing the git shim");
     release_gate(&release, b"release\n");
-    // Status need not call a marker-written index stalled (S-116); the next binary join must consume this tree.
+    // Status need not call a marker-written index stalled; the next binary join must consume this tree.
     let before_read = f.observe(); let pending = f.last_move();
     assert_eq!(pending.record.op_id, done.record.op_id);
     let movement = pending.record.moves.iter().find(|m| m.refname == REQUEST).unwrap();

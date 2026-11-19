@@ -1,7 +1,7 @@
-//! The verb table's entry for `mr help` (SPEC-cli 08). entry::main_entry answers help before `run` parses the line,
+//! The verb table's entry for `mr help`. entry::main_entry answers help before `run` parses the line,
 //! so this entry never reaches dispatch; it is in the table so a usage error lists help and `mr help help` has a
 //! usage.
-//! A bare const (S-7); verbs_setup_tests covers it.
+//! A bare const; verbs_setup_tests covers it.
 
 use super::{LockNeed, VerbKind, VerbSpec};
 

@@ -1,4 +1,4 @@
-//! Step 5, disk (05-disk.md): the refusal of a copy that is a registered team repository, the plan read from the
+//! Step 5, disk: the refusal of a copy that is a registered team repository, the plan read from the
 //! copy's HEAD, the folders Mortar makes from the copy under the scratch, the five numbers and their check lines;
 //! run_disk is the body.
 

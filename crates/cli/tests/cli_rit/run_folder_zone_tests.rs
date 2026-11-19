@@ -1,9 +1,9 @@
 //! `mortar folder zone`: a sparse zone folder from the config, its repeat, an unknown zone, a missing --actor, and
-//! --start making a new zone branch (or naming no commit). S-149's no-start cases prove the origin tip, not HEAD,
+//! --start making a new zone branch (or naming no commit). The no-start cases prove the origin tip, not HEAD,
 //! supplies a missing zone branch, and a missing origin is refused with --start next.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-104, S-109):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - a folders lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks);
 //! - free disk under the floor: exit 1 with the cli's own facts, never folders' BelowFloor Display text;
 //! - the zone branch checked out in another folder, or a different folder at the path: the cli's why and next,
@@ -117,7 +117,7 @@ fn member(output: &Output, key: &str) -> String {
     oplog::parse_json_string(&stdout, at).unwrap().0
 }
 
-/// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
+/// A harness verb's next step is never aimed at an agent: it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
     for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",

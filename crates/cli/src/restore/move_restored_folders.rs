@@ -1,7 +1,6 @@
-//! move_restored_folders: step 6 of `mr restore`: each folder that needs it is moved with its restored ref
-//! (S-113(3)).
-//! No unit test: it moves real folders through folders::move_folder (S-5, S-104); restore_move_refusal_report_tests
-//! cover what a refused move reports. Nagatha's integration group is to cover, with the mortar binary as a child
+//! move_restored_folders: step 6 of `mr restore`: each folder that needs it is moved with its restored ref.
+//! No unit test: it moves real folders through folders::move_folder; restore_move_refusal_report_tests
+//! cover what a refused move reports. The repo integration tests are to cover, with the mortar binary as a child
 //! process in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip.
@@ -21,7 +20,7 @@ use crate::report::Report;
 /// Moves each folder in `needing` (restored as of op `op_id`) from its ref's old value to its new one as `record`
 /// (the restore's done record, fresh or Repeated) moved the ref, so a repeat moves from the right tip. `needing` never
 /// holds a folder whose ref has moved on since a repeated record (folders_to_move leaves those, ref_moved_on), so a
-/// repeat moves only a folder whose ref still holds the record's new value (S-113(3)). The folders were checked saved
+/// repeat moves only a folder whose ref still holds the record's new value. The folders were checked saved
 /// before the restore (on a repeat, by the first attempt), so move_folder is told saved. A folder whose ref the record
 /// does not move stays. The first move refused stops the rest: restore_move_refusal_report, naming the folders
 /// already moved. Answers the folders moved.

@@ -1,6 +1,6 @@
 //! lock_report: a held lock or a takeover is busy naming the holder; contention is busy; a bad zone is refused; a
 //! file system error and an unknown host are failures.
-//! ZUT (rule 11, S-171): the lock errors are built as data; the failures run oplog's exported, pure Display and
+//! ZUT: the lock errors are built as data; the failures run oplog's exported, pure Display and
 //! report::failure_report directly.
 
 use std::path::PathBuf;
@@ -17,7 +17,7 @@ fn holder() -> LockRecord {
 #[test]
 fn a_held_lock_is_busy_naming_the_holder_and_since() {
     let error = LockError::Held {
-        path: PathBuf::from("/r/.git/mortar/locks/join-orc.lock"),
+        path: PathBuf::from("/r/.git/mortar/locks/join-a.lock"),
         holder: holder(),
         removed_guards: Vec::new(),
     };
@@ -28,7 +28,7 @@ fn a_held_lock_is_busy_naming_the_holder_and_since() {
             exit: ExitCode::Busy,
             outcome: "busy".to_string(),
             lines: vec![
-                "the lock /r/.git/mortar/locks/join-orc.lock is held by pid 4242 on build-7 for op join-a1b2 \
+                "the lock /r/.git/mortar/locks/join-a.lock is held by pid 4242 on build-7 for op join-a1b2 \
                  since 1763100000 (unix seconds); nothing ran"
                     .to_string()
             ],

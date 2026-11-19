@@ -1,5 +1,4 @@
-//! undo_refusal: the report of an undo refused by what choose_undo found, before any snapshot or op log write
-//! (S-73; S-142 item 1; S-148).
+//! undo_refusal: the report of an undo refused by what choose_undo found, before any snapshot or op log write.
 
 use super::UndoChoice;
 use crate::report::{ExitCode, Report};

@@ -1,5 +1,5 @@
-//! `mr status` (spec 02): the state it reports, the reads that fill it, the decisions it makes from that state,
-//! its report and its runner, for request folders and attempt folders (S-127(1)).
+//! `mr status`: the state it reports, the reads that fill it, the decisions it makes from that state,
+//! its report and its runner, for request folders and attempt folders.
 
 mod attempt_next;
 mod attempt_status_report;

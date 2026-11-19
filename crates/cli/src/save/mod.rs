@@ -1,7 +1,7 @@
-//! mr save and mr snapshot: save's runner, the sentence it takes (S-41), the run it reads before its lock
-//! (S-143), the snapshot target a folder saves to (S-69, shared by both verbs), the report of a save and of a save
-//! that did not happen; snapshot's runner, the report of a snapshot, of a snapshot that did not happen and of one run
-//! in a zone folder.
+//! mr save and mr snapshot: save's runner, the sentence it takes, the run it reads before its lock,
+//! the snapshot target a folder saves to (shared by both verbs), the report of a save, of a save
+//! that did not happen and of one that failed in a step that may follow its snapshot ref's move; snapshot's runner,
+//! the report of a snapshot, of a snapshot that did not happen and of one run in a zone folder.
 
 mod run_save;
 mod run_snapshot;
@@ -9,6 +9,7 @@ mod save_error_report;
 mod save_report;
 mod save_run_for;
 mod save_sentence;
+mod save_step_failure;
 mod snapshot_error_report;
 mod snapshot_report;
 mod snapshot_target_for;
@@ -22,6 +23,8 @@ mod save_report_tests;
 mod save_run_for_tests;
 #[cfg(test)]
 mod save_sentence_tests;
+#[cfg(test)]
+mod save_step_failure_tests;
 #[cfg(test)]
 mod snapshot_error_report_tests;
 #[cfg(test)]
@@ -37,6 +40,7 @@ pub(crate) use save_error_report::save_error_report;
 pub(crate) use save_report::save_report;
 pub(crate) use save_run_for::save_run_for;
 pub(crate) use save_sentence::save_sentence;
+pub(crate) use save_step_failure::save_step_failure;
 pub(crate) use snapshot_error_report::snapshot_error_report;
 pub(crate) use snapshot_report::snapshot_report;
 pub(crate) use snapshot_target_for::snapshot_target_for;

@@ -1,4 +1,4 @@
-//! `mr install` and `mr uninstall` (SPEC-cli 07): placing the binary in `~/.local/bin`, the `mr` link, the
+//! `mr install` and `mr uninstall`: placing the binary in `~/.local/bin`, the `mr` link, the
 //! harness skill files, install's record, and uninstall by that record.
 
 mod apply_failure;

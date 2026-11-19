@@ -7,7 +7,7 @@ use oplog::{OpPhase, OpRecord, OpResult, RefMove};
 use super::failed_undo_report;
 use crate::report::{ExitCode, Report};
 
-const REQ: &str = "refs/heads/req/orc/WO-cli-4";
+const REQ: &str = "refs/heads/req/a/r1";
 
 fn oid(c: char) -> Oid {
     Oid::parse(&c.to_string().repeat(40)).expect("a valid oid")
@@ -18,7 +18,7 @@ fn failed(result: Option<OpResult>) -> OpRecord {
         op_id: "op-12".to_string(),
         key: "undo:op-7".to_string(),
         kind: "undo".to_string(),
-        actor: "orc/WO-cli-4".to_string(),
+        actor: "a/r1".to_string(),
         reason: "undo of save op op-7".to_string(),
         at: 50,
         phase: OpPhase::Failed,
@@ -37,11 +37,11 @@ fn a_stale_ref_is_refused_naming_the_op_undone_and_the_ref_moved_outside_mortar(
             exit: ExitCode::Refused,
             outcome: "refused".to_string(),
             lines: vec![
-                "op op-7 cannot be undone: refs/heads/req/orc/WO-cli-4 moved since, outside mortar".to_string(),
+                "op op-7 cannot be undone: refs/heads/req/a/r1 moved since, outside mortar".to_string(),
                 "nothing was undone; the snapshot taken first is kept".to_string(),
             ],
             owner: None,
-            next: "ask the zone's coordinator about refs/heads/req/orc/WO-cli-4".to_string(),
+            next: "ask the zone's coordinator about refs/heads/req/a/r1".to_string(),
             fields: Vec::new(),
         }
     );

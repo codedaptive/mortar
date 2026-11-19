@@ -1,8 +1,8 @@
-//! restore_failed_report: restore_join_state refused after the oplog undo moved the ref (S-155 Q2); every error is a
+//! restore_failed_report: restore_join_state refused after the oplog undo moved the ref; every error is a
 //! refusal naming both ops, then why, with mr undo next to finish the restore.
-//! ZUT (rule 11): restore_failed_report builds its why lines by calling undo::restore_why, which is pure on these
+//! ZUT: restore_failed_report builds its why lines by calling undo::restore_why, which is pure on these
 //! errors, directly. Git failing, a_git_failure_is_a_refusal_too, runs gitio's GitError Display, exported, pure and
-//! below cli (S-171).
+//! below cli.
 
 use std::io;
 use std::path::PathBuf;

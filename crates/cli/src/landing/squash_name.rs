@@ -1,5 +1,5 @@
 //! SquashName: what a landing verb was told to read as a squash, a commit or a change ID.
-//! No sibling test (S-7): a bare type with no behaviour of its own.
+//! No sibling test: a bare type with no behaviour of its own.
 
 use gitio::Oid;
 use oplog::ChangeId;

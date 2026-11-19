@@ -1,4 +1,4 @@
-//! plan_placement: Install's decision about placing the binary at `~/.local/bin/mortar` (spec 07 item 1).
+//! plan_placement: Install's decision about placing the binary at `~/.local/bin/mortar`.
 //! Pure: it decides from the facts install read. A skip reason decides first; only without one does what stands
 //! at the path count, and a foreign program there is the one refusal.
 

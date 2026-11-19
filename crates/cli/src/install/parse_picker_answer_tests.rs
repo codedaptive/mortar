@@ -1,4 +1,4 @@
-//! parse_picker_answer: none, all, or a comma list of detected names in table order (spec 07 item 4).
+//! parse_picker_answer: none, all, or a comma list of detected names in table order.
 
 use super::{parse_picker_answer, HarnessSpec, HARNESSES};
 

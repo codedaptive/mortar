@@ -1,5 +1,5 @@
-//! verb_help_lines: a verb's usage one line per form, then its row's line (SPEC-cli 08, "A verb's help").
-//! ZUT (rule 11): the help groups, find_help_entry, usage_forms and the verb table are pure and used directly.
+//! verb_help_lines: a verb's usage one line per form, then its row's line.
+//! Unit test: the help groups, find_help_entry, usage_forms and the verb table are pure and used directly.
 
 use super::{find_help_entry, verb_help_lines};
 

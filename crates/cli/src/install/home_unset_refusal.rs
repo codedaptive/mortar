@@ -1,4 +1,4 @@
-//! home_unset_refusal: The refusal of install or uninstall when HOME is unset or empty (spec 07).
+//! home_unset_refusal: The refusal of install or uninstall when HOME is unset or empty.
 //! Pure: builds the report from its arguments; home_unset_refusal_tests pins its text.
 
 use crate::report::{ExitCode, Report};

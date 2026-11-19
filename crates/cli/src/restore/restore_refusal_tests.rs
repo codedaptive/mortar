@@ -1,5 +1,5 @@
 //! restore_refusal: an unsaved folder or a folder whose ref the restore deletes refuses with nothing moved; zone
-//! folders are never checked (S-113(2), S-115(1)).
+//! folders are never checked.
 
 use std::path::PathBuf;
 

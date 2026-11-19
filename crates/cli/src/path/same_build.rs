@@ -1,4 +1,4 @@
-//! same_build: whether the `mr` found on PATH is this Mortar (S-147). Pure: the caller gives both paths canonical and
+//! same_build: whether the `mr` found on PATH is this Mortar. Pure: the caller gives both paths canonical and
 //! has read the candidate's bytes for the marker.
 
 use std::path::Path;

@@ -1,6 +1,6 @@
 //! The report of an `mr guard` that land's guard_install or guard_status stopped, in the cli's own words: land's
 //! and gitio's Display texts are never printed.
-//! The Git case is a RIT left for Nagatha (listed only, not written: S-101, S-119): it needs git itself to fail to name
+//! The Git case is a repo integration test to write (not written here): it needs git itself to fail to name
 //! the hooks folder or common dir, and checks the cli's words are printed, not gitio's.
 
 use land::GuardError;
@@ -19,8 +19,8 @@ const IO_REPEAT: &str = "what was already written is the guard's own and harmles
 ///   owner "the Mortar guard", next `mr guard install --actor <name>` (install rewrites a guard.json whose bytes
 ///   differ from the config's). Fields: none.
 /// - Io { path, error }: failure_report (exit 5, "failed", next "repeat the same command"), lines "reading or writing
-///   <path> failed: <error>" and, in place of "nothing half-done is left", that what was written is harmless and a
-///   repeat writes only what is missing or different (install can fail after writing guard.json).
+///   <path> failed: <error>" and then that what was written is harmless and a repeat writes only what is missing
+///   or different (install can fail after writing guard.json).
 /// - Git: failure_report, "git could not name the repository's hooks folder or common dir".
 pub fn guard_error_report(error: &GuardError) -> Report {
     match error {
@@ -39,10 +39,8 @@ pub fn guard_error_report(error: &GuardError) -> Report {
             fields: Vec::new(),
         },
         GuardError::Io { path, error } => {
-            // guard_install writes guard.json before the hooks, so a failed hook write can leave guard.json behind:
-            // failure_report's "nothing half-done is left" would not be true, so its second line is replaced.
+            // guard_install writes guard.json before the hooks, so a failed hook write can leave guard.json behind.
             let mut report = failure_report(VERB, &format!("reading or writing {} failed: {error}", path.display()));
-            report.lines.truncate(1);
             report.lines.push(IO_REPEAT.to_string());
             report
         }

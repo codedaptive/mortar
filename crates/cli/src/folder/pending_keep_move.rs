@@ -1,5 +1,5 @@
 //! The request folder's move a killed `mr folder keep` left undone: its op moved the request branch and deleted
-//! the try branches, then the process died before the request folder moved (S-49, S-86).
+//! the try branches, then the process died before the request folder moved.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord};

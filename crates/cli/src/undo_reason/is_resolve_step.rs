@@ -1,6 +1,6 @@
 //! is_resolve_step: whether an op record is a resolve's final join step, the join-rebase op that records the paused
-//! join state under JOIN_STATE beside folder_tree (S-142 (1)). An undo of such a step puts the paused join back and
-//! leaves the folder's files, so it is no pending folder move (S-143, S-148).
+//! join state under JOIN_STATE beside folder_tree. An undo of such a step puts the paused join back and
+//! leaves the folder's files, so it is no pending folder move.
 
 use ::join::JOIN_STATE;
 use oplog::ValuedRecord;

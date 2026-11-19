@@ -1,4 +1,4 @@
-//! placement_skip: Why install skips placing the binary, if it does (spec 07 item 1).
+//! placement_skip: Why install skips placing the binary, if it does.
 
 use std::path::{Path, PathBuf};
 

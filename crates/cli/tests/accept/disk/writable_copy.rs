@@ -1,4 +1,4 @@
-//! Step 5's refusal decision on the moot copy. Real files, repositories and processes: the drive (steps/disk.rs)
+//! Step 5's refusal decision on the repository copy. Real files, repositories and processes: the drive (steps/disk.rs)
 //! runs it through run_disk, before anything else, on every drive with ACCEPT_MOOT_COPY set and not empty whose
 //! throwaway world was made.
 

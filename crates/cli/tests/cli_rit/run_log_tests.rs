@@ -1,11 +1,12 @@
 //! run_log: with one op in the log, plain `mr log` lists it and prints no records, and `mr --json log` puts the log's
-//! own line in "records", byte for byte (S-114): for a line with no values and no remote mark, and for a done push
-//! line carrying values and a remote mark (S-103), so --json gives the values and the mark exactly as oplog wrote
+//! own line in "records", byte for byte: for a line with no values and no remote mark, and for a done push
+//! line carrying values and a remote mark, so --json gives the values and the mark exactly as oplog wrote
 //! them.
-//! RIT (S-135, S-136): the mortar binary runs as a child in a throwaway repository (testkit's TestRepo, removed after
-//! the test) whose config `mr init` writes first; real git answers its common dir, and oplog reads a real op log file
-//! holding one line written here by hand. Children run with GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1.
-//! Nagatha's from landing. log's usage cases are ZUTs in crates/cli/src/log/run_log_tests.rs.
+//! Repo integration test: the mortar binary runs as a child in a throwaway repository (testkit's TestRepo, removed
+//! after the test) whose config `mr init` writes first; real git answers its common dir, and oplog reads a real op
+//! log file holding one line written here by hand. Children run with GIT_CONFIG_GLOBAL=/dev/null and
+//! GIT_CONFIG_NOSYSTEM=1. Owned by integration from landing. log's usage cases are ZUTs in
+//! crates/cli/src/log/run_log_tests.rs.
 
 use std::fs;
 use std::path::Path;

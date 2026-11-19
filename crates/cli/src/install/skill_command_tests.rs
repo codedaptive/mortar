@@ -1,4 +1,4 @@
-//! Tests of skill_command: every case of the rule (spec 07 item 6, S-177).
+//! Tests of skill_command: every case of the rule.
 
 use super::skill_command;
 

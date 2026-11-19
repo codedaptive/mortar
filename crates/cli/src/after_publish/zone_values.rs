@@ -1,4 +1,4 @@
-//! zone_values: the values a zone branch has held, newest first, for finding the commit its folder stands on (S-140).
+//! zone_values: the values a zone branch has held, newest first, for finding the commit its folder stands on.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, RefMove};

@@ -1,5 +1,5 @@
-//! The paths install writes under HOME (spec 07 items 1 to 3 and 7).
-//! A bare type (S-7); install_paths_for_tests exercises it.
+//! The paths install writes under HOME.
+//! A bare type; install_paths_for_tests exercises it.
 
 use std::path::PathBuf;
 

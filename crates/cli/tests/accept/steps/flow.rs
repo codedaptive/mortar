@@ -1,4 +1,4 @@
-//! Step 1, the flow (01-flow.md): its body is crate::flow::run_flow, the set-up and the fifteen checks in order.
+//! Step 1, the flow: its body is crate::flow::run_flow, the set-up and the fifteen checks in order.
 
 use super::{Gate, StepSpec};
 

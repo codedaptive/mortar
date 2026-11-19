@@ -1,5 +1,5 @@
 //! restore_move_refusal_report: the refs are restored, the folders already moved are named, then the folder that
-//! could not move and why; a plain repeat finishes the move (S-113(3)).
+//! could not move and why; a plain repeat finishes the move.
 
 use std::path::{Path, PathBuf};
 

@@ -1,4 +1,4 @@
-//! Step 1, the flow (01-flow.md): run_flow, its check groups in spec order, the state they hand on, and the pure
+//! Step 1, the flow: run_flow, its check groups in check order, the state they hand on, and the pure
 //! decisions they make from what Mortar and git said.
 
 mod conflict_commit;

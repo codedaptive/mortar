@@ -1,6 +1,6 @@
 //! folders_error_report: a FolderError from disk or sweep, under the verb it came from. Lock is lock_report's; Git and
 //! Oplog are failures in the cli's own words, never gitio's or oplog's Display; DiskProbe names the path and reason;
-//! ExtraRefRefused names the --ref to drop (S-112); every other arm is folder_error_why's lines with folder_refusal's
+//! ExtraRefRefused names the --ref to drop; every other arm is folder_error_why's lines with folder_refusal's
 //! exit and next.
 
 use std::path::PathBuf;
@@ -30,7 +30,7 @@ fn refused(verb: &str, lines: &[&str], next: &str) -> Report {
 }
 
 fn failed(verb: &str, what: &str) -> Report {
-    report(verb, ExitCode::Failure, "failed", &[what, "nothing half-done is left"], "repeat the same command")
+    report(verb, ExitCode::Failure, "failed", &[what], "repeat the same command")
 }
 
 fn git_error() -> GitError {
@@ -91,7 +91,7 @@ fn io_is_a_failure_with_its_path_and_folder_refusals_next() {
             ExitCode::Failure,
             "failed",
             &["/w/a: disk gone"],
-            "repeat the same command; nothing half-done is left",
+            "repeat the same command",
         )
     );
 }

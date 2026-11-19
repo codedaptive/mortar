@@ -1,4 +1,4 @@
-//! Step 5's zone and request folders, made by Mortar from the moot copy. Real repositories and processes: the drive
+//! Step 5's zone and request folders, made by Mortar from the copy. Real repositories and processes: the drive
 //! (steps/disk.rs) runs it through run_disk on every drive that passes the refusal and reads the plan.
 
 use std::path::{Path, PathBuf};

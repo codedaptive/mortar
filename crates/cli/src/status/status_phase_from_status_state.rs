@@ -1,5 +1,5 @@
-//! From<&StatusState> for StatusPhase: the first that holds wins, in the spec's order: a stalled folder move first
-//! (S-85), then a paused join, unsaved work, saved work not yet joined, and a joined request.
+//! From<&StatusState> for StatusPhase: the first that holds wins, in this order: a stalled folder move first,
+//! then a paused join, unsaved work, saved work not yet joined, and a joined request.
 
 use super::{StatusPhase, StatusState};
 

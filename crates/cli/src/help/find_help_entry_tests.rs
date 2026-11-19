@@ -1,5 +1,5 @@
 //! find_help_entry: the row named exactly, with its group; None for any other word.
-//! ZUT (rule 11): the help groups are pure data.
+//! Unit test: the help groups are pure data.
 
 use super::find_help_entry;
 

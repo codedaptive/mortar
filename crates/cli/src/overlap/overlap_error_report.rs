@@ -1,5 +1,5 @@
 //! overlap_error_report: the report of an `mr overlap` whose read of the requests' changed files failed, one arm
-//! per JoinError, in the cli's own words: gitio's Display is never printed (S-128 (4)).
+//! per JoinError, in the cli's own words: gitio's Display is never printed.
 
 use ::join::JoinError;
 
@@ -7,7 +7,7 @@ use crate::report::{failure_report, Report};
 
 const VERB: &str = "overlap";
 
-/// Every arm is a failure (exit 5): overlap reads only, so nothing half-done is left and a repeat is safe. join's
+/// Every arm is a failure (exit 5): overlap reads only, so a repeat is safe. join's
 /// overlap returns only Git; the other arms are its replay's refusals, each worded naming its commit or ref.
 pub fn overlap_error_report(error: &JoinError) -> Report {
     let what = match error {

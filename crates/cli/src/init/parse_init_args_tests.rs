@@ -55,7 +55,7 @@ fn the_three_names_alone_take_every_default() {
 #[test]
 fn every_flag_given() {
     let options = ok(&[
-        "--zone", "orc=crates/cli,Makefile", "--zone", "gitio=crates/gitio", "--root-file", "Cargo.toml",
+        "--zone", "cli=crates/cli,Makefile", "--zone", "gitio=crates/gitio", "--root-file", "Cargo.toml",
         "--root-file", "Cargo.lock", "--build-dir", "target", "--build-dir", ".build", "--cap-bytes", "1024",
         "--floor-bytes", "0", "--formatter", "cargo", "--formatter", "fmt", "--formatter-timeout", "60", "--replace",
     ]);
@@ -65,7 +65,7 @@ fn every_flag_given() {
         config.zones,
         BTreeMap::from([
             ("gitio".to_string(), ZoneConfig { paths: vec!["crates/gitio".to_string()] }),
-            ("orc".to_string(), ZoneConfig { paths: vec!["crates/cli".to_string(), "Makefile".to_string()] }),
+            ("cli".to_string(), ZoneConfig { paths: vec!["crates/cli".to_string(), "Makefile".to_string()] }),
         ])
     );
     assert_eq!(config.root_files, vec!["Cargo.toml".to_string(), "Cargo.lock".to_string()]);
@@ -106,9 +106,9 @@ fn a_missing_or_empty_value_is_refused() {
 
 #[test]
 fn zone_refusals_come_through() {
-    assert_eq!(err_with(&["--zone", "orc"]), "--zone needs <zone>=<path>[,<path>...], not \"orc\"");
-    assert_eq!(err_with(&["--zone", "orc=a", "--zone", "orc=b"]), "--zone \"orc\" is given twice");
-    assert_eq!(err_with(&["--zone", "orc=a,,b"]), "--zone \"orc\" has an empty path");
+    assert_eq!(err_with(&["--zone", "cli"]), "--zone needs <zone>=<path>[,<path>...], not \"cli\"");
+    assert_eq!(err_with(&["--zone", "cli=a", "--zone", "cli=b"]), "--zone \"cli\" is given twice");
+    assert_eq!(err_with(&["--zone", "cli=a,,b"]), "--zone \"cli\" has an empty path");
 }
 
 #[test]

@@ -1,5 +1,5 @@
-//! after_publish_failure: after-publish's failure report (exit 5, S-71). Not failure_report, whose line "nothing
-//! half-done is left" is false here: after_publish stops at a zone with the zones before it already moved.
+//! after_publish_failure: after-publish's failure report (exit 5). Not failure_report, which takes one
+//! line: after_publish stops at a zone with the zones before it already moved, so its callers add a line saying so.
 
 use crate::report::{ExitCode, Report};
 

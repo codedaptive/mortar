@@ -1,4 +1,4 @@
-//! undo_report: the report of an undo oplog answered Done, after its folder step (S-142, S-143, S-148).
+//! undo_report: the report of an undo oplog answered Done, after its folder step.
 
 use gitio::Oid;
 use oplog::OpRecord;

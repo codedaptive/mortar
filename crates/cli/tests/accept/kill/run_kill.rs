@@ -1,4 +1,4 @@
-//! Step 3, nothing lost, nothing twice (03-kill.md). Real repositories, processes and SIGKILLs: the drive
+//! Step 3, nothing lost, nothing twice. Real repositories, processes and SIGKILLs: the drive
 //! (steps/kill.rs) runs it as step 3's body on every drive.
 
 use super::{kill_join_after, kill_join_before, kill_land, kill_not_run, kill_publish, kill_setup, squash_ready};

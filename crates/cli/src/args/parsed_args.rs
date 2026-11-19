@@ -1,5 +1,5 @@
 //! A command line once read.
-//! A bare type (S-7); parse_args_tests exercises it.
+//! A bare type; parse_args_tests exercises it.
 
 use super::VerbSpec;
 

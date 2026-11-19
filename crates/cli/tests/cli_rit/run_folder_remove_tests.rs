@@ -1,9 +1,9 @@
 //! `mortar folder remove`: a joined, saved request folder removed with its branch and snapshot ref; unsaved work,
 //! remaining attempts and a zone folder each refused with nothing removed.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-104, S-109):
-//! - a file the snapshot cap refuses counts as unsaved (S-32): exit 1, the cli's facts naming the file and the cap
+//! Repo integration tests to write (cross-zone, not written here):
+//! - a file the snapshot cap refuses counts as unsaved: exit 1, the cli's facts naming the file and the cap
 //!   (cli with snapshot's saved_state);
 //! - a request not joined (NotJoined) and a snapshot ref moved under the op (RemovedRefsLeft): the cli's why and
 //!   next, never folders' FolderError Display text;
@@ -124,7 +124,7 @@ fn member(output: &Output, key: &str) -> String {
     oplog::parse_json_string(&stdout, at).unwrap().0
 }
 
-/// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
+/// A harness verb's next step is never aimed at an agent: it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
     for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",

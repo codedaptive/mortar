@@ -1,4 +1,4 @@
-//! The report of an `mr bisect` that land's bisect answered (SPEC-cli 06).
+//! The report of an `mr bisect` that land's bisect answered.
 
 use gitio::Oid;
 use land::{BisectAnswer, BisectNotFound, BisectReport, Culprit};

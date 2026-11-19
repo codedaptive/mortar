@@ -2,8 +2,8 @@
 
 use super::{Gate, StepBody};
 
-/// The step's number and title in the report, the order that writes its body, its gate, and its body (None until
-/// that order fills it in).
+/// The step's number and title in the report, the acceptance item its body is written for, its gate, and its body
+/// (None until it is written).
 #[derive(Debug, Clone, Copy)]
 pub struct StepSpec {
     pub number: u8,

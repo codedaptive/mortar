@@ -1,4 +1,4 @@
-//! `mr sweep` (SPEC-cli 05): its words, its reports and its runner.
+//! `mr sweep`: its words, its reports and its runner.
 
 mod parse_sweep_args;
 mod run_sweep;

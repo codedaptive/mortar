@@ -1,6 +1,5 @@
 //! folder_move_refusal_report: exit 1 "folder-not-moved" naming the folder, both tips, what blocks the move (the
-//! paths in the way, or another reason) and the owner's step in words: clear it, then repeat the same command
-//! (S-137 (3), (4)).
+//! paths in the way, or another reason) and the owner's step in words: clear it, then repeat the same command.
 
 use std::path::{Path, PathBuf};
 
@@ -9,7 +8,7 @@ use gitio::Oid;
 use super::{folder_move_refusal_report, MoveBlock};
 use crate::report::{ExitCode, OutValue, Report};
 
-/// The words S-137 (3) and (4) rule out of every next: a git command, a by-hand sync, and the claim that
+/// The words no next may hold: a git command, a by-hand sync, and the claim that
 /// integration already moved.
 fn assert_next_is_words_only(report: &Report) {
     assert!(!report.next.contains("git "), "a git command in next: {}", report.next);

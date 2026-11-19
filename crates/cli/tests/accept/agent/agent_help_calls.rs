@@ -1,4 +1,4 @@
-//! The agent's help and version calls in mr.log, which check 4's report lists (04-agent.md, S-181).
+//! The agent's help and version calls in mr.log, which check 4's report lists.
 
 use super::{help_or_version_call, parse_log_line};
 

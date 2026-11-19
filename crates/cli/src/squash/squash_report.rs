@@ -1,4 +1,4 @@
-//! The report of an `mr squash` that land's squash answered (SPEC-cli 06).
+//! The report of an `mr squash` that land's squash answered.
 
 use land::{Squash, SquashAnswer};
 

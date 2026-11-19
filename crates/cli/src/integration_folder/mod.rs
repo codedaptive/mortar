@@ -1,5 +1,5 @@
 //! The integration folder: the worktree on the integration branch, found from git, moved after a verb moves that
-//! branch, a move a stopped run left undone finished by the next land, back-out or publish (S-137), and its report
+//! branch, a move a stopped run left undone finished by the next land, back-out or publish, and its report
 //! lines and refusal in the cli's own words.
 
 mod finish_stopped_move;

@@ -1,4 +1,4 @@
-//! The zone list disk and sweep pass to folders: every key of the config's zones, never an empty list (S-121 (2)).
+//! The zone list disk and sweep pass to folders: every key of the config's zones, never an empty list.
 
 use crate::config::Config;
 

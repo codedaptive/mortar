@@ -1,6 +1,6 @@
 //! Step 0, the shell: proves the world, the `mr` runner and the kill path work, with `mr init` and `mr log`.
 //! The log is empty after the two inits because init records no op: it writes config.json only and moves no ref
-//! (crates/cli/src/init/run_init.rs writes only the config; SPEC-cli 01-shell, S-81). Steps 3 and 4 check real records
+//! (crates/cli/src/init/run_init.rs writes only the config). Steps 3 and 4 check real records
 //! (the op log, after the kills and for the agent's actor).
 
 use std::path::Path;

@@ -21,7 +21,7 @@ fn disk_lists_real_zone_and_request_bytes_counts_the_shared_store_once_and_never
     assert_eq!(r.number("store_bytes"), store);
     assert_eq!(r.strings("lines").iter().filter(|s| s.starts_with("object store:")).cloned().collect::<Vec<_>>(), vec![format!("object store: {store} bytes, counted once")]);
     assert_eq!(r.strings("refs"), &["refs/heads 2", "refs/heads/req 1", "refs/heads/zone 2", "refs/remotes/origin 1"]);
-    assert_eq!(r.number("sweep_bytes"), 0, "S-141: no stale refs and no implicit build sweep");
+    assert_eq!(r.number("sweep_bytes"), 0, "sweep policy: no stale refs and no implicit build sweep");
     assert!(r.strings("lines").contains(&"an mr sweep with no --idle-days frees up to 0 bytes".into()));
     assert_eq!(r.text("next"), "mr sweep --idle-days <n> --actor <name>"); assert_eq!(observe(&w), before);
     // The same object store, not a per-cwd or per-folder sum, when called from the request instead of main.

@@ -5,9 +5,9 @@
 //! Mortar's and git's own behaviour. The one addition is in the `mr` wrapper: on the agent's first `mr join`, before
 //! that join runs, it makes the drive's conflicting change. The change lands after every save
 //! the agent ran before that join and before the join itself (which saves first), so the join conflicts whether or
-//! not the agent ran `mr save`, with no timer. That is why the wrappers come first on the agent's PATH (04-agent.md puts the build's folder
-//! first): the agent's `mr` must be the wrapper. Each line is tab-separated: pid, parent pid, the parent's command
-//! base name, then the argv.
+//! not the agent ran `mr save`, with no timer. That is why the wrappers come first on the agent's PATH, ahead of
+//! the build's folder: the agent's `mr` must be the wrapper. Each line is tab-separated: pid, parent pid, the
+//! parent's command base name, then the argv.
 
 use std::ffi::OsString;
 use std::fs;

@@ -1,12 +1,12 @@
 //! run_folder_remove: `mr folder remove <path>`, a joined and saved request folder removed with its branch and its
 //! snapshot ref.
-//! No sibling test (S-104): it takes a real lock and runs git, the op log, snapshot and folders;
+//! No sibling test: it takes a real lock and runs git, the op log, snapshot and folders;
 //! folder_removed_report_tests, folder_refusal_tests and folder_error_why_tests cover its decisions. The RIT
 //! crates/cli/tests/cli_rit/run_folder_remove_tests.rs covers it through the binary: a joined, saved request folder removed
 //! with its branch and snapshot ref by a folder-remove op of the actor; unsaved work, remaining attempts (next naming
 //! keep and drop) and a zone folder each refused exit 1 with nothing removed.
-//! RITs left for Nagatha (cross-zone, listed only, not written): a file the snapshot cap refuses counts as unsaved
-//! (S-32), naming the file and the cap; a request not joined, and a snapshot ref moved under the op, the cli's why and
+//! Repo integration tests to write (cross-zone, not written here): a file the snapshot cap refuses counts as unsaved,
+//! naming the file and the cap; a request not joined, and a snapshot ref moved under the op, the cli's why and
 //! next; a join-<zone> lock held by a live pid, exit 3.
 
 use std::path::{Path, PathBuf};
@@ -32,7 +32,7 @@ const VERB: &str = "folder";
 /// worktree with no Mortar record, is exit 1 "not-a-folder" before any lock. Under join-<record's zone> after recover
 /// (locked_act), keyed by --key or op_key("folder-remove", the folder): a request or attempt folder's saved state is
 /// snapshot's saved_state against its own snapshot ref, with the config's excludes and cap, its cap-refused files
-/// passed as refused (S-32); then folders' remove with the cap, as the actor.
+/// passed as refused; then folders' remove with the cap, as the actor.
 pub fn run_folder_remove(context: &ShellContext, config: &Config, cwd: &Path, path: &Path) -> Report {
     let path = cwd.join(path);
     let Ok(folder) = Git::new(&path).toplevel() else {

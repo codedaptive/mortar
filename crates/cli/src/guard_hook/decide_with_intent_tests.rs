@@ -1,6 +1,6 @@
 //! decide_with_intent with land::guard_decide itself (pure: no repository). Guarded refs are refs/heads/main and
 //! refs/heads/integration on remote origin, whose push URL is ORIGIN_URL; expected verdicts and call counts are
-//! literals from the contracts of decide_with_intent and guard_decide (SPEC-land 06).
+//! literals from the contracts of decide_with_intent and guard_decide.
 
 use std::cell::Cell;
 use std::convert::Infallible;

@@ -1,4 +1,4 @@
-//! `mr would-merge` (SPEC-cli 06): its words, its report in the cli's own words, and its runner.
+//! `mr would-merge`: its words, its report in the cli's own words, and its runner.
 
 mod parse_would_merge_args;
 mod run_would_merge;

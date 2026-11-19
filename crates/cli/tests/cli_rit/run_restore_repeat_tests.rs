@@ -1,9 +1,9 @@
 //! CLI restore's crash-repeat, unsaved-work and repeat-after-a-later-restore outcomes, and a crash-repeat refusing
-//! work added after the kill (S-122(3)).
-//! RIT (S-135, S-136): the mortar binary runs as a child in a throwaway repository (testkit's TestRepo) with a zone
-//! folder, a request folder and the config `mr init` writes (zone core=src, floor 0, the default build dir, S-109),
-//! reaching folders, snapshot, gitio and oplog below cli; Nagatha's from landing. The crash cases kill the worker
-//! (`run_restore_repeat_tests::restore_worker`, run by testkit's test_child) at testkit's git crash gate.
+//! work added after the kill.
+//! Repo integration test: the mortar binary runs as a child in a throwaway repository (testkit's TestRepo) with a zone
+//! folder, a request folder and the config `mr init` writes (zone core=src, floor 0, the default build dir),
+//! reaching folders, snapshot, gitio and oplog below cli; owned by integration from landing. The crash cases kill
+//! the worker (`run_restore_repeat_tests::restore_worker`, run by testkit's test_child) at testkit's git crash gate.
 
 use std::fs;
 use std::os::unix::process::{CommandExt, ExitStatusExt};
@@ -129,9 +129,9 @@ fn repeat_after_ref_transaction_finishes_the_folder_move_once() {
     assert_eq!(records.iter().filter(|r| r.kind == "restore" && r.key == key && r.phase == OpPhase::Done).count(), 1);
 }
 
-/// A crash-repeat whose folder gained work after the kill refuses and moves nothing (S-122(3)): before the folder
-/// move, the repeat makes S-113(2)'s saved check against the snapshot ref's old value, finds the new file unsaved,
-/// exits 1 with S-113(2)'s report, and leaves the refs, the folder and the folder-move count as they were.
+/// A crash-repeat whose folder gained work after the kill refuses and moves nothing: before the folder move,
+/// the repeat makes the saved check against the snapshot ref's old value, finds the new file unsaved, exits 1
+/// with the unsaved-work report, and leaves the refs, the folder and the folder-move count as they were.
 #[test]
 fn crash_repeat_with_work_added_after_the_kill_refuses_and_moves_nothing() {
     let fx = Fixture::new();
@@ -176,7 +176,7 @@ fn crash_repeat_with_work_added_after_the_kill_refuses_and_moves_nothing() {
     assert_eq!(records.iter().filter(|r| r.kind == "restore" && r.key == key && r.phase == OpPhase::Done).count(), 1, "repeat: {out}");
 }
 
-/// A finished restore repeated after a later restore moved the same ref on (S-113(3)) moves nothing: the folder and
+/// A finished restore repeated after a later restore moved the same ref on moves nothing: the folder and
 /// its refs stay at the later restore's value, no folder move is recorded, and the output says why.
 #[test]
 fn repeat_after_a_later_restore_leaves_the_folder_and_its_ref() {

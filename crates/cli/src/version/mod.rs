@@ -1,4 +1,4 @@
-//! `mr --version` and `mortar --version` (SPEC-cli 07, "--version"): whether it is asked, and its one line.
+//! `mr --version` and `mortar --version`: whether it is asked, and its one line.
 
 mod version_asked;
 mod version_text;

@@ -1,7 +1,7 @@
 //! resolve_report: the first run's files written is exit 2 with the files, skipped paths and submodules; a rebase
 //! reports as join does plus the snapshot's ref and commit; a conflict on a later commit reports as join does;
 //! a finished folder move comes first; a joined answer, which resolve never gives, is a failure.
-//! ZUT (rule 11): join's answer_part and finished_move_part and report::failure_report are pure and used directly.
+//! ZUT: join's answer_part and finished_move_part and report::failure_report are pure and used directly.
 
 use std::path::PathBuf;
 
@@ -46,6 +46,7 @@ fn outcome(finished_move: Option<PendingMove>, answer: JoinAnswer) -> ResolveOut
         request_ref: REQUEST_REF.to_string(),
         finished_move,
         snapshot_ref: SNAP_REF.to_string(),
+        snapshot_written: false,
         snapshot_commit: oid(SNAP),
         answer,
     }
@@ -170,6 +171,59 @@ fn a_conflict_on_a_later_commit_reports_as_join_does() {
     );
 }
 
+#[test]
+fn conflicted_names_the_snapshot_move() {
+    let answer = JoinAnswer::Conflicted {
+        commit: oid(TWO), files: paths(&["src/c.rs"]),
+        state: PathBuf::from("/r/.git/worktrees/fix-1/mortar-join.json"),
+    };
+    let mut result = outcome(None, answer);
+    result.snapshot_written = true;
+    assert_eq!(resolve_report(&result), Report {
+        verb: "resolve".to_string(), exit: ExitCode::Conflict, outcome: "conflicted".to_string(),
+        lines: vec![
+            "conflicted: commit 2222222222222222222222222222222222222222 did not apply; the snapshot ref moved as the work was saved first; no other ref moved and the folder stays at the request tip".to_string(),
+            "  src/c.rs".to_string(),
+            "mr resolve writes both sides into these files with markers; fix them, then run mr resolve again".to_string(),
+        ],
+        owner: None, next: "mr resolve".to_string(),
+        fields: vec![
+            ("finished_move_from".to_string(), OutValue::Null), ("finished_move_to".to_string(), OutValue::Null),
+            ("request_ref".to_string(), OutValue::Text("refs/heads/req/core/fix-1".to_string())),
+            ("commit".to_string(), OutValue::Text("2222222222222222222222222222222222222222".to_string())),
+            ("files".to_string(), OutValue::Texts(vec!["src/c.rs".to_string()])),
+            ("state".to_string(), OutValue::Text("/r/.git/worktrees/fix-1/mortar-join.json".to_string())),
+        ],
+    });
+}
+
+#[test]
+fn files_written_names_the_snapshot_move() {
+    let answer = JoinAnswer::FilesWritten {
+        commit: oid(ONE), files: paths(&["src/a.rs"]), skipped: paths(&["moved.rs"]), gitlinks: paths(&["vendor/lib"]),
+    };
+    let mut result = outcome(None, answer);
+    result.snapshot_written = true;
+    assert_eq!(resolve_report(&result), Report {
+        verb: "resolve".to_string(), exit: ExitCode::Conflict, outcome: "files-written".to_string(),
+        lines: vec![
+            "files written: the conflicted versions of commit 1111111111111111111111111111111111111111, markers included; the snapshot ref moved as the work was saved first; no other ref moved".to_string(),
+            "  src/a.rs".to_string(),
+            "skipped (no version in the conflicted tree): moved.rs".to_string(),
+            "submodule vendor/lib: set its commit in the folder, then mr resolve".to_string(),
+        ],
+        owner: None, next: "fix the files, then mr resolve".to_string(),
+        fields: vec![
+            ("finished_move_from".to_string(), OutValue::Null), ("finished_move_to".to_string(), OutValue::Null),
+            ("request_ref".to_string(), OutValue::Text("refs/heads/req/core/fix-1".to_string())),
+            ("commit".to_string(), OutValue::Text("1111111111111111111111111111111111111111".to_string())),
+            ("files".to_string(), OutValue::Texts(vec!["src/a.rs".to_string()])),
+            ("skipped".to_string(), OutValue::Texts(vec!["moved.rs".to_string()])),
+            ("gitlinks".to_string(), OutValue::Texts(vec!["vendor/lib".to_string()])),
+        ],
+    });
+}
+
 fn never_given() -> Report {
     Report {
         verb: "resolve".to_string(),
@@ -177,7 +231,6 @@ fn never_given() -> Report {
         outcome: "failed".to_string(),
         lines: vec![
             "join resolve answered joined, which it never gives".to_string(),
-            "nothing half-done is left".to_string(),
         ],
         owner: None,
         next: "repeat the same command".to_string(),

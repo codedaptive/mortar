@@ -1,4 +1,4 @@
-//! parse_install_args: the flags of `mr install`, their defaults, and each usage reason (spec 07 items 1 to 5).
+//! parse_install_args: the flags of `mr install`, their defaults, and each usage reason.
 
 use super::{parse_install_args, InstallOptions, SkillLocation};
 

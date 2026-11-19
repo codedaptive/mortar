@@ -78,12 +78,12 @@ fn target(attempt: Option<u32>) -> SnapshotTarget {
     }
 }
 
-/// failure_report's shape for save, whatever words name the missing part.
-fn assert_save_failure(report: &Report) {
+/// failure_report's shape for save, with `reason` as its one line.
+fn assert_save_failure(report: &Report, reason: &str) {
     assert_eq!(report.verb, "save");
     assert_eq!(report.exit, ExitCode::Failure);
     assert_eq!(report.outcome, "failed");
-    assert_eq!(report.lines[1], "nothing half-done is left");
+    assert_eq!(report.lines, vec![reason.to_string()]);
     assert_eq!(report.next, "repeat the same command");
 }
 
@@ -119,20 +119,20 @@ fn attempt_folder_2_gives_its_try_branch_and_attempt_2_and_is_not_refused() {
 fn no_folder_is_a_failure() {
     let mut context = request_context(None);
     context.folder = None;
-    assert_save_failure(&save_run_for(&context, "save").unwrap_err());
+    assert_save_failure(&save_run_for(&context, "save").unwrap_err(), "save runs in its folder, and the shell gave it none");
 }
 
 #[test]
 fn no_config_is_a_failure() {
     let mut context = request_context(None);
     context.config = None;
-    assert_save_failure(&save_run_for(&context, "save").unwrap_err());
+    assert_save_failure(&save_run_for(&context, "save").unwrap_err(), "save runs with the Mortar config, and the shell gave it none");
 }
 
 #[test]
 fn a_record_naming_no_request_is_a_failure() {
     let context = context("/w/core", record(FolderKind::Zone, None), None);
-    assert_save_failure(&save_run_for(&context, "save").unwrap_err());
+    assert_save_failure(&save_run_for(&context, "save").unwrap_err(), "this folder's record names no request; actor_for refuses a zone folder");
 }
 
 /// undo builds its run here too: the same branch, target and lock, its own key and its own failures' verb.

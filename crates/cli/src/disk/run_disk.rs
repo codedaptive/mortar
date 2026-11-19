@@ -1,11 +1,11 @@
 //! run_disk: `mr disk`, what each Mortar folder, the object store and the refs cost on disk and what a plain
-//! mr sweep frees (SPEC-cli 05). Takes no lock and writes nothing (S-16).
-//! No sibling test (S-104): it runs git and reads the file system through folders' disk; config_zones_tests,
+//! mr sweep frees. Takes no lock and writes nothing.
+//! No sibling test: it runs git and reads the file system through folders' disk; config_zones_tests,
 //! no_zones_report_tests, folders_error_report_tests and disk_report_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): disk on a zone folder and a request
+//! Repo integration tests to write (cross-zone, not written here): disk on a zone folder and a request
 //! folder lists both with their files and build bytes and counts the object store once; disk with a config of no
-//! zones refused, exit 1, nothing read; any argument, exit 4; without a config, exit 1. ACCEPT-5 (05-disk.md):
-//! disk's per-folder bytes and its store-once figure, reached through this verb.
+//! zones refused, exit 1, nothing read; any argument, exit 4; without a config, exit 1. The acceptance run's disk
+//! step checks disk's per-folder bytes and its store-once figure, reached through this verb.
 
 use std::path::Path;
 

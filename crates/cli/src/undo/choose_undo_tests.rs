@@ -1,8 +1,8 @@
 //! choose_undo over histories given as data: the last done op of the folder's actor, kind not "snapshot", that moved
-//! any of the folder's own refs or the zone branch, and what undo does with it (S-73; S-142 items 1-3). A join-rebase
-//! recording the paused join (a resolve step, S-148) restores it, and an undo of one is already undone with that
+//! any of the folder's own refs or the zone branch, and what undo does with it. A join-rebase
+//! recording the paused join (a resolve step) restores it, and an undo of one is already undone with that
 //! step; an undo of a join-rebase missing from the log is already undone with the folder step.
-//! ZUT (rule 11): undo_reason's is_resolve_step and done_record are pure and used directly.
+//! ZUT: undo_reason's is_resolve_step and done_record are pure and used directly.
 
 use ::join::JOIN_STATE;
 use gitio::Oid;
@@ -10,12 +10,12 @@ use oplog::{OpPhase, OpRecord, OpResult, RefMove, ValuedRecord};
 
 use super::{choose_undo, UndoChoice, UndoStep};
 
-const ACTOR: &str = "orc/WO-cli-4";
-const ZONE: &str = "refs/heads/zone/orc";
-const REQ: &str = "refs/heads/req/orc/WO-cli-4";
-const SNAP: &str = "refs/mortar/snap/orc/WO-cli-4";
-const TRY2: &str = "refs/heads/try/orc/WO-cli-4/2";
-const TRYSNAP2: &str = "refs/mortar/trysnap/orc/WO-cli-4/2";
+const ACTOR: &str = "a/r1";
+const ZONE: &str = "refs/heads/zone/a";
+const REQ: &str = "refs/heads/req/a/r1";
+const SNAP: &str = "refs/mortar/snap/a/r1";
+const TRY2: &str = "refs/heads/try/a/r1/2";
+const TRYSNAP2: &str = "refs/mortar/trysnap/a/r1/2";
 
 fn oid(c: char) -> Oid {
     Oid::parse(&c.to_string().repeat(40)).expect("a valid oid")
@@ -85,7 +85,7 @@ fn a_later_op_by_another_actor_on_the_same_ref_is_not_chosen() {
     let records = [
         done("op-1", "save", &[REQ]),
         done("op-2", "save", &[REQ]),
-        op("op-3", "save", "orc/someone-else", OpPhase::Done, &[REQ]),
+        op("op-3", "save", "a/someone-else", OpPhase::Done, &[REQ]),
     ];
     assert_eq!(choose(&records), UndoChoice::Step { index: 1, step: UndoStep::SetIndex });
 }
@@ -104,7 +104,7 @@ fn intent_and_failed_records_are_skipped() {
 
 #[test]
 fn ops_on_refs_neither_own_nor_the_zones_are_not_reached() {
-    let records = [done("op-1", "save", &[REQ]), done("op-2", "save", &["refs/heads/req/orc/WO-cli-9"])];
+    let records = [done("op-1", "save", &[REQ]), done("op-2", "save", &["refs/heads/req/a/r2"])];
     assert_eq!(choose(&records), UndoChoice::Step { index: 0, step: UndoStep::SetIndex });
 }
 
@@ -184,7 +184,7 @@ fn a_restore_is_not_a_step() {
 
 #[test]
 fn a_save_that_also_moved_a_ref_not_its_own_is_not_a_step() {
-    let records = [done("op-1", "save", &[REQ, "refs/heads/req/orc/WO-cli-9"])];
+    let records = [done("op-1", "save", &[REQ, "refs/heads/req/a/r2"])];
     assert_eq!(choose(&records), UndoChoice::NotAStep { op_id: "op-1".to_string(), kind: "save".to_string() });
 }
 
@@ -216,7 +216,7 @@ fn step_carries_the_chosen_records_index_in_the_slice() {
         op("op-2", "save", ACTOR, OpPhase::Intent, &[REQ]),
         done("op-2", "save", &[REQ]),
         done("op-3", "snapshot", &[SNAP]),
-        op("op-4", "save", "orc/someone-else", OpPhase::Done, &[REQ]),
+        op("op-4", "save", "a/someone-else", OpPhase::Done, &[REQ]),
     ];
     assert_eq!(choose(&records), UndoChoice::Step { index: 2, step: UndoStep::SetIndex });
 }

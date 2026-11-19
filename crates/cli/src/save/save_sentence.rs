@@ -1,7 +1,7 @@
 //! save_sentence: the one sentence `mr save` takes, checked before anything runs. The one-argument check is
-//! the verb's own; the blank and line-break checks are snapshot's sentence_refusal (S-41, exported per S-90).
+//! the verb's own; the blank and line-break checks are snapshot's sentence_refusal, which snapshot exports.
 //! save_sentence_tests covers the one-argument check (no word, two words) and the one-argument cases, which run
-//! snapshot::sentence_refusal (exported and pure on the text, so a ZUT by S-171): the returned sentence,
+//! snapshot::sentence_refusal (exported and pure on the text, so a unit test may use it): the returned sentence,
 //! snapshot's blank and line-break reasons, and each refusal's exit 1, "nothing ran" and next
 //! `mr save "<one line saying what changed>"`.
 

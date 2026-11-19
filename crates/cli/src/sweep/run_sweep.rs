@@ -1,13 +1,13 @@
 //! run_sweep: `mr sweep [--idle-days <n>] [--ref <full ref name>]...`, the refs folders' sweep picks (closed
 //! requests' snapshot refs, joined leftover branches, replay records of zones the config no longer lists, the
-//! caller's extra refs: S-52, S-53, S-121 (2)) deleted in one op, then, only with --idle-days, the build dirs of
-//! folders idle that long cleared (SPEC-cli 05). Under the folders lock after recover (S-16): sweep_refs deletes refs
-//! of every zone, so no one join lock covers it. --key names the lock holder only, never passed to the op log
-//! (S-132): sweep_refs draws its own op id, and a repeat finds nothing left to sweep.
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and folders; parse_sweep_args_tests,
+//! caller's extra refs) deleted in one op, then, only with --idle-days, the build dirs of
+//! folders idle that long cleared. Under the folders lock after recover: sweep_refs deletes refs
+//! of every zone, so no one join lock covers it. --key names the lock holder only, never passed to the op log:
+//! sweep_refs draws its own op id, and a repeat finds nothing left to sweep.
+//! No sibling test: it takes a real lock and runs git, the op log and folders; parse_sweep_args_tests,
 //! config_zones_tests, no_zones_report_tests, folders_error_report_tests, sweep_report_tests and
 //! sweep_build_failure_report_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): sweep with an extra ref deletes it in
+//! Repo integration tests to write (cross-zone, not written here): sweep with an extra ref deletes it in
 //! one folder-sweep-refs op with the actor; sweep keeps a configured zone's refs/mortar/replayed/ record and deletes a
 //! removed zone's; sweep --idle-days 0 clears build dirs, without it none; a refused extra ref (refs/heads/...)
 //! deletes nothing, exit 1; sweep with a config of no zones refused, exit 1, nothing deleted; the folders lock held

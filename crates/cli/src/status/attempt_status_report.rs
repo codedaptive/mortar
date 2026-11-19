@@ -1,4 +1,4 @@
-//! attempt_status_report: the report of `mr status` in attempt folder k (S-127(1)).
+//! attempt_status_report: the report of `mr status` in attempt folder k.
 
 use super::{attempt_next, status_report, StatusState};
 use crate::report::{OutValue, Report};

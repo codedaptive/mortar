@@ -53,7 +53,7 @@ fn failed(line: &str) -> Report {
         verb: "back-out".to_string(),
         exit: ExitCode::Failure,
         outcome: "failed".to_string(),
-        lines: vec![line.to_string(), "nothing half-done is left".to_string()],
+        lines: vec![line.to_string()],
         owner: None,
         next: "repeat the same command".to_string(),
         fields: Vec::new(),

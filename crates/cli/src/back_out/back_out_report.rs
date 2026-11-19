@@ -1,4 +1,4 @@
-//! The report of an `mr back-out` that land's back_out answered (SPEC-cli 06).
+//! The report of an `mr back-out` that land's back_out answered.
 
 use std::path::Path;
 

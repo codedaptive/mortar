@@ -1,4 +1,4 @@
-//! install_in: `mr install` against a given environment: reads, plans, then writes and records (spec 07 item 7).
+//! install_in: `mr install` against a given environment: reads, plans, then writes and records.
 //! Every refusal comes before the first write: an unreadable record, the harness choice (--target, the picker),
 //! the plan's refusals (placement, link, skills), and a path the record cannot hold (the record's own path
 //! included). A plan with no step writes nothing at all. Otherwise the first write is the record's folder: if it
@@ -93,18 +93,15 @@ fn write_install(plan: &InstallPlan, facts: &InstallFacts, paths: &InstallPaths,
 }
 
 /// The record's folder could not be made: the folders made for it are removed again, deepest first (they are empty
-/// and install's own), and any that would not go is named instead of "nothing half-done is left".
+/// and install's own). It prints "cannot make <state_dir>: <error>", then "left <dir>: <why>" for each that would
+/// not go.
 fn state_dir_failure(state_dir: &Path, error: &io::Error, made: &[PathBuf]) -> Report {
     let mut report = failure_report("install", &format!("cannot make {}: {error}", state_dir.display()));
-    let stuck: Vec<String> = made
-        .iter()
-        .rev()
-        .filter_map(|dir| fs::remove_dir(dir).err().map(|why| format!("left {}: {why}", dir.display())))
-        .collect();
-    if !stuck.is_empty() {
-        report.lines.truncate(1);
-        report.lines.extend(stuck);
-    }
+    report.lines.extend(
+        made.iter()
+            .rev()
+            .filter_map(|dir| fs::remove_dir(dir).err().map(|why| format!("left {}: {why}", dir.display()))),
+    );
     report
 }
 

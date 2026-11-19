@@ -1,4 +1,4 @@
-//! status_lines: the plain lines of `mr status`, in the spec's order.
+//! status_lines: the plain lines of `mr status`, in a fixed order.
 
 use std::path::PathBuf;
 
@@ -9,9 +9,9 @@ use crate::join::MoveCause;
 /// per non-empty list, or one line saying there are none), then git's unmerged paths when there are any (the
 /// `paths.conflicted` list, worded "unmerged" so that "conflicted" names only a paused join); whether everything is
 /// saved, then each file the size cap refused in save's wording; whether the zone has commits this request has not
-/// taken in, then whether the request is joined; a paused join with its conflicted files; a stalled folder move
-/// (S-85), worded for the rebase or the undo that left it (S-143); each overlapping request with the shared paths
-/// (S-45); and the gaps.
+/// taken in, then whether the request is joined; a paused join with its conflicted files; a stalled folder move,
+/// worded for the rebase or the undo that left it; each overlapping request with the shared paths;
+/// and the gaps.
 /// Ids are written by `as_str`.
 pub fn status_lines(state: &StatusState) -> Vec<String> {
     let mut lines = vec![format!("request {} in zone {}", state.request, state.zone)];

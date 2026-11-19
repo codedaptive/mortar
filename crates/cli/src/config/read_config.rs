@@ -1,6 +1,6 @@
 //! Reads the config from the repository's git common dir.
-//! No unit test: it reads a real file (S-5); decode_config_tests covers the decoding. Nagatha's integration
-//! group is to cover: a common dir with no config reads None; a config written by write_config reads back
+//! No unit test: it reads a real file; decode_config_tests covers the decoding. The repo integration
+//! tests are to cover: a common dir with no config reads None; a config written by write_config reads back
 //! equal; a file holding text that is not a config is refused with a reason naming the file.
 
 use std::io::ErrorKind;

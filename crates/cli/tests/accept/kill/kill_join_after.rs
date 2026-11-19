@@ -1,4 +1,4 @@
-//! 03's case 2: a rebase join killed after its request-ref move, before its folder move (S-150). Real repositories,
+//! Step 3's case 2: a rebase join killed after its request-ref move, before its folder move. Real repositories,
 //! processes and a SIGKILL: run_kill.rs runs it on every drive.
 
 use super::{kill_armed, kill_consistent, kill_log_check, CaseLines, KillState};

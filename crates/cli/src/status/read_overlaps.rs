@@ -1,12 +1,12 @@
 //! read_overlaps: the other open requests of the zone that change a path this request changes since its fork point
-//! from the zone (S-45, S-108).
-//! No unit test: it runs git and reads folder records (S-5, S-104); open_requests_for_tests and overlaps_with_tests
-//! cover its decisions. Nagatha's integration group is to cover, with the mortar binary as a child process in
+//! from the zone.
+//! No unit test: it runs git and reads folder records; open_requests_for_tests and overlaps_with_tests
+//! cover its decisions. The repo integration tests are to cover, with the mortar binary as a child process in
 //! request folders made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - two requests of one zone changing one path: status in either gives the overlap line naming the other and that
 //!   path;
-//! - a rebased request (joined after the zone moved) shows no overlap on paths only the zone changed (S-108);
+//! - a rebased request (joined after the zone moved) shows no overlap on paths only the zone changed;
 //! - a worktree whose folder record cannot be read: status fails with failure_report naming that folder, never
 //!   'no overlap'.
 
@@ -24,9 +24,9 @@ use crate::report::{failure_report, Report};
 /// Every worktree but bare and prunable ones is read for its folder record (a worktree with none is not a Mortar
 /// folder and is skipped); each record of `zone` naming a request gets its request branch's tip and its snapshot
 /// ref's commit. open_requests_for picks the zone's open requests, each based at the merge base of its tip and
-/// `zone_tip` (S-108); join's overlap_for gives the pairs holding `request`, and overlaps_with turns them into (the
+/// `zone_tip`; join's overlap_for gives the pairs holding `request`, and overlaps_with turns them into (the
 /// other request, the shared paths). A request sharing no commit with the zone tip is an error, never "no overlap". Any
-/// read failing is failure_report for `verb`. Reads only: no lock, no ref move (S-85).
+/// read failing is failure_report for `verb`. Reads only: no lock, no ref move.
 pub fn read_overlaps(
     git: &Git,
     zone: &str,

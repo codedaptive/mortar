@@ -1,5 +1,5 @@
 //! version_asked: `--version` alone or with one `--json`, in either order; anything else is not a version request.
-//! ZUT (rule 11): version_asked is pure.
+//! ZUT: version_asked is pure.
 
 use super::version_asked;
 

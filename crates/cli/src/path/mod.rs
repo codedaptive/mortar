@@ -1,5 +1,5 @@
-//! Which `mr` a shell would run (S-133 (1)): the first on PATH, whether it is this build (its canonical path, or the
-//! Mortar marker in its bytes, S-147, decided by is_this_build), and the warning `mr guard install` prints when it is
+//! Which `mr` a shell would run: the first on PATH, whether it is this build (its canonical path, or the
+//! Mortar marker in its bytes, decided by is_this_build), and the warning `mr guard install` prints when it is
 //! not.
 
 mod file_has_marker;

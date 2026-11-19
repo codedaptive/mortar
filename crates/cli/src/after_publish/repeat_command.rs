@@ -1,4 +1,4 @@
-//! repeat_command: the same after-publish command again, which a refused or failed folder's next ends with (S-112).
+//! repeat_command: the same after-publish command again, which a refused or failed folder's next ends with.
 
 use super::AfterPublishArgs;
 

@@ -1,4 +1,4 @@
-//! attempts_dir: where `mr folder attempts <n> <dir>` makes its attempts (S-127, SPEC-cli 05): `dir` taken from
+//! attempts_dir: where `mr folder attempts <n> <dir>` makes its attempts: `dir` taken from
 //! the request folder's toplevel when relative, normalized lexically, and refused when it is the toplevel or inside it.
 
 use std::path::{Component, Path, PathBuf};

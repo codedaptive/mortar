@@ -1,4 +1,4 @@
-//! reversed_op: the op an undo reversed, read back from the reason undo_reason wrote (S-142 (3)).
+//! reversed_op: the op an undo reversed, read back from the reason undo_reason wrote.
 
 /// (kind, op_id) from a reason "undo of <kind> op <op_id>", each part non-empty and without whitespace. A reason in
 /// any other form, such as one an undo outside mortar wrote, is None.

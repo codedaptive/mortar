@@ -1,5 +1,5 @@
 //! save_run_for: what `mr save` and `mr undo` read once, before their lock, as join's RequestRun, so that
-//! each can finish a pending folder move with join's finish_pending_move (S-143).
+//! each can finish a pending folder move with join's finish_pending_move.
 //! Shell API: run_save and run_undo call it.
 
 use folders::plan::{attempt_branch, request_branch};
@@ -15,10 +15,10 @@ use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
 /// The run of `verb` (save or undo) in a request folder or attempt folder k; neither is refused (an attempt saves to
-/// and undoes on its own branch, S-69, S-142). target is snapshot_target_for's (attempt k's for attempt folder k);
+/// and undoes on its own branch). target is snapshot_target_for's (attempt k's for attempt folder k);
 /// request_ref is "refs/heads/" and the folder's own branch: the request branch for a request folder, attempt k's
 /// try branch for attempt folder k; the lock is the verb entry's for the folder's zone (lock_name_for); the key is
-/// --key, else `verb`'s op key of the folder with no moves (S-84), which names the lock's holder only (S-90). A
+/// --key, else `verb`'s op key of the folder with no moves, which names the lock's holder only. A
 /// missing folder or config, a record naming no request, a branch name that cannot be formed or a verb entry naming
 /// no lock is failure_report for `verb`.
 pub fn save_run_for<'a>(context: &'a ShellContext, verb: &str) -> Result<RequestRun<'a>, Report> {

@@ -1,4 +1,4 @@
-//! status_fields: the --json members in the spec's order; overlap_paths is every shared path once, sorted.
+//! status_fields: the --json members in a fixed order; overlap_paths is every shared path once, sorted.
 
 use std::path::PathBuf;
 

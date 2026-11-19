@@ -1,4 +1,4 @@
-//! note_finished_move: a verb's report saying first that it finished a stopped integration folder move (S-137).
+//! note_finished_move: a verb's report saying first that it finished a stopped integration folder move.
 
 use super::FinishedMove;
 use crate::report::Report;

@@ -1,5 +1,5 @@
 //! What one `mr folder` line asks for: its sub-verb and that sub-verb's words.
-//! A bare type (S-7); parse_folder_args_tests exercises it.
+//! A bare type; parse_folder_args_tests exercises it.
 
 use std::path::PathBuf;
 

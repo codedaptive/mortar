@@ -1,4 +1,4 @@
-//! protected_refs: only the origin branch, by the config's origin_branch (S-56).
+//! protected_refs: only the origin branch, by the config's origin_branch.
 
 use std::collections::BTreeMap;
 

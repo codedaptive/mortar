@@ -1,4 +1,4 @@
-//! The subject of the commit `mr join` makes of unsaved work (S-72).
+//! The subject of the commit `mr join` makes of unsaved work.
 
 /// "<request>: work saved at join".
 pub fn join_save_subject(request: &str) -> String {

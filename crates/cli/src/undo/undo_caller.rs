@@ -1,4 +1,4 @@
-//! undo_caller: who asks oplog for an undo, and why (S-142 item 3).
+//! undo_caller: who asks oplog for an undo, and why.
 
 use oplog::{OpCaller, OpRecord};
 

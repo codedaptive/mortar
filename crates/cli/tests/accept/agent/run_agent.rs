@@ -1,4 +1,4 @@
-//! Step 4, the agent test (04-agent.md). Real repositories, processes and files: the drive (steps/agent.rs) runs
+//! Step 4, the agent test. Real repositories, processes and files: the drive (steps/agent.rs) runs
 //! it as step 4's body on every drive with ACCEPT_AGENT set.
 
 use std::path::{Path, PathBuf};

@@ -4,7 +4,7 @@ use std::ffi::OsString;
 
 use super::{Decision, Gate, StepSpec};
 
-/// The gate first, so an unset variable is named even before the step's order lands: an Env gate whose variable
+/// The gate first, so an unset variable is named even before the step's body is written: an Env gate whose variable
 /// is unset or empty is NotRun("set <VAR> to <meaning>"). Then a step with no body is NotRun("not written yet:
 /// <order>"). Otherwise Run.
 pub fn decide_step(spec: &StepSpec, env: &dyn Fn(&str) -> Option<OsString>) -> Decision {

@@ -1,5 +1,5 @@
 //! need_with_next: a finished need's report with the next step status gives, or with "mr status" when that step
-//! could not be read (spec 02).
+//! could not be read.
 
 use crate::report::Report;
 use crate::status::{status_next, StatusState};

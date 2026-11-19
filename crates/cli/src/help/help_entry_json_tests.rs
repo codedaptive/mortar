@@ -1,6 +1,5 @@
-//! help_entry_json: one verb's object in the help's "verbs" array: name, group key, line and usage forms
-//! (SPEC-cli 08, "The calls").
-//! ZUT (rule 11): the help groups, find_help_entry, usage_forms and the JSON writers are pure and used directly.
+//! help_entry_json: one verb's object in the help's "verbs" array: name, group key, line and usage forms.
+//! Unit test: the help groups, find_help_entry, usage_forms and the JSON writers are pure and used directly.
 
 use super::{find_help_entry, help_entry_json};
 

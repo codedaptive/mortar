@@ -1,4 +1,4 @@
-//! uninstall_report: Uninstall's report (spec 07, "mr uninstall").
+//! uninstall_report: Uninstall's report.
 
 use std::path::Path;
 

@@ -1,5 +1,5 @@
-//! What uninstall will remove, decided from the record and what is on disk (spec 07, "mr uninstall").
-//! A bare type (S-7); plan_uninstall_tests exercises it.
+//! What uninstall will remove, decided from the record and what is on disk.
+//! A bare type; plan_uninstall_tests exercises it.
 
 use std::path::PathBuf;
 

@@ -1,4 +1,4 @@
-//! S-136/S-148/S-155: actual CLI undo/resolve/status/log/save/join -> real Join, Oplog, Snapshot, Gitio and Folders.
+//! Actual CLI undo/resolve/status/log/save/join -> real Join, Oplog, Snapshot, Gitio and Folders.
 //! Each parent owns World's disposable store/worktrees/remote. Expected state is captured BEFORE final resolve;
 //! expected folder_tree is built by raw Git from literal resolved contents, not Join's composition code.
 //! Real post-undo faults and SIGKILL occur after the selected ref transaction, without clocks or fake kit answers.

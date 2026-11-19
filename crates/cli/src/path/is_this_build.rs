@@ -1,4 +1,4 @@
-//! is_this_build: whether a candidate binary found on PATH is this Mortar once both paths are canonical (S-147).
+//! is_this_build: whether a candidate binary found on PATH is this Mortar once both paths are canonical.
 //! Pure: the caller gives the canonicalize and the marker read to use, so tests pass fakes.
 
 use std::path::{Path, PathBuf};

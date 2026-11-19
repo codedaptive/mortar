@@ -1,5 +1,5 @@
 //! What `mr install` was asked to do.
-//! A bare type (S-7); parse_install_args_tests exercises it.
+//! A bare type; parse_install_args_tests exercises it.
 
 use super::{HarnessSpec, SkillLocation};
 

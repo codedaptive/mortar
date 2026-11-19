@@ -1,4 +1,4 @@
-//! run_after_publish/bring_zone_folder joined to real Land, Join, Folders and Oplog: S-139/S-140 and ACCEPT-1 #14.
+//! run_after_publish/bring_zone_folder joined to real Land, Join, Folders and Oplog, with acceptance step 1's check 14.
 use super::fixture::World;
 use crate::support::raw;
 use std::fs;

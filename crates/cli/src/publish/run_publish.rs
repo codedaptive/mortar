@@ -1,19 +1,19 @@
 //! run_publish: `mr publish`, the landing on integration pushed to the remote's origin branch under the land lock
-//! (SPEC-cli 06's row: land publish; exit 1 when origin moved, saying land again). On OriginMoved the integration
-//! folder moves with integration onto the fetched origin, as back-out moves it (S-137(1)). --key names the lock holder
-//! only, never passed to the op log (S-132); repeat safety comes from land's answers (a repeat settles a push intent,
-//! S-103) and from the stopped-move finish: before land's call, finish_stopped_move moves an integration folder a
-//! stopped run left on the old commit onto integration's tip (S-137(2)), so a plain repeat after a kill finishes the
+//! (land publish; exit 1 when origin moved, saying land again). On OriginMoved the integration
+//! folder moves with integration onto the fetched origin, as back-out moves it. --key names the lock holder
+//! only, never passed to the op log; repeat safety comes from land's answers (a repeat settles a push intent)
+//! and from the stopped-move finish: before land's call, finish_stopped_move moves an integration folder a
+//! stopped run left on the old commit onto integration's tip, so a plain repeat after a kill finishes the
 //! move even when land answers NothingToPublish. A refused folder move is finished by a repeat when the folder was
 //! cleared as the refusal says (paths moved out or put back to the index copy, the index left as it is); a clear that
 //! resets the index to HEAD (the folder's HEAD is already the branch's new commit) leaves no stall for the repeat to
-//! see, and the folder's files are then their owner's to bring to HEAD, unreported (S-137 (3), (4)).
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and land; publish_report_tests,
+//! see, and the folder's files are then their owner's to bring to HEAD, unreported.
+//! No sibling test: it takes a real lock and runs git, the op log and land; publish_report_tests,
 //! note_finished_move_tests and landing's publish_error_report_tests cover its decisions. The RIT
 //! crates/cli/tests/cli_rit/run_publish_tests.rs covers it through the binary.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid, exit
+//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
 //! 3; without a config, exit 1, next mr init; the PublishError texts through a real remote (PushRefused by a
-//! remote hook, RemoteMissing, a PushIntent left open); ACCEPT-1 checks 12 and 13, ACCEPT-2 check 8 (with mr
+//! remote hook, RemoteMissing, a PushIntent left open); the acceptance checks of publish (with mr
 //! land); the stopped-move finish (a kill after land's op and before the folder move, then a plain repeat moves the
 //! folder from the op's old value to the tip and the report's first line says so); a staged edit in the integration
 //! folder (no move, the verb goes on).
@@ -35,7 +35,7 @@ use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
 const VERB: &str = "publish";
-/// The same command run again, which a refused integration folder move's next ends with (S-112).
+/// The same command run again, which a refused integration folder move's next ends with.
 const REPEAT: &str = "mr publish --actor <name>";
 
 /// Any argument is publish's usage report, exit 4, before any git. Then, under the land lock after recover

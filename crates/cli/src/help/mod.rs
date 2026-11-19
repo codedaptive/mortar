@@ -1,4 +1,4 @@
-//! help: mr help, mr --help, mr -h and mr <verb> --help (SPEC-cli 08, S-175): whether a command line asks for help,
+//! help: mr help, mr --help, mr -h and mr <verb> --help: whether a command line asks for help,
 //! and the report that answers it: the program help's groups and rows, or one verb's usage one line per form and its
 //! row's line, plain or as the `--json` object.
 

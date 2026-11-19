@@ -89,13 +89,13 @@ fn differs_names_both_commits_and_the_next_step_names_the_hosts_backup() {
 
 #[test]
 fn vanished_says_the_ref_was_not_created() {
-    let entries = [Restored::Vanished { refname: "refs/heads/req/cli/WO-9".to_string() }];
+    let entries = [Restored::Vanished { refname: "refs/heads/req/cli/r9".to_string() }];
     assert_eq!(
         restore_backup_report("build-mac-02", &entries),
         restored(
-            &["refs/heads/req/cli/WO-9 was gone from the remote by the fetch: not created"],
+            &["refs/heads/req/cli/r9 was gone from the remote by the fetch: not created"],
             "nothing to do",
-            [&[], &[], &[], &["refs/heads/req/cli/WO-9"]],
+            [&[], &[], &[], &["refs/heads/req/cli/r9"]],
         )
     );
 }
@@ -103,7 +103,7 @@ fn vanished_says_the_ref_was_not_created() {
 #[test]
 fn every_entry_is_a_line_in_order_and_one_differs_sets_the_next_step() {
     let entries = [
-        Restored::Vanished { refname: "refs/heads/req/cli/WO-9".to_string() },
+        Restored::Vanished { refname: "refs/heads/req/cli/r9".to_string() },
         Restored::Created { refname: "refs/heads/zone/cli".to_string(), oid: oid(A) },
         Restored::Differs { refname: "refs/heads/zone/land".to_string(), local: oid(B), backup: oid(A) },
         Restored::Same { refname: "refs/mortar/squash/cli".to_string() },
@@ -113,7 +113,7 @@ fn every_entry_is_a_line_in_order_and_one_differs_sets_the_next_step() {
         restore_backup_report("build-mac-02", &entries),
         restored(
             &[
-                "refs/heads/req/cli/WO-9 was gone from the remote by the fetch: not created",
+                "refs/heads/req/cli/r9 was gone from the remote by the fetch: not created",
                 "created refs/heads/zone/cli at 4b825dc642cb6eb9a060e54bf8d69288fbee4904",
                 "refs/heads/zone/land is at e69de29bb2d1d6434b8b29ae775ad8c2e48c5391, its backup at \
                  4b825dc642cb6eb9a060e54bf8d69288fbee4904: left as it is",
@@ -125,7 +125,7 @@ fn every_entry_is_a_line_in_order_and_one_differs_sets_the_next_step() {
                 &["refs/heads/zone/cli", "refs/heads/zone/join"],
                 &["refs/mortar/squash/cli"],
                 &["refs/heads/zone/land"],
-                &["refs/heads/req/cli/WO-9"],
+                &["refs/heads/req/cli/r9"],
             ],
         )
     );
@@ -136,7 +136,7 @@ fn no_differs_among_several_entries_is_nothing_to_do() {
     let entries = [
         Restored::Created { refname: "refs/heads/zone/cli".to_string(), oid: oid(A) },
         Restored::Same { refname: "refs/mortar/squash/cli".to_string() },
-        Restored::Vanished { refname: "refs/heads/req/cli/WO-9".to_string() },
+        Restored::Vanished { refname: "refs/heads/req/cli/r9".to_string() },
     ];
     assert_eq!(restore_backup_report("build-mac-02", &entries).next, "nothing to do");
 }

@@ -1,5 +1,5 @@
 //! choose_harnesses: --target, then no harness detected, then -y, then no terminal, then the picker; `ask` only on
-//! the picker (spec 07 item 4).
+//! the picker.
 
 use super::{choose_harnesses, HarnessSpec, InstallOptions, SkillLocation, HARNESSES};
 use crate::report::{ExitCode, Report};

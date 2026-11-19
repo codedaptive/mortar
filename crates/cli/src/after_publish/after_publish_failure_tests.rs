@@ -1,4 +1,4 @@
-//! after_publish_failure: exit 5 with the lines given, a repeat as next, and never "nothing half-done is left".
+//! after_publish_failure: exit 5 with the lines given, a repeat as next, and no line added.
 
 use super::after_publish_failure;
 use crate::report::{ExitCode, Report};
@@ -21,7 +21,7 @@ fn the_lines_are_kept_exactly_with_a_repeat_as_next() {
 }
 
 #[test]
-fn one_line_gets_no_nothing_half_done_line_added() {
+fn one_line_gets_no_line_added() {
     let report = after_publish_failure(vec!["the op log could not be read".to_string()]);
     assert_eq!(report.lines, vec!["the op log could not be read".to_string()]);
     assert!(!report.lines.iter().any(|line| line == "nothing half-done is left"));

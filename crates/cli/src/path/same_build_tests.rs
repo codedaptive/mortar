@@ -1,4 +1,4 @@
-//! same_build: equal canonical paths, or a candidate whose bytes carry the Mortar marker (S-147); a name beside this
+//! same_build: equal canonical paths, or a candidate whose bytes carry the Mortar marker; a name beside this
 //! binary counts for nothing. Pure: none of these paths exist.
 
 use std::path::Path;

@@ -1,4 +1,4 @@
-//! on_install_map: Whether a record item names a path of install's own map (spec 07): the binary, the short-name link,
+//! on_install_map: Whether a record item names a path of install's own map: the binary, the short-name link,
 //! the skill files of item 5's table, and folders of the shapes install creates. Uninstall touches no file or link off
 //! it. Folders are judged by shape, so a tampered record can name such a folder that install did not create; that can
 //! only ever cost an empty folder, since uninstall removes a folder only when empty. A real install never records a

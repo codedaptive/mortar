@@ -1,4 +1,4 @@
-//! plan_skills: Install's decision about each chosen harness's skill file (spec 07 items 4 and 5).
+//! plan_skills: Install's decision about each chosen harness's skill file.
 //! Pure: it decides from the facts install read. The chosen harnesses are taken in the order of `facts.skills`; the
 //! first file that is not Mortar's skill refuses the whole plan, and the wiring-skipped line comes last.
 

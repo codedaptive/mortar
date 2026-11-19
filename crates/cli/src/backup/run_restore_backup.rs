@@ -1,9 +1,9 @@
 //! run_restore_backup: `mr restore-backup <host>`, a host's backup on the remote brought back into the local
-//! store, under the land lock (SPEC-cli 06: land restore_backup). A local ref at another commit than its backup is
+//! store, under the land lock (land's restore_backup). A local ref at another commit than its backup is
 //! listed, never moved. --key names the lock holder only, never passed to the op log.
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and land;
+//! No sibling test: it takes a real lock and runs git, the op log and land;
 //! parse_restore_backup_args_tests, restore_backup_report_tests and backup_error_report_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): backup then restore-backup round trip
+//! Repo integration tests to write (cross-zone, not written here): backup then restore-backup round trip
 //! into a fresh clone; restore-backup with a local ref at another commit (Differs, left as it is); restore-backup of
 //! a host with no backup; the land lock held by a live pid, exit 3; without a config, exit 1.
 

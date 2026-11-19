@@ -1,5 +1,5 @@
-//! Mortar's per-repository settings (S-70): `<common>/mortar/config.json`, its type, its one-line JSON form,
-//! and the protected list (S-56) and snapshot settings built from it.
+//! Mortar's per-repository settings: `<common>/mortar/config.json`, its type, its one-line JSON form,
+//! and the protected list and snapshot settings built from it.
 
 mod config;
 mod config_error;

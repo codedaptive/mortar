@@ -1,5 +1,5 @@
-//! Everything install reads before it decides, so the plan is a function of data (spec 07, "Tests": the plan as
-//! data). A bare type (S-7); the planning tests exercise it.
+//! Everything install reads before it decides, so the plan is a function of data ("Tests": the plan as
+//! data). A bare type; the planning tests exercise it.
 
 use std::path::PathBuf;
 

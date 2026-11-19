@@ -1,7 +1,6 @@
 //! JSON text to a ConfigJsonValue, for the subset the config uses.
-//! A stopgap (see config_json_value.rs): its number, null and error rules match oplog's crate-private
-//! parse_json, and strings are read by oplog::parse_json_string (S-51) until oplog exports parse_json and
-//! JsonValue (S-80, WO-oplog-11).
+//! A stopgap (see config_json_value.rs): its number, null and error rules match oplog's exported parse_json,
+//! and strings are read by oplog::parse_json_string; oplog already exports parse_json and JsonValue.
 
 use oplog::{parse_json_string, JsonError};
 

@@ -2,7 +2,7 @@
 
 use land::Culprit;
 
-/// The change ID and zone the culprit's squash trailers carry, naming each trailer that is missing (S-78 (c)).
+/// The change ID and zone the culprit's squash trailers carry, naming each trailer that is missing.
 pub fn culprit_line(culprit: &Culprit) -> String {
     match (&culprit.change_id, &culprit.zone) {
         (Some(id), Some(zone)) => format!("its squash is change {id} from zone {zone}"),

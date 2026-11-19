@@ -1,6 +1,6 @@
 //! status_next: one state per StatusPhase phase gives its step; a stalled move an undo left is finished by
-//! `mr undo`, one a rebase left by `mr join` (S-143); a saved folder with no work yet is told to make its
-//! change, then save, after the stall, the paused join and unsaved work (S-145);
+//! `mr undo`, one a rebase left by `mr join`; a saved folder with no work yet is told to make its
+//! change, then save, after the stall, the paused join and unsaved work;
 //! status_phase_from_status_state_tests holds the whole state table.
 
 use std::path::PathBuf;
@@ -89,7 +89,7 @@ fn a_saved_folder_with_no_work_yet_is_told_to_make_its_change_then_save() {
     assert_eq!(status_next(&no_work(false, false, true, false)), "make your change, then mr save");
 }
 
-/// S-145's order: the stall, the paused join and unsaved work come before the no-work step.
+/// The order of steps: the stall, the paused join and unsaved work come before the no-work step.
 #[test]
 fn a_stall_a_paused_join_and_unsaved_work_come_before_no_work_yet() {
     assert_eq!(status_next(&no_work(true, true, false, false)), "mr join");

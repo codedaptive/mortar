@@ -1,4 +1,4 @@
-//! The brief the drive gives the agent on stdin (04-agent.md, "The brief"). A const only: run_agent's checks read
+//! The brief the drive gives the agent on stdin. A const only: run_agent's checks read
 //! what it asks for (agent_zone_check), and write_agent_bin's conflicting change edits the line it names.
 
 /// The request's task, two small edits to named files in src/a; the first changes the line the drive's

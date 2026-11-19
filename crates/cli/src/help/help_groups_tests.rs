@@ -1,6 +1,6 @@
 //! HELP_GROUPS: four groups in the spec's order and headings, every verb of the table and --version once each, and
-//! rows in the spec's words (SPEC-cli 08, "The program help").
-//! ZUT (rule 11): the groups and the verb table are pure data.
+//! rows in the spec's words.
+//! Unit test: the groups and the verb table are pure data.
 
 use super::{HelpEntry, HELP_GROUPS};
 use crate::args::VERBS;

@@ -1,4 +1,4 @@
-//! verb_help_lines: one verb's help text (SPEC-cli 08, "A verb's help").
+//! verb_help_lines: one verb's help text.
 
 use super::{usage_forms, HelpEntry};
 

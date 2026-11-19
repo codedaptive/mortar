@@ -1,4 +1,4 @@
-//! Step 3, nothing lost, nothing twice (03-kill.md): run_kill, its set-up and cases in spec order, the consistency
+//! Step 3, nothing lost, nothing twice: run_kill, its set-up and cases in case order, the consistency
 //! items run after each, and the pure readings of the op log, the lock files, the landing state and the refs.
 
 mod case_lines;

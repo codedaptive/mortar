@@ -1,5 +1,5 @@
-//! help_request: a command line that asks for help, and whether its answer is JSON (SPEC-cli 08).
-//! A bare type (S-7); help_asked_tests and help_report_tests exercise it.
+//! help_request: a command line that asks for help, and whether its answer is JSON.
+//! A bare type; help_asked_tests and help_report_tests exercise it.
 
 use super::HelpTopic;
 

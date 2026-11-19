@@ -1,5 +1,5 @@
 //! VERBS: install, uninstall and help are setup verbs: no lock, no config, and their usage lines.
-//! ZUT (rule 11): the verb table is pure data.
+//! Unit test: the verb table is pure data.
 
 use super::{LockNeed, VerbKind, VerbSpec, VERBS};
 

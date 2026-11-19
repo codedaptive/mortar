@@ -1,4 +1,4 @@
-//! Decides whether step 5 may write to the moot copy it was given.
+//! Decides whether step 5 may write to the repository copy it was given.
 
 use super::Registered;
 use std::path::Path;

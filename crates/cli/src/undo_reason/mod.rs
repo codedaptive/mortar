@@ -1,5 +1,5 @@
-//! The reason an undo op records, "undo of <kind> op <op_id>" (S-142 (3)), its reading back, and the reading of the
-//! reversed op's record: its Done record and whether it was a resolve's final join step (S-142, S-143). A leaf that
+//! The reason an undo op records, "undo of <kind> op <op_id>", its reading back, and the reading of the
+//! reversed op's record: its Done record and whether it was a resolve's final join step. A leaf that
 //! depends on no module above it, so undo writes the reason and join reads it without a join <-> undo cycle.
 
 mod done_record;

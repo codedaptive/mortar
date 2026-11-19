@@ -1,5 +1,5 @@
-//! What install decided about the short-name link `~/.local/bin/mr` (spec 07 item 3).
-//! A bare type (S-7); plan_link_tests exercises it.
+//! What install decided about the short-name link `~/.local/bin/mr`.
+//! A bare type; plan_link_tests exercises it.
 
 use super::{InstallItem, InstallStep};
 

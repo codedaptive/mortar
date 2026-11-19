@@ -1,5 +1,5 @@
-//! A request verb's refusal in an attempt folder (S-91): join and resolve act on the request's own folder, so in
-//! attempt folder k they run nothing. save is not refused there (it saves under attempt k, S-69, S-83), so the rule
+//! A request verb's refusal in an attempt folder: join and resolve act on the request's own folder, so in
+//! attempt folder k they run nothing. save is not refused there (it saves under attempt k), so the rule
 //! is per verb and its caller decides whether to ask.
 
 use folders::{FolderKind, FolderRecord};

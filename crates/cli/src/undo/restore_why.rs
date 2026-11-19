@@ -1,5 +1,5 @@
-//! restore_why: the why lines of a refused restore of a paused join, for `mr undo` of a resolve step (S-148, S-155).
-//! Built from the error's fields, never join's Display; the match lists every variant with no wildcard (S-128 (4)).
+//! restore_why: the why lines of a refused restore of a paused join, for `mr undo` of a resolve step.
+//! Built from the error's fields, never join's Display; the match lists every variant with no wildcard.
 
 use ::join::JoinRunError;
 

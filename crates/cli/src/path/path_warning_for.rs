@@ -1,4 +1,4 @@
-//! path_warning_for: whether `mr guard install` warns about the first `mr` on PATH (S-133 (1), S-147), and with which
+//! path_warning_for: whether `mr guard install` warns about the first `mr` on PATH, and with which
 //! line. Pure: the caller finds both paths and gives the canonicalize and the marker read to use, so tests pass fakes.
 //! The is-this-build test itself lives in is_this_build.rs.
 

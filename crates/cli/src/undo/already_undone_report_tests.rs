@@ -1,5 +1,5 @@
 //! already_undone_report: a repeat of an undo is exit 0 "already-done", naming the undo op and the op it undid,
-//! never a redo (S-142 item 3); after a save's undo the files are untouched and the work shows as unsaved; after a
+//! never a redo; after a save's undo the files are untouched and the work shows as unsaved; after a
 //! resolve's undo the files are untouched and the next is mr resolve. The --json fields are not pinned here.
 
 use super::{already_undone_report, UndoStep};

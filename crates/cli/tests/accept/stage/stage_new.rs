@@ -1,4 +1,4 @@
-//! ACCEPT-1's set-up (01-flow.md, "Set-up"), shared by steps 1-4. Real repositories and processes: step 1
+//! Step 1's set-up, shared by steps 1-4. Real repositories and processes: step 1
 //! (flow/run_flow.rs) runs it on every drive.
 
 use std::path::PathBuf;
@@ -28,8 +28,8 @@ pub fn stage_new(world: &World, checks: &mut Checks) -> Option<Stage> {
     Some(Stage { zone_a: zone_a?, zone_b: zone_b? })
 }
 
-/// `mr folder zone <zone> <root>/zone-<zone>` as the spec writes it, one check line; the folder when it was made.
-/// Init makes no zone branch: folder zone starts it at the origin branch's tip (S-149).
+/// `mr folder zone <zone> <root>/zone-<zone>`, one check line; the folder when it was made.
+/// Init makes no zone branch: folder zone starts it at the origin branch's tip.
 fn zone_folder(world: &World, checks: &mut Checks, zone: &str) -> Option<PathBuf> {
     let path = world.root.join(format!("zone-{zone}"));
     let made = harness_mr(world, &["folder", "zone", zone, &path.to_string_lossy()]);

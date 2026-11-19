@@ -1,4 +1,4 @@
-//! S-85/S-143: CLI status -> real Oplog recovery decisions and Gitio, without settling or moving anything.
+//! CLI status -> real Oplog recovery decisions and Gitio, without settling or moving anything.
 //! Owned Fixture repositories; Testkit kills/reaps the actual CLI after its real rebase ref transaction.
 use crate::support::{raw, script, shim_path, Fixture, REQUEST, ZONE};
 use oplog::{KillPidProbe, OpPhase, OpRecord, PidProbe, RefMove};

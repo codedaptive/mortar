@@ -1,7 +1,7 @@
 //! read_branch_tips: where a request's branch and its zone's branch stand, for `mr need` (status reads them with
 //! read_tips).
-//! No unit test: it runs git (S-5, S-104); missing_branch_report_tests covers the refusal it gives. Nagatha's
-//! integration group is to cover, with the mortar binary as a child process in a request folder made by the landing
+//! No unit test: it runs git; missing_branch_report_tests covers the refusal it gives. The repo
+//! integration tests are to cover, with the mortar binary as a child process in a request folder made by the landing
 //! verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - status in a clean, saved and joined folder reads both tips and gives next "wait for the zone's tests";

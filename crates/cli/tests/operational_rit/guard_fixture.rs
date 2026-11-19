@@ -20,7 +20,7 @@ impl Guard {
         symlink(env!("CARGO_BIN_EXE_mortar"), bin.join("mortar")).unwrap();
         f.git.env.push(("PATH".into(), shim_path(&bin)));
         f.git.program = actual_git();
-        // S-112: actual product installer and its untouched executable hook scripts, not a fake hook.
+        // Actual product installer and its untouched executable hook scripts, not a fake hook.
         land::guard_install(&f.git, &refs()).unwrap();
         Self { f, new, origin, other }
     }

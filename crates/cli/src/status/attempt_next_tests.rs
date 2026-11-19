@@ -1,5 +1,5 @@
 //! attempt_next: unsaved gives mr save, saved with no work yet gives "make your change, then mr save"
-//! (S-145) and other saved work waits for the harness, whatever else holds; no answer is join or resolve.
+//! and other saved work waits for the harness, whatever else holds; no answer is join or resolve.
 
 use std::path::PathBuf;
 
@@ -87,7 +87,7 @@ fn no_state_answers_join_or_resolve() {
 
 const MAKE_CHANGE: &str = "make your change, then mr save";
 
-/// S-145: a saved attempt with no work yet is told to make its change, never to wait on keep or drop, whatever
+/// A saved attempt with no work yet is told to make its change, never to wait on keep or drop, whatever
 /// else holds; an unsaved one is still told to save.
 #[test]
 fn saved_with_no_work_yet_is_make_your_change_and_unsaved_is_still_save() {

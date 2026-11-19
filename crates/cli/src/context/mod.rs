@@ -1,4 +1,4 @@
-//! The folder an agent verb runs in (S-18), what a failure to read it reports, and who each verb acts as.
+//! The folder an agent verb runs in, what a failure to read it reports, and who each verb acts as.
 
 mod actor_for;
 mod context_error;

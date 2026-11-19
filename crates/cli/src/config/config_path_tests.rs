@@ -1,4 +1,4 @@
-//! config_path: mortar/config.json directly in the git common dir (S-70).
+//! config_path: mortar/config.json directly in the git common dir.
 
 use std::path::{Path, PathBuf};
 

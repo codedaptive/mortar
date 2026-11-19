@@ -1,4 +1,4 @@
-//! install_paths_for: every path install writes, under the HOME given (spec 07 items 1 to 3 and 7).
+//! install_paths_for: every path install writes, under the HOME given.
 
 use std::path::{Path, PathBuf};
 

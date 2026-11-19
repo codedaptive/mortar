@@ -1,5 +1,5 @@
 //! One verb of the binary.
-//! A bare type (S-7); verbs_tests and find_verb_tests exercise it.
+//! A bare type; verbs_tests and find_verb_tests exercise it.
 
 use super::{LockNeed, VerbKind};
 

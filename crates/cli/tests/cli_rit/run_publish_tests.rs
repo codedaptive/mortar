@@ -2,16 +2,16 @@
 //! landing there is nothing to publish and the remote is untouched; a remote main someone else moved exits 1
 //! origin-moved, with local main and integration on the commit found, the integration worktree's files at it and the
 //! squash ref kept; an extra word is a usage error (exit 4) with publish's usage line as next.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing. A bare repository in a second throwaway directory is the remote; the squash and the landing are made in
 //! setup through land::squash and land::land under the land lock.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - each land error variant's text that needs git or the op log to fail: PublishError PushRefused, RemoteMissing
 //!   and PushIntent, and LandError's;
-//! - ACCEPT-1 checks 7, 9, 11 and 12 through these verbs on two zones;
-//! - publish with --key: the key names the lock holder only (S-132).
+//! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones;
+//! - publish with --key: the key names the lock holder only.
 
 use std::collections::BTreeMap;
 use std::fs;

@@ -1,4 +1,4 @@
-//! `mr resolve` (S-50, S-64, S-87): what one run did, its reports, its refusals and the runner.
+//! `mr resolve`: what one run did, its reports, its refusals and the runner.
 
 mod resolve_move_refusal_report;
 mod resolve_outcome;

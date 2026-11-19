@@ -1,5 +1,5 @@
 //! uninstall_in: `mr uninstall` under a given HOME: removes what install's record lists that is on install's map
-//! (on_install_map) and still as install placed it (spec 07, "mr uninstall", S-177). Files and links go first, then
+//! (on_install_map) and still as install placed it. Files and links go first, then
 //! each recorded folder that is still a folder and empty, deepest first, except the folders holding the record; then
 //! the record; then the folders holding it, deepest first. A recorded folder that is not empty or is no longer a
 //! folder is left and named. A record entry off the map is skipped and named, whatever stands there. Nothing else is

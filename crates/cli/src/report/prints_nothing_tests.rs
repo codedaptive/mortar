@@ -1,4 +1,4 @@
-//! prints_nothing: only guard-hook's exit 0 (the guard's allow) prints nothing (S-111).
+//! prints_nothing: only guard-hook's exit 0 (the guard's allow) prints nothing.
 
 use super::{prints_nothing, ExitCode, Report};
 

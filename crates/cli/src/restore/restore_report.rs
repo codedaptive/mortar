@@ -13,8 +13,8 @@ use crate::report::{is_zero_oid, ExitCode, OutValue, Report};
 /// "mr log --ref <that ref>". Lines: each move of the record, "<ref> <old|absent> -> <new|deleted>" (or "every
 /// ref already holds its value as of op <op_id>" when there is none; for Failed, the ref that stood in the way
 /// instead); each folder `moved`; each folder already `in_place`; each folder `left_alone` because its ref has moved
-/// on since the record's op (a repeat never reapplies its move after a later mover, S-113(3)), "the folder <path>
-/// stays: its ref has moved on since op <record op id>"; each zone folder, whose files stay (S-115(1)).
+/// on since the record's op (a repeat never reapplies its move after a later mover), "the folder <path>
+/// stays: its ref has moved on since op <record op id>"; each zone folder, whose files stay.
 /// Fields: op_id, key, moves, folders_moved, folders_left and zone_folders.
 pub fn restore_report(
     outcome: &ApplyOutcome,

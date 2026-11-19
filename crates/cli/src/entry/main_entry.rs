@@ -1,12 +1,12 @@
 //! main_entry: the body of the binary under both its names (`mortar` and `mr`): reads the arguments and the
 //! current directory, runs the verb, prints its report unless it prints nothing, and returns the exit code.
 //! `--version` (alone or with `--json`) prints its one line, `mortar <version> <commit>` or the JSON object, with no
-//! `next:` line, and returns 0 without running a verb (SPEC-cli 07, "--version").
-//! Help is answered next (help::help_asked, SPEC-cli 08): after --version and before the current directory, config,
+//! `next:` line, and returns 0 without running a verb.
+//! Help is answered next (help::help_asked): after --version and before the current directory, config,
 //! folder context, lock, recover or snapshot are read, from the help's data alone, so it changes nothing and works
 //! in any directory.
-//! No sibling unit test: it reads the process's arguments and directory and prints (S-5, S-104); cli's unit tests
-//! cover the reports. Nagatha's integration group is to cover, with the binary as a child process in a throwaway
+//! No sibling unit test: it reads the process's arguments and directory and prints; cli's unit tests
+//! cover the reports. The repo integration tests are to cover, with the binary as a child process in a throwaway
 //! repository: `mr init --actor h --origin main --integration integration --remote origin` writes the
 //! config, exit 0, stdout ending "next: mr folder zone <zone> <path>"; the same again is exit 0
 //! "already-done" with the file byte-identical; other values are exit 1 naming the keys; --replace rewrites,
@@ -15,7 +15,7 @@
 //! argument is exit 4; a held lock is exit 3 naming the holder and since, and recover runs before the act (with
 //! mr join, the first ref-moving verb); an agent verb outside a Mortar folder is refused, exit 1 (with
 //! mr join, the first agent verb); `mortar guard-hook` allowing a move prints nothing on stdout or stderr,
-//! exit 0, also with --json (S-111); `mr --version` and `mortar --version` print one line "mortar <crate version>
+//! exit 0, also with --json; `mr --version` and `mortar --version` print one line "mortar <crate version>
 //! <12 hex or unknown>" and nothing else, exit 0, and with --json (either order) one object {verb: "version", ok,
 //! version, commit} on one line, exit 0; `mr help`, `mr --help` and `mr resolve --help` outside any repository are
 //! exit 0; `mr help` in a directory that has been removed is exit 0; `mr save --help` in a request folder with
@@ -30,7 +30,7 @@ use crate::version::{version_asked, version_text};
 use crate::{failure_report, prints_nothing, render_json, render_plain, run, usage_report, UsageError};
 
 pub fn main_entry() -> i32 {
-    // Keeps MORTAR_MARKER's bytes in both bins, debug and release, so `mr guard install` can find them (S-147).
+    // Keeps MORTAR_MARKER's bytes in both bins, debug and release, so `mr guard install` can find them.
     std::hint::black_box(&crate::path::MORTAR_MARKER);
     let words = std::env::args_os().skip(1).collect::<Vec<OsString>>();
     // Read before anything else, so that a word that is not UTF-8 is reported in the form asked for.
