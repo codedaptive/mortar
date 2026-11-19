@@ -1,13 +1,12 @@
 #!/bin/sh
-# test_one.sh DIR GROUP: the tests of one crate, source module or test target in one group (D281, three kinds of
-# test). Groups differ only in which test targets run and which name filter libtest gets, so switching groups
-# never rebuilds anything.
-#   unit         the library's tests (--lib), minus any `integration` module inside them. The default; the only
-#                group leads and the landing check run.
+# test_one.sh DIR GROUP: the tests of one crate, source module or test target in one of the three test
+# groups.
+#   unit         the library's tests (--lib), minus any `integration` module inside them. The default.
 #   integration  the library's `integration::` modules, then every test target in tests/ except `validation`.
 #   validation   the crate's `validation` test target (tests/validation/main.rs), in release.
-# DIR=crates/<crate>/src/<a>/<b> filters library tests to a::b:: (unit only: libtest ORs its name filters, so one
-# call cannot select a module's `integration::` tests; run those with DIR=crates/<crate> GROUP=integration).
+# DIR=crates/<crate>/src/<a>/<b> gives libtest the name filter a::b::, matched as a substring (unit only: the
+# module run skips `integration::`, so run a module's `integration::` tests with DIR=crates/<crate>
+# GROUP=integration).
 # DIR=crates/<crate>/tests runs the integration targets (GROUP=validation: the validation target);
 # DIR=crates/<crate>/tests/<target> runs that target, and tests/validation runs in release like GROUP=validation.
 # CARGO (default cargo) and CARGO_TEST_ARGS come from the environment. A bare CARGO_TEST_ARGS name replaces a module's

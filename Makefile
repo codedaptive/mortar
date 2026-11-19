@@ -3,7 +3,7 @@
 CARGO ?= cargo
 .PHONY: test-one test-group check test accept
 
-# Three kinds of test: GROUP=unit (default), integration or validation; scripts/test_one.sh says what each runs.
+# Three test groups: GROUP=unit (default), integration or validation; scripts/test_one.sh says what each runs.
 GROUP ?= unit
 test-one:
 	@CARGO="$(CARGO)" CARGO_TEST_ARGS="$(CARGO_TEST_ARGS)" sh "$(CURDIR)/scripts/test_one.sh" "$(DIR)" "$(GROUP)"
