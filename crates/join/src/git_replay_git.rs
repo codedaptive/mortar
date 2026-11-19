@@ -1,5 +1,5 @@
 //! ReplayGit for gitio::Git: each method calls gitio's inherent method of the same name; replay passes onto as
-//! gitio's attr_source. No unit test: it only runs git; Nagatha's integration tests of `replay` are to cover it.
+//! gitio's attr_source. No unit test: it only runs git; integration tests of `replay` are to cover it.
 
 use crate::replay_git::ReplayGit;
 use gitio::{CommitInfo, Git, GitError, MergeTreeOutcome, Oid, Person, ReplayOutcome, TreeWithPathsError};

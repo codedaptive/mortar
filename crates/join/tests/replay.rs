@@ -1,4 +1,4 @@
-//! WO-orc-join-it-1: SPEC-join WO-join-1, S-28/S-39; public join::replay with real git on both execution paths.
+//! Public join::replay with real git on both execution paths.
 use gitio::{Git, Oid, Person, RunOpts};
 use join::{replay, JoinError, ReplayResult};
 use std::{fs, path::PathBuf};
@@ -137,7 +137,7 @@ fn missing_onto_is_typed_refusal_before_any_merge_replay_or_commit_on_both_paths
     }
 }
 
-// WO-join-8 (S-121 (1)): both paths agree on empty commits. git 2.56.0's replay drops a commit its onto already
+// Both paths agree on empty commits. git 2.56.0's replay drops a commit its onto already
 // holds and keeps a commit that was empty at its source; the commit-by-commit fallback must give the same chain.
 
 #[test]
@@ -308,11 +308,11 @@ fn assert_path(trace: &PathBuf, fallback: bool, conflict: bool) {
     if fallback || conflict { assert!(calls.lines().any(|line| line == "commit-tree"), "{calls}"); }
 }
 
-// WO-orc-join-it-2, SPEC-join WO-join-2 (S-20/S-21), plus S-43's public fallback refusal.
+// join::join cases, plus the public fallback refusal.
 const JOIN_ZONE: &str = "it-zone";
 const ZONE_REF: &str = "refs/heads/zone/it-zone";
 const REQUEST_REF: &str = "refs/heads/request/task";
-// WO-orc-join-it-3: the caller supplies attribution; lock/recovery cases remain deferred to cli.
+// The caller supplies attribution; lock/recovery cases remain deferred to cli.
 const JOIN_ACTOR: &str = "join-it-3-caller";
 
 #[test]
@@ -439,12 +439,12 @@ fn join_missing_zone_or_request_is_named_without_history() {
     }
 }
 
-// S-47 / Orc #843/#848: caller-held lock and kill-mid-join/recover integration belongs to cli,
-// once cli exists. No join-owned-lock crash fixture is kept here.
+// Caller-held lock and kill-mid-join/recover integration is tested in cli. No join-owned-lock crash fixture is
+// kept here.
 
 #[test]
 fn fallback_refuses_empty_author_date_naming_the_original_commit_before_merge_or_commit_tree() {
-    // S-43: actual malformed commit remains readable by gitio, but public join::replay must not silently re-date it.
+    // An actual malformed commit remains readable by gitio, but public join::replay must not silently re-date it.
     let f = Fixture::new();
     let contents = f.tree(&[("file", b"base\n")]);
     let base = f.commit(&contents, &[], "base\n", &author("Base", "1700000000 +0000"));

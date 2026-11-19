@@ -1,10 +1,9 @@
 //! write_conflicted_files: a resolve's first run, writing the conflicted tree's versions of the conflicted files
 //! into the folder.
-//! No unit test: it runs git and writes real files (S-5); classify_conflicted_tests covers how each path is sorted.
-//! Nagatha's integration tests are to cover, in a throwaway repository: the conflicted versions are written, markers
-//! included (WO-join-3 Goal 2); a conflicted path the conflicted tree lacks (rename/rename) is skipped and listed
-//! (S-50: "a conflicted path the conflicted tree lacks (rename/rename) is skipped by the first run and listed in the
-//! answer"); a conflicted gitlink (submodule) is not written and is listed apart from the absent paths (S-64).
+//! No unit test: it runs git and writes real files; classify_conflicted_tests covers how each path is sorted.
+//! Integration tests are to cover, in a throwaway repository: the conflicted versions are written, markers
+//! included; a conflicted path the conflicted tree lacks (rename/rename) is skipped by the first run and listed in
+//! the answer; a conflicted gitlink (submodule) is not written and is listed apart from the absent paths.
 
 use crate::classify_conflicted::classify_conflicted;
 use crate::conflicted_entry::ConflictedEntry;

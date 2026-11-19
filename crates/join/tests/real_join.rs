@@ -1,5 +1,5 @@
-//! WO-join-3e, Orc #1311/#1461, S-84/S-87/S-89, rule 11 (ZIT): public join::join, join::resolve and
-//! join::paused_join with real git in one throwaway repository; the op log read with oplog::read_valued_log.
+//! ZIT: public join::join, join::resolve and join::paused_join with real git in one throwaway repository; the op log
+//! read with oplog::read_valued_log.
 use gitio::{Git, Oid, RunOpts};
 use join::{JoinAnswer, JoinRunError, PausedJoin};
 use oplog::{with_lock, KillPidProbe, LockName, OpPhase};
@@ -84,7 +84,7 @@ fn paused() -> (Fixture, Oid) {
 
 #[test]
 fn a_join_paused_on_a_conflict_is_answered_by_paused_join() {
-    // Joins join -> replay's conflict -> pause's mortar-join.json -> paused_join reading it back (S-84).
+    // Joins join -> replay's conflict -> pause's mortar-join.json -> paused_join reading it back.
     let (f, request) = paused();
     assert!(matches!(f.join(), JoinAnswer::Conflicted { .. }));
     let expected = PausedJoin { commit: request, files: vec![PathBuf::from(P)] };
@@ -93,7 +93,7 @@ fn a_join_paused_on_a_conflict_is_answered_by_paused_join() {
 
 #[test]
 fn a_completed_resolve_records_folder_tree_on_its_final_op() {
-    // Joins join's pause -> resolve's first run -> resolve's commit, folder tree and final op (S-87, S-89).
+    // Joins join's pause -> resolve's first run -> resolve's commit, folder tree and final op.
     let (f, _) = paused();
     assert!(matches!(f.join(), JoinAnswer::Conflicted { .. }));
     let caller_tree = f.tree(&[(P, b"resolved\n"), ("keep", b"caller edit outside the conflict\n")]);
@@ -102,7 +102,7 @@ fn a_completed_resolve_records_folder_tree_on_its_final_op() {
     let state = fs::read_to_string(f.repo.path.join(".git/mortar-join.json")).unwrap();
     let state = state.strip_suffix('\n').unwrap_or(&state).to_string();
     let JoinAnswer::Rebased { folder_tree: Some(t), .. } = f.resolve(&caller_tree) else { panic!("expected Rebased with a folder_tree") };
-    // S-87: the old request tip's tree with P taken from the caller's tree; the caller's edit to keep stays out.
+    // The old request tip's tree with P taken from the caller's tree; the caller's edit to keep stays out.
     assert_eq!(t, f.tree(&[(P, b"resolved\n"), ("keep", b"keep\n")]));
     let values = vec![("folder_tree".to_string(), t.to_string()), ("join_state".to_string(), state)];
     assert_eq!(f.rebase_records(), vec![(OpPhase::Intent, values.clone()), (OpPhase::Done, values)]);
@@ -110,7 +110,7 @@ fn a_completed_resolve_records_folder_tree_on_its_final_op() {
 
 #[test]
 fn a_plain_join_rebase_op_carries_no_values() {
-    // Joins join -> clean replay -> rebase_op applied: the op names no values (S-89).
+    // Joins join -> clean replay -> rebase_op applied: the op names no values.
     let f = Fixture::new();
     let base = f.commit(&[(P, b"base\n")], None, "base\n");
     let request = f.commit(&[(P, b"request\n")], Some(&base), "request change\n");

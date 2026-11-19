@@ -49,7 +49,7 @@ fn rit_b_a_real_tree_comes_back_as_its_refusal_through_first_resolve() {
 
 #[test]
 fn rit_b_a_commit_record_naming_another_path_is_refused_before_gitlink_classification() {
-    // S-109 equivalent of the extracted mismatched-path NotABlob: the public reader checks paths first.
+    // Public equivalent of the extracted mismatched-path NotABlob: the public reader checks paths first.
     // resolve -> tree_entry_typed/read_tree_entry_record -> classify_conflicted -> unchanged Git refusal.
     let f = Fixture::new();
     f.state(r#"["vendor/lib"]"#, r#"["vendor/lib"]"#, false);

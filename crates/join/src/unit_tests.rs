@@ -1,5 +1,5 @@
 //! unit_tests: declares the crate's unit-test files. Test-only; kept out of lib.rs so lib.rs stays within 150
-//! lines (small-files rule 3). Each test file reaches the code through crate:: paths.
+//! lines. Each test file reaches the code through crate:: paths.
 
 #[path = "accumulate_paths_tests.rs"]
 mod accumulate_paths_tests;

@@ -12,7 +12,10 @@ fn a_folder_tree_is_one_pair_named_folder_tree() {
 
 #[test]
 fn no_folder_tree_is_refused_naming_rebased_to_and_folder_tree() {
-    let reason = folder_tree_values(None).unwrap_err();
-    assert!(reason.contains("rebased_to"), "{reason}");
-    assert!(reason.contains("folder_tree"), "{reason}");
+    assert_eq!(
+        folder_tree_values(None),
+        Err("the state's rebased_to is set but its folder_tree is null, so the final op could not record folder_tree; \
+             the state is kept"
+            .to_string())
+    );
 }

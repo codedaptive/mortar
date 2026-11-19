@@ -1,4 +1,4 @@
-//! WO-join-rit-9 / S-142(1): public Join resolve -> Oplog valued log/undo -> Join restore -> resolve.
+//! Public Join resolve -> Oplog valued log/undo -> Join restore -> resolve.
 //! Five real-repository cases; the sixth is restore_crash's actual killed resolve. No private state codec.
 
 use super::restore_support::{tree, Scenario, ACTOR, REQUEST, ZONE};

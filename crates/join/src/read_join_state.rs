@@ -1,8 +1,7 @@
 //! read_join_state: reads mortar-join.json back into a JoinState, or None when there is none.
-//! No unit test: it reads a real file (S-5); decode_join_state_tests covers the text it accepts and refuses.
-//! Nagatha's integration tests are to cover, in a throwaway repository: the state a conflicted join wrote to the
-//! folder's git dir is read back by resolve (WO-join-3 Goal 1; S-21); with no state file, resolve refuses
-//! (WO-join-3 Goal 1: "No state: refuse, saying there is nothing to resolve").
+//! No unit test: it reads a real file; decode_join_state_tests covers the text it accepts and refuses.
+//! Integration tests are to cover, in a throwaway repository: the state a conflicted join wrote to the folder's git
+//! dir is read back by resolve; with no state file, resolve refuses, saying there is nothing to resolve.
 
 use crate::decode_join_state::decode_join_state;
 use crate::join_state::JoinState;

@@ -6,8 +6,8 @@
 pub(crate) enum ConflictedEntry {
     /// A file: its conflicted version is written into the folder.
     Write,
-    /// The conflicted tree has no entry there (a rename/rename conflict, S-50): skipped and listed.
+    /// The conflicted tree has no entry there (a rename/rename conflict): skipped and listed.
     Absent,
-    /// A submodule (gitlink): it has no file text, so nothing is written and it is listed apart (S-64).
+    /// A submodule (gitlink): it has no file text, so nothing is written and it is listed apart.
     Gitlink,
 }

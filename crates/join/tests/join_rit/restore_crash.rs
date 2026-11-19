@@ -1,4 +1,4 @@
-//! WO-join-rit-9 / S-142(1): real resolve ref transaction -> SIGKILL/reap -> Oplog recovery/undo -> Join restore.
+//! Real resolve ref transaction -> SIGKILL/reap -> Oplog recovery/undo -> Join restore.
 //! Uses the same after-transaction boundary as resolution/crashes.rs: recovery closes its durable open intent.
 
 use super::restore_support::{caller, Scenario, ACTOR, REQUEST};

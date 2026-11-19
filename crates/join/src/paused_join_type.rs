@@ -5,7 +5,7 @@
 use gitio::Oid;
 use std::path::PathBuf;
 
-/// The commit a paused join stopped at, and its conflicted files, relative to the folder (S-21, S-84).
+/// The commit a paused join stopped at, and its conflicted files, relative to the folder.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PausedJoin {
     pub commit: Oid,

@@ -1,12 +1,12 @@
-//! check_restore_join_state: the read-only pre-check of restore_join_state's refusals (S-148) that the cli runs
-//! before the cli's pending folder move and oplog undo, which run in that order after it (S-143 (4), S-155), so a
-//! refused undo of a resolve is refused with no ref moved by the undo (S-142(1)).
-//! restore_join_state keeps its own checks for a change between this check and the restore (S-148 (1)); the caller
-//! holds join-<zone> (S-16).
-//! No unit test: it runs git and reads a real file (S-5, S-104). restore_refusal_tests (its rules, with fakes),
+//! check_restore_join_state: the read-only pre-check of restore_join_state's refusals that the cli runs
+//! before the cli's pending folder move and oplog undo, which run in that order after it, so a refused undo of a
+//! resolve is refused with no ref moved by the undo.
+//! restore_join_state keeps its own checks for a change between this check and the restore; the caller holds
+//! join-<zone>.
+//! No unit test: it runs git and reads a real file. restore_refusal_tests (its rules, with fakes),
 //! recorded_join_state_tests and restore_state_step_tests (the decisions it passes in) cover it. No ZIT: any test
-//! through it calls gitio for real, which makes it a RIT (S-135).
-//! RITs (Nagatha's join_rit, S-135), each in a throwaway repository: tests/join_rit/precheck.rs covers
+//! through it calls gitio for real, which makes it a RIT.
+//! RITs (tests/join_rit), each in a throwaway repository: tests/join_rit/precheck.rs covers
 //! - the pre-check, then oplog undo of the resolve's final op, then restore_join_state: Restored
 //!   (precheck_then_real_undo_and_restore_recreates_the_exact_pause_and_resolves_the_same_tree);
 //! - the pre-check while another paused join's state is present: StatePresent, and no ref moved and no file written

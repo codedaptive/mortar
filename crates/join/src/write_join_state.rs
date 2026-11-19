@@ -1,8 +1,8 @@
 //! write_join_state: writes mortar-join.json into a folder's git dir, whole or not at all.
-//! No unit test: it writes and renames real files; encode_join_state_tests covers the text. Nagatha's integration
-//! tests are to cover: the file holds exactly the text given; writing again replaces it; no
-//! `mortar-join.json.tmp` is left beside it; a git dir that cannot be written to is refused as StateWrite naming
-//! the temp file.
+//! No unit test: it writes and renames real files; encode_join_state_tests covers the text. Integration tests are
+//! to cover: the file holds exactly the text given; writing again replaces it; no `mortar-join.json.tmp` is left
+//! beside it after a write that succeeds; a git dir that cannot be written to is refused as StateWrite naming the
+//! temp file. A failed rename is refused as StateWrite naming `mortar-join.json`, and the temp file is left behind.
 
 use crate::join_state_path::join_state_path;
 use crate::JoinRunError;

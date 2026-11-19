@@ -1,7 +1,7 @@
 //! JoinRunError: why a join, a resolve or a restore of a paused join was refused. A declaration only;
 //! join_run_error_display_tests and join_run_error_display_restore_tests exercise each variant's text.
-//! There is no Lock variant: join, resolve and restore_join_state take no lock; their caller holds join-<zone>
-//! (S-16). oplog's errors are carried as they are, so no Clone or Eq is asked of them.
+//! There is no Lock variant: join, resolve and restore_join_state take no lock; their caller holds join-<zone>.
+//! oplog's errors are carried as they are, so no Clone or Eq is asked of them.
 
 use crate::{JoinError, MarkedFile};
 use gitio::{GitError, Oid};
@@ -36,7 +36,7 @@ pub enum JoinRunError {
     /// These conflicted files still hold conflict-marker lines; resolve made no commit.
     StillMarked(Vec<MarkedFile>),
     /// The request ref is not at the tip the paused join recorded (`actual` is None when the ref is gone), so the
-    /// state at `state` no longer describes the request; it is kept and no ref moved.
+    /// state at `state` no longer describes the request; it is kept and join moved no ref.
     StateStale { request_ref: String, expected: Oid, actual: Option<Oid>, state: PathBuf },
     /// Reading mortar-join.json at `path` failed.
     StateRead { path: PathBuf, source: std::io::Error },
@@ -46,9 +46,9 @@ pub enum JoinRunError {
     StateRemove { path: PathBuf, source: std::io::Error },
     /// Reading the conflicted file at `path` to check it for markers failed.
     FileRead { path: PathBuf, source: std::io::Error },
-    /// A conflicted path names a folder where resolve needs a file entry, so no resolved commit was made.
+    /// A conflicted path names a folder where resolve needs a file entry, so join moved no ref.
     ConflictedPathIsFolder { path: PathBuf },
-    /// gitio refused to build the resolved tree from the conflicted paths, so no resolved commit was made; `path` is
+    /// gitio refused to build the resolved tree from the conflicted paths, so join moved no ref; `path` is
     /// the conflicted path the refusal names, when it names one, and `reason` is gitio's.
     ConflictedPathRefused { path: Option<PathBuf>, reason: String },
     /// The op given to restore is not a resolve's final join-rebase op recording a state: another kind, not done,

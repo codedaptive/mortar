@@ -10,7 +10,7 @@ use std::path::PathBuf;
 /// of this join over all its rounds, this round's `files` included, in first-seen order. `files_written` is true
 /// once resolve has written the conflicted files into the folder, so a resolve run tells its first run from a next
 /// one. `rebased_to` is the new request tip once a resolve's continued replay is clean, and `folder_tree` the tree
-/// the caller moves the folder from (S-87): the old request tip's tree with every path in `all_files` taken from
+/// the caller moves the folder from: the old request tip's tree with every path in `all_files` taken from
 /// the caller's tree. Both are saved before the op that moves the request ref, so a repeated resolve can tell
 /// whether that op was applied and answers the same folder_tree.
 #[derive(Clone, Debug, PartialEq, Eq)]

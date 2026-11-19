@@ -1,8 +1,8 @@
 //! pause: stops a conflicted replay, saving its state for `mr resolve`.
-//! No unit test: it runs git and writes real files (S-5); after_replay_tests covers the state it is given. Nagatha's
-//! integration tests are to cover, in a throwaway repository: a conflict lists the files, writes mortar-join.json and
-//! moves no ref (SPEC-join §WO-join-2; join.rs's header); a resolve whose continued replay conflicts again writes a
-//! new state for the new commit, moves no ref and lists the files (WO-join-3 Goal 3, "Conflicted again").
+//! No unit test: it runs git and writes real files; after_replay_tests covers the state it is given. Integration
+//! tests are to cover, in a throwaway repository: a conflict lists the files, writes mortar-join.json and moves no
+//! ref (join.rs's header); a resolve whose continued replay conflicts again writes a new state for the new commit,
+//! moves no ref and lists the files.
 
 use crate::join_state::JoinState;
 use crate::save_join_state::save_join_state;

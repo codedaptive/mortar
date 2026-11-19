@@ -1,5 +1,5 @@
 //! join_state_path: where a folder's paused-join state lives, mortar-join.json in its git dir. The one place the
-//! state file's path is built, so resolve, write_join_state and paused_join agree on it (WO-join-6).
+//! state file's path is built, so resolve, write_join_state and paused_join agree on it.
 
 use std::path::{Path, PathBuf};
 

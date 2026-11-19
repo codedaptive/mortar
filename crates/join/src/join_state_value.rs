@@ -1,4 +1,4 @@
-//! join_state_value: the value under which a resolve's final join-rebase op records the paused state (S-142(1)).
+//! join_state_value: the value under which a resolve's final join-rebase op records the paused state.
 //! join_state_value_tests covers the name, a hand-written text, the clearing of rebased_to and folder_tree, the round
 //! trip through decode_join_state and the refusal of a non-UTF-8 path.
 

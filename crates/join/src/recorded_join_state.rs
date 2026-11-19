@@ -1,4 +1,4 @@
-//! recorded_join_state: the paused state a resolve's final join-rebase op recorded under JOIN_STATE (S-142(1)).
+//! recorded_join_state: the paused state a resolve's final join-rebase op recorded under JOIN_STATE.
 //! recorded_join_state_tests covers a good op, each cause of NotAResolveOp, the first of two values taken and each
 //! cause of RecordedStateCorrupt.
 

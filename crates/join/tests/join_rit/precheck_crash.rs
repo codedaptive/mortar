@@ -1,4 +1,4 @@
-//! S-148: pre-check of a real resolve's finished state left by SIGKILL, then Oplog undo and Join restore.
+//! Pre-check of a real resolve's finished state left by SIGKILL, then Oplog undo and Join restore.
 //! Reuses the existing resolve worker and Testkit's after-transaction kernel-reap boundary, not a fabricated state.
 use super::restore_support::{Scenario, REQUEST};
 use oplog::{KillPidProbe, OpPhase, PidProbe};
