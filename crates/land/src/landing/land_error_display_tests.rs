@@ -1,11 +1,14 @@
-//! Display for LandError's own refusals that carry only op-log records (OpFailed, OpRepeated), each as literal text
-//! naming the op and saying nothing moved. The arms that print an Oid (NoZone, NoLandingState, IntegrationElsewhere)
-//! are repo integration tests (RITs): tests/land_rit/owed_displays.rs covers them; the State arm, which runs
+//! Display for LandError's own refusals, each as literal text saying nothing moved: OpFailed and OpRepeated name the
+//! op, NoZone, NoLandingState and IntegrationElsewhere their commits. The State arm, which runs
 //! LandingStateError's Display, is tested in tests/landing_zit (state_display); the Squash, Git, Oplog and Trailers
 //! arms embed another error's text and have no case here.
 
 use super::LandError;
+use gitio::Oid;
 use oplog::{OpPhase, OpRecord, OpResult};
+
+fn a() -> Oid { Oid::parse("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa").unwrap() }
+fn b() -> Oid { Oid::parse("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb").unwrap() }
 
 fn record(phase: OpPhase) -> OpRecord {
     OpRecord {
@@ -39,3 +42,17 @@ fn op_repeated_names_the_key_and_says_nothing_moved() {
     );
 }
 
+#[test]
+fn no_zone_names_the_commit_and_says_nothing_moved() {
+    assert_eq!(LandError::NoZone { commit: a() }.to_string(), "squash commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa carries no Mortar-Zone trailer, so its landing cannot name the zone; nothing was moved");
+}
+
+#[test]
+fn no_landing_state_names_both_tips_and_says_nothing_moved() {
+    assert_eq!(LandError::NoLandingState { origin: a(), integration: b() }.to_string(), "integration is at bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, not at origin aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, and no landing state names a landing in flight; nothing was moved");
+}
+
+#[test]
+fn integration_elsewhere_names_both_commits_and_says_nothing_moved() {
+    assert_eq!(LandError::IntegrationElsewhere { expected: a(), actual: b() }.to_string(), "integration is at bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, neither origin nor aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, the commit the landing state says was landed; nothing was moved");
+}

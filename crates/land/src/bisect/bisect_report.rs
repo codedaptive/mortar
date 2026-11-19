@@ -1,5 +1,5 @@
-//! What bisect reports. A bare type; bisect_report_display_tests exercise the NotFound texts with no probes; the
-//! culprit and probe lines are repo integration tests (RITs): tests/land_rit/owed_displays.rs covers them.
+//! What bisect reports. A bare type; bisect_report_display_tests exercise its texts: the NotFound answers, the
+//! culprit lines and the probe lines.
 
 use super::{BisectAnswer, Probe};
 

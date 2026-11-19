@@ -1,5 +1,4 @@
-//! One probe of the bisect. A bare type; tests/bisect_zit exercises it, and its Display cases are repo integration
-//! tests (RITs): tests/land_rit/owed_displays.rs covers them.
+//! One probe of the bisect. A bare type; tests/bisect_zit exercises it, and probe_display_tests its Display cases.
 
 use std::path::PathBuf;
 

@@ -1,10 +1,13 @@
 //! Display for BackupError: each refusal names what it carries and says what moved. The Host, Git and Oplog arms
-//! print oplog's or gitio's own text, so their cases run another crate's Display: they are repo integration tests
-//! (RITs), in tests/land_rit/owed_displays.rs, and are not here.
+//! print oplog's or gitio's own text after their prefix.
 
 use super::BackupError;
-use gitio::PushRefusal;
-use oplog::{OpPhase, OpRecord, OpResult};
+use gitio::{GitError, PushRefusal};
+use oplog::{LockError, OpPhase, OpRecord, OpResult, OplogError};
+
+fn git_error() -> GitError {
+    GitError { args: vec!["read-tree".into(), "HEAD".into()], code: Some(128), stderr: "fatal: no tree\n".into() }
+}
 
 fn record(phase: OpPhase) -> OpRecord {
     OpRecord {
@@ -68,4 +71,21 @@ fn op_repeated_names_the_key_and_says_nothing_moved() {
     let text = BackupError::OpRepeated(record(OpPhase::Done)).to_string();
     assert!(text.contains("op key land-restore-backup:h1:op-7 is already done"), "{text}");
     assert!(text.contains("this restore moved nothing"), "{text}");
+}
+
+#[test]
+fn host_says_nothing_moved() {
+    assert_eq!(BackupError::Host(LockError::HostUnknown("hostname failed".into())).to_string(), "backup host name: cannot read this host's name: hostname failed; check that `hostname` runs on this machine; nothing was pushed or restored");
+}
+
+#[test]
+fn git_is_marked_as_backups() {
+    assert_eq!(BackupError::Git(git_error()).to_string(), "backup git: git read-tree HEAD: exit code 128: fatal: no tree");
+}
+
+#[test]
+fn oplog_is_marked_as_backups() {
+    let shown = BackupError::Oplog(OplogError::UnknownOp { op_id: "op-404".into() }).to_string();
+    assert!(shown == "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mortar log"
+        || shown == "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mr log", "{shown}");
 }

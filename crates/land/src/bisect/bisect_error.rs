@@ -1,8 +1,7 @@
 //! Every way bisect can fail before or while it searches.
-//! A bare type; bisect_error_source_tests exercise each variant, and bisect_error_display_tests the OriginMissing
-//! text. The other arms' texts are repo integration tests (RITs): tests/land_rit/owed_displays.rs covers
-//! NotOnOrigin, OffTheLine and ProbeCouldNotRun; Culprit prints CulpritError's text, covered there (NotALanding)
-//! and in tests/land_rit/displays.rs (Trailers); Git's is not yet written.
+//! A bare type; bisect_error_source_tests exercise each variant, and bisect_error_display_tests the OriginMissing,
+//! NotOnOrigin, OffTheLine and ProbeCouldNotRun texts. Culprit prints CulpritError's text, covered by
+//! culprit_error_display_tests (NotALanding) and tests/land_rit/displays.rs (Trailers); Git's is not yet written.
 
 use gitio::{GitError, Oid};
 

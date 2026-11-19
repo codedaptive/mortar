@@ -1,13 +1,14 @@
 //! Display for PublishError's own refusals (PushRefused, RemoteMissing, PushIntent), each as literal text naming what
 //! it carries and saying nothing was published or pushed; PushIntent's OpPhase is built as data and not printed. The
-//! Land arm, which prints LandError's Oid text, is a repo integration test (RIT): tests/land_rit/owed_displays.rs
-//! covers it; the State arm, which runs
+//! Land arm prefixes LandError's text with "publish: "; the State arm, which runs
 //! LandingStateError's Display, is tested in tests/publish_zit (state_display); the Squash, Git and Oplog arms embed
 //! another error's text and have no case here.
 
-use super::PublishError;
-use gitio::PushRefusal;
+use super::{LandError, PublishError};
+use gitio::{Oid, PushRefusal};
 use oplog::OpPhase;
+
+fn a() -> Oid { Oid::parse("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa").unwrap() }
 
 fn refused(refusal: PushRefusal) -> String {
     PublishError::PushRefused { refname: "refs/heads/main".to_string(), refusal }.to_string()
@@ -47,4 +48,9 @@ fn push_intent_names_the_record_and_says_what_to_do_whether_open_or_done() {
     for phase in [OpPhase::Intent, OpPhase::Done] {
         assert_eq!(PublishError::PushIntent { op_id: "op-7".to_string(), phase }.to_string(), text);
     }
+}
+
+#[test]
+fn land_is_prefixed_with_publish() {
+    assert_eq!(PublishError::Land(LandError::NoZone { commit: a() }).to_string(), "publish: squash commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa carries no Mortar-Zone trailer, so its landing cannot name the zone; nothing was moved");
 }

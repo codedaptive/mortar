@@ -1,10 +1,13 @@
 //! Display for SquashError's refusals: each names what it carries and says what moved.
 //! The Git, Oplog, Trailers and ChangeId texts embed gitio's or oplog's own failure text, so tests/land_rit
-//! covers them. The AttrSourceMissing and Unrelated texts name a commit (gitio's Oid Display), so
-//! tests/land_rit/owed_displays.rs covers them too.
+//! covers them.
 
 use super::SquashError;
+use gitio::Oid;
 use oplog::{OpPhase, OpRecord, OpResult};
+
+fn a() -> Oid { Oid::parse("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa").unwrap() }
+fn b() -> Oid { Oid::parse("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb").unwrap() }
 
 fn record(phase: OpPhase) -> OpRecord {
     OpRecord {
@@ -39,4 +42,14 @@ fn op_repeated_names_the_key_and_says_nothing_moved() {
     let text = SquashError::OpRepeated(record(OpPhase::Done)).to_string();
     assert!(text.contains("op key land-squash:refs/mortar/squash/land:none:k:op-7 is already done"), "{text}");
     assert!(text.contains("this squash moved nothing"), "{text}");
+}
+
+#[test]
+fn attr_source_missing_names_the_commit_and_says_nothing_moved() {
+    assert_eq!(SquashError::AttrSourceMissing { commit: a() }.to_string(), "attribute source commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa does not exist, so the merge cannot read its attributes; no commit was written and no ref was moved");
+}
+
+#[test]
+fn unrelated_names_both_tips_and_says_nothing_moved() {
+    assert_eq!(SquashError::Unrelated { origin: a(), source: b() }.to_string(), "zone tip bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb shares no history with origin aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa; nothing was squashed and no ref was moved");
 }

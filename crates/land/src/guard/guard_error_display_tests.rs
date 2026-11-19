@@ -1,10 +1,21 @@
-//! Guard failure texts. The Git arm prints gitio's own text, so its case runs another crate's Display: a RIT, in
-//! tests/land_rit/owed_displays.rs, not here. Io embeds std's text, so only its path prefix is checked.
+//! Guard failure texts. The Git arm prints gitio's own text after its prefix. Io embeds std's text, so only its path
+//! prefix is checked.
 
 use std::io;
 use std::path::PathBuf;
 
+use gitio::GitError;
+
 use super::GuardError;
+
+fn git_error() -> GitError {
+    GitError { args: vec!["read-tree".into(), "HEAD".into()], code: Some(128), stderr: "fatal: no tree\n".into() }
+}
+
+#[test]
+fn git_text_starts_with_git_failed() {
+    assert_eq!(GuardError::Git(git_error()).to_string(), "git failed: git read-tree HEAD: exit code 128: fatal: no tree");
+}
 
 #[test]
 fn io_text_starts_with_the_path() {
