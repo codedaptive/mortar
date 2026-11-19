@@ -1,8 +1,7 @@
 //! check_hooks_path: read core.hooksPath from git and refuse a value git would resolve per worktree.
 //! It runs git, so it has no sibling unit test (S-5); its decision is decide_hooks_path, with decide_hooks_path_tests.
-//! A RIT is owed to Nagatha: on a throwaway repository, core.hooksPath unset and absolute pass, a relative value and
-//! a `~/` value (which `--type=path` expands to an absolute one) give their outcomes, and the Git display arm reads
-//! as git's failure (tests/land_rit/owed_displays.rs).
+//! tests/land_rit/check_hooks_path.rs runs it on throwaway repositories: unset, absolute and `~/` values pass,
+//! relative and empty values are refused, a broken config is a Git failure, and none of them writes anything.
 
 use gitio::{Git, RunOpts};
 

@@ -1,5 +1,5 @@
-//! HooksPathError texts. The Git arm prints gitio's own text, so its case runs another crate's Display: a RIT owed in
-//! tests/land_rit/owed_displays.rs, not here.
+//! HooksPathError texts. The Git arm prints gitio's own text, so its case runs another crate's Display: it is in
+//! tests/land_rit/check_hooks_path.rs, not here.
 
 use std::path::PathBuf;
 
