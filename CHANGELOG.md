@@ -72,6 +72,7 @@ The first public version. Mortar writes version-control history for teams of cod
 ### Known limits
 
 - Unix only. Mortar is built from source; there are no packaged releases.
+- Needs `git` 2.46 or newer: the guard reads symbolic-ref writes from git's reference-transaction hook, which older git does not pass to it.
 - Licensed under the MIT License; see [`LICENSE`](LICENSE).
 - The guard stops accidental moves of the protected branches. It is not a defence against someone who can write to the repository's git folder. See [`SECURITY.md`](SECURITY.md).
 - `mr disk` and `mr sweep --idle-days` measure and clear the folder named `target` only, whatever `--build-dir` names.

@@ -25,7 +25,7 @@ For a problem with security consequences, do not open an issue. See "Reporting s
 
 ## The code
 
-Mortar is a Cargo workspace that ships one program, `mortar` (also built as `mr`). It needs a Rust toolchain with Cargo and `git` 2.40 or newer.
+Mortar is a Cargo workspace that ships one program, `mortar` (also built as `mr`). It needs a Rust toolchain with Cargo and `git` 2.46 or newer.
 
 | Crate | What it holds | Depends on |
 |---|---|---|
