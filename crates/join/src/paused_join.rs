@@ -1,7 +1,7 @@
 //! paused_join: the join paused in a folder, if any, read from its mortar-join.json.
 //! No unit test: it reads a real file; the JoinState -> PausedJoin step is a field copy with no decision.
-//! The no-state, valid-state, corrupt and unreadable cases are ZITs in crates/join/tests/paused_join.rs.
-//! A real join stopped on a conflict is covered by the ZIT a_join_paused_on_a_conflict_is_answered_by_paused_join in
+//! The no-state, valid-state, corrupt and unreadable cases are tested in crates/join/tests/paused_join.rs.
+//! A real join stopped on a conflict is tested by a_join_paused_on_a_conflict_is_answered_by_paused_join in
 //! crates/join/tests/real_join.rs.
 
 use crate::join_state_path::join_state_path;
