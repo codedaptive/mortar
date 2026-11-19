@@ -1,5 +1,6 @@
-//! Display for BackupError: each refusal names what it carries and says what moved. The Host, Git and Oplog arms
-//! print oplog's or gitio's own text after their prefix.
+//! Display for BackupError: each test pins the whole Display text, in land's own words around the values the test
+//! passes, except: the Host arm is land's prefix, oplog's LockError text, then land's suffix; the Oplog arm is land's
+//! prefix then oplog's text; the Git arm is land's prefix then gitio's text.
 
 use super::BackupError;
 use gitio::{GitError, PushRefusal};
@@ -28,7 +29,7 @@ fn refused(refusal: PushRefusal) -> String {
 }
 
 #[test]
-fn bad_host_names_the_host_and_says_nothing_moved() {
+fn bad_host_text_is_the_host_why_no_backup_namespace_then_nothing_pushed_and_nothing_restored() {
     let text = BackupError::BadHost("a/b".to_string()).to_string();
     assert_eq!(
         text,
@@ -38,52 +39,77 @@ fn bad_host_names_the_host_and_says_nothing_moved() {
 }
 
 #[test]
-fn refused_names_the_backup_ref_and_says_what_moved() {
-    let text = refused(PushRefusal::StaleLease);
-    assert!(text.starts_with("the remote refused to move backup ref refs/mortar-backup/h1/heads/zone/a: "), "{text}");
-    assert!(text.contains("it was not moved, other backup refs in the same push may have been"), "{text}");
+fn refused_text_is_the_remote_refused_the_ref_the_stale_lease_why_what_moved_then_what_to_do() {
+    assert_eq!(
+        refused(PushRefusal::StaleLease),
+        "the remote refused to move backup ref refs/mortar-backup/h1/heads/zone/a: it moved on the remote since it \
+         was read (stale lease); it was not moved, other backup refs in the same push may have been; run backup \
+         again to compare afresh"
+    );
 }
 
 #[test]
-fn refused_says_why_for_each_refusal() {
+fn refused_text_is_the_remote_refused_the_ref_each_refusals_why_what_moved_then_what_to_do() {
     let cases = [
-        (PushRefusal::StaleLease, "it moved on the remote since it was read (stale lease)"),
-        (PushRefusal::NonFastForward, "the move is not a fast-forward"),
-        (PushRefusal::Hook, "a hook on the remote declined it"),
-        (PushRefusal::Other("[rejected] (fetch first)".to_string()), "git said [rejected] (fetch first)"),
+        (
+            PushRefusal::StaleLease,
+            "the remote refused to move backup ref refs/mortar-backup/h1/heads/zone/a: it moved on the remote since \
+             it was read (stale lease); it was not moved, other backup refs in the same push may have been; run \
+             backup again to compare afresh",
+        ),
+        (
+            PushRefusal::NonFastForward,
+            "the remote refused to move backup ref refs/mortar-backup/h1/heads/zone/a: the move is not a \
+             fast-forward; it was not moved, other backup refs in the same push may have been; run backup again to \
+             compare afresh",
+        ),
+        (
+            PushRefusal::Hook,
+            "the remote refused to move backup ref refs/mortar-backup/h1/heads/zone/a: a hook on the remote \
+             declined it; it was not moved, other backup refs in the same push may have been; run backup again to \
+             compare afresh",
+        ),
+        (
+            PushRefusal::Other("[rejected] (fetch first)".to_string()),
+            "the remote refused to move backup ref refs/mortar-backup/h1/heads/zone/a: git said [rejected] (fetch \
+             first); it was not moved, other backup refs in the same push may have been; run backup again to \
+             compare afresh",
+        ),
     ];
-    for (refusal, why) in cases {
-        let text = refused(refusal);
-        assert!(text.contains(&format!("zone/a: {why}; ")), "{text}");
+    for (refusal, expected) in cases {
+        assert_eq!(refused(refusal), expected);
     }
 }
 
 #[test]
-fn op_failed_names_the_op_and_its_key_and_says_nothing_moved() {
-    let text = BackupError::OpFailed(record(OpPhase::Failed)).to_string();
-    assert!(text.contains("op op-7 (key land-restore-backup:h1:op-7) failed"), "{text}");
-    assert!(text.contains("not at its expected value"), "{text}");
-    assert!(text.contains("nothing was restored"), "{text}");
+fn op_failed_text_is_the_op_its_key_failed_why_nothing_restored_then_what_to_do() {
+    assert_eq!(
+        BackupError::OpFailed(record(OpPhase::Failed)).to_string(),
+        "op op-7 (key land-restore-backup:h1:op-7) failed: a local ref was not at its expected value, so nothing was \
+         restored; run restore again to read the refs afresh"
+    );
 }
 
 #[test]
-fn op_repeated_names_the_key_and_says_nothing_moved() {
-    let text = BackupError::OpRepeated(record(OpPhase::Done)).to_string();
-    assert!(text.contains("op key land-restore-backup:h1:op-7 is already done"), "{text}");
-    assert!(text.contains("this restore moved nothing"), "{text}");
+fn op_repeated_text_is_the_key_already_done_in_the_op_log_nothing_moved_then_what_to_do() {
+    assert_eq!(
+        BackupError::OpRepeated(record(OpPhase::Done)).to_string(),
+        "op key land-restore-backup:h1:op-7 is already done in the op log, so this restore moved nothing; run restore \
+         again"
+    );
 }
 
 #[test]
-fn host_says_nothing_moved() {
+fn host_text_is_the_backup_prefix_cannot_read_the_host_name_the_reason_what_to_do_then_nothing_pushed_and_nothing_restored() {
     assert_eq!(BackupError::Host(LockError::HostUnknown("hostname failed".into())).to_string(), "backup host name: cannot read this host's name: hostname failed; check that `hostname` runs on this machine; nothing was pushed or restored");
 }
 
 #[test]
-fn git_is_marked_as_backups() {
+fn git_text_is_the_backup_prefix_then_gitios_command_exit_code_and_stderr() {
     assert_eq!(BackupError::Git(git_error()).to_string(), "backup git: git read-tree HEAD: exit code 128: fatal: no tree");
 }
 
 #[test]
-fn oplog_is_marked_as_backups() {
+fn oplog_text_is_the_backup_prefix_cannot_restore_the_op_not_in_the_log_then_what_to_do() {
     assert_eq!(BackupError::Oplog(OplogError::UnknownOp { op_id: "op-404".into() }).to_string(), "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mr log");
 }
