@@ -1,8 +1,8 @@
 //! guard_install: put the guard's config and both hooks in place. It runs git and does file I/O, so it has no sibling
 //! unit test (S-5); its decisions are decide_hook_writes and decide_config_write, each with its _tests.
 //! tests/land_rit/guard_installation.rs checks a fresh install's bytes of guard.json and both hooks and their exec
-//! bits, a repeat install changing nothing, ForeignHook refusing either hook with nothing written, a relative
-//! core.hooksPath and an install from a linked worktree. tests/land_rit/guard_codec.rs checks guard.json's bytes.
+//! bits, a repeat install changing nothing, ForeignHook refusing either hook with nothing written and an install from
+//! a linked worktree. tests/land_rit/guard_codec.rs checks guard.json's bytes.
 
 use std::fs::{self, Permissions};
 use std::os::unix::fs::PermissionsExt;
