@@ -6,7 +6,7 @@ use std::path::PathBuf;
 fn unset_is_refused_naming_the_variable() {
     assert_eq!(
         teams_folder(None),
-        Err("ACCEPT_TEAMS is not set: set it to the folder of codeteam's team manifests".to_string())
+        Err("ACCEPT_TEAMS is not set: set it to the folder of team manifests".to_string())
     );
 }
 
@@ -14,7 +14,7 @@ fn unset_is_refused_naming_the_variable() {
 fn empty_is_refused_like_unset() {
     assert_eq!(
         teams_folder(Some(OsString::new())),
-        Err("ACCEPT_TEAMS is not set: set it to the folder of codeteam's team manifests".to_string())
+        Err("ACCEPT_TEAMS is not set: set it to the folder of team manifests".to_string())
     );
 }
 

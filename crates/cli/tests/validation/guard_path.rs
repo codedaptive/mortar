@@ -7,7 +7,7 @@ use crate::support::{actual_git, script, Fixture};
 use std::{ffi::{OsStr, OsString}, fs, os::unix::fs::{symlink, PermissionsExt}, path::{Path, PathBuf}};
 
 // The binary's actual 37-byte signature is protocol input, not an import of CLI's private marker implementation.
-const MARKER: &[u8] = b"\0mortar-binary-marker/S-147/7c1e4b9a\0";
+const MARKER: &[u8] = b"\0mortar-binary-marker/5e3a9d7c1e4b9a\0";
 const FOREIGN: &[u8] = b"#!/bin/sh\nprintf 'candidate ran\\n' >\"$GUARD_PATH_CANDIDATE_RAN\"\nexit 97\n";
 
 enum Warning<'a> { Recognized, Missing, Foreign(&'a Path) }

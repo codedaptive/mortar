@@ -3,7 +3,7 @@
 //! it makes its zone and request folders from the copy, under its own scratch, and takes the five numbers: a full
 //! checkout's bytes, both folders' bytes, mr disk's store and mr snapshot's wall time. The step runs only when
 //! ACCEPT_MOOT_COPY is set and not empty, which is only on request; once the copy and its git common dir
-//! are read, it refuses on one failed line when ACCEPT_TEAMS, the folder of codeteam's team manifests, is unset or
+//! are read, it refuses on one failed line when ACCEPT_TEAMS, the folder of team manifests, is unset or
 //! empty.
 
 use super::{Gate, StepSpec};

@@ -7,4 +7,4 @@
 /// The marker: NUL-bounded so it reads as no word in a program's text, with a random tail so no other program
 /// carries it by chance.
 #[used]
-pub static MORTAR_MARKER: [u8; 37] = *b"\0mortar-binary-marker/S-147/7c1e4b9a\0";
+pub static MORTAR_MARKER: [u8; 37] = *b"\0mortar-binary-marker/5e3a9d7c1e4b9a\0";
