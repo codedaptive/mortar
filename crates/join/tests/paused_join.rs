@@ -1,5 +1,5 @@
-//! ZIT: public join::paused_join with read_join_state, decode_join_state and join_state_path for real; touches only
-//! its own temp files, no git.
+//! Tests the public join::paused_join with read_join_state, decode_join_state and join_state_path for real; touches
+//! only its own temp files, no git.
 use gitio::Oid;
 use join::{paused_join, JoinRunError, PausedJoin};
 use std::path::{Path, PathBuf};
