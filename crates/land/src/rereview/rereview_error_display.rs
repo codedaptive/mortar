@@ -1,7 +1,6 @@
 //! How a re-review failure reads: git's failure, the trailer failure as it is, or the refusal naming its commits.
-//! No sibling unit test: every test of it runs gitio's Oid Display or another crate's error Display.
-//! No ZIT reaches it yet; tests/land_rit covers the Git and Trailers texts (displays.rs) and the NotSameChange and
-//! NoParent texts (owed_displays.rs).
+//! rereview_error_display_tests cover the NotSameChange and NoParent texts; tests/land_rit/displays.rs covers the
+//! Git and Trailers texts. No ZIT reaches it yet.
 
 use std::fmt;
 

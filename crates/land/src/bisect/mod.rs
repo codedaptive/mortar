@@ -38,6 +38,8 @@ mod bisect_error_source_tests;
 #[cfg(test)]
 mod bisect_report_display_tests;
 #[cfg(test)]
+mod culprit_error_display_tests;
+#[cfg(test)]
 mod culprit_error_source_tests;
 #[cfg(test)]
 mod culprit_of_landing_tests;
@@ -45,6 +47,8 @@ mod culprit_of_landing_tests;
 mod decide_bisect_range_tests;
 #[cfg(test)]
 mod on_first_parent_line_tests;
+#[cfg(test)]
+mod probe_display_tests;
 #[cfg(test)]
 mod probe_outcome_of_tests;
 #[cfg(test)]

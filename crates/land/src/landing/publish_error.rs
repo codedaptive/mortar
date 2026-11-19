@@ -1,5 +1,5 @@
 //! PublishError: why publish was refused. A bare type;
-//! publish_error_display_tests exercises the PushRefused, RemoteMissing and PushIntent texts, tests/publish_zit
+//! publish_error_display_tests exercises the PushRefused, RemoteMissing, PushIntent and Land texts, tests/publish_zit
 //! (state_display) the State text, publish_error_source_tests its source.
 
 use crate::landing::{LandError, LandingStateError};

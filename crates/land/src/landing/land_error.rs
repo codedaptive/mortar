@@ -1,7 +1,7 @@
 //! LandError: why land, back_out or one of publish's ops was refused; publish wraps it as PublishError::Land. A bare
-//! type; land_error_display_tests exercises the OpFailed and OpRepeated texts,
-//! tests/landing_zit (state_display) the State text, land_error_source_tests its source, landing_applied_tests the op
-//! variants.
+//! type; land_error_display_tests exercises the OpFailed, OpRepeated, NoZone, NoLandingState and
+//! IntegrationElsewhere texts, tests/landing_zit (state_display) the State text, land_error_source_tests its source,
+//! landing_applied_tests the op variants.
 
 use crate::landing::LandingStateError;
 use crate::squash::SquashError;
