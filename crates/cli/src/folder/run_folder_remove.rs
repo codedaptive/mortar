@@ -5,7 +5,7 @@
 //! crates/cli/tests/validation/run_folder_remove_tests.rs covers it through the binary: a joined, saved request folder removed
 //! with its branch and snapshot ref by a folder-remove op of the actor; unsaved work, remaining attempts (next naming
 //! keep and drop) and a zone folder each refused exit 1 with nothing removed.
-//! Repo integration tests to write (cross-zone, not written here): a file the snapshot cap refuses counts as unsaved,
+//! Validation tests to write (not written here): a file the snapshot cap refuses counts as unsaved,
 //! naming the file and the cap; a request not joined, and a snapshot ref moved under the op, the cli's why and
 //! next; a join-<zone> lock held by a live pid, exit 3.
 

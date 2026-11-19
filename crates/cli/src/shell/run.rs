@@ -6,7 +6,9 @@
 //! No unit test: run only wires real git into run_in. shell/run_in_tests and shell/git_floor_tests cover the floor
 //! check and its order before the folder read with both reads faked; the tests in src (context/context_report_tests,
 //! args/usage_report_tests, actor_for_tests, repository_report_tests, missing_config_report_tests,
-//! shell/checks_git_floor_tests, shell/git_floor_report_tests) cover what it reports. The validation tests are to
+//! shell/checks_git_floor_tests, shell/git_floor_report_tests) cover what it reports. validation/run_git_floor_tests
+//! covers the real version read: with git 2.45.2 first on PATH, `mr join` outside a folder is refused by the floor,
+//! exit 1; with 2.46.0 it passes the floor and is refused as "not-a-folder". The other validation tests are to
 //! cover, with the mortar binary as a child process in a throwaway repository: an unknown verb is exit 4
 //! listing the verbs; `mr init` without
 //! --actor is exit 4; with --json stdout holds one JSON object and nothing else, also for a usage error; an agent verb

@@ -1,6 +1,6 @@
 //! NamedZone: one zone named on the after-publish line or by overlap, as read_named_zones reads it (before land's
-//! call, for after-publish). A bare type; run_after_publish and run_overlap read it, and the repo integration tests
-//! listed there are to exercise it.
+//! call, for after-publish). A bare type; run_after_publish and run_overlap read it, and the validation
+//! tests listed there are to exercise it.
 
 use std::path::PathBuf;
 

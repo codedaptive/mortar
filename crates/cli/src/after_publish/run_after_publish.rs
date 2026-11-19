@@ -8,7 +8,7 @@
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_after_publish_args_tests,
 //! find_zone_old_tests, zone_values_tests, zone_move_lines_tests, zone_folder_lines_tests,
 //! after_publish_report_tests and after_publish_error_report_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here): zone b's folder
+//! Validation tests to write (not written here): zone b's folder
 //! made before r3 joined ends with r3's change; a folder several joins behind brought to the tip from the commit it
 //! stands on; Current and Conflicted zones' folders brought to the tip; a folder left on a pre-replay tip by a refused
 //! repeat found through the op log; no folder; already at the tip; an unstaged edit in the way and an unmerged index

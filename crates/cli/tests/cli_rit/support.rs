@@ -26,9 +26,9 @@ impl Fixture {
         let mut git = Git::new(&root);
         git.env = vec![
             ("GIT_CONFIG_NOSYSTEM".into(), "1".into()), ("GIT_CONFIG_GLOBAL".into(), "/dev/null".into()),
-            ("GIT_AUTHOR_NAME".into(), "CLI RIT Author".into()), ("GIT_AUTHOR_EMAIL".into(), "author@example.invalid".into()),
+            ("GIT_AUTHOR_NAME".into(), "CLI Validation Author".into()), ("GIT_AUTHOR_EMAIL".into(), "author@example.invalid".into()),
             ("GIT_AUTHOR_DATE".into(), "1700000000 +0000".into()),
-            ("GIT_COMMITTER_NAME".into(), "CLI RIT Committer".into()), ("GIT_COMMITTER_EMAIL".into(), "committer@example.invalid".into()),
+            ("GIT_COMMITTER_NAME".into(), "CLI Validation Committer".into()), ("GIT_COMMITTER_EMAIL".into(), "committer@example.invalid".into()),
             ("GIT_COMMITTER_DATE".into(), "1700000100 +0000".into()),
         ];
         git.run(&["init", "-q", "--initial-branch=main", main.to_str().unwrap()], &RunOpts::default()).unwrap();
@@ -81,7 +81,7 @@ impl Fixture {
         raw(&self.git, &["update-ref", ZONE, next.as_str()]); next
     }
     pub fn commit(&self, parent: &Oid, edits: &[(&str, &[u8])], message: &str) -> Oid {
-        let opts = RunOpts { env: vec![("GIT_INDEX_FILE".into(), self.common.join("rit-oracle-index").into_os_string())], ..RunOpts::default() };
+        let opts = RunOpts { env: vec![("GIT_INDEX_FILE".into(), self.common.join("validation-oracle-index").into_os_string())], ..RunOpts::default() };
         self.git.run(&["read-tree", parent.as_str()], &opts).unwrap();
         for (path, bytes) in edits {
             let id = oid(&self.git.run(&["hash-object", "-w", "--stdin"], &RunOpts { stdin: Some(bytes.to_vec()), ..RunOpts::default() }).unwrap().stdout);
@@ -92,7 +92,7 @@ impl Fixture {
     }
     pub fn pending_rebase(&self) -> (Oid, Oid, Oid) {
         let old = self.save_topic(); let zone = self.advance_zone(false);
-        let answer = with_lock(&self.git, &self.common, &LockName::Join("core".into()), "rit-setup-rebase", &KillPidProbe, || {
+        let answer = with_lock(&self.git, &self.common, &LockName::Join("core".into()), "validation-setup-rebase", &KillPidProbe, || {
             oplog::recover(&self.git, &self.common).map_err(join::JoinRunError::Oplog)?;
             join::join(&self.git, &self.request, "core", REQUEST, "core/task")
         });
@@ -107,7 +107,7 @@ impl Fixture {
     }
 }
 pub fn setup<'a>(git: &'a Git, path: &Path) -> FolderSetup<'a> {
-    FolderSetup { git, path: path.into(), floor_bytes: 0, sweep: SweepEstimate { bytes: 0, reason: None }, disk: &DfFreeDisk, pids: &KillPidProbe, actor: "rit-fixture".into() }
+    FolderSetup { git, path: path.into(), floor_bytes: 0, sweep: SweepEstimate { bytes: 0, reason: None }, disk: &DfFreeDisk, pids: &KillPidProbe, actor: "validation-fixture".into() }
 }
 pub fn raw(git: &Git, args: &[&str]) -> Vec<u8> { git.run(args, &RunOpts::default()).unwrap().stdout }
 pub fn oid(bytes: &[u8]) -> Oid { Oid::parse(std::str::from_utf8(bytes).unwrap().trim_end()).unwrap() }
@@ -117,12 +117,12 @@ pub fn actual_git() -> PathBuf {
     std::env::split_paths(&std::env::var_os("PATH").unwrap()).map(|p| p.join("git")).find(|p| p.is_file()).unwrap().canonicalize().unwrap()
 }
 pub fn shim_path(dir: &Path) -> OsString { std::env::join_paths(std::iter::once(dir.to_path_buf()).chain(std::env::split_paths(&std::env::var_os("PATH").unwrap()))).unwrap() }
-struct OwnDir(PathBuf);
+pub struct OwnDir(pub PathBuf);
 impl OwnDir {
-    fn new() -> Self {
+    pub fn new() -> Self {
         static NEXT: AtomicU64 = AtomicU64::new(0);
         loop {
-            let path = std::env::temp_dir().join(format!("mortar-cli-rit-{}-{}", std::process::id(), NEXT.fetch_add(1, Ordering::Relaxed)));
+            let path = std::env::temp_dir().join(format!("mortar-cli-validation-{}-{}", std::process::id(), NEXT.fetch_add(1, Ordering::Relaxed)));
             match fs::create_dir(&path) { Ok(()) => return Self(path.canonicalize().unwrap()), Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue, Err(e) => panic!("temp directory: {e}") }
         }
     }

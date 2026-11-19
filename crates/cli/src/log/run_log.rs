@@ -3,7 +3,7 @@
 //! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, run_log_tests its usage refusals
 //! before any read, and the validation test crates/cli/tests/validation/run_log_tests.rs, for one op in a real log, the plain
 //! listing with no "records" lines and the --json "records" line, for a line with no values or remote mark and for
-//! one carrying both. The repo integration tests are to cover, with the mortar binary as a child process in a
+//! one carrying both. The validation tests are to cover, with the mortar binary as a child process in a
 //! throwaway repository with ops in its log (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a real log read with each filter (--ref, --actor, --key) lists the matching ops, and with two filters their AND;

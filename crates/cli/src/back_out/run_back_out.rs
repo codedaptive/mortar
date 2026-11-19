@@ -10,7 +10,7 @@
 //! No sibling test: it takes a real lock and runs git, the op log and land; back_out_report_tests,
 //! note_finished_move_tests and landing's land_error_report_tests cover its decisions. The validation test
 //! crates/cli/tests/validation/run_back_out_tests.rs covers it through the binary.
-//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid,
+//! Validation tests to write (not written here): the land lock held by a live pid,
 //! exit 3; without a config, exit 1, next mr init; the LandError texts that need git, the op log or the landing
 //! state to fail for real; a back-out after a failed integration test of a landed squash; the stopped-move finish
 //! (a kill after land's op and before the folder

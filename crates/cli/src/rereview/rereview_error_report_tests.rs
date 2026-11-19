@@ -1,5 +1,5 @@
 //! rereview_error_report: NotSameChange (with and without change ids) and NoParent in the cli's own words. The Git
-//! and Trailers cases are RITs (see the file).
+//! and Trailers cases are validation tests to write (see rereview_error_report.rs).
 
 use gitio::Oid;
 use land::RereviewError;

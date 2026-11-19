@@ -11,8 +11,8 @@ use testkit::TestRepo;
 fn env() -> Vec<(OsString, OsString)> {
     [
         ("GIT_CONFIG_GLOBAL", "/dev/null"), ("GIT_CONFIG_NOSYSTEM", "1"), ("LC_ALL", "C"),
-        ("GIT_AUTHOR_NAME", "Guard RIT"), ("GIT_AUTHOR_EMAIL", "guard-rit@example.invalid"),
-        ("GIT_COMMITTER_NAME", "Guard RIT"), ("GIT_COMMITTER_EMAIL", "guard-rit@example.invalid"),
+        ("GIT_AUTHOR_NAME", "Guard Validation"), ("GIT_AUTHOR_EMAIL", "guard-validation@example.invalid"),
+        ("GIT_COMMITTER_NAME", "Guard Validation"), ("GIT_COMMITTER_EMAIL", "guard-validation@example.invalid"),
     ].map(|(name, value)| (name.into(), value.into())).to_vec()
 }
 

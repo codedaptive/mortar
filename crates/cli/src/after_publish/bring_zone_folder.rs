@@ -12,7 +12,7 @@
 //! the tip like a folder lagging behind; nothing is lost, since V's content is a commit the zone branch held.
 //! No sibling test: it runs git on a real folder; find_zone_old_tests (the staged-edit loss case as data) and
 //! zone_values_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here):
+//! Validation tests to write (not written here):
 //! - the staged-edit loss run: a staged edit at a path the tip changes refuses that folder,
 //!   "matches no commit", the edit kept in its index and files, exit 1;
 //! - zone b's folder, made before r3 joined, ends with r3's change;

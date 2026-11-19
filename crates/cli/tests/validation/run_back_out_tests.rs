@@ -3,7 +3,7 @@
 //! out; an extra word is a usage error (exit 4) with back-out's usage line as next and integration unmoved.
 //! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! The squash and the landing are made in setup through land::squash and land::land under the land lock.
-//! Repo integration tests to write (cross-zone, not written here):
+//! Validation tests to write (not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - each LandError variant's text that needs git or the op log to fail;

@@ -2,7 +2,7 @@ use crate::{json::check, support::*};
 use std::fs;
 
 #[test]
-fn rit_save_child_json_has_real_commit_id_trailers_and_inert_repeat() {
+fn validation_save_child_json_has_real_commit_id_trailers_and_inert_repeat() {
     let f = Fixture::new(); f.write("src/file", b"saved binary output\n");
     // Running within the folder still addresses the request's top and shared config/lock.
     let report = check(f.command(&f.request.join("src"), &["--json", "save", "Save from binary"]).output().unwrap(), "save", 0, "saved");
@@ -23,7 +23,7 @@ fn rit_save_child_json_has_real_commit_id_trailers_and_inert_repeat() {
 }
 
 #[test]
-fn rit_attempt_save_uses_trysnap_and_keeps_request_branch_snapshot_and_change_id() {
+fn validation_attempt_save_uses_trysnap_and_keeps_request_branch_snapshot_and_change_id() {
     let f = Fixture::new(); let request = f.save_topic();
     let snap = f.git.read_ref(SNAP).unwrap();
     let attempts = f.root.join("attempts");
@@ -42,7 +42,7 @@ fn rit_attempt_save_uses_trysnap_and_keeps_request_branch_snapshot_and_change_id
 }
 
 #[test]
-fn rit_blank_or_two_line_save_sentence_refuses_without_lock_snapshot_commit_or_log_changes() {
+fn validation_blank_or_two_line_save_sentence_refuses_without_lock_snapshot_commit_or_log_changes() {
     for sentence in ["   ", "one\ntwo"] {
         let f = Fixture::new(); f.write("src/file", b"must remain unsaved\n");
         let before = f.observe();
@@ -53,7 +53,7 @@ fn rit_blank_or_two_line_save_sentence_refuses_without_lock_snapshot_commit_or_l
 }
 
 #[test]
-fn rit_zone_save_and_missing_config_refuse_before_any_work() {
+fn validation_zone_save_and_missing_config_refuse_before_any_work() {
     let f = Fixture::new(); let before = f.observe();
     let zone = check(f.command(&f.zone, &["--json", "save", "Do not save zone"]).output().unwrap(), "save", 1, "refused");
     assert!(zone.lines().contains("zone folder")); assert_eq!(f.observe(), before);
@@ -63,7 +63,7 @@ fn rit_zone_save_and_missing_config_refuse_before_any_work() {
 }
 
 #[test]
-fn rit_save_lists_new_over_cap_file_with_literal_size_and_saves_tracked_changes() {
+fn validation_save_lists_new_over_cap_file_with_literal_size_and_saves_tracked_changes() {
     let f = Fixture::new(); let mut config = f.init_args.clone(); config.cap_bytes = 3; f.configure(&config);
     f.write("src/large", b"1234567"); f.write("src/file", b"tracked change stays despite cap\n");
     let report = f.report(&["--json", "save", "Save capped work"], "save", 0, "saved");
@@ -75,7 +75,7 @@ fn rit_save_lists_new_over_cap_file_with_literal_size_and_saves_tracked_changes(
 }
 
 #[test]
-fn rit_save_and_join_exclude_top_level_and_nested_configured_build_dirs_without_deleting_them() {
+fn validation_save_and_join_exclude_top_level_and_nested_configured_build_dirs_without_deleting_them() {
     for verb in ["save", "join"] {
         let f = Fixture::new();
         f.write("src/file", b"included change\n"); f.write("sub/positive", b"included neighbor\n");

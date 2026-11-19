@@ -7,7 +7,7 @@
 //! Attempt(k) records and try branches at the request tip, made by ops of the actor; a relative <dir> run from a
 //! subfolder taken from the request folder; run in a zone folder it is refused exit 1, nothing made; n = 0 or a <dir>
 //! that normalizes inside the request folder is exit 4.
-//! Repo integration tests to write (cross-zone, not written here): a folders lock held by a live pid, exit 3; free disk
+//! Validation tests to write (not written here): a folders lock held by a live pid, exit 3; free disk
 //! under the floor at attempt j, exit 1 with the cli's facts, and a repeat making the rest; a request branch gone, the
 //! cli's why and next.
 

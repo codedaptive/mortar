@@ -6,7 +6,7 @@
 //! Status reads only: refs, index, record, op log and files are unchanged by it (observe::status_at).
 //! Validation test: every step drives the mortar binary as a child in a throwaway repository, reaching the
 //! snapshot, join, folders and oplog crates below cli through it; the cli lane owns it. More status
-//! RITs are in tests/operational_rit/status.rs.
+//! validation tests are in tests/validation/status.rs.
 
 use crate::observe::status;
 use crate::support::{script, Fixture, SNAP};

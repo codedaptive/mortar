@@ -5,6 +5,11 @@ use crate::report::{self, ExitCode, Report};
 
 #[test]
 fn below_floor_is_refused_with_the_found_version_and_install_step() {
+    assert_eq!(
+        Version::FLOOR,
+        Version { major: 2, minor: 46, patch: 0 },
+        "a floor move means updating this report pin"
+    );
     let error = Version { major: 2, minor: 39, patch: 5 }.require_floor().unwrap_err();
     assert_eq!(
         git_floor_report("status", &error),
@@ -21,8 +26,9 @@ fn below_floor_is_refused_with_the_found_version_and_install_step() {
 }
 
 #[test]
-fn unreadable_version_output_is_refused() {
+fn unreadable_version_output_is_refused_with_the_below_floor_install_step() {
     let error = Version::parse(b"not git at all").unwrap_err();
+    let below_floor = Version { major: 2, minor: 39, patch: 5 }.require_floor().unwrap_err();
     assert_eq!(
         git_floor_report("join", &error),
         Report {
@@ -31,10 +37,20 @@ fn unreadable_version_output_is_refused() {
             outcome: "refused".to_string(),
             lines: vec![error.stderr.clone()],
             owner: Some("this machine's git".to_string()),
-            next: "install git 2.46 or newer, then repeat the command".to_string(),
+            next: git_floor_report("join", &below_floor).next,
             fields: Vec::new(),
         }
     );
+}
+
+#[test]
+fn below_floor_next_step_names_floor_without_patch() {
+    let floor = Version::FLOOR;
+    let error = Version { major: 2, minor: 39, patch: 5 }.require_floor().unwrap_err();
+    let next = git_floor_report("status", &error).next;
+    // The report pin carries today's value; this ties the text to FLOOR if the floor moves but the code does not.
+    assert!(next.contains(&format!("git {}.{} or newer", floor.major, floor.minor)));
+    assert!(!next.contains(&format!("{}.{}.{}", floor.major, floor.minor, floor.patch)));
 }
 
 #[test]

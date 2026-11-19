@@ -5,10 +5,10 @@
 //! --start making a new zone branch by an op of the actor; a --start that names no commit refused, nothing made.
 //! With no --start, a missing zone branch is started at the origin branch tip (default_zone_start_tests covers
 //! the decision).
-//! Repo integration tests to write (cross-zone, not written here): a folders lock held by a live pid, exit 3; free disk
+//! Validation tests to write (not written here): a folders lock held by a live pid, exit 3; free disk
 //! under the floor, exit 1 with the cli's facts; the zone branch checked out elsewhere or a different folder at the
 //! path, the cli's why and next.
-//! Repo integration tests to write (not written here): a bare folder zone on a missing zone branch made at the origin
+//! Validation tests to write (not written here): a bare folder zone on a missing zone branch made at the origin
 //! branch tip; the same with no origin branch either, refused with a next naming --start.
 
 use std::path::Path;

@@ -1,6 +1,6 @@
 //! move_restored_folders: step 6 of `mr restore`: each folder that needs it is moved with its restored ref.
 //! No unit test: it moves real folders through folders::move_folder; restore_move_refusal_report_tests
-//! cover what a refused move reports. The repo integration tests are to cover, with the mortar binary as a child
+//! cover what a refused move reports. The validation tests are to cover, with the mortar binary as a child
 //! process in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip.

@@ -3,7 +3,7 @@
 //! passed in, so tests never change the process's shared one.
 //! No sibling test: its job is reading files. path_entries_tests cover the reading of PATH (unset, empty,
 //! empty and relative entries). Its real-file cases (order, execute bits, symlinks, directories, missing dirs, the
-//! cwd for empty entries) are listed for the repo integration tests through `mr guard install`.
+//! cwd for empty entries) are listed for the validation tests through `mr guard install`.
 
 use std::ffi::OsStr;
 use std::fs;

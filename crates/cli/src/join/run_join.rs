@@ -4,7 +4,7 @@
 //! No unit test: it runs git, the formatter and the op log, and takes a real lock; the tests in crates/cli/tests
 //! (request_run_for_tests, save_part_tests, join_report_tests, join_refusal_report_tests and move_refusal_report_tests)
 //! and in src (snapshot_settings_for_tests, join_save_subject_tests) cover its decisions and reports, and
-//! finish_pending_move's header lists the cases of a move left pending. The repo integration tests are to cover, with
+//! finish_pending_move's header lists the cases of a move left pending. The validation tests are to cover, with
 //! the mortar binary as a child process in a throwaway repository and a request folder: a request ahead of an unmoved
 //! zone fast-forwards it, exit 0 "joined", next "wait for the zone's tests", and a repeat answers joined with nothing
 //! moved; unsaved edits are saved first as "<request>: work saved at join" on the request branch and joined; a zone

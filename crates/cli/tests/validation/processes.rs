@@ -5,7 +5,7 @@ use std::{fs::{self, File, OpenOptions}, io::{BufRead, BufReader, Write}, os::un
     path::{Path, PathBuf}, process::{Child, Command}, sync::mpsc, thread, time::Duration};
 
 #[test]
-fn rit_configured_formatter_runs_once_before_save_or_join_and_its_bytes_enter_the_saved_commit() {
+fn validation_configured_formatter_runs_once_before_save_or_join_and_its_bytes_enter_the_saved_commit() {
     for verb in ["save", "join"] {
         let f = Fixture::new(); let program = f.common.join("formatter.sh"); let trace = f.common.join("formatter.trace");
         script(&program, b"#!/bin/sh\nset -eu\ntrace=$1; shift\ntest \"$1\" = --; shift\nprintf 'run\\n' >>\"$trace\"\npwd >\"$trace.cwd\"\nprintf '%s\\0' \"$@\" >\"$trace.args\"\nfor path in \"$@\"; do printf 'formatted child output\\n' >\"$path\"; done\n");
@@ -23,7 +23,7 @@ fn rit_configured_formatter_runs_once_before_save_or_join_and_its_bytes_enter_th
 }
 
 #[test]
-fn rit_fifo_formatter_timeout_is_reported_and_save_still_commits_work_then_reaps_formatter() {
+fn validation_fifo_formatter_timeout_is_reported_and_save_still_commits_work_then_reaps_formatter() {
     let f = Fixture::new(); let fifo = f.common.join("formatter-blocked"); make_fifos(std::slice::from_ref(&fifo));
     let fired = f.common.join("timeout-guard-fired"); let _guard = FifoGuard::new(vec![fifo.clone()], fired.clone());
     let pid_file = f.common.join("formatter.pid"); let _cleanup = StopPid(pid_file.clone()); let program = f.common.join("timeout.sh");
@@ -39,7 +39,7 @@ fn rit_fifo_formatter_timeout_is_reported_and_save_still_commits_work_then_reaps
 }
 
 #[test]
-fn rit_killed_cli_after_actual_rebase_transaction_recovers_then_moves_folder_before_save_once() {
+fn validation_killed_cli_after_actual_rebase_transaction_recovers_then_moves_folder_before_save_once() {
     let f = Fixture::new(); let old = f.save_topic(); let zone = f.advance_zone(false);
     let dir = f.common.join("git-shim"); fs::create_dir(&dir).unwrap();
     let event = f.common.join("rebase-event"); let release = f.common.join("rebase-release"); make_fifos(&[event.clone(), release.clone()]);
@@ -48,19 +48,19 @@ fn rit_killed_cli_after_actual_rebase_transaction_recovers_then_moves_folder_bef
     script(&dir.join("git"), br#"#!/bin/sh
 set -eu
 if [ "${3-}" = update-ref ] && [ "${4-}" = --stdin ] &&
-   grep -q '"kind":"join-rebase"' "$MORTAR_RIT_LOG" && mkdir "$MORTAR_RIT_ONCE" 2>/dev/null; then
-  "$MORTAR_RIT_REAL_GIT" "$@"
-  printf 'READY\n' >"$MORTAR_RIT_EVENT"
-  IFS= read -r signal <"$MORTAR_RIT_RELEASE"
+   grep -q '"kind":"join-rebase"' "$MORTAR_VALIDATION_LOG" && mkdir "$MORTAR_VALIDATION_ONCE" 2>/dev/null; then
+  "$MORTAR_VALIDATION_REAL_GIT" "$@"
+  printf 'READY\n' >"$MORTAR_VALIDATION_EVENT"
+  IFS= read -r signal <"$MORTAR_VALIDATION_RELEASE"
   [ "$signal" = release ] || exit 97
   exit 0
 fi
-exec "$MORTAR_RIT_REAL_GIT" "$@"
+exec "$MORTAR_VALIDATION_REAL_GIT" "$@"
 "#);
     let mut command = f.command(&f.request, &["--json", "join"]);
-    command.env("PATH", shim_path(&dir)).env("MORTAR_RIT_REAL_GIT", actual_git())
-        .env("MORTAR_RIT_LOG", oplog::oplog_path(&f.common)).env("MORTAR_RIT_ONCE", &once)
-        .env("MORTAR_RIT_EVENT", &event).env("MORTAR_RIT_RELEASE", &release);
+    command.env("PATH", shim_path(&dir)).env("MORTAR_VALIDATION_REAL_GIT", actual_git())
+        .env("MORTAR_VALIDATION_LOG", oplog::oplog_path(&f.common)).env("MORTAR_VALIDATION_ONCE", &once)
+        .env("MORTAR_VALIDATION_EVENT", &event).env("MORTAR_VALIDATION_RELEASE", &release);
     let mut child = Process(command.spawn().unwrap());
     let mut line = String::new(); BufReader::new(File::open(&event).unwrap()).read_line(&mut line).unwrap();
     assert_eq!(line, "READY\n"); assert!(!fired.exists());

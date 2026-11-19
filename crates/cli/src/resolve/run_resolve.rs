@@ -4,8 +4,8 @@
 //! No unit test: it runs git and the op log, and takes a real lock; the tests in crates/cli/tests
 //! (request_run_for_tests, resolve_report_tests, resolve_refusal_report_tests, resolve_move_refusal_report_tests and
 //! run_resolve_tests, which covers an attempt folder and an argument, both returning before any lock or git run) cover
-//! its decisions and reports, and finish_pending_move's header lists the cases of a move left pending. The repo
-//! integration tests are to cover, with the mortar binary as a child process in a throwaway repository and a request
+//! its decisions and reports, and finish_pending_move's header lists the cases of a move left pending. The validation
+//! tests are to cover, with the mortar binary as a child process in a throwaway repository and a request
 //! folder: no paused join is exit 0 nothing-to-resolve; the first run writes the files and lists skipped and gitlinks,
 //! exit 2; a next run with markers is exit 2 naming files and lines; a next run resolved and clean is Rebased, exit 0,
 //! the folder's files and HEAD at the new tip with the resolved content and edits outside the resolved paths kept;

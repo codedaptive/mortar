@@ -1,6 +1,6 @@
 //! Reads the Mortar folder holding a directory: its worktree, git dirs and record.
 //! No unit test: it runs git and reads a real file; context_report_tests covers what each refusal says.
-//! The repo integration tests are to cover, with the mortar binary as a child process in a throwaway repository
+//! The validation tests are to cover, with the mortar binary as a child process in a throwaway repository
 //! and the first agent verb (mr join): run outside any git repository it is refused, exit 1, outcome
 //! "not-a-folder"; run in a worktree with no Mortar record (the main checkout) it is refused, exit 1, naming the
 //! worktree's top; run in a subfolder of a request folder it finds that folder (toplevel, its own git dir, the

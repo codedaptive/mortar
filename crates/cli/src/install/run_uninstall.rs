@@ -1,7 +1,7 @@
 //! run_uninstall: `mr uninstall`: reads its arguments and HOME, then uninstall_in.
 //! No sibling test: it reads the process's environment. Its body past HOME is uninstall_in, which the install ZITs in
-//! install/integration/uninstall.rs and uninstall_partial.rs cover; the command line itself is Nagatha's RIT through
-//! the binary.
+//! install/integration/uninstall.rs and uninstall_partial.rs cover; the command line itself is a validation test
+//! through the binary to write (not written here).
 
 use std::path::Path;
 

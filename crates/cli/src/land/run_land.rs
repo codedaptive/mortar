@@ -5,7 +5,7 @@
 //! left on the old commit onto integration's tip.
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_land_args_tests,
 //! land_report_tests, note_finished_move_tests and landing's land_error_report_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here): land landed by fast-forward and by
+//! Validation tests to write (not written here): land landed by fast-forward and by
 //! merge commit, with and without an integration folder (the folder moved from the origin tip to the landed
 //! commit); conflicted, exit 2 with the files and integration unmoved; busy, exit 3 naming the other change; a
 //! repeat after Landed answers landed and moves nothing more; a change ID word, exit 4; the stopped-move finish (a

@@ -5,7 +5,7 @@
 //! crates/cli/tests/validation/run_folder_request_tests.rs covers it through the binary: the folder holding only its --paths and
 //! the root file, recorded as a request folder, its branch made by an op of the actor; a zone with no branch refused,
 //! nothing made.
-//! Repo integration tests to write (cross-zone, not written here): a request branch already at another commit or
+//! Validation tests to write (not written here): a request branch already at another commit or
 //! checked out elsewhere, the cli's why and next; a folders lock held by a live pid, exit 3; free disk under the floor, exit 1
 //! with the cli's facts.
 

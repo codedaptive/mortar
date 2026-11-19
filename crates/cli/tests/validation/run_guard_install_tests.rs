@@ -4,13 +4,13 @@
 //! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused
 //! (exit 1) with nothing written.
 //! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
-//! Repo integration tests to write (cross-zone, not written here):
+//! Validation tests to write (not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - GuardError::Git: the cli's own words, never gitio's Display text;
 //! - after `mortar guard install`, git update-ref, commit and push against integration and origin are refused
 //!   through the installed hook and Mortar's own moves pass (acceptance step 2's checks 1-9; land's guard_decide);
-//! - tests/operational_rit/guard_fixture.rs to install through `mortar guard install` instead of land::guard_install.
+//! - tests/validation/guard_fixture.rs to install through `mortar guard install` instead of land::guard_install.
 
 use std::collections::BTreeMap;
 use std::fs;

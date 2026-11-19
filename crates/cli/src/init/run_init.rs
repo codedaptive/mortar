@@ -1,6 +1,6 @@
 //! `mr init`: writes the repository's Mortar config.
 //! No unit test: it runs git and reads and writes a real file; parse_init_args_tests, decide_init_tests,
-//! init_report_tests and repository_report_tests cover its parts. The repo integration tests are to cover, with
+//! init_report_tests and repository_report_tests cover its parts. The validation tests are to cover, with
 //! the mortar binary as a child process in a throwaway repository: init writes <common>/mortar/config.json,
 //! exit 0 "written", and it
 //! decodes to the values given; a repeat with the same values is exit 0 "already-done" and the file is

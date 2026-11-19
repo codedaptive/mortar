@@ -2,7 +2,7 @@
 //! mr sweep frees. Takes no lock and writes nothing.
 //! No sibling test: it runs git and reads the file system through folders' disk; config_zones_tests,
 //! no_zones_report_tests, folders_error_report_tests and disk_report_tests cover its decisions.
-//! Repo integration tests to write (cross-zone, not written here): disk on a zone folder and a request
+//! Validation tests to write (not written here): disk on a zone folder and a request
 //! folder lists both with their files and build bytes and counts the object store once; disk with a config of no
 //! zones refused, exit 1, nothing read; any argument, exit 4; without a config, exit 1. The acceptance run's disk
 //! step checks disk's per-folder bytes and its store-once figure, reached through this verb.

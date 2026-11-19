@@ -2,7 +2,7 @@
 //! from the op log settled in memory as recover would leave it (recovered_records), so a join
 //! rebase killed before its Done record is seen; status writes nothing and takes no lock.
 //! No unit test: it reads the op log and runs git; recovered_records_tests, find_pending_move_tests and
-//! move_stalled_tests cover its decisions. The repo integration tests are to cover, with the mortar binary as a child
+//! move_stalled_tests cover its decisions. The validation tests are to cover, with the mortar binary as a child
 //! process in a request folder made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a kill after join's rebase op and before the folder move: status reports the stall (the request ref, the new

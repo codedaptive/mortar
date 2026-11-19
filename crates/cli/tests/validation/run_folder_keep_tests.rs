@@ -2,7 +2,7 @@
 //! snapshots kept; an unsaved attempt or request folder refused with nothing changed; an orphan attempt re-made in the
 //! same command; and a keep killed between its op and the request folder's move finished by a plain repeat.
 //! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
-//! Repo integration tests to write (cross-zone, not written here):
+//! Validation tests to write (not written here):
 //! - a request branch moved on after the attempts were cut (RequestMovedOn) and a try branch moved under the op
 //!   (AttemptRefsLeft): the cli's why and next, never folders' FolderError Display text;
 //! - an orphan with no trysnap ref (OrphanWithoutSnapshot): exit 1 naming the folder, nothing changed;

@@ -4,7 +4,7 @@
 //! with rereview's usage line as next.
 //! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! The squashes are made in setup through land::squash under the land lock.
-//! Repo integration tests to write (cross-zone, not written here):
+//! Validation tests to write (not written here):
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - RereviewError::Git and RereviewError::Trailers texts (git or the trailers must fail);
 //! - RereviewError::NoParent: a root commit;
