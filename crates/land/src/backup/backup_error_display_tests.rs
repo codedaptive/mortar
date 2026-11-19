@@ -39,16 +39,6 @@ fn bad_host_text_is_the_host_why_no_backup_namespace_then_nothing_pushed_and_not
 }
 
 #[test]
-fn refused_text_is_the_remote_refused_the_ref_the_stale_lease_why_what_moved_then_what_to_do() {
-    assert_eq!(
-        refused(PushRefusal::StaleLease),
-        "the remote refused to move backup ref refs/mortar-backup/h1/heads/zone/a: it moved on the remote since it \
-         was read (stale lease); it was not moved, other backup refs in the same push may have been; run backup \
-         again to compare afresh"
-    );
-}
-
-#[test]
 fn refused_text_is_the_remote_refused_the_ref_each_refusals_why_what_moved_then_what_to_do() {
     let cases = [
         (

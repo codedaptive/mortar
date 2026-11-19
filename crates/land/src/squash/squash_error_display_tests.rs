@@ -86,3 +86,18 @@ fn trailers_text_is_the_squash_prefix_git_trailers_failed_then_gitios_command_ex
 fn change_id_text_is_the_squash_prefix_not_a_change_id_the_text_then_the_reason() {
     assert_eq!(SquashError::ChangeId(bad_id()).to_string(), "squash change ID: not a change ID: \"bad\": expected 32 characters");
 }
+
+#[test]
+fn trailer_missing_text_names_the_commit_and_the_trailer_then_what_to_do() {
+    assert_eq!(SquashError::TrailerMissing { commit: a(), trailer: "Mortar-Change-Id".into() }.to_string(), "commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa has no Mortar-Change-Id trailer, so it is not a squash mortar made; name the commit at refs/mortar/squash/<zone>, or squash the zone again");
+}
+
+#[test]
+fn trailer_malformed_text_names_the_commit_the_trailer_and_its_quoted_value_then_what_to_do() {
+    assert_eq!(SquashError::TrailerMalformed { commit: a(), trailer: "Mortar-Change-Id".into(), value: "nope".into() }.to_string(), "commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa has a malformed Mortar-Change-Id trailer \"nope\", so it cannot be read as a squash; squash the zone again to write a new squash commit");
+}
+
+#[test]
+fn requests_malformed_text_names_the_commit_and_the_request_lines_expected_then_what_to_do() {
+    assert_eq!(SquashError::RequestsMalformed { commit: a() }.to_string(), "commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa's message does not list its requests as squash writes them (`<zone>: <n> requests`, then one `- <request>: ...` line each); squash the zone again to write a new squash commit");
+}

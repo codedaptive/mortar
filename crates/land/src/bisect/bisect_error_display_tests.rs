@@ -1,7 +1,7 @@
-//! Failure texts for OriginMissing, NotOnOrigin, OffTheLine and ProbeCouldNotRun. Culprit prints CulpritError's
-//! text: culprit_error_display_tests cover NotALanding and Trailers; Git's is not yet written.
+//! Failure texts for OriginMissing, NotOnOrigin, OffTheLine and ProbeCouldNotRun, plus Git (gitio's text alone).
+//! Culprit prints CulpritError's text: culprit_error_display_tests cover NotALanding and Trailers.
 
-use gitio::Oid;
+use gitio::{GitError, Oid};
 
 use super::BisectError;
 
@@ -31,4 +31,10 @@ fn off_the_line_names_both_commits() {
 #[test]
 fn probe_could_not_run_names_the_commit_and_the_error() {
     assert_eq!(BisectError::ProbeCouldNotRun { commit: a(), error: "spawn refused".into() }.to_string(), "the test command could not be run at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: spawn refused; fix the command, then bisect again");
+}
+
+#[test]
+fn git_text_is_gitios_command_exit_code_and_stderr_with_no_prefix() {
+    let err = GitError { args: vec!["read-tree".into(), "HEAD".into()], code: Some(128), stderr: "fatal: no tree\n".into() };
+    assert_eq!(BisectError::Git(err).to_string(), "git read-tree HEAD: exit code 128: fatal: no tree");
 }
