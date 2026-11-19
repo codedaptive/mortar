@@ -4,9 +4,10 @@
 //! restore_join_state keeps its own checks for a change between this check and the restore; the caller holds
 //! join-<zone>.
 //! No unit test: it runs git and reads a real file. restore_refusal_tests (its rules, with fakes),
-//! recorded_join_state_tests and restore_state_step_tests (the decisions it passes in) cover it. No ZIT: any test
-//! through it calls gitio for real, which makes it a RIT.
-//! RITs (tests/join_rit), each in a throwaway repository: tests/join_rit/precheck.rs covers
+//! recorded_join_state_tests and restore_state_step_tests (the decisions it passes in) cover it. No test runs it
+//! with join's own code alone: every test through it runs git through gitio for real, so its tests are tests of join
+//! with gitio. The tests in tests/join_rit/precheck.rs and tests/join_rit/precheck_crash.rs each run it in a
+//! throwaway repository. tests/join_rit/precheck.rs covers
 //! - the pre-check, then oplog undo of the resolve's final op, then restore_join_state: Restored
 //!   (precheck_then_real_undo_and_restore_recreates_the_exact_pause_and_resolves_the_same_tree);
 //! - the pre-check while another paused join's state is present: StatePresent, and no ref moved and no file written
