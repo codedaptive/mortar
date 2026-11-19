@@ -179,6 +179,7 @@ mod usable_remote;
 mod usable_sparse_path;
 mod usable_worktree_path;
 mod version;
+mod version_floor;
 mod version_parse;
 mod version_require_floor;
 mod worktree;
@@ -446,6 +447,8 @@ mod usable_remote_tests;
 mod usable_sparse_path_tests;
 #[cfg(test)]
 mod usable_worktree_path_tests;
+#[cfg(test)]
+mod version_floor_tests;
 #[cfg(test)]
 mod version_parse_tests;
 #[cfg(test)]
