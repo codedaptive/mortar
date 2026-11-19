@@ -14,7 +14,7 @@ const NEXT: &str = "bring your work in with `mr join`, or ask for a landing";
 /// it. A reference-transaction line on `refs/heads/<origin_branch>` or `refs/heads/<integration_branch>`
 /// whose old and new are the same non-zero oid moves nothing and is allowed, as a checkout of the branch writes it;
 /// a line that changes them is allowed only when the intent lists that ref with the same old and new. A
-/// symbolic value (`ref:<target>`, as git 2.45+ writes it) as old or new is refused on those two refs whatever the
+/// symbolic value (`ref:<target>`, as git 2.46+ writes it) as old or new is refused on those two refs whatever the
 /// intent lists, since an intent's moves hold oids only, and allowed on any other ref. Every other readable line is
 /// allowed, and a line the guard cannot read is refused. The first line refused decides.
 ///

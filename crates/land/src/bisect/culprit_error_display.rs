@@ -1,6 +1,5 @@
 //! How a culprit failure reads: the commit that is not a landing with its parent count, or the trailer error.
-//! culprit_error_display_tests cover the NotALanding text; tests/land_rit covers the Trailers text. No ZIT reaches
-//! it yet.
+//! culprit_error_display_tests cover the NotALanding and Trailers texts. No ZIT reaches it yet.
 
 use std::fmt;
 

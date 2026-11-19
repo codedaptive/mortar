@@ -1,5 +1,5 @@
-//! Display for LandingStateError: Corrupt as literal text; Read, Write and Remove name the path and say what
-//! failed. The io error's own text is std's, so only the text around the path is asserted.
+//! Display for LandingStateError: Corrupt, Read, Write and Remove asserted as full literal text; the io error is a
+//! fixed io::Error::other value.
 
 use super::LandingStateError;
 use std::io;
@@ -25,19 +25,19 @@ fn corrupt_names_the_path_and_the_reason() {
 fn read_names_the_path_and_says_it_could_not_be_read() {
     let error = LandingStateError::Read { path: PathBuf::from("/r/mortar/landing.json"), source: io_error() };
     let text = error.to_string();
-    assert!(text.starts_with("landing state /r/mortar/landing.json could not be read: "), "{text}");
+    assert_eq!(text, "landing state /r/mortar/landing.json could not be read: boom");
 }
 
 #[test]
 fn write_names_the_path_and_says_it_could_not_be_written() {
     let error = LandingStateError::Write { path: PathBuf::from("/r/mortar/landing.json.tmp"), source: io_error() };
     let text = error.to_string();
-    assert!(text.starts_with("landing state /r/mortar/landing.json.tmp could not be written: "), "{text}");
+    assert_eq!(text, "landing state /r/mortar/landing.json.tmp could not be written: boom");
 }
 
 #[test]
 fn remove_names_the_path_and_says_it_could_not_be_removed() {
     let error = LandingStateError::Remove { path: PathBuf::from("/r/mortar/landing.json"), source: io_error() };
     let text = error.to_string();
-    assert!(text.starts_with("landing state /r/mortar/landing.json could not be removed: "), "{text}");
+    assert_eq!(text, "landing state /r/mortar/landing.json could not be removed: boom");
 }

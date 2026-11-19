@@ -120,7 +120,7 @@ fn transaction_cases() -> Vec<Case> {
             None, refuse("cannot read the reference-transaction hook's input line \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb refs/heads/x\"")),
         case("short id", tx("prepared"), "abc bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb refs/heads/x", None,
             refuse("cannot read the reference-transaction hook's input line \"abc bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb refs/heads/x\"")),
-        // git 2.45+ writes a symbolic value as `ref:<target>`: read on any ref, allowed off the guarded refs, refused
+        // git 2.46+ writes a symbolic value as `ref:<target>`: read on any ref, allowed off the guarded refs, refused
         // on them whatever the intent lists (a RefMove holds oids only).
         case("HEAD to a symref from zero", tx("prepared"), &format!("{Z} ref:refs/heads/zone/a HEAD"), None,
             GuardVerdict::Allow),

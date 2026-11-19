@@ -85,7 +85,5 @@ fn git_is_marked_as_backups() {
 
 #[test]
 fn oplog_is_marked_as_backups() {
-    let shown = BackupError::Oplog(OplogError::UnknownOp { op_id: "op-404".into() }).to_string();
-    assert!(shown == "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mortar log"
-        || shown == "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mr log", "{shown}");
+    assert_eq!(BackupError::Oplog(OplogError::UnknownOp { op_id: "op-404".into() }).to_string(), "backup op log: cannot restore: op op-404 is not in the op log; find the op id with mr log");
 }

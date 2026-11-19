@@ -1,11 +1,11 @@
 //! Display for LandError's own refusals, each as literal text saying nothing moved: OpFailed and OpRepeated name the
-//! op, NoZone, NoLandingState and IntegrationElsewhere their commits. The State arm, which runs
-//! LandingStateError's Display, is tested in tests/landing_zit (state_display); the Squash, Git, Oplog and Trailers
-//! arms embed another error's text and have no case here.
+//! op, NoZone, NoLandingState and IntegrationElsewhere their commits. The State arm prefixes LandingStateError's text
+//! with "landing: "; the Squash, Git, Oplog and Trailers arms embed another error's text and have no case here.
 
-use super::LandError;
+use super::{LandError, LandingStateError};
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, OpResult};
+use std::path::PathBuf;
 
 fn a() -> Oid { Oid::parse("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa").unwrap() }
 fn b() -> Oid { Oid::parse("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb").unwrap() }
@@ -55,4 +55,11 @@ fn no_landing_state_names_both_tips_and_says_nothing_moved() {
 #[test]
 fn integration_elsewhere_names_both_commits_and_says_nothing_moved() {
     assert_eq!(LandError::IntegrationElsewhere { expected: a(), actual: b() }.to_string(), "integration is at bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, neither origin nor aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, the commit the landing state says was landed; nothing was moved");
+}
+
+#[test]
+fn state_is_prefixed_with_landing() {
+    let inner = LandingStateError::Corrupt { path: PathBuf::from("/r/mortar/landing.json"), reason: "x".to_string() };
+    let text = LandError::State(inner).to_string();
+    assert_eq!(text, "landing: landing state /r/mortar/landing.json is not a state land wrote: x");
 }
