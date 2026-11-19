@@ -1,7 +1,6 @@
 //! Git::write_blob_paths: write a tree's version of named paths into a folder. It only runs git, so it has no unit
-//! tests; cli's tests/resolve_rit/first_runs.rs
-//! (rit_first_resolve_writes_exact_conflicted_bytes_after_snapshot_from_subdirectory_without_formatter) covers it
-//! through `mr resolve`: the named file and its index entry are written, and unrelated index entries stay unchanged.
+//! tests; cli's tests of `mr resolve` cover it: the named file and its index entry are written, and unrelated index
+//! entries stay unchanged.
 
 use crate::write_blob_paths_request::write_blob_paths_request;
 use crate::{Git, GitError, Oid};
