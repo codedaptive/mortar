@@ -1,8 +1,8 @@
 //! run_folder_drop: `mr folder drop`, run in a request folder: every attempt of the request dropped, their folders
 //! and try branches gone, the request branch unmoved and the trysnap refs kept.
 //! No sibling test: it takes a real lock and runs git, the op log, snapshot and folders;
-//! request_folder_refusal_tests, attempt_saved_tests and dropped_report_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_folder_drop_tests.rs covers it through the binary: saved attempts dropped by an op of the actor
+//! request_folder_refusal_tests, attempt_saved_tests and dropped_report_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_folder_drop_tests.rs covers it through the binary: saved attempts dropped by an op of the actor
 //! with the request unmoved and their snapshots kept; a branch-only attempt whose trysnap tree equals its tip's tree
 //! dropped; one with no trysnap ref refused exit 1 naming its branch, nothing changed.
 //! Repo integration tests to write (cross-zone, not written here): a try branch moved under the op, the cli's why and

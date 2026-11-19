@@ -9,8 +9,8 @@
 //! resets the index to HEAD (the folder's HEAD is already the branch's new commit) leaves no stall for the repeat to
 //! see, and the folder's files are then their owner's to bring to HEAD, unreported.
 //! No sibling test: it takes a real lock and runs git, the op log and land; publish_report_tests,
-//! note_finished_move_tests and landing's publish_error_report_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_publish_tests.rs covers it through the binary.
+//! note_finished_move_tests and landing's publish_error_report_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_publish_tests.rs covers it through the binary.
 //! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
 //! 3; without a config, exit 1, next mr init; the PublishError texts through a real remote (PushRefused by a
 //! remote hook, RemoteMissing, a PushIntent left open); the acceptance checks of publish (with mr
@@ -38,7 +38,7 @@ const VERB: &str = "publish";
 /// The same command run again, which a refused integration folder move's next ends with.
 const REPEAT: &str = "mr publish --actor <name>";
 
-/// Any argument is publish's usage report, exit 4, before any git. Then, under the land lock after recover
+/// Any argument is publish's usage report, exit 4, before the verb runs git. Then, under the land lock after recover
 /// (locked_act), keyed by --key or op_key("publish", the common dir): first a stopped integration folder move is
 /// finished (finish_stopped_move), then integration's tip read, land's publish as the context's actor, reported by
 /// publish_report or, when refused, publish_error_report. On OriginMoved the integration folder is moved from that

@@ -1,5 +1,5 @@
-//! no_zones_report: a config with no zone is refused before any git (exit 1), naming the danger of an empty zone list
-//! and the init step that mends the config.
+//! no_zones_report: a config with no zone is refused before the verb runs git (exit 1), naming the danger of an empty
+//! zone list and the init step that mends the config.
 
 use super::no_zones_report;
 use crate::report::{ExitCode, Report};

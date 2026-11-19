@@ -1,9 +1,14 @@
-//! One command line, from the words to the report the binary prints: the line is parsed and its verb run. Help is
-//! never asked here: entry::main_entry answers every line that asks for help before run is called.
-//! No unit test: it runs git through read_folder_context, load_config and the verbs; the tests in src
-//! (context/context_report_tests, args/usage_report_tests, actor_for_tests, repository_report_tests,
-//! missing_config_report_tests) cover what it reports. The repo integration tests are to cover, with the mortar
-//! binary as a child process in a throwaway repository: an unknown verb is exit 4 listing the verbs; `mr init` without
+//! One command line, from the words to the report the binary prints: the line is parsed, the installed git is checked
+//! against gitio's floor, and the verb run. The body is shell/run_in.rs; run gives it the real reads: git's version
+//! from `cwd` and read_folder_context. Help and --version are never asked here: entry::main_entry answers every line
+//! that asks for them before run is called. The floor check comes first, before any folder or config read, for every
+//! verb but help, install, uninstall and guard-hook (shell/checks_git_floor.rs says why).
+//! No unit test: run only wires real git into run_in. shell/run_in_tests and shell/git_floor_tests cover the floor
+//! check and its order before the folder read with both reads faked; the tests in src (context/context_report_tests,
+//! args/usage_report_tests, actor_for_tests, repository_report_tests, missing_config_report_tests,
+//! shell/checks_git_floor_tests, shell/git_floor_report_tests) cover what it reports. The validation tests are to
+//! cover, with the mortar binary as a child process in a throwaway repository: an unknown verb is exit 4
+//! listing the verbs; `mr init` without
 //! --actor is exit 4; with --json stdout holds one JSON object and nothing else, also for a usage error; an agent verb
 //! outside a Mortar folder is refused, exit 1 (with `mr join`); a verb that needs the config is refused without
 //! one, exit 1, next "mr init", and outside any git repository is refused, exit 1, outcome "not-a-folder" for an
@@ -17,103 +22,12 @@ use std::path::Path;
 
 use gitio::Git;
 
-use super::{load_config, ShellContext};
-use crate::after_publish::run_after_publish;
-use crate::args::{parse_args, usage_report, ParsedArgs, VerbKind};
-use crate::back_out::run_back_out;
-use crate::backup::{run_backup, run_restore_backup};
-use crate::bisect::run_bisect;
-use crate::config::protected_refs;
-use crate::context::{actor_for, context_report, read_folder_context, repository_error, repository_report};
-use crate::disk::run_disk;
-use crate::folder::run_folder;
-use crate::guard::run_guard;
-use crate::guard_hook::run_guard_hook;
-use crate::init::run_init;
-use crate::install::{run_install, run_uninstall};
-use crate::join::run_join;
-use crate::land::run_land;
-use crate::log::run_log;
-use crate::need::run_need;
-use crate::overlap::run_overlap;
-use crate::publish::run_publish;
-use crate::report::{failure_report, Report};
-use crate::rereview::run_rereview;
-use crate::resolve::run_resolve;
-use crate::restore::run_restore;
-use crate::save::{run_save, run_snapshot};
-use crate::squash::run_squash;
-use crate::status::run_status;
-use crate::sweep::run_sweep;
-use crate::undo::run_undo;
-use crate::would_merge::run_would_merge;
+use super::{run_in, ShellIo};
+use crate::context::read_folder_context;
+use crate::report::Report;
 
-/// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. The line is
-/// parsed; agent verbs read their folder first, and no other kind reads one (a setup verb, install or uninstall,
-/// reads no folder or config); every verb then gets its actor (a read-only or setup verb acts as nobody, ""); verbs
-/// that need the config load it and the protected list. The verb runs with the context built.
+/// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON: run_in with
+/// `Git::new(cwd).version()` answering the floor check and read_folder_context reading the folder.
 pub fn run(argv: &[String], cwd: &Path) -> (Report, bool) {
-    match parse_args(argv) {
-        Err(error) => (usage_report(&error), error.json),
-        Ok(args) => {
-            let json = args.json;
-            let report = shell_context(args, cwd).map_or_else(|refusal| refusal, |context| dispatch(&context, cwd));
-            (report, json)
-        }
-    }
-}
-
-fn shell_context(args: ParsedArgs, cwd: &Path) -> Result<ShellContext, Report> {
-    let verb = args.verb.name;
-    let folder = match args.verb.kind {
-        VerbKind::Agent => Some(read_folder_context(cwd).map_err(|error| context_report(verb, &error))?),
-        VerbKind::Harness | VerbKind::Hook | VerbKind::ReadOnly | VerbKind::Setup => None,
-    };
-    let actor = actor_for(args.verb, folder.as_ref().map(|f| &f.record), args.actor.as_deref())?;
-    let config = match (args.verb.needs_config, &folder) {
-        (false, _) => None,
-        (true, Some(folder)) => Some(load_config(verb, &folder.common)?),
-        (true, None) => {
-            let common =
-                Git::new(cwd).common_dir().map_err(|error| repository_report(verb, &repository_error(cwd, error)))?;
-            Some(load_config(verb, &common)?)
-        }
-    };
-    let protected = config.as_ref().map(protected_refs).unwrap_or_default();
-    Ok(ShellContext { args, actor, folder, config, protected })
-}
-
-// The verb table's help entry never reaches dispatch: main_entry answers every help line before run.
-fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
-    match context.args.verb.name {
-        "after-publish" => run_after_publish(context, cwd),
-        "back-out" => run_back_out(context, cwd),
-        "backup" => run_backup(context, cwd),
-        "bisect" => run_bisect(context, cwd),
-        "disk" => run_disk(context, cwd),
-        "folder" => run_folder(context, cwd),
-        "guard" => run_guard(context, cwd),
-        "guard-hook" => run_guard_hook(context, cwd),
-        "init" => run_init(&context.args, cwd),
-        "install" => run_install(context, cwd),
-        "join" => run_join(context),
-        "land" => run_land(context, cwd),
-        "log" => run_log(context, cwd),
-        "need" => run_need(context),
-        "overlap" => run_overlap(context, cwd),
-        "publish" => run_publish(context, cwd),
-        "rereview" => run_rereview(context, cwd),
-        "resolve" => run_resolve(context),
-        "restore" => run_restore(context, cwd),
-        "restore-backup" => run_restore_backup(context, cwd),
-        "save" => run_save(context),
-        "snapshot" => run_snapshot(context, cwd),
-        "squash" => run_squash(context, cwd),
-        "status" => run_status(context),
-        "sweep" => run_sweep(context, cwd),
-        "undo" => run_undo(context),
-        "uninstall" => run_uninstall(context),
-        "would-merge" => run_would_merge(context, cwd),
-        other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
-    }
+    run_in(argv, cwd, &ShellIo { read_version: &|| Git::new(cwd).version(), read_folder: &read_folder_context })
 }

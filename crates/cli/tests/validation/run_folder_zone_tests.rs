@@ -1,8 +1,7 @@
 //! `mortar folder zone`: a sparse zone folder from the config, its repeat, an unknown zone, a missing --actor, and
 //! --start making a new zone branch (or naming no commit). The no-start cases prove the origin tip, not HEAD,
 //! supplies a missing zone branch, and a missing origin is refused with --start next.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - a folders lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks);
 //! - free disk under the floor: exit 1 with the cli's own facts, never folders' BelowFloor Display text;

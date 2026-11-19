@@ -1,8 +1,7 @@
 //! `mortar folder drop`: saved attempts dropped with the request branch unmoved and their snapshots kept; a
 //! branch-only attempt whose trysnap tree equals its tip's tree dropped; one with no trysnap ref refused
 //! naming its branch, with nothing changed.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - a try branch moved under the op (AttemptRefsLeft): the cli's why and next, never folders' FolderError Display
 //!   text;

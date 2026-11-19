@@ -24,8 +24,8 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "overlap";
 
-/// The config, then the zone read by parse_overlap_args (an Err is overlap's usage report, exit 4, before any git).
-/// Then the zone's open requests from the folder records, each based at its fork point from the zone
+/// The config, then the zone read by parse_overlap_args (an Err is overlap's usage report, exit 4, before the verb
+/// runs git). Then the zone's open requests from the folder records, each based at its fork point from the zone
 /// (read_named_zones; its failure report is relabelled to the verb overlap), and join's overlap over
 /// them (a failure is overlap_error_report); reported by overlap_report.
 pub fn run_overlap(context: &ShellContext, cwd: &Path) -> Report {

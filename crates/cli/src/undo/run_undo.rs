@@ -19,7 +19,7 @@
 //! - undo of a resolve recorded without its paused join (no join_state value) is refused, exit 1, nothing changed;
 //! - `mr log --json` shows the join_state value on the resolve op's line;
 //! - a resolve undo whose own folder move is pending with a file in the way is the move refusal, exit 1, the
-//!   snapshot kept and no undo op (cli_rit/rit11/refusals.rs covers it);
+//!   snapshot kept and no undo op (tests/validation/rit11/refusals.rs covers it);
 //! - the snapshot taken first is restorable with mr restore;
 //! - a repeat after a kill answers already-done, finishing the folder step the kill left;
 //! - a held join-<zone> lock is exit 3 naming the holder;

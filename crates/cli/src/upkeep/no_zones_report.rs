@@ -1,4 +1,4 @@
-//! The refusal of `mr disk` or `mr sweep` when the config names no zone, before any git.
+//! The refusal of `mr disk` or `mr sweep` when the config names no zone, before the verb runs git.
 
 use crate::report::{ExitCode, Report};
 

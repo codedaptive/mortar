@@ -1,8 +1,7 @@
 //! `mortar folder keep <k>`: the request branch and folder moved to the kept attempt, the attempts gone and their
 //! snapshots kept; an unsaved attempt or request folder refused with nothing changed; an orphan attempt re-made in the
 //! same command; and a keep killed between its op and the request folder's move finished by a plain repeat.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - a request branch moved on after the attempts were cut (RequestMovedOn) and a try branch moved under the op
 //!   (AttemptRefsLeft): the cli's why and next, never folders' FolderError Display text;

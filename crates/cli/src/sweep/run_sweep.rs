@@ -28,7 +28,7 @@ use crate::upkeep::{config_zones, folders_error_report, no_zones_report};
 
 const VERB: &str = "sweep";
 
-/// The words read by parse_sweep_args (an Err is sweep's usage report, exit 4, before any git); the config's zones
+/// The words read by parse_sweep_args (an Err is sweep's usage report, exit 4, before the verb runs git); the config's zones
 /// (config_zones; none is no_zones_report, exit 1). Then, under the folders lock after recover (locked_act), keyed
 /// by --key or op_key("sweep", the common dir): folders' sweep_refs as the context's actor over every zone, the
 /// extra refs and the protected refs (a refusal or failure is folders_error_report, nothing deleted); then, only

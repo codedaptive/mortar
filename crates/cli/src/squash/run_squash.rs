@@ -2,8 +2,8 @@
 //! refs/mortar/squash/<zone> under the land lock. --key names the lock holder only,
 //! never passed to the op log: repeat safety comes from land's answers (Same).
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_squash_args_tests,
-//! squash_report_tests and landing's squash_error_report_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_squash_tests.rs covers it through the binary.
+//! squash_report_tests and landing's squash_error_report_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_squash_tests.rs covers it through the binary.
 //! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid,
 //! exit 3; without a config, exit 1, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
 //! OpRepeated texts when git or the op log fails for real; the acceptance checks of squash.
@@ -24,8 +24,8 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "squash";
 
-/// The config's zone read by parse_squash_args (an Err is squash's usage report, exit 4, before any git); then,
-/// under the land lock after recover (locked_act), keyed by --key or op_key("squash", the common dir), land's
+/// The config's zone read by parse_squash_args (an Err is squash's usage report, exit 4, before the verb runs git);
+/// then, under the land lock after recover (locked_act), keyed by --key or op_key("squash", the common dir), land's
 /// squash of that zone onto the config's origin branch as the context's actor, reported by squash_report or, when
 /// refused, squash_error_report.
 pub fn run_squash(context: &ShellContext, cwd: &Path) -> Report {

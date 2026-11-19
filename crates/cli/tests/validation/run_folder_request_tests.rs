@@ -1,7 +1,6 @@
 //! `mortar folder request`: a sparse request folder holding only its --paths plus the root files (acceptance step 1), a
 //! missing --paths, and a zone with no branch yet.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - a request branch already at another commit (BranchExists) or checked out elsewhere: the cli's why and next,
 //!   never folders' FolderError Display text;

@@ -1,6 +1,6 @@
 //! snapshot_value_to_check: which snapshot value restore's saved check compares a folder against, the done record's
 //! or the snapshot ref's present one.
-//! ZUT snapshot_value_to_check_tests; the RIT crates/cli/tests/cli_rit/run_restore_repeat_tests.rs covers it end to
+//! ZUT snapshot_value_to_check_tests; the validation test crates/cli/tests/validation/run_restore_repeat_tests.rs covers it end to
 //! end.
 
 use oplog::RefMove;

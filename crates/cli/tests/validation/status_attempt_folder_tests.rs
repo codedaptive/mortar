@@ -4,8 +4,8 @@
 //! attempt has no work yet, otherwise "wait for the harness to keep or drop the attempts", never join, even
 //! when the zone has moved. `need` stays refused in an attempt folder.
 //! Status reads only: refs, index, record, op log and files are unchanged by it (observe::status_at).
-//! Repo integration test: the mortar binary runs as a child in a throwaway repository, with the attempts made by the
-//! folders crate directly; owned by integration from landing.
+//! Validation test: the mortar binary runs as a child in a throwaway repository, with the attempts made by the
+//! folders crate directly; the cli lane owns it.
 
 use crate::json::check;
 use crate::observe::{before, status_at};

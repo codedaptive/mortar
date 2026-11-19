@@ -2,7 +2,7 @@
 //! No unit test: every decision that reads the repository runs land, oplog and gitio for real.
 //! guard_hook_from_args_tests and guard_hook_report_tests cover the words it reads and the reports it gives;
 //! decide_with_intent_tests covers when the open intent is read.
-//! RITs in tests/cli_rit/run_guard_hook_tests.rs: hook input on stdin that is not UTF-8 is refused
+//! Validation tests in tests/validation/run_guard_hook_tests.rs: hook input on stdin that is not UTF-8 is refused
 //! (exit 1), with nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let
 //! through (exit 0, nothing printed) and a prepared one fails on the op log (exit 5).
 //! The RITs in tests/operational_rit/guard.rs cover, with the mortar binary installed as the hook

@@ -1,8 +1,8 @@
 //! run_folder_remove: `mr folder remove <path>`, a joined and saved request folder removed with its branch and its
 //! snapshot ref.
 //! No sibling test: it takes a real lock and runs git, the op log, snapshot and folders;
-//! folder_removed_report_tests, folder_refusal_tests and folder_error_why_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_folder_remove_tests.rs covers it through the binary: a joined, saved request folder removed
+//! folder_removed_report_tests, folder_refusal_tests and folder_error_why_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_folder_remove_tests.rs covers it through the binary: a joined, saved request folder removed
 //! with its branch and snapshot ref by a folder-remove op of the actor; unsaved work, remaining attempts (next naming
 //! keep and drop) and a zone folder each refused exit 1 with nothing removed.
 //! Repo integration tests to write (cross-zone, not written here): a file the snapshot cap refuses counts as unsaved,

@@ -25,7 +25,7 @@ const VERB: &str = "disk";
 /// the refs part. The build bytes are shown per folder instead.
 const NO_BUILD_SWEEP: u64 = u64::MAX;
 
-/// Any argument is disk's usage report, before any git. Then the config's zones (config_zones; none is
+/// Any argument is disk's usage report, before the verb runs git. Then the config's zones (config_zones; none is
 /// no_zones_report, exit 1), then folders' disk over every zone with no extra ref and the context's protected refs,
 /// reported by disk_report or, when folders refuses or fails, folders_error_report.
 pub fn run_disk(context: &ShellContext, cwd: &Path) -> Report {

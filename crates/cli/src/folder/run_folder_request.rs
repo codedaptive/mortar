@@ -1,8 +1,8 @@
 //! run_folder_request: `mr folder request <zone> <request> <path> --paths <path>...`, a request's folder made from
 //! its zone's branch, holding only its paths and the root files.
 //! No sibling test: it takes a real lock and runs git, the op log and folders; request_folder_paths_tests,
-//! folder_setup_for_tests and folder_made_report_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_folder_request_tests.rs covers it through the binary: the folder holding only its --paths and
+//! folder_setup_for_tests and folder_made_report_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_folder_request_tests.rs covers it through the binary: the folder holding only its --paths and
 //! the root file, recorded as a request folder, its branch made by an op of the actor; a zone with no branch refused,
 //! nothing made.
 //! Repo integration tests to write (cross-zone, not written here): a request branch already at another commit or

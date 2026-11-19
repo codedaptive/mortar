@@ -8,8 +8,8 @@ use crate::report::{failure_report, with_moved_first, ExitCode, Report};
 /// missing zone is the zone coordinator's; a missing or unrelated request, a conflicted path that is not UTF-8,
 /// and a request commit replay cannot take (a merge, a root, no author date) are this request's. Anything else
 /// (git, the op log, a state file) is failure_report. `moved` (moved_before's line), when given, is the first line of
-/// either report: it names the refs the save or snapshot before the join moved, ahead of the line saying join moved
-/// no ref.
+/// either report: it names the refs the save or snapshot before the join moved, ahead of join's own text, whose "join
+/// moved no ref" speaks for the join step alone.
 pub fn join_refusal_report(error: &JoinRunError, moved: Option<&str>) -> Report {
     let report = refusal(error);
     Report { lines: with_moved_first(moved, report.lines), ..report }

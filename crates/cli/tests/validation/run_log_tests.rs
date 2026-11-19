@@ -2,10 +2,10 @@
 //! own line in "records", byte for byte: for a line with no values and no remote mark, and for a done push
 //! line carrying values and a remote mark, so --json gives the values and the mark exactly as oplog wrote
 //! them.
-//! Repo integration test: the mortar binary runs as a child in a throwaway repository (testkit's TestRepo, removed
+//! Validation test: the mortar binary runs as a child in a throwaway repository (testkit's TestRepo, removed
 //! after the test) whose config `mr init` writes first; real git answers its common dir, and oplog reads a real op
 //! log file holding one line written here by hand. Children run with GIT_CONFIG_GLOBAL=/dev/null and
-//! GIT_CONFIG_NOSYSTEM=1. Owned by integration from landing. log's usage cases are ZUTs in
+//! GIT_CONFIG_NOSYSTEM=1. The cli lane owns it. log's usage cases are ZUTs in
 //! crates/cli/src/log/run_log_tests.rs.
 
 use std::fs;

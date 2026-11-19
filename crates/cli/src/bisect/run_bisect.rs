@@ -28,7 +28,7 @@ use crate::shell::ShellContext;
 const VERB: &str = "bisect";
 
 /// The words read by parse_bisect_args from the line's rest and its `--` mark (an Err is bisect's usage report,
-/// exit 4, before any git). Then, under the land lock after recover (locked_act), keyed by --key or
+/// exit 4, before the verb runs git). Then, under the land lock after recover (locked_act), keyed by --key or
 /// op_key("bisect", the common dir), land's bisect over the config's origin branch, reported by bisect_report or,
 /// when refused or failed, bisect_error_report.
 pub fn run_bisect(context: &ShellContext, cwd: &Path) -> Report {

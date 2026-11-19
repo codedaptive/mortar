@@ -3,7 +3,7 @@
 //! lock or git run.
 //! ZUT: restore_lock and usage_report are plain functions, used directly; the context is built by hand with a cwd
 //! that does not exist, so a run that took a lock or ran git would answer a refusal or a failure, not exit 4. The
-//! BadMove case, with real git, is a RIT in crates/cli/tests/cli_rit/run_restore_tests.rs.
+//! BadMove case, with real git, is a validation test in crates/cli/tests/validation/run_restore_tests.rs.
 
 use std::collections::BTreeMap;
 use std::path::Path;

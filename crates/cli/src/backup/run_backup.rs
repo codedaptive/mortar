@@ -21,7 +21,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "backup";
 
-/// Any argument is backup's usage report, before any git. Then, under the land lock after recover (locked_act),
+/// Any argument is backup's usage report, before backup runs git. Then, under the land lock after recover (locked_act),
 /// keyed by --key or op_key("backup", the common dir), land's backup as the context's actor to the config's
 /// remote, reported by backup_report or, when refused, backup_error_report naming that remote.
 pub fn run_backup(context: &ShellContext, cwd: &Path) -> Report {

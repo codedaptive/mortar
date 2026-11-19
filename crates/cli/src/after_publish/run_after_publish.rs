@@ -37,12 +37,12 @@ use crate::shell::ShellContext;
 const VERB: &str = "after-publish";
 
 /// The config, then the words read by parse_after_publish_args (an Err is after-publish's usage report, exit 4,
-/// before any git). Then, under the land lock after recover (locked_act), keyed by --key or op_key("after-publish",
-/// the common dir): the named zones' folders and open requests (read_named_zones); land's after_publish as the
-/// context's actor, the published zone first (a refusal is after_publish_error_report); the op log read once; then
-/// for each ZoneMove in order, the folder of the named zone it names brought to the tip (bring_zone_folder), NoFolder
-/// when it has none; reported by after_publish_report. An op log that cannot be read is a failure saying the zones
-/// moved and their folders did not.
+/// before the verb runs git). Then, under the land lock after recover (locked_act), keyed by --key or
+/// op_key("after-publish", the common dir): the named zones' folders and open requests (read_named_zones); land's
+/// after_publish as the context's actor, the published zone first (a refusal is after_publish_error_report); the op
+/// log read once; then for each ZoneMove in order, the folder of the named zone it names brought to the tip
+/// (bring_zone_folder), NoFolder when it has none; reported by after_publish_report. An op log that cannot be read is
+/// a failure saying the zones moved and their folders did not.
 pub fn run_after_publish(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let Some(config) = &context.config else {

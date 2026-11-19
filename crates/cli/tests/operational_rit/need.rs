@@ -1,4 +1,4 @@
-// The wrong-argument-count usage case is a RIT in tests/cli_rit/run_need_tests.rs.
+// The wrong-argument-count usage case is a validation test in tests/validation/run_need_tests.rs.
 use crate::{json::check, need_fixture::Need, observe::*, support::*};
 use oplog::{with_lock, KillPidProbe, LockName};
 use std::{fs, path::PathBuf};

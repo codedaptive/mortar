@@ -1,13 +1,14 @@
 //! Whether a git call only reads (step 4's check 3; config and remote read only in the forms named below).
 
-/// The subcommands that are reads whatever follows them; `config` and `remote` are reads only in the forms
-/// `git_call_is_read` names.
-const READS: [&str; 9] = ["status", "diff", "log", "show", "ls-files", "rev-parse", "blame", "grep", "cat-file"];
+/// The subcommands that are reads whatever follows them (`version` is the git floor check every verb but the exempt
+/// ones makes first); `config` and `remote` are reads only in the forms `git_call_is_read` names.
+const READS: [&str; 10] =
+    ["status", "diff", "log", "show", "ls-files", "rev-parse", "blame", "grep", "cat-file", "version"];
 
 /// `args` is git's argv, argv[0] the program. The subcommand is the first argument after argv[0] that is not an
 /// option: `-C <dir>` and `-c <key=value>` skip their value too, and any other argument starting with `-`
 /// (`--no-pager`, `--git-dir=<dir>`) is skipped alone. True when that subcommand is one of the reads, or when there
-/// is none (`git --version` changes nothing). `config` is a read when it has a reading flag (`--get`, `--get-all`,
+/// is none (`git --version`, like `git version`, changes nothing). `config` is a read when it has a reading flag (`--get`, `--get-all`,
 /// `--get-regexp`, `--list`, `-l`) and every other option is a scope (`--global`, `--system`, `--local`,
 /// `--worktree`, `--file`/`-f <f>`, `--file=<f>`, `--blob <b>`, `--blob=<b>`), `--includes`, `-z` or `--null`.
 /// `remote` is a read alone, with only `-v` or `--verbose`, or as `get-url` with one name and only `--push` or

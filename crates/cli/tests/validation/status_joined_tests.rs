@@ -4,8 +4,8 @@
 //! a join with nothing new since, and a formatted save (the formatter set by `mr init --replace`) then a join, stay
 //! joined, next "wait for the zone's tests".
 //! Status reads only: refs, index, record, op log and files are unchanged by it (observe::status_at).
-//! Repo integration test: every step drives the mortar binary as a child in a throwaway repository, reaching the
-//! snapshot, join, folders and oplog crates below cli through it; owned by integration from landing. More status
+//! Validation test: every step drives the mortar binary as a child in a throwaway repository, reaching the
+//! snapshot, join, folders and oplog crates below cli through it; the cli lane owns it. More status
 //! RITs are in tests/operational_rit/status.rs.
 
 use crate::observe::status;
