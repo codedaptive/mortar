@@ -1,4 +1,5 @@
-# Mortar workspace: one crate per lane, one binary crate (cli) on top (mission, Layout).
+# Mortar workspace: one library crate per part of the program, the binary crate (cli) on top, and testkit, used by
+# the tests only.
 [workspace]
 members = ["crates/*"]
 resolver = "2"
