@@ -29,7 +29,7 @@ pub enum JoinRunError {
     OpRepeated(OpRecord),
     /// A conflicted path that is not UTF-8, which mortar-join.json cannot hold without loss.
     StatePath(PathBuf),
-    /// Writing mortar-join.json (or its temp file, `path`) failed.
+    /// Writing mortar-join.json failed; `path` is the file that failed: its temp file or mortar-join.json itself.
     StateWrite { path: PathBuf, source: std::io::Error },
     /// resolve found no mortar-join.json at `state`: no join is paused in this folder.
     NothingToResolve { state: PathBuf },
