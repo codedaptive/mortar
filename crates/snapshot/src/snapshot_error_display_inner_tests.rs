@@ -1,8 +1,10 @@
-//! The eight cross-kit SnapshotError Display cases.
-//! SnapshotError::fmt -> real Gitio/Oplog Display, with literal expected contracts, not inner.to_string or fakes.
+//! SnapshotError's Display where the text shows a gitio or oplog Display: an error (Git, Oplog, Trailers, ChangeId,
+//! IndexNotSet) or an Oid (ChangeIdMissing, IndexNotSet, and the Oid a Stale result holds in RefMoved and BranchMoved).
+//! Unit tests over pure Display code against literal text. The other cases, OpRepeated included (its text shows only
+//! the record's key and op id), are in snapshot_error_display_tests.rs.
 use gitio::{GitError, Oid};
 use oplog::{ChangeIdError, MortarTrailerError, OpPhase, OpRecord, OpResult, OplogError, RefMove};
-use snapshot::SnapshotError;
+use crate::SnapshotError;
 
 const HEX: &str = "abcdefabcdefabcdefabcdefabcdefabcdefabcd";
 fn oid() -> Oid { Oid::parse(HEX).unwrap() }

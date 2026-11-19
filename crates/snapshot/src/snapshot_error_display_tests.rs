@@ -1,6 +1,5 @@
 // Arms whose text comes from gitio's or oplog's Display (Git, Oplog, ChangeIdMissing, Trailers, ChangeId, IndexNotSet,
-// a Stale result holding an Oid) are not tested here: their text is another crate's, so the repo integration tests in
-// tests/snapshot_display_rit.rs cover them.
+// a Stale result holding an Oid) are not tested here: snapshot_error_display_inner_tests.rs tests them.
 use crate::SnapshotError;
 use oplog::{OpPhase, OpRecord, OpResult};
 use std::ffi::OsStr;

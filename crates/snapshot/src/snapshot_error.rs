@@ -1,5 +1,6 @@
 //! SnapshotError: why a snapshot or a save did not happen. A declaration only: its Display is snapshot_error_display,
-//! and snapshot_error_display_tests exercises the text of every variant that needs no other crate's code.
+//! snapshot_error_display_tests exercises the text that shows no gitio or oplog Display, and
+//! snapshot_error_display_inner_tests the text that shows one (an Oid, or a gitio or oplog error).
 //! snapshot_ref_name_tests exercises BadTarget, snapshot_from_apply_tests OpRepeated and RefMoved,
 //! capped_excludes_tests PathNotUtf8, save_head_tests UnbornHead and DetachedHead, save_message_tests BadSentence,
 //! save_change_id_tests ChangeIdMissing, and
@@ -20,7 +21,7 @@
 //! BranchMoved in
 //! tests/snapshot/save_race.rs::branch_moved_during_save_is_named_without_overwriting_foreign_head_index_work_or_caller_lock.
 //! ChangeId comes only from new_change_id's I/O in save and no integration test reaches it there (its Display is in
-//! tests/snapshot_display_rit.rs::rit_change_id_variant_keeps_oplogs_quoted_bad_text_and_reason_after_snapshot_prefix);
+//! snapshot_error_display_inner_tests.rs::rit_change_id_variant_keeps_oplogs_quoted_bad_text_and_reason_after_snapshot_prefix);
 //! PathNotUtf8 and OpRepeated have no integration test.
 //! BadTarget (attempt 0, through snapshot and saved_state) is in
 //! tests/snapshot/saved_state_cases.rs::attempt_zero_is_bad_target_for_snapshot_and_saved_state_before_any_ref_log_or_file_write.

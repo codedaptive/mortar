@@ -155,6 +155,8 @@ mod saved_with_snapshot_from_tests;
 #[cfg(test)]
 mod sentence_refusal_tests;
 #[cfg(test)]
+mod snapshot_error_display_inner_tests;
+#[cfg(test)]
 mod snapshot_error_display_tests;
 #[cfg(test)]
 mod snapshot_excludes_tests;
