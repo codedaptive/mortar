@@ -1,5 +1,5 @@
 //! is_saved: whether a folder's files equal the target's last snapshot.
-//! No unit test: it only calls saved_state and holds no decision of its own (S-5). Nagatha's integration tests
+//! No unit test: it only calls saved_state and holds no decision of its own. The integration tests in tests/snapshot
 //! cover it, in a throwaway repository:
 //! - false when the request has no snapshot ref, and true right after a snapshot, without appending to the op log:
 //!   tests/snapshot/lifecycle.rs::first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op;
@@ -21,7 +21,7 @@ use std::path::Path;
 /// snapshot ref; false when it differs or there is no snapshot yet. The caller passes the excludes and the size cap
 /// it snapshots with, or the trees differ. The cap leaves new files over it out of the tree, so a folder whose only
 /// change is such a file reads saved. The bool alone does not show the cap's refusals: a caller that must know them
-/// (S-32's remove rule, the cli's status) reads saved_state.
+/// (the remove rule, which keeps a folder with a refused file, and the cli's status) reads saved_state.
 /// Writes tree objects (folder_tree does, through gitio's snapshot_tree) but moves no ref and appends no op record.
 pub fn is_saved(
     git: &Git,

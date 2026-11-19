@@ -1,5 +1,7 @@
-//! WO-orc-snapshot-it-5: SPEC-snapshot WO-snapshot-1/-2, S-31; seven remaining I/O cases in WO-snapshot-4d.
-//! All private sizing/tree decisions are exercised through snapshot/is_saved, real gitio and oplog, not source includes.
+//! I/O edge cases of a snapshot's file sizing and tree: a symlink loop's size error, a caller's noglob pathspec
+//! environment giving CapMismatch, a symlink sized by its own length, a deleted path and a new gitlink that are not
+//! size refusals, an unborn HEAD refused before anything is written, and an over-cap file replacing a HEAD directory.
+//! Private sizing/tree decisions are exercised through snapshot/is_saved, real gitio and oplog, not source includes.
 use crate::support::{assert_snapshot_written, blob, run, tree_names, write, Fixture};
 use oplog::{oplog_path, read_op_log, OpPhase, OpResult};
 use snapshot::{is_saved, snapshot, RefusedFile, SnapshotError, DEFAULT_SIZE_CAP};
@@ -62,7 +64,7 @@ fn caller_noglob_environment_produces_exact_cap_mismatch_without_losing_previous
     let before_index = fs::read(f.common.join("index")).unwrap();
     let before_commits = commit_ids(&f);
     let mut git = f.git.clone();
-    // Deliberately caller-scoped, not process-global: WO-gitio-4 scrubs inherited pathspec variables.
+    // Deliberately caller-scoped, not process-global: gitio scrubs inherited pathspec variables.
     git.env.push(("GIT_NOGLOB_PATHSPECS".into(), "1".into()));
     for error in [
         snapshot(&git, &f.repo.path, &f.target, &[], 3).unwrap_err(),

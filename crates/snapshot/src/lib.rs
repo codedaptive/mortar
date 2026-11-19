@@ -1,6 +1,7 @@
-//! snapshot: see the Mortar mission (Layout).
+//! snapshot: saves a folder's tree to a hidden snapshot ref under refs/mortar/, and saves a folder's work as a
+//! commit on its branch.
 //! The crate's bridge file: module declarations and re-exports only, one line per public symbol, so it grows past
-//! the 150-line ceiling by design (charter exception, Coord-snapshot, 2026-11-14); it is not split.
+//! the 150-line ceiling by design; it is not split.
 
 mod candidate_size;
 mod cap_candidate;
@@ -52,8 +53,11 @@ mod save_op;
 mod save_outcome;
 mod save_trailers;
 mod save_unchanged;
+mod save_with_snapshot;
 mod saved_state;
 mod saved_state_type;
+mod saved_with_snapshot;
+mod saved_with_snapshot_from;
 mod sentence_refusal;
 mod snapshot;
 mod snapshot_decision;
@@ -80,8 +84,10 @@ pub use refused_file::RefusedFile;
 pub use run_in_group::run_in_group;
 pub use save::save;
 pub use save_outcome::SaveOutcome;
+pub use save_with_snapshot::save_with_snapshot;
 pub use saved_state::saved_state;
 pub use saved_state_type::SavedState;
+pub use saved_with_snapshot::SavedWithSnapshot;
 pub use sentence_refusal::sentence_refusal;
 pub use snapshot::snapshot;
 pub use snapshot_error::SnapshotError;
@@ -144,6 +150,8 @@ mod save_op_tests;
 mod save_trailers_tests;
 #[cfg(test)]
 mod save_unchanged_tests;
+#[cfg(test)]
+mod saved_with_snapshot_from_tests;
 #[cfg(test)]
 mod sentence_refusal_tests;
 #[cfg(test)]

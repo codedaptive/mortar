@@ -1,8 +1,8 @@
 //! run_formatter: run a snapshot's formatter over the folder's changed files, and say how it ended.
-//! No unit test: it runs git and the formatter, and holds no decision of its own (S-5); formatter_paths,
+//! No unit test: it runs git and the formatter, and holds no decision of its own; formatter_paths,
 //! formatter_argv, decide_formatter_wait, decide_group_run_end and decide_formatter_result are its decisions and have
 //! their tests; run_in_group is its process runner.
-//! Nagatha's integration tests cover it through snapshot_formatted, in a throwaway repository:
+//! The integration tests in tests/snapshot cover it through snapshot_formatted, in a throwaway repository:
 //! - a formatter that rewrites a changed file (the snapshot tree holds the formatted contents, formatted lists
 //!   Formatted with the paths), and is_saved never running the formatter:
 //!   tests/snapshot/formatter.rs::rewriting_formatter_runs_once_with_literal_argv_in_folder_and_snapshot_saves_its_output;

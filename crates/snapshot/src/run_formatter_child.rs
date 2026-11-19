@@ -1,9 +1,9 @@
 //! run_formatter_child: run one child (on Unix as the leader of its own process group), read its stderr, and kill
 //! the group, and the child if it is still running, at its end or its limit. Its one caller is run_in_group.
 //! No unit test: it is process I/O, and decide_formatter_wait, decide_group_kill and decide_formatter_end, which
-//! decide each poll, have their tests (S-5); kill_process_group holds the system calls.
+//! decide each poll, have their tests; kill_process_group holds the system calls.
 //! On Unix the child leads a new group whose id is its pid. The group is signalled only while the child is
-//! unreaped, since a reaped leader's group id may be reused (S-38). At its limit a running child's group is
+//! unreaped, since a reaped leader's group id may be reused. At its limit a running child's group is
 //! killed, then the child is killed and reaped, and the call returns without waiting for the stderr read
 //! (TimedOut). On Linux and macOS a normal exit is seen with WNOWAIT, the group is killed, then the child is
 //! reaped: no process it started is left to write into the snapshot, and none holding stderr holds the call. On other
@@ -66,7 +66,7 @@ pub(crate) fn run_formatter_child(
     let mut group_killed = false;
     loop {
         let leader = observe_leader(&mut child, &mut status).inspect_err(|_| {
-            // No group signal: a failed wait (such as ECHILD) is no proof the leader is unreaped (S-38).
+            // No group signal: a failed wait (such as ECHILD) is no proof the leader is unreaped.
             let _ = child.kill();
             let _ = child.wait();
         })?;

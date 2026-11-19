@@ -15,7 +15,7 @@ pub struct Formatter {
     pub program: PathBuf,
     pub args: Vec<OsString>,
     /// Set by the caller and required: there is no default and no unlimited, because the caller holds its lock
-    /// around the snapshot and a hung formatter would hold it (S-25, S-35). A formatter still running when `timeout`
+    /// around the snapshot and a hung formatter would hold it. A formatter still running when `timeout`
     /// has passed since its spawn is killed with its process group and reaped, and listed as
     /// FormatterResult::TimedOut, and the snapshot goes ahead with the files as they are.
     pub timeout: Duration,

@@ -1,4 +1,4 @@
-//! #1191/S-69/S-83: snapshot/is_saved/save -> actual attempt refs, commit trailers and one-branch transactions.
+//! Snapshot/is_saved/save -> actual attempt refs, commit trailers and one-branch transactions.
 use crate::support::{blob, run, write, Fixture};
 use oplog::{oplog_path, read_mortar_trailers, read_op_log, OpPhase, OpResult};
 use snapshot::{is_saved, save, snapshot, DEFAULT_SIZE_CAP};

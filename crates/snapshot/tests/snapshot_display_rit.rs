@@ -1,6 +1,6 @@
-//! WO-orc-snapshot-rit-1 #1453, S-101: the eight cross-kit SnapshotError Display cases removed from units.
+//! The eight cross-kit SnapshotError Display cases.
 //! SnapshotError::fmt -> real Gitio/Oplog Display, with literal expected contracts, not inner.to_string or fakes.
-//! Every parent owns a disposable TestRepo; its init isolates global/system Git config (#1419).
+//! Every parent owns a disposable TestRepo; its init isolates global/system Git config.
 use gitio::{GitError, Oid};
 use oplog::{ChangeIdError, MortarTrailerError, OpPhase, OpRecord, OpResult, OplogError, RefMove};
 use snapshot::SnapshotError;
@@ -13,7 +13,7 @@ fn git_error() -> GitError {
 }
 fn stale_record() -> OpRecord {
     OpRecord {
-        op_id: "op-7".into(), key: "save refs/heads/x op-7".into(), kind: "save".into(), actor: "bilby".into(),
+        op_id: "op-7".into(), key: "save refs/heads/x op-7".into(), kind: "save".into(), actor: "agent-a".into(),
         reason: "save".into(), at: 1700000000, phase: OpPhase::Failed,
         moves: vec![RefMove { refname: "refs/heads/x".into(), old: None, new: oid() }],
         result: Some(OpResult::Stale { refname: "refs/heads/x".into(), actual: Some(oid()) }),

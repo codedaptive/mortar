@@ -1,4 +1,4 @@
-//! WO-orc-snapshot-it-6: save joined to real snapshot/gitio/oplog, S-34 and the non-repair part of S-41.
+//! Save joined to real snapshot/gitio/oplog: the change ID read back from HEAD, and index repair where none is needed.
 use crate::support::{blob, run, tree_names, write, Fixture};
 use gitio::{Oid, RunOpts};
 use oplog::{oplog_path, read_mortar_trailers, read_op_log, ChangeIdError, MortarTrailerError, OpPhase, OpResult};
@@ -60,7 +60,7 @@ fn save_on_zone_tip_draws_a_new_id_leaves_status_clean_and_next_save_reuses_the_
 
 #[test]
 fn unchanged_save_keeps_index_at_heads_tree_and_entries_and_repeat_writes_no_history() {
-    // S-41/#843: this index already matches HEAD; saves keep that tree and entries, not necessarily stat/cache bytes.
+    // This index already matches HEAD; saves keep that tree and entries, not necessarily stat/cache bytes.
     // Repair of a deliberately stale index is proved separately in save_repair.rs.
     let f = Fixture::new(&[]);
     let head_tree = run(&f.git, &["rev-parse", "HEAD^{tree}"]);
@@ -92,7 +92,7 @@ fn unchanged_save_keeps_index_at_heads_tree_and_entries_and_repeat_writes_no_his
 
 #[test]
 fn this_requests_head_without_change_id_refuses_after_snapshot_without_saving_a_branch_commit() {
-    // Joins actual HEAD trailers -> S-34 missing ID refusal -> snapshot history without branch/index mutation.
+    // Joins actual HEAD trailers -> missing-ID refusal -> snapshot history without branch/index mutation.
     let f = Fixture::new(&[]);
     let head = seed_head(&f, "ours without id\n\nMortar-Request: request-17\nMortar-Zone: snapshot-zone\n");
     write(&f.repo.path, "root.txt", b"work preserved in snapshot\n");

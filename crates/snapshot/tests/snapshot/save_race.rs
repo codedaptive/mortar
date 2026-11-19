@@ -1,4 +1,4 @@
-//! WO-orc-snapshot-it-6: save's branch CAS joins a real competing oplog writer under the caller's existing lock.
+//! Save's branch CAS joins a real competing oplog writer under the caller's existing lock.
 use crate::support::{blob, run, write, Fixture};
 use gitio::{Git, Oid};
 use oplog::{apply, decode_lock_record, read_op_log, ApplyOutcome, Op, OpPhase, OpResult, RefMove};

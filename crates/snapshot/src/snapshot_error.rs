@@ -3,7 +3,7 @@
 //! snapshot_ref_name_tests exercises BadTarget, snapshot_from_apply_tests OpRepeated and RefMoved,
 //! capped_excludes_tests PathNotUtf8, save_head_tests UnbornHead and DetachedHead, save_message_tests BadSentence,
 //! save_change_id_tests ChangeIdMissing, and
-//! save_from_apply_tests OpRepeated and BranchMoved. Nagatha's integration tests get, through snapshot: RefMoved in
+//! save_from_apply_tests OpRepeated and BranchMoved. The integration tests get, through snapshot: RefMoved in
 //! tests/snapshot/race.rs::foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or_files;
 //! FileSize (an ELOOP) in
 //! tests/snapshot/sizing_edges.rs::real_metadata_symlink_loop_is_file_size_error_before_commit_ref_or_log_and_retry_preserves_work;
@@ -43,7 +43,7 @@ pub enum SnapshotError {
     BadTarget { reason: String },
     /// The sentence cannot be a commit subject; the reason says why.
     BadSentence { reason: String },
-    /// HEAD's Mortar-Request and Mortar-Zone are the target's but it carries no Mortar-Change-Id (S-34); save writes
+    /// HEAD's Mortar-Request and Mortar-Zone are the target's but it carries no Mortar-Change-Id; save writes
     /// no commit and moves no branch rather than make a second ID for the request. Its snapshot step has already
     /// run, so the target's snapshot ref may have moved.
     ChangeIdMissing { head: Oid },
@@ -63,8 +63,7 @@ pub enum SnapshotError {
     /// Setting the folder's index failed; `commit` is the branch's commit (the new commit on a written save, HEAD on
     /// an unchanged one). The files are untouched. The index is the old one, unless gitio's set_index failed at its
     /// sparse-checkout reapply, after read-tree had already set it: then it holds the commit's tree without its
-    /// skip-worktree bits (S-125). Either way a save again finds the tree equal to HEAD's and sets the index to it
-    /// (S-41).
+    /// skip-worktree bits. Either way a save again finds the tree equal to HEAD's and sets the index to it.
     IndexNotSet { commit: Oid, error: gitio::GitError },
     /// A changed file's size could not be read, so the cap could not be checked; no commit was written.
     FileSize { path: PathBuf, error: std::io::Error },

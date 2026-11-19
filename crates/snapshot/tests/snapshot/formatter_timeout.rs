@@ -1,5 +1,5 @@
-//! SPEC-snapshot WO-snapshot-4, S-35: deadline outcomes, real child death/reaping and capped stderr.
-//! No elapsed-time assertions; no background children, held-pipe case or process-group behavior (S-37).
+//! Deadline outcomes, real child death/reaping and capped stderr.
+//! No elapsed-time assertions; no background children, held-pipe case or process-group behavior.
 use crate::support::{assert_snapshot_written, blob, fifo_hang_guard, formatter_script, write, Fixture};
 use oplog::{KillPidProbe, PidProbe};
 use snapshot::{snapshot_formatted, Formatter, FormatterResult, DEFAULT_SIZE_CAP};

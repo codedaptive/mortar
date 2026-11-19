@@ -1,10 +1,10 @@
 //! snapshot_formatted: run the caller's formatter over a folder's changed files, then save the folder's files as a
 //! commit on the target's snapshot ref.
-//! No unit test: it runs git and the formatter and appends to the op log, and holds no decision of its own (S-5);
+//! No unit test: it runs git and the formatter and appends to the op log, and holds no decision of its own;
 //! decide_snapshot, snapshot_ref_name, snapshot_parents, snapshot_trailers, snapshot_op, snapshot_from_apply,
 //! formatter_paths, formatter_argv, decide_formatter_wait, decide_group_run_end and decide_formatter_result are its
 //! decisions and have their tests.
-//! Nagatha's integration tests cover it through snapshot, in a throwaway repository:
+//! The integration tests in tests/snapshot cover it through snapshot, in a throwaway repository:
 //! - a first snapshot of a target with no attempt writes a commit with parents [HEAD], message "snapshot" with
 //!   Mortar-Request and Mortar-Zone trailers, moves refs/mortar/snap/<zone>/<request> (the no-attempt ref) to it
 //!   and leaves a done op record:
@@ -21,7 +21,7 @@
 //!   tests/snapshot/attempts.rs::attempts_have_independent_snapshot_chains_and_saved_reads_only_the_selected_ref.
 //!
 //! The formatter cases are run_formatter's header's: tests/snapshot/formatter.rs, formatter_paths.rs,
-//! formatter_timeout.rs and formatter_group.rs (the S-37 process-group cases) cover them.
+//! formatter_timeout.rs and formatter_group.rs (the process-group cases) cover them.
 
 use crate::decide_snapshot::decide_snapshot;
 use crate::folder_tree::folder_tree;
@@ -40,8 +40,8 @@ use std::path::Path;
 
 /// Runs `formatter` over `folder`'s changed files, then saves `folder`'s files, minus the built-in excludes,
 /// `extra_excludes` and each new file (not in HEAD) over `size_cap` bytes, listed in refused, as a commit on
-/// the target's snapshot ref (snapshot_ref_name: `refs/mortar/snap/<zone>/<request>` (S-19), or
-/// `refs/mortar/trysnap/<zone>/<request>/<k>` (S-69) with attempt k (from 1)), with parents [HEAD] for the ref's
+/// the target's snapshot ref (snapshot_ref_name: `refs/mortar/snap/<zone>/<request>`, or
+/// `refs/mortar/trysnap/<zone>/<request>/<k>` with attempt k (from 1)), with parents [HEAD] for the ref's
 /// first snapshot and [HEAD, previous snapshot] after that. `git` gives the binary and environment; every run is in
 /// `folder`, which must be the folder's top.
 ///
@@ -59,7 +59,7 @@ use std::path::Path;
 /// nothing moved.
 ///
 /// Callers wanting the default cap pass DEFAULT_SIZE_CAP. The caller runs oplog::recover and holds the lock around
-/// this call, as every command does (S-16).
+/// this call, as every command does.
 pub fn snapshot_formatted(
     git: &Git,
     folder: &Path,

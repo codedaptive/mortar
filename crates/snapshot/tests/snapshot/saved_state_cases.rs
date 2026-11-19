@@ -1,4 +1,4 @@
-//! WO-snapshot-10 and 11: saved_state read directly against real snapshot refs, its tree checked against the tree
+//! saved_state read directly against real snapshot refs, its tree checked against the tree
 //! each snapshot ref records, and attempt 0 refused before any write.
 use crate::support::{run, tree_names, write, Fixture};
 use gitio::Oid;

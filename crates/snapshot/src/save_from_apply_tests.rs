@@ -12,7 +12,7 @@ fn record(phase: OpPhase, result: OpResult) -> OpRecord {
         op_id: "op-1".to_string(),
         key: "save refs/heads/zone/snapshot op-1".to_string(),
         kind: "save".to_string(),
-        actor: "bilby".to_string(),
+        actor: "agent-a".to_string(),
         reason: "save".to_string(),
         at: 1700000000,
         phase,

@@ -1,7 +1,7 @@
 //! SavedState: whether a folder's files equal the target's last snapshot, the folder's tree it compared, and the
 //! files the size cap refused.
 //! A declaration only. It lives in saved_state_type.rs, not saved_state.rs, because the function saved_state has
-//! that file (the charter's naming rule would name both the same).
+//! that file (each file is named after its symbol, which would name both the same).
 
 use crate::RefusedFile;
 use gitio::Oid;
@@ -16,6 +16,6 @@ pub struct SavedState {
     /// before building its tree, so with a formatter a snapshot's tree can differ.
     pub tree: Oid,
     /// Each new file (new against HEAD) over the size cap that the tree leaves out, with its size and the cap, as
-    /// SnapshotOutcome.refused reports them (S-31).
+    /// SnapshotOutcome.refused reports them.
     pub refused: Vec<RefusedFile>,
 }

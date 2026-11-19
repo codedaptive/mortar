@@ -1,4 +1,4 @@
-//! snapshot_trailers: the trailers a snapshot commit carries, built by oplog's mortar_trailer_pairs (S-2, S-24).
+//! snapshot_trailers: the trailers a snapshot commit carries, built by oplog's mortar_trailer_pairs.
 
 use oplog::{mortar_trailer_pairs, MortarTrailers};
 

@@ -1,4 +1,4 @@
-//! save_trailers: the trailers a save commit carries, built by oplog's mortar_trailer_pairs (S-2).
+//! save_trailers: the trailers a save commit carries, built by oplog's mortar_trailer_pairs.
 
 use crate::SnapshotTarget;
 use oplog::{mortar_trailer_pairs, ChangeId, MortarTrailers};

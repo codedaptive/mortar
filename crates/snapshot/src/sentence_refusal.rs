@@ -1,4 +1,4 @@
-//! sentence_refusal: S-41's save-sentence check, exported so the cli can refuse a sentence before a save (S-90).
+//! sentence_refusal: the save-sentence check, exported so the cli can refuse a sentence before a save.
 
 /// Why `sentence` cannot be a save commit's subject, or None when it can. An empty or whitespace-only sentence
 /// is refused first; otherwise one holding a line break ('\n' or '\r') is refused, since a subject is one line.

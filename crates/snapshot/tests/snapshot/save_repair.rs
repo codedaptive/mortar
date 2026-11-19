@@ -1,4 +1,4 @@
-//! WO-orc-snapshot-it-7b / S-41: real IndexNotSet -> unchanged save repairs actual index without more history.
+//! Real IndexNotSet -> unchanged save repairs actual index without more history.
 use crate::support::{blob, run, write, Fixture};
 use oplog::{oplog_path, read_op_log, OpPhase, OpResult};
 use snapshot::{save, SnapshotError, DEFAULT_SIZE_CAP};
