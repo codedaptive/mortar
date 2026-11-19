@@ -20,7 +20,7 @@ args=${CARGO_TEST_ARGS:-}
 case "$group" in unit|integration|validation) ;; *) echo "test-one: GROUP must be unit, integration or validation"; exit 2 ;; esac
 case "$dir" in crates/?*) ;; "") echo "test-one: set DIR"; exit 2 ;; *) echo "test-one: DIR must start with crates/"; exit 2 ;; esac
 
-d=${dir%/}; p=${d#crates/}; p=${p%%/*}; rest=${d#crates/$p}; root=crates/$p
+d=$(printf '%s\n' "$dir" | sed 's|//*|/|g'); d=${d%/}; p=${d#crates/}; p=${p%%/*}; rest=${d#crates/$p}; root=crates/$p
 
 # libtest arguments go after one `--`: reuse the caller's when CARGO_TEST_ARGS has one.
 case " $args " in *" -- "*) sep="" ;; *) sep="--" ;; esac
@@ -58,6 +58,9 @@ case "$rest" in
     "") "run_$group" ;;
     /src/*)
         [ "$group" = unit ] || { echo "test-one: a source module runs its unit tests only; use DIR=$root GROUP=$group"; exit 2; }
+        # The unit run skips every test whose path holds `integration::`, and every test this module filter selects
+        # has a segment ending in integration in its path, so the run would skip them all: refuse it.
+        case "$rest/" in */*integration/*) echo "test-one: a module path with a segment ending in integration has no unit tests here; use DIR=$root GROUP=integration"; exit 2 ;; esac
         m=$(echo "${rest#/src/}" | sed 's|/|::|g')
         case "$args" in
             ""|-*) $cargo test -p "$p" --lib "$m::" $args $sep --skip integration:: ;;
@@ -71,6 +74,7 @@ case "$rest" in
             $cargo test -p "$p" $targets $args
         fi ;;
     /tests/validation) run_validation ;;
+    /tests/*/*) t=${rest#/tests/}; echo "test-one: DIR must name a test target, not a file inside one; use DIR=$root/tests/${t%%/*}"; exit 2 ;;
     /tests/*) $cargo test -p "$p" --test "${rest##*/}" $args ;;
     *) echo "test-one: DIR must name a crate, source module, or test target"; exit 2 ;;
 esac

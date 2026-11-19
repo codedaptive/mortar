@@ -1,7 +1,7 @@
-# Mortar workspace targets: test-one, test-group, check, test and accept. A make file named in MAKEFILES may add
+# Mortar workspace targets: test-one, test-group, check, test, accept and script-test. A make file named in MAKEFILES may add
 # its own targets beside them.
 CARGO ?= cargo
-.PHONY: test-one test-group check test accept
+.PHONY: test-one test-group check test accept script-test
 
 # Three test groups: GROUP=unit (default), integration or validation; scripts/test_one.sh says what each runs.
 GROUP ?= unit
@@ -15,6 +15,10 @@ test-group:
 
 check:
 	$(CARGO) check --workspace --all-targets
+
+# Checks test_one.sh's path handling (scripts/test_one_tests.sh); calls no cargo and runs no test.
+script-test:
+	@sh "$(CURDIR)/scripts/test_one_tests.sh"
 
 test:
 	@$(MAKE) --no-print-directory test-group GROUP=$(GROUP)
