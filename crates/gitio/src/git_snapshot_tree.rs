@@ -1,6 +1,6 @@
 //! Git::snapshot_tree: save a folder's files as a tree without touching its index. It only runs git, so it has no
-//! unit tests; Nagatha's integration test "snapshot_tree in a sparse folder keeping out-of-cone files, applying
-//! excludes, leaving the folder's index unchanged and no temp index behind" is to cover it.
+//! unit tests; tests/typed/snapshot.rs covers it: excludes applied, the folder's index unchanged and no temp index
+//! left behind, out-of-cone files kept in a sparse folder, and a failed run removing its temp index.
 
 use crate::next_temp_index::next_temp_index;
 use crate::oid_line::oid_line;

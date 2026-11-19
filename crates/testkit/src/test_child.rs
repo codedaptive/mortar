@@ -1,4 +1,4 @@
-//! Shared libtest subprocess selection; tests/support.rs launches a real ignored worker (S-5).
+//! Shared libtest subprocess selection; tests/support.rs launches a real ignored worker.
 
 use std::io;
 use std::process::Command;

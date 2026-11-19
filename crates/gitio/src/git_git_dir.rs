@@ -1,5 +1,6 @@
-//! Git::git_dir: a folder's own git directory. It only runs git, so it has no unit tests; Nagatha's integration test
-//! "git_dir answering a linked worktree's own .git/worktrees/<name>, absolute" is to cover it.
+//! Git::git_dir: a folder's own git directory. It only runs git, so it has no unit tests; join's
+//! tests/join_rit/restore_support.rs (the `caller` helper the restore tests run) checks that it answers the common
+//! git directory for the main folder. Folders, join and cli also call it to find a folder's own records.
 
 use crate::git_dir_request::git_dir_request;
 use crate::path_line::path_line;

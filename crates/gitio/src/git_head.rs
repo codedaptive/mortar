@@ -1,5 +1,6 @@
 //! Git::head: the branch a folder's HEAD names and the commit it points at. It only runs git, so it has no unit
-//! tests; Nagatha's integration test "head on a branch, detached, and unborn" is to cover it.
+//! tests; no gitio test calls it, and crates/snapshot/tests/snapshot/save_cases.rs reaches it through save on a
+//! detached and an unborn HEAD.
 //! The two answers come from two git runs, not one snapshot: a HEAD moved between them gives a branch and a commit
 //! that never stood together.
 

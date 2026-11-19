@@ -3,8 +3,8 @@
 use crate::{Oid, RunOpts};
 use std::ffi::OsString;
 
-/// `merge-base --end-of-options <a> <b>`: `--end-of-options` goes before caller revisions, as SPEC-gitio asks of
-/// every run that takes them. Exit 1 (no common ancestor) is an answer; read_merge_base tells it from a failure by
+/// `merge-base --end-of-options <a> <b>`: `--end-of-options` goes before the revisions, so neither is read as an
+/// option. Exit 1 (no common ancestor) is an answer; read_merge_base tells it from a failure by
 /// its empty output.
 pub(crate) fn merge_base_request(a: &Oid, b: &Oid) -> (Vec<OsString>, RunOpts) {
     (

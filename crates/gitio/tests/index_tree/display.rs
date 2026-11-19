@@ -1,5 +1,6 @@
 //! IndexTreeError's Display composed with GitError's Display and std::error::Error, through the public API only.
-//! Runs no git and touches no files; ZITs because they run another file's code for real (S-102, rule 11).
+//! Unit tests (ZUTs): runs no git and touches no files; IndexTreeError's Display only formats and delegates to
+//! GitError's Display, which also only formats, so they use only pure code of the kit.
 use gitio::{GitError, IndexTreeError};
 use std::path::PathBuf;
 

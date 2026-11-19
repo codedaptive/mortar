@@ -1,4 +1,4 @@
-//! Real-git integration coverage for WO-gitio-1; each test names the public functions it joins.
+//! Real-git integration coverage; each test names the public functions it joins.
 
 #[path = "../support/mod.rs"]
 mod support;

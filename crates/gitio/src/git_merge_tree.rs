@@ -1,6 +1,6 @@
 //! Git::merge_tree: merge two commits into a tree without touching any folder. It only runs git, so it has no unit
-//! tests; Nagatha's integration test "merge_tree giving Clean, Conflicted with the file names, and an error for an
-//! unknown commit" is to cover it.
+//! tests; tests/typed/merge.rs covers it: Clean with no folder touched, Conflicted with the file names, an error
+//! for an unknown commit, and the attribute source's merge drivers.
 
 use crate::merge_tree_request::merge_tree_request;
 use crate::read_merge_tree::read_merge_tree;

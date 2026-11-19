@@ -1,4 +1,4 @@
-//! Real-git joins for WO-gitio-2b typed operations (SPEC-gitio §Tests, S-10, S-12).
+//! Real-git joins for typed operations.
 #[path = "../support/mod.rs"]
 mod support;
 mod fixture;

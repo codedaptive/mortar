@@ -1,5 +1,6 @@
-//! Git::toplevel: the top folder of the worktree. It only runs git, so it has no unit tests; Nagatha's integration
-//! test "toplevel answering the worktree's top from a subfolder" is to cover it.
+//! Git::toplevel: the top folder of the worktree. It only runs git, so it has no unit tests; tests/typed/worktrees.rs
+//! `worktree_lifecycle_sparse_paths_and_discovery_share_the_real_common_store` covers it: a linked worktree's top
+//! from a subfolder, and the main worktree's top.
 
 use crate::path_line::path_line;
 use crate::{Git, GitError, RunOpts};

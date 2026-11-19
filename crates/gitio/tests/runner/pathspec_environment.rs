@@ -1,4 +1,4 @@
-//! WO-orc-gitio-it-4 / SPEC-gitio WO-gitio-1: inherited pathspec modes are cleared, explicit modes win.
+//! Inherited pathspec modes are cleared, explicit modes win.
 use crate::support::GitRepo;
 use gitio::{Git, RunOpts};
 use std::{fs, path::PathBuf};

@@ -1,4 +1,4 @@
-//! WO-orc-gitio-it-5, S-39 / SPEC-join WO-join-1: replay uses its explicit attribute source, not disk or onto.
+//! Replay uses its explicit attribute source, not disk or onto.
 use crate::fixture::{blob, commit, repo, set_ref, tree};
 use gitio::{ReplayOutcome, RunOpts};
 use std::fs;
@@ -36,10 +36,10 @@ fn replay_union_comes_from_the_supplied_commit_and_plain_source_conflicts_despit
     let supported = String::from_utf8_lossy(&help).contains("--ref-action");
     assert_eq!(r.git.replay_available().unwrap(), supported);
     if !supported {
-        eprintln!("S-39 capability gate: --ref-action unavailable; only unsupported/no-ref-move outcome exercised");
+        eprintln!("capability gate: --ref-action unavailable; only unsupported/no-ref-move outcome exercised");
         assert!(r.git.replay(&union_source, &onto, &base, "refs/heads/topic").is_err());
     } else {
-        eprintln!("S-39 capability gate: --ref-action available; exercising real union/plain attribute-source contrast");
+        eprintln!("capability gate: --ref-action available; exercising real union/plain attribute-source contrast");
         let updates = match r.git.replay(&union_source, &onto, &base, "refs/heads/topic").unwrap() {
             ReplayOutcome::Replayed(updates) => updates,
             other => panic!("supplied union source must resolve shared-line edit, despite binary disk attributes: {other:?}"),

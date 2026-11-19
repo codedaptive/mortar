@@ -1,6 +1,6 @@
-//! Git::worktree_add: add a worktree with an empty folder. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "worktree_add on a new branch and detached, each listed by worktree_list with an empty folder"
-//! is to cover it.
+//! Git::worktree_add: add a worktree with an empty folder. It only runs git, so it has no unit tests;
+//! tests/typed/worktrees.rs covers it: worktrees on a new branch and detached, each an empty folder holding only
+//! .git and listed by worktree_list.
 
 use crate::worktree_add_request::worktree_add_request;
 use crate::{Git, GitError, Oid};

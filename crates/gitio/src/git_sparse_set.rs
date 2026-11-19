@@ -1,6 +1,5 @@
-//! Git::sparse_set: set a folder's sparse paths and fill them. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "sparse_set on a worktree added by worktree_add filling the cone and the root files only" is to
-//! cover it.
+//! Git::sparse_set: set a folder's sparse paths and fill them. It only runs git, so it has no unit tests;
+//! tests/typed/worktrees.rs covers it: a worktree added by worktree_add filled with the cone and the root files only.
 
 use crate::sparse_set_requests::sparse_set_requests;
 use crate::{Git, GitError};

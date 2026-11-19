@@ -1,6 +1,7 @@
-//! Git::status_paths: a folder's changed, untracked and conflicted paths. It only runs git, so it has no unit
-//! tests; Nagatha's integration test "status_paths with a modified, a staged, a deleted, a renamed, an
-//! untracked-in-a-new-folder and a conflicted path" is to cover it.
+//! Git::status_paths: a folder's changed, untracked and conflicted paths. It only runs git, so it has no unit tests;
+//! snapshot's tests/snapshot/formatter_paths.rs
+//! (formatter_gets_only_regular_saved_nonconflicted_changes_not_deleted_refused_excluded_links_or_submodules) covers it
+//! through the formatter: it is handed the changed and untracked files, not the conflicted one.
 
 use crate::read_status_paths::read_status_paths;
 use crate::status_paths_request::status_paths_request;

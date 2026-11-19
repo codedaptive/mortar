@@ -3,7 +3,7 @@ use gitio::{Oid, ReplayOutcome, RunOpts};
 
 #[test]
 fn replay_probe_gates_real_clean_conflict_and_error_results_without_ref_moves() {
-    // S-12: joins replay_available -> real replay -> parsed proposed updates, never a ref move.
+    // Joins replay_available -> real replay -> parsed proposed updates, never a ref move.
     let r = repo();
     let base_tree = tree(&r.git, &[("file", b"base\n")]);
     let base = commit(&r.git, &base_tree, &[], "base\n");

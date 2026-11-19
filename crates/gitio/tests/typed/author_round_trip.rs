@@ -1,4 +1,4 @@
-//! WO-orc-gitio-it-3 / WO-gitio-3c: commit_info's stored author is reusable by commit_tree.
+//! commit_info's stored author is reusable by commit_tree.
 use crate::fixture::{commit, repo, tree};
 use gitio::{Oid, Person, RunOpts};
 

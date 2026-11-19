@@ -4,8 +4,8 @@ use std::path::PathBuf;
 /// A Git whose program does not exist: any run it attempted would end in a spawn refusal ("could not run ...").
 fn no_git() -> Git {
     Git {
-        program: PathBuf::from("/nonexistent/wo-gitio-12/git"),
-        repo: PathBuf::from("/nonexistent/wo-gitio-12/repo"),
+        program: PathBuf::from("/nonexistent/disk-usage/git"),
+        repo: PathBuf::from("/nonexistent/disk-usage/repo"),
         env: Vec::new(),
     }
 }

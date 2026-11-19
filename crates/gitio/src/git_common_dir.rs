@@ -1,5 +1,5 @@
-//! Git::common_dir: the repository's shared git directory. It only runs git, so it has no unit tests; Nagatha's
-//! integration test "common_dir answering the main repository's .git from a linked worktree" is to cover it.
+//! Git::common_dir: the repository's shared git directory. It only runs git, so it has no unit tests;
+//! tests/typed/worktrees.rs covers it: the main repository's .git from inside a linked worktree and from the main one.
 
 use crate::path_line::path_line;
 use crate::{Git, GitError, RunOpts};

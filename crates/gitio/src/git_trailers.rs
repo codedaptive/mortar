@@ -1,5 +1,5 @@
-//! Git::trailers: a message's trailers. It only runs git, so it has no unit tests; Nagatha's integration test
-//! "trailers reading a message's trailers in order with folded values unfolded" is to cover it.
+//! Git::trailers: a message's trailers. It only runs git, so it has no unit tests; tests/typed/trailers.rs covers
+//! it: trailers in order with folded values unfolded, and none read above a body divider.
 
 use crate::read_trailers::read_trailers;
 use crate::trailers_parse_request::trailers_parse_request;
