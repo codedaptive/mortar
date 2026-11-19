@@ -1,5 +1,6 @@
-//! Display for SquashError's refusals: each names what it carries and says what moved.
-//! The Git, Oplog, Trailers and ChangeId texts embed gitio's or oplog's own failure text.
+//! Display for SquashError: each test pins the whole Display text, in land's own words around the values the test
+//! passes, except: the Git arm is gitio's text alone; the Oplog and ChangeId arms are land's prefix then oplog's text;
+//! the Trailers arm is land's prefix then oplog's text with gitio's inside it.
 
 use super::SquashError;
 use gitio::{GitError, Oid};
@@ -23,33 +24,36 @@ fn record(phase: OpPhase) -> OpRecord {
 }
 
 #[test]
-fn ref_missing_names_the_ref_and_says_nothing_moved() {
+fn ref_missing_text_is_the_ref_does_not_exist_then_no_commit_written_and_no_ref_moved() {
     let text = SquashError::RefMissing { refname: "refs/heads/zone/land".to_string() }.to_string();
     assert_eq!(text, "ref refs/heads/zone/land does not exist; no commit was written and no ref was moved");
 }
 
 #[test]
-fn op_failed_names_the_op_and_its_key_and_says_nothing_moved() {
-    let text = SquashError::OpFailed(record(OpPhase::Failed)).to_string();
-    assert!(text.contains("op op-7 (key land-squash:refs/mortar/squash/land:none:k:op-7) failed"), "{text}");
-    assert!(text.contains("not at its expected value"), "{text}");
-    assert!(text.contains("nothing was moved"), "{text}");
+fn op_failed_text_is_the_op_its_key_failed_why_nothing_moved_then_what_to_do() {
+    assert_eq!(
+        SquashError::OpFailed(record(OpPhase::Failed)).to_string(),
+        "op op-7 (key land-squash:refs/mortar/squash/land:none:k:op-7) failed: the squash ref was not at its expected \
+         value, so nothing was moved; run squash again to read the refs afresh"
+    );
 }
 
 #[test]
-fn op_repeated_names_the_key_and_says_nothing_moved() {
-    let text = SquashError::OpRepeated(record(OpPhase::Done)).to_string();
-    assert!(text.contains("op key land-squash:refs/mortar/squash/land:none:k:op-7 is already done"), "{text}");
-    assert!(text.contains("this squash moved nothing"), "{text}");
+fn op_repeated_text_is_the_key_already_done_in_the_op_log_nothing_moved_then_what_to_do() {
+    assert_eq!(
+        SquashError::OpRepeated(record(OpPhase::Done)).to_string(),
+        "op key land-squash:refs/mortar/squash/land:none:k:op-7 is already done in the op log, so this squash moved \
+         nothing; run squash again"
+    );
 }
 
 #[test]
-fn attr_source_missing_names_the_commit_and_says_nothing_moved() {
+fn attr_source_missing_text_is_the_commit_does_not_exist_merge_cannot_read_attributes_then_no_commit_written_and_no_ref_moved() {
     assert_eq!(SquashError::AttrSourceMissing { commit: a() }.to_string(), "attribute source commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa does not exist, so the merge cannot read its attributes; no commit was written and no ref was moved");
 }
 
 #[test]
-fn unrelated_names_both_tips_and_says_nothing_moved() {
+fn unrelated_text_is_the_zone_tip_shares_no_history_with_origin_then_nothing_squashed_and_no_ref_moved() {
     assert_eq!(SquashError::Unrelated { origin: a(), source: b() }.to_string(), "zone tip bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb shares no history with origin aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa; nothing was squashed and no ref was moved");
 }
 
@@ -61,24 +65,24 @@ fn bad_id() -> ChangeIdError {
 }
 
 #[test]
-fn squash_git_display_is_gitios_command_exit_and_trimmed_stderr_without_an_added_prefix() {
+fn git_text_is_gitios_command_exit_code_and_stderr_with_no_prefix() {
     assert_eq!(SquashError::Git(git_error()).to_string(), "git read-tree HEAD: exit code 128: fatal: no tree");
 }
 
 #[test]
-fn squash_oplog_display_prefix_keeps_oplogs_complete_refusal_and_next_step() {
+fn oplog_text_is_the_squash_prefix_the_line_not_a_record_the_reason_mortar_did_not_write_it_then_what_to_do() {
     let inner = OplogError::Malformed { line: Some(7), reason: "missing op_id".into() };
     assert_eq!(SquashError::Oplog(inner).to_string(),
         "squash op log: op log line 7 is not a record (missing op_id); mortar did not write it, so check what did, then repair or remove that line of mortar/oplog.jsonl");
 }
 
 #[test]
-fn squash_trailers_display_preserves_both_oplog_and_gitio_error_layers() {
+fn trailers_text_is_the_squash_prefix_git_trailers_failed_then_gitios_command_exit_code_and_stderr() {
     let inner = MortarTrailerError::Git(git_error());
     assert_eq!(SquashError::Trailers(inner).to_string(), "squash trailers: git trailers failed: git read-tree HEAD: exit code 128: fatal: no tree");
 }
 
 #[test]
-fn squash_change_id_display_keeps_oplogs_bad_text_and_reason_after_the_squash_prefix() {
+fn change_id_text_is_the_squash_prefix_not_a_change_id_the_text_then_the_reason() {
     assert_eq!(SquashError::ChangeId(bad_id()).to_string(), "squash change ID: not a change ID: \"bad\": expected 32 characters");
 }

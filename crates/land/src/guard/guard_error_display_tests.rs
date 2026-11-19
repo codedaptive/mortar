@@ -1,5 +1,5 @@
-//! Guard failure texts. The Git arm prints gitio's own text after its prefix. Io embeds std's text, so only its path
-//! prefix is checked.
+//! Guard failure texts: each test pins the whole Display text, in land's own words around the values the test passes,
+//! except: the Git arm is land's prefix then gitio's text; the Io arm is the path then std's io::Error text.
 
 use std::io;
 use std::path::PathBuf;
@@ -13,18 +13,18 @@ fn git_error() -> GitError {
 }
 
 #[test]
-fn git_text_starts_with_git_failed() {
+fn git_text_is_git_failed_then_gitios_command_exit_code_and_stderr() {
     assert_eq!(GuardError::Git(git_error()).to_string(), "git failed: git read-tree HEAD: exit code 128: fatal: no tree");
 }
 
 #[test]
-fn io_text_starts_with_the_path() {
+fn io_text_is_the_path_then_the_io_error_text() {
     let err = GuardError::Io { path: PathBuf::from("/r/.git/hooks/pre-push"), error: io::Error::other("disk") };
-    assert!(err.to_string().starts_with("/r/.git/hooks/pre-push: "), "{err}");
+    assert_eq!(err.to_string(), "/r/.git/hooks/pre-push: disk");
 }
 
 #[test]
-fn foreign_hook_names_the_file_and_what_to_do() {
+fn foreign_hook_text_is_the_file_why_never_overwritten_then_what_to_do() {
     let err = GuardError::ForeignHook { path: PathBuf::from("/r/.git/hooks/pre-push") };
     assert_eq!(
         err.to_string(),
@@ -34,7 +34,7 @@ fn foreign_hook_names_the_file_and_what_to_do() {
 }
 
 #[test]
-fn bad_config_names_the_file_and_why() {
+fn bad_config_text_is_the_file_not_a_guard_config_then_why() {
     let err = GuardError::BadConfig {
         path: PathBuf::from("/r/.git/mortar/guard.json"),
         why: "key \"remote\" appears twice".to_string(),
