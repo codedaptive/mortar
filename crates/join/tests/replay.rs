@@ -312,12 +312,12 @@ fn assert_path(trace: &PathBuf, fallback: bool, conflict: bool) {
 const JOIN_ZONE: &str = "it-zone";
 const ZONE_REF: &str = "refs/heads/zone/it-zone";
 const REQUEST_REF: &str = "refs/heads/request/task";
-// The caller supplies attribution; lock/recovery cases remain deferred to cli.
+// The caller supplies attribution; lock and recovery cases are tested in cli.
 const JOIN_ACTOR: &str = "join-it-3-caller";
 
 #[test]
 fn join_fast_forwards_only_the_zone_and_repeat_is_joined_without_another_op() {
-    // Joins join -> protected oplog apply -> exact refs/log and inert repeat; caller-lock coverage belongs to cli.
+    // Joins join -> protected oplog apply -> exact refs/log and inert repeat; the caller's lock is tested in cli.
     let f = Fixture::new();
     let initial = f.tree(&[("file", b"base\n")]);
     let base = f.commit(&initial, &[], "base\n", &author("Base", "1700000000 +0000"));
