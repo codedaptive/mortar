@@ -1,10 +1,8 @@
 //! SquashError: why a squash, would_merge or read_squash was refused. A declaration only;
 //! squash_error_display_tests exercise the texts of RefMissing, OpFailed, OpRepeated, AttrSourceMissing, Unrelated,
-//! Git, Oplog, Trailers and ChangeId.
-//! The TrailerMissing, TrailerMalformed and RequestsMalformed texts name a commit (gitio's Oid Display), so
-//! tests/squash_zit/read_squash_cases.rs reads them in a real repository, checking the TrailerMissing and
-//! TrailerMalformed texts for the trailer name and the advice. squash_error_error_tests exercise its source,
-//! squash_applied_tests the op variants, squash_from_parts_tests the read_squash refusals.
+//! Git, Oplog, Trailers, ChangeId, TrailerMissing, TrailerMalformed and RequestsMalformed.
+//! squash_error_error_tests exercise its source, squash_applied_tests the op variants, squash_from_parts_tests the
+//! read_squash refusals.
 
 use gitio::{GitError, Oid};
 use oplog::{ChangeIdError, MortarTrailerError, OpRecord, OplogError};
