@@ -1,15 +1,17 @@
 //! Replaces a stale lock with ours, one taker at a time: the `<lock>.takeover` guard file, made by exclusive create
-//! (create_new temp + link(2), fails if the name exists), serializes takers (S-6), and a per-holder reap guard
+//! (create_new temp + link(2), fails if the name exists), serializes takers, and a per-holder reap guard
 //! serializes removal of a dead guard. A guard whose holder is stale by decide_lock_staleness (same host, dead pid)
 //! is removed if it still holds that holder, pushed onto the caller's `removed_guards`, and the guard is taken
 //! again. A live or other-host holder, or an existing reap guard, is refused with TakeoverInProgress.
 //! Errors and the lock built here carry an empty `removed_guards`: acquire_lock owns the list and puts it on its
-//! result (S-30).
-//! No unit test: it writes and removes real files and asks about real processes (S-5); the decision it applies is
-//! decide_lock_staleness, tested on its own. Covered by Nagatha's integration group: stale takeover, two racing
-//! takers (one wins, the other starts again or is refused), a live or other-host guard refused as a takeover in
-//! progress, a dead same-host guard removed and returned in `removed_guards`, two takers racing to remove the same
-//! dead guard (one removes it), and the guard removed after every takeover.
+//! result.
+//! No unit test: it writes and removes real files and asks about real processes; the decision it applies is
+//! decide_lock_staleness, tested on its own. Covered by the crate's integration tests: stale takeover
+//! (tests/oplog/locks.rs); two racing takers (one wins, the other starts again or is refused), a live or
+//! other-host guard refused as a takeover in progress, a dead same-host guard removed and returned in
+//! `removed_guards`, two takers racing to remove the same dead guard (one removes it)
+//! (tests/oplog/takeover_guards.rs); and the guard removed after every takeover (tests/oplog/locks.rs and
+//! tests/oplog/takeover_guards.rs).
 
 use std::ffi::OsString;
 use std::io::ErrorKind;
@@ -59,7 +61,7 @@ pub(crate) fn take_over_stale_lock(
 /// or is already gone is false, so the caller starts again rather than claim another taker's removal.
 /// Sound because only reapers of `holder` unlink a guard holding it, they are serialized by its reap guard
 /// `<guard>.reap-<pid>-<since>`, and `holder` never reappears once gone: no taker can split the compare and the
-/// unlink. An existing reap guard (crash-left included) is refused with TakeoverInProgress naming it (S-6).
+/// unlink. An existing reap guard (crash-left included) is refused with TakeoverInProgress naming it.
 fn remove_guard_if_held_by(guard_path: &Path, holder: &LockRecord, me: &LockRecord) -> Result<bool, LockError> {
     let mut reap = OsString::from(guard_path.as_os_str());
     reap.push(format!(".reap-{}-{}", holder.pid, holder.since));

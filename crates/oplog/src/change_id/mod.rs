@@ -1,4 +1,4 @@
-//! Change IDs: the 32-letter k..z form (S-2), its encoding from 16 bytes and back, parsing, and drawing a
+//! Change IDs: the 32-letter k..z form, its encoding from 16 bytes and back, parsing, and drawing a
 //! new one from /dev/urandom.
 
 mod change_id;

@@ -1,5 +1,6 @@
-//! decide_recovery: unchanged moves never decide; every changing move at new (or none to check) is done; no
-//! changing move at new is failed; some is mixed. Failed and mixed carry each move with its actual value.
+//! decide_recovery: unchanged moves never decide; every changing move at new (or none to check) is done; at
+//! least one changing move and none at new is failed; some at new and some not is mixed. Failed and mixed
+//! carry each move with its actual value.
 
 use gitio::Oid;
 
@@ -197,7 +198,7 @@ fn case_2_only_an_unchanged_ref_moved_elsewhere_is_done() {
 }
 
 #[test]
-fn kongs_example_changing_move_at_old_beside_unchanged_ref_is_failed() {
+fn worked_example_changing_move_at_old_beside_unchanged_ref_is_failed() {
     let refs = vec![
         (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
         (mv("refs/heads/main", Some(C), C), Some(oid(C))),
@@ -212,7 +213,7 @@ fn kongs_example_changing_move_at_old_beside_unchanged_ref_is_failed() {
 }
 
 #[test]
-fn kongs_example_changing_move_still_at_old_beside_unchanged_ref_moved_elsewhere_is_failed() {
+fn worked_example_changing_move_still_at_old_beside_unchanged_ref_moved_elsewhere_is_failed() {
     let refs = vec![
         (mv("refs/heads/landing", Some(A), B), Some(oid(A))),
         (mv("refs/heads/main", Some(C), C), Some(oid(D))),

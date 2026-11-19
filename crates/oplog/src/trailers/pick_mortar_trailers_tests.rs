@@ -41,12 +41,12 @@ fn all_three_present_fill_each_field() {
     let list = [
         ("Signed-off-by", "A <a@example.com>"),
         ("Mortar-Change-Id", ID_A),
-        ("Mortar-Request", "WO-oplog-4"),
+        ("Mortar-Request", "r1"),
         ("Mortar-Zone", "oplog"),
     ];
     let expected = MortarTrailers {
         change_id: Some(id(ID_A)),
-        request: Some("WO-oplog-4".to_string()),
+        request: Some("r1".to_string()),
         zone: Some("oplog".to_string()),
     };
     assert_eq!(pick_mortar_trailers(&pairs(&list)).unwrap(), expected);
@@ -106,10 +106,10 @@ fn malformed_then_valid_change_id_is_refused_naming_the_bad_one() {
 
 #[test]
 fn absent_change_id_with_request_and_zone() {
-    let list = [("Mortar-Request", "WO-join-2"), ("Mortar-Zone", "join")];
+    let list = [("Mortar-Request", "r2"), ("Mortar-Zone", "join")];
     let expected = MortarTrailers {
         change_id: None,
-        request: Some("WO-join-2".to_string()),
+        request: Some("r2".to_string()),
         zone: Some("join".to_string()),
     };
     assert_eq!(pick_mortar_trailers(&pairs(&list)).unwrap(), expected);

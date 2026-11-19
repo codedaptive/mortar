@@ -6,13 +6,14 @@ use super::RecoveryDecision;
 use crate::store::{move_changes, oid_is_zero, RefMove};
 
 /// Decided over the moves that change something (move_changes) only: Done when every changing move's ref is at new
-/// (so an op with no changing move, or no moves at all, is Done); Failed when none is; Mixed when some are.
+/// (so an op with no changing move, or no moves at all, is Done); Failed when there is at least one changing
+/// move and none is at new; Mixed when some are and some are not.
 /// Failed and Mixed carry every move, changing or not, with its actual value.
-/// update_refs is one all-or-nothing transaction (S-1), so a changing move not at new proves nothing moved.
+/// update_refs is one all-or-nothing transaction, so a changing move not at new proves nothing moved.
 /// An unchanged move (old == new, or a delete of an absent ref) sits at its new value whether or not the
 /// transaction ran, and may since have been moved elsewhere by someone else, so it proves nothing either
 /// way and never decides. A changing move at new beside a changing move not at new can only come from a
-/// foreign move, so it is refused (S-13).
+/// foreign move, so it is refused.
 pub fn decide_recovery(refs: &[(RefMove, Option<Oid>)]) -> RecoveryDecision {
     let changing_at_new: Vec<bool> = refs
         .iter()

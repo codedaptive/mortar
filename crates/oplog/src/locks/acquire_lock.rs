@@ -1,10 +1,10 @@
 //! Takes a lock: creates its file by exclusive create (create_new temp + link(2), fails if the name exists), refuses a live holder, takes over a stale one.
-//! Every stale takeover guard removed on the way, across all attempts, is returned on the lock or on the refusal
-//! (S-30), so the caller logs each one.
-//! No unit test: it creates directories and files and asks about real processes (S-5); the staleness
-//! decision it applies is decide_lock_staleness, tested on its own. Covered by Nagatha's integration
-//! group: acquire on a fresh dir (creates mortar/locks), refusal while held, stale takeover (returns
-//! the previous holder), a holder on another host refused, two racing takers.
+//! Every stale takeover guard removed on the way, across all attempts, is returned on the lock or on the refusal,
+//! so the caller logs each one.
+//! No unit test: it creates directories and files and asks about real processes; the staleness
+//! decision it applies is decide_lock_staleness, tested on its own. Covered by the crate's integration tests
+//! (tests/oplog/locks.rs): acquire on a fresh dir (creates mortar/locks), refusal while held, stale takeover
+//! (returns the previous holder), a holder on another host refused, two racing takers.
 
 use std::path::Path;
 
@@ -21,8 +21,8 @@ const ATTEMPTS: usize = 3;
 
 /// Takes lock `name` under the git common directory `common` for `me`. A stale holder taken over is
 /// returned in `took_over`. Every stale takeover guard removed on the way, in order, is returned in
-/// `removed_guards`: on the lock when acquire succeeds, on the refusal when it refuses (S-30). Both are for the
-/// caller to log (S-4); this function writes no log.
+/// `removed_guards`: on the lock when acquire succeeds, on the refusal when it refuses. Both are for the
+/// caller to log; this function writes no log.
 pub fn acquire_lock(
     common: &Path,
     name: &LockName,

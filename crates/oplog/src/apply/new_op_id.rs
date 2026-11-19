@@ -1,8 +1,7 @@
 //! A fresh op id for a caller building an Op.
-//! No unit test: it reads the clock and the process id (S-5); op_id_from_parts_tests covers the format.
-//! Nagatha's integration group should cover: two calls in one process return different ids; ids from two
-//! processes started at once differ; each id has the form `<hex>-<hex>-<hex>` with the middle part the
-//! process id in hex.
+//! No unit test: it reads the clock and the process id; op_id_from_parts_tests covers the format.
+//! Integration tests should cover: two calls in one process return different ids; ids from two processes started
+//! at once differ; each id has the form `<hex>-<hex>-<hex>` with the middle part the process id in hex.
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};

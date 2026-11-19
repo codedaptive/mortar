@@ -1,6 +1,6 @@
 //! open_intent_moves: an open intent's moves for its op_id; None once a later Done or Failed closes it, or
 //! for an op_id with no intent. These run open_intent_moves with the real open_intents, a pure filter over
-//! the record slice, so they are unit tests (S-166).
+//! the record slice, so they are unit tests.
 
 use gitio::Oid;
 
@@ -35,7 +35,7 @@ fn rec(op_id: &str, phase: OpPhase, moves: Vec<RefMove>) -> OpRecord {
         op_id: op_id.to_string(),
         key: format!("key-{op_id}"),
         kind: "land".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "squash lands".to_string(),
         at: 1763030400,
         phase,

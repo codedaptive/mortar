@@ -170,13 +170,13 @@ fn moved_since_by_a_logged_op_names_that_op_and_its_actor() {
         refname: "refs/heads/a".to_string(),
         left: Some(oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")),
         actual: Some(oid("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")),
-        moved_by: Some(("op-2".to_string(), "simms".to_string())),
+        moved_by: Some(("op-2".to_string(), "agent-a".to_string())),
     };
     assert_eq!(
         err.to_string(),
         "cannot undo op op-1: ref refs/heads/a moved since (that op left it at \
          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, it now holds bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb), by op \
-         op-2 of simms; undo op op-2 first, or restore the ref to the value you want"
+         op-2 of agent-a; undo op op-2 first, or restore the ref to the value you want"
     );
 }
 

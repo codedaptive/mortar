@@ -32,54 +32,54 @@ fn by_ref(refname: &str) -> HistoryFilter {
 
 #[test]
 fn ref_matches_the_second_of_two_moves() {
-    let r = rec("land:zone-b", "nagatha", &["refs/heads/main", "refs/heads/landing"]);
+    let r = rec("land:zone-b", "agent-b", &["refs/heads/main", "refs/heads/landing"]);
     assert!(history_matches(&r, &by_ref("refs/heads/landing")));
 }
 
 #[test]
 fn ref_does_not_match_a_record_with_no_moves() {
-    let r = rec("lock:land", "simms", &[]);
+    let r = rec("lock:land", "agent-a", &[]);
     assert!(!history_matches(&r, &by_ref("refs/heads/landing")));
 }
 
 #[test]
 fn ref_does_not_match_a_refname_it_is_only_a_prefix_of() {
-    let r = rec("land:zone-a", "simms", &["refs/heads/landing"]);
+    let r = rec("land:zone-a", "agent-a", &["refs/heads/landing"]);
     assert!(!history_matches(&r, &by_ref("refs/heads/land")));
 }
 
 #[test]
 fn key_matches_exactly() {
-    let r = rec("land:zone-a", "simms", &[]);
+    let r = rec("land:zone-a", "agent-a", &[]);
     assert!(history_matches(&r, &HistoryFilter::Key("land:zone-a".to_string())));
 }
 
 #[test]
 fn key_does_not_match_a_different_key() {
-    let r = rec("land:zone-a", "simms", &[]);
+    let r = rec("land:zone-a", "agent-a", &[]);
     assert!(!history_matches(&r, &HistoryFilter::Key("land:zone-b".to_string())));
 }
 
 #[test]
 fn key_does_not_match_a_prefix_of_the_key() {
-    let r = rec("land:zone-a", "simms", &[]);
+    let r = rec("land:zone-a", "agent-a", &[]);
     assert!(!history_matches(&r, &HistoryFilter::Key("land:zone".to_string())));
 }
 
 #[test]
 fn key_does_not_match_a_different_case() {
-    let r = rec("land:zone-a", "simms", &[]);
+    let r = rec("land:zone-a", "agent-a", &[]);
     assert!(!history_matches(&r, &HistoryFilter::Key("LAND:ZONE-A".to_string())));
 }
 
 #[test]
 fn actor_matches_exactly() {
-    let r = rec("land:zone-a", "simms", &[]);
-    assert!(history_matches(&r, &HistoryFilter::Actor("simms".to_string())));
+    let r = rec("land:zone-a", "agent-a", &[]);
+    assert!(history_matches(&r, &HistoryFilter::Actor("agent-a".to_string())));
 }
 
 #[test]
 fn actor_does_not_match_a_prefix_of_the_actor() {
-    let r = rec("land:zone-a", "simms", &[]);
-    assert!(!history_matches(&r, &HistoryFilter::Actor("sim".to_string())));
+    let r = rec("land:zone-a", "agent-a", &[]);
+    assert!(!history_matches(&r, &HistoryFilter::Actor("agent".to_string())));
 }

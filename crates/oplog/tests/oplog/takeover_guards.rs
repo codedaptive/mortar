@@ -1,5 +1,6 @@
-//! S-30: joins real dead/live PID evidence, on-disk takeover/reap guards, acquire results and caller-side op logging.
-//! The caller logs each removal by applying the takeover-guard-removal op S-30 names, written out here;
+//! Acquire returns every takeover guard it removed, on success and on refusal: joins real dead/live PID evidence,
+//! on-disk takeover/reap guards, acquire results and caller-side op logging.
+//! The caller logs each removal by applying the takeover-guard-removal op, written out here;
 //! guard_removal_op building that op is proved by its unit tests, src/apply/guard_removal_op_tests.rs.
 
 use super::locks::holder;
@@ -188,7 +189,7 @@ fn guard_case() -> GuardCase {
 }
 
 fn reap_path(c: &GuardCase) -> PathBuf {
-    // Literal SPEC-oplog/S-30 spelling, not the production path helper.
+    // The reap-guard path spelled out literally, not built by the production path helper.
     c.f.common.join(format!("mortar/locks/land.lock.takeover.reap-{}-100", c.dead_guard.pid))
 }
 
@@ -198,7 +199,7 @@ fn write_record(path: &std::path::Path, record: &LockRecord) {
     fs::write(path, text).unwrap();
 }
 
-/// The op S-30 has the caller log for removing c's dead guard, with op ID `op_id`: no moves, kind
+/// The takeover-guard-removal op the caller logs for removing c's dead guard, with op ID `op_id`: no moves, kind
 /// takeover-guard-removal, actor `<pid>@<host>` of the new holder, a key that names the guard and its old holder
 /// (so a repeat is the same op), and a reason naming the guard path and the old holder's pid, host and key.
 fn removal_op(c: &GuardCase, op_id: &str, at: u64) -> Op {

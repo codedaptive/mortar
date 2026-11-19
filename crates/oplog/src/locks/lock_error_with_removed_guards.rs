@@ -1,4 +1,4 @@
-//! Puts an acquire's takeover guard removals on the refusal it returns, so a refusal still names them (S-30).
+//! Puts an acquire's takeover guard removals on the refusal it returns, so a refusal still names them.
 
 use super::{LockError, LockRecord};
 

@@ -1,7 +1,7 @@
 //! Reading a message's Mortar trailers through git; pick_mortar_trailers makes every decision.
-//! No unit test: it runs git (S-5). Covered by Nagatha's integration group: "read_mortar_trailers reads what
+//! No unit test: it runs git. Integration tests should cover: "read_mortar_trailers reads what
 //! write_mortar_trailers wrote", "read_mortar_trailers on a message with no trailers is all absent" and "a
-//! body with a `---` line still has Mortar's trailers read (S-10)".
+//! body with a `---` line still has Mortar's trailers read".
 
 use gitio::Git;
 

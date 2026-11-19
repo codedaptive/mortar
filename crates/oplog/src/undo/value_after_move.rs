@@ -1,4 +1,4 @@
-//! What a ref holds after a move sets it to `new` (S-9: an all-zero new deletes the ref).
+//! What a ref holds after a move sets it to `new` (an all-zero new deletes the ref).
 
 use gitio::Oid;
 

@@ -28,9 +28,9 @@ fn pairs(items: &[(&str, &str)]) -> Vec<(String, String)> {
 }
 
 /// The record the literal lines below carry.
-fn simms() -> OpRecord {
+fn agent_a() -> OpRecord {
     OpRecord {
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         at: 5,
         ..record(OpPhase::Intent, None)
     }
@@ -45,7 +45,7 @@ fn written(seed: Option<&str>, values: &[(String, String)]) -> String {
         fs::create_dir_all(path.parent().unwrap()).unwrap();
         fs::write(&path, seed).unwrap();
     }
-    append_valued_record(&f.common, &simms(), values).unwrap();
+    append_valued_record(&f.common, &agent_a(), values).unwrap();
     fs::read_to_string(&path).unwrap()
 }
 
@@ -53,7 +53,7 @@ fn written(seed: Option<&str>, values: &[(String, String)]) -> String {
 fn empty_file_gets_the_record_and_a_newline() {
     assert_eq!(
         written(None, &[]),
-        "{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"simms\",\"reason\":\"r\",\"at\":5,\
+        "{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"agent-a\",\"reason\":\"r\",\"at\":5,\
          \"phase\":\"intent\",\"moves\":[]}\n"
     );
 }
@@ -63,7 +63,7 @@ fn file_ending_in_newline_gets_no_leading_newline() {
     let seed = format!("{EARLIER}\n");
     assert_eq!(
         written(Some(&seed), &[]),
-        seed + "{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"simms\",\"reason\":\"r\",\"at\":5,\
+        seed + "{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"agent-a\",\"reason\":\"r\",\"at\":5,\
          \"phase\":\"intent\",\"moves\":[]}\n"
     );
 }
@@ -73,7 +73,7 @@ fn torn_tail_gets_a_newline_before_the_record() {
     assert_eq!(
         written(Some(EARLIER), &[]),
         EARLIER.to_string()
-            + "\n{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"simms\",\"reason\":\"r\",\"at\":5,\
+            + "\n{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"agent-a\",\"reason\":\"r\",\"at\":5,\
          \"phase\":\"intent\",\"moves\":[]}\n"
     );
 }
@@ -83,7 +83,7 @@ fn values_go_last_on_the_line() {
     let seed = format!("{EARLIER}\n");
     assert_eq!(
         written(Some(&seed), &pairs(&[("folder_tree", "t1")])),
-        seed + "{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"simms\",\"reason\":\"r\",\"at\":5,\
+        seed + "{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"agent-a\",\"reason\":\"r\",\"at\":5,\
          \"phase\":\"intent\",\"moves\":[],\"values\":[{\"name\":\"folder_tree\",\"value\":\"t1\"}]}\n"
     );
 }

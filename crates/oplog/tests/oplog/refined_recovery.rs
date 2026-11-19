@@ -1,4 +1,7 @@
-//! S-13: joins real intent persistence, real refs, recovery decisions and durable closing records.
+//! Recover closes an intent as failed when it has at least one changing move and none is at its new value, as
+//! done when every changing move is at its new value (so an intent with no changing move is done), and refuses
+//! only a true mix (a foreign move); a move whose old equals its new changes nothing. Joins real intent
+//! persistence, real refs, recovery decisions and durable closing records.
 
 use crate::support::{kill_apply, operation, refs, set_ref, Fixture};
 use gitio::Oid;

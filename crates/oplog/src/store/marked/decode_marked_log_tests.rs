@@ -199,7 +199,7 @@ fn unmarked(record: OpRecord) -> MarkedRecord {
     MarkedRecord { record, values: Vec::new(), remote: None }
 }
 
-const STALE_LINE: &str = r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"stale","ref":"refs/heads/x","actual":null}}"#;
+const STALE_LINE: &str = r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"agent-a","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"stale","ref":"refs/heads/x","actual":null}}"#;
 
 #[test]
 fn decodes_a_literal_line_with_a_stale_result() {
@@ -209,7 +209,7 @@ fn decodes_a_literal_line_with_a_stale_result() {
             op_id: "op-1".to_string(),
             key: "land:zone-a".to_string(),
             kind: "land".to_string(),
-            actor: "simms".to_string(),
+            actor: "agent-a".to_string(),
             reason: "squash lands".to_string(),
             at: 1763030400,
             phase: OpPhase::Failed,

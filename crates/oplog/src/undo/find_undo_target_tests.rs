@@ -11,7 +11,7 @@ fn rec(op_id: &str, kind: &str, phase: OpPhase, refs: &[&str]) -> OpRecord {
         op_id: op_id.to_string(),
         key: format!("key-{op_id}"),
         kind: kind.to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "test".to_string(),
         at: 1763030400,
         phase,

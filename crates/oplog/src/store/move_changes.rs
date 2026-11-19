@@ -1,4 +1,4 @@
-//! Whether a move changes its ref at all; recover and undo both decide by it (S-13).
+//! Whether a move changes its ref at all; recover and undo both decide by it.
 
 use super::{oid_is_zero, RefMove};
 

@@ -13,7 +13,7 @@ fn rec(op_id: &str, key: &str, phase: OpPhase) -> OpRecord {
         op_id: op_id.to_string(),
         key: key.to_string(),
         kind: "land".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "squash lands".to_string(),
         at: 1,
         phase,

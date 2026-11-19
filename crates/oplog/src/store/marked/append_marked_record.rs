@@ -1,9 +1,10 @@
-//! Appends one record with its values and remote mark to the op log and syncs it to disk (S-1).
-//! The I/O only. No unit test of its own: it writes a real file (S-5).
+//! Appends one record with its values and remote mark to the op log and syncs it to disk.
+//! The I/O only. No unit test of its own: it writes a real file.
 //! crates/oplog/tests/oplog/marked_lines.rs covers the exact bytes it writes, including the append after a
-//! torn tail (a file not ending in '\n') that starts on a new line. Nagatha's integration group should
-//! cover: the first append creates `<common>/mortar/` and the file; each append adds exactly one line that
-//! read_marked_log returns with its values and mark; an unwritable folder is an Io error naming the path.
+//! torn tail (a file not ending in '\n') that starts on a new line. Covered by the crate's integration tests:
+//! the first append creates `<common>/mortar/` and the file (tests/oplog/valued_lines.rs); each append adds
+//! exactly one line that read_marked_log returns with its values and mark (tests/oplog/remote_close.rs).
+//! Integration tests should cover: an unwritable folder is an Io error naming the path.
 
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};

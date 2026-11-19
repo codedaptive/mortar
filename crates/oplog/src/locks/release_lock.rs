@@ -1,5 +1,5 @@
 //! Gives a lock back: removes its file, only if the file holds our record when it is read.
-//! No unit test: it reads and removes real files (S-5). Covered by Nagatha's integration group:
+//! No unit test: it reads and removes real files. Covered by the crate's integration tests (tests/oplog/locks.rs):
 //! release after acquire removes the file, release of a lock taken over by another is refused naming
 //! the new holder, release of a missing lock is refused.
 

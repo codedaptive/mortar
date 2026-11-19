@@ -1,4 +1,4 @@
-//! The verdict on one move of a protected ref (S-29): a fast-forward or a creation passes; a rewind, a
+//! The verdict on one move of a protected ref: a fast-forward or a creation passes; a rewind, a
 //! sideways move or a delete is refused.
 
 use gitio::Oid;

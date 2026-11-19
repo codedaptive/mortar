@@ -1,5 +1,5 @@
 //! Decides, from the marked log alone, whether opening a remote intent for a key would repeat earlier work.
-//! No unit test: its decisions run through find_done_in and open_intents_in (S-102).
+//! No unit test: its decisions run through find_done_in and open_intents_in.
 //! crates/oplog/tests/oplog/remote_verdict.rs proves them through open_remote_intent on a seeded log.
 
 use super::{find_done_in, RemoteIntentOutcome};

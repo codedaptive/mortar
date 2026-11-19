@@ -2,9 +2,9 @@
 //! left untouched. The record is written and synced to a private temp file in the same directory,
 //! then hard-linked to the lock's name: a reader never sees an empty or partial record, and
 //! hard_link refuses an existing name just as O_EXCL does. Used for lock files and takeover guards.
-//! No unit test: it writes real files (S-5). Covered by Nagatha's integration group: acquire on a
-//! fresh dir, refusal while held, two racing takers (exactly one creates the file), a reader racing
-//! a writer never sees a partial record.
+//! No unit test: it writes real files. Covered by the crate's integration tests (tests/oplog/locks.rs): acquire
+//! on a fresh dir, refusal while held, two racing takers (exactly one creates the file). Integration tests should
+//! cover: a reader racing a writer never sees a partial record.
 
 use std::ffi::OsString;
 use std::fs::OpenOptions;

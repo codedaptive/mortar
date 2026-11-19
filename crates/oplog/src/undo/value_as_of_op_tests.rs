@@ -23,7 +23,7 @@ fn rec(op_id: &str, phase: OpPhase, refname: &str, old: Option<&str>, new: &str)
         op_id: op_id.to_string(),
         key: format!("key-{op_id}"),
         kind: "land".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "test".to_string(),
         at: 1763030400,
         phase,

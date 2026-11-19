@@ -1,4 +1,4 @@
-//! oplog: see the Mortar mission (Layout).
+//! oplog: the operation log, undo and restore, locks, change IDs, and repeat-safe operation keys.
 
 pub mod apply;
 pub mod change_id;

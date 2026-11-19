@@ -21,7 +21,7 @@ fn tagged(tag: &'static str, key: &str, phase: OpPhase) -> Tagged {
             op_id: "op-1".to_string(),
             key: key.to_string(),
             kind: "land".to_string(),
-            actor: "simms".to_string(),
+            actor: "agent-a".to_string(),
             reason: "squash lands".to_string(),
             at: 1,
             phase,

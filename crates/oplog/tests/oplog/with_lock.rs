@@ -1,4 +1,5 @@
-//! WO-orc-oplog-it-7b, S-44/S-30: public with_lock joins real PID probes, lock files, oplog durability and work.
+//! Public with_lock joins real PID probes, lock files, oplog durability and work; each takeover
+//! guard the acquire removed, on success or refusal, is logged as an op.
 use crate::support::{refs, Fixture};
 use oplog::{acquire_lock, decode_lock_record, host_name, oplog_path, read_op_log,
     release_lock, with_lock, HeldLockError, KillPidProbe, LockError, LockName, LockRecord, OpPhase, OpResult, PidProbe};

@@ -13,7 +13,7 @@ fn record(phase: OpPhase, moves: Vec<RefMove>, result: Option<OpResult>) -> OpRe
         op_id: "op-1".to_string(),
         key: "land:zone-a".to_string(),
         kind: "land".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "squash lands".to_string(),
         at: 1763030400,
         phase,
@@ -46,7 +46,7 @@ fn intent_with_create_and_delete_has_no_result() {
     ];
     assert_eq!(
         encode_op_record(&record(OpPhase::Intent, moves, None)),
-        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"intent","moves":[{"ref":"refs/heads/new","old":null,"new":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},{"ref":"refs/heads/old","old":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","new":"0000000000000000000000000000000000000000"}]}"#
+        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"agent-a","reason":"squash lands","at":1763030400,"phase":"intent","moves":[{"ref":"refs/heads/new","old":null,"new":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},{"ref":"refs/heads/old","old":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","new":"0000000000000000000000000000000000000000"}]}"#
     );
 }
 
@@ -77,11 +77,11 @@ fn failed_stale_with_actual_and_absent() {
     };
     assert_eq!(
         encode_op_record(&record(OpPhase::Failed, one_move(), Some(stale(Some(oid("cccccccccccccccccccccccccccccccccccccccc")))))),
-        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"stale","ref":"refs/heads/x","actual":"cccccccccccccccccccccccccccccccccccccccc"}}"#
+        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"agent-a","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"stale","ref":"refs/heads/x","actual":"cccccccccccccccccccccccccccccccccccccccc"}}"#
     );
     assert_eq!(
         encode_op_record(&record(OpPhase::Failed, one_move(), Some(stale(None)))),
-        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"stale","ref":"refs/heads/x","actual":null}}"#
+        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"agent-a","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"stale","ref":"refs/heads/x","actual":null}}"#
     );
 }
 
@@ -89,7 +89,7 @@ fn failed_stale_with_actual_and_absent() {
 fn failed_not_moved_with_no_refs() {
     assert_eq!(
         encode_op_record(&record(OpPhase::Failed, Vec::new(), Some(OpResult::NotMoved { refs: Vec::new() }))),
-        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[],"result":{"outcome":"not-moved","refs":[]}}"#
+        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"agent-a","reason":"squash lands","at":1763030400,"phase":"failed","moves":[],"result":{"outcome":"not-moved","refs":[]}}"#
     );
 }
 
@@ -103,7 +103,7 @@ fn failed_not_moved_with_two_refs_one_absent() {
     };
     assert_eq!(
         encode_op_record(&record(OpPhase::Failed, one_move(), Some(not_moved))),
-        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"simms","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"not-moved","refs":[{"ref":"refs/heads/x","actual":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},{"ref":"refs/heads/\"y\"","actual":null}]}}"#
+        r#"{"op_id":"op-1","key":"land:zone-a","kind":"land","actor":"agent-a","reason":"squash lands","at":1763030400,"phase":"failed","moves":[{"ref":"refs/heads/x","old":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","new":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}],"result":{"outcome":"not-moved","refs":[{"ref":"refs/heads/x","actual":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},{"ref":"refs/heads/\"y\"","actual":null}]}}"#
     );
 }
 

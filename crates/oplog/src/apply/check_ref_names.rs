@@ -1,7 +1,8 @@
 //! Checks every move's ref name: the pure checks, then git check-ref-format.
-//! No unit test: it runs git (S-5); check_ref_moves_tests and ref_format_verdict_tests cover its decisions.
-//! Nagatha's integration group, in a throwaway repository, should cover: a full well-formed name passes;
-//! refs/heads/a..b is BadMove with no intent written; heads/main is BadMove (not refs/).
+//! No unit test: it runs git; check_ref_moves_tests and ref_format_verdict_tests cover its decisions.
+//! Covered by the crate's integration tests, in a throwaway repository: a full well-formed name passes and
+//! refs/heads/a..b is BadMove (tests/oplog/restore_ref_names.rs); a name outside refs/ and refs/heads/bad..name
+//! are BadMove with no intent written (tests/oplog/ref_names.rs).
 
 use gitio::Git;
 

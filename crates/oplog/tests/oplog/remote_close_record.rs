@@ -20,7 +20,7 @@ fn record(op_id: &str, phase: OpPhase, at: u64, result: Option<OpResult>) -> OpR
         op_id: op_id.to_string(),
         key: format!("publish:{op_id}"),
         kind: "publish".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "squash publishes".to_string(),
         at,
         phase,

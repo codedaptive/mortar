@@ -1,8 +1,8 @@
 //! decode_valued_log: lines with and without values read whole and in order, values kept per record,
 //! torn lines numbered, any other bad line refused by number; one-line logs (values, no values, refusals,
-//! every torn prefix), a marked line with its mark dropped, and encode_valued_record's lines read back. It runs decode_marked_log,
-//! decode_marked_line, unmarked_log and encode_valued_record for real: all pure, so these are unit tests
-//! (S-166).
+//! every torn prefix), a marked line with its mark dropped, and encode_valued_record's lines read back. It runs
+//! decode_marked_log, decode_marked_line, unmarked_log and encode_valued_record for real: all pure, so these are
+//! unit tests.
 
 use gitio::Oid;
 

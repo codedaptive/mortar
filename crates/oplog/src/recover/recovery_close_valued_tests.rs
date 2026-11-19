@@ -23,7 +23,7 @@ fn record(phase: OpPhase, at: u64, result: Option<OpResult>) -> OpRecord {
         op_id: "op-7".to_string(),
         key: "land:zone-a".to_string(),
         kind: "land".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "squash lands".to_string(),
         at,
         phase,
@@ -42,13 +42,13 @@ fn intent(values: &[(&str, &str)]) -> ValuedRecord {
 
 #[test]
 fn done_closes_as_done_moved_keeping_the_values_in_order() {
-    let values = [("folder_tree", "3f2a"), ("actor", "simms"), ("folder_tree", "")];
+    let values = [("folder_tree", "3f2a"), ("actor", "agent-a"), ("folder_tree", "")];
     let r = recovery_close_valued(&intent(&values), RecoveryDecision::Done, 1763030999).unwrap();
     assert_eq!(
         r,
         ValuedRecord {
             record: record(OpPhase::Done, 1763030999, Some(OpResult::Moved)),
-            values: pairs(&[("folder_tree", "3f2a"), ("actor", "simms"), ("folder_tree", "")]),
+            values: pairs(&[("folder_tree", "3f2a"), ("actor", "agent-a"), ("folder_tree", "")]),
         }
     );
 }

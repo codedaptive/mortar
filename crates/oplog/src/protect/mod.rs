@@ -1,4 +1,5 @@
-//! Protected refs: a protected ref moves only by fast-forward or creation (S-29); the pure verdict, the git reads, and apply behind both.
+//! Protected refs: a protected ref moves only by fast-forward or creation; the pure verdict, the git reads, and
+//! apply behind both.
 
 mod apply_protected;
 mod check_protected_moves;

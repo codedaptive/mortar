@@ -1,10 +1,10 @@
 //! Checks every move of a protected ref against its current value and merge base.
-//! No unit test: it runs git (S-5); protected_move_verdict_tests covers the decision. Nagatha's integration
-//! group should cover, in a throwaway repository: a fast-forward of a protected ref passes; a creation of an
-//! absent protected ref passes; a rewind, a sideways move, a move to an unrelated commit and a delete of a
-//! protected ref return Protected; a move of an unprotected ref is not read and passes whatever it does; a ref
-//! listed twice in `protected` is judged by its first entry; a git failure reading a ref or its merge base is
-//! OplogError::Git.
+//! No unit test: it runs git; protected_move_verdict_tests covers the decision. Covered by the crate's
+//! integration tests (tests/oplog/protection.rs), in a throwaway repository: a fast-forward of a protected ref
+//! passes; a creation of an absent protected ref passes; a rewind, a sideways move, a move to an unrelated commit
+//! and a delete of a protected ref return Protected; a move of an unprotected ref passes whatever it does.
+//! Integration tests should cover: a move of an unprotected ref is not read; a ref listed twice in `protected` is
+//! judged by its first entry; a git failure reading a ref or its merge base is OplogError::Git.
 
 use gitio::Git;
 

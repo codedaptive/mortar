@@ -1,8 +1,9 @@
 //! Reads the op log file whole and decodes it, each record with its values and remote mark.
-//! No unit test: it reads a real file (S-5); decode_marked_log_tests covers the decoding. Nagatha's
-//! integration group should cover: a missing file reads as an empty log; records appended by
-//! append_marked_record read back equal, with their values and marks, and in order; a file cut mid-record
-//! reads with that line in torn_lines; an unreadable path is an Io error naming the log's path.
+//! No unit test: it reads a real file; decode_marked_log_tests covers the decoding. Covered by the crate's
+//! integration tests: a missing file reads as an empty log (tests/oplog/recovery.rs); records appended by
+//! append_marked_record read back equal, with their values and marks, and in order
+//! (tests/oplog/remote_close.rs). Integration tests should cover: a file cut mid-record reads with that line
+//! in torn_lines; an unreadable path is an Io error naming the log's path.
 
 use std::io::ErrorKind;
 use std::path::Path;

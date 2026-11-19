@@ -1,4 +1,5 @@
-//! #1179/S-60: apply/apply_protected/op_git -> real transaction/pre-push hooks; open_intent -> durable real log.
+//! The guard hooks allow a move of origin or integration only under MORTAR_OP naming an open intent
+//! with that move. apply/apply_protected/op_git -> real transaction/pre-push hooks; open_intent -> durable real log.
 use crate::support::{operation, set_ref, Fixture};
 use gitio::{Git, RunOpts};
 use oplog::{append_op_record, apply, apply_protected, close_record, intent_record, open_intent, op_git,

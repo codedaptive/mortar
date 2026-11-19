@@ -1,4 +1,5 @@
-//! S-14: joins apply's pre-intent ref validation, real git grammar and durable-log absence.
+//! Apply checks ref names with git check-ref-format before it writes an intent: joins apply's pre-intent ref
+//! validation, real git grammar and durable-log absence.
 
 use crate::support::{operation, refs, Fixture};
 use gitio::RunOpts;

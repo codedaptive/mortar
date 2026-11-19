@@ -102,12 +102,12 @@ fn values_go_on_a_new_line_after_a_torn_tail() {
     let path = oplog_path(&f.common);
     fs::create_dir_all(path.parent().unwrap()).unwrap();
     fs::write(&path, "{\"op_id\":\"t\",\"key\":x").unwrap();
-    let r = record("o", "k", "land", "simms", 5, OpPhase::Intent, None);
+    let r = record("o", "k", "land", "agent-a", 5, OpPhase::Intent, None);
     append_valued_record(&f.common, &r, &pairs(&[("folder_tree", "t1")])).unwrap();
     assert_eq!(
         fs::read_to_string(&path).unwrap(),
         "{\"op_id\":\"t\",\"key\":x\
-         \n{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"simms\",\"reason\":\"r\",\"at\":5,\
+         \n{\"op_id\":\"o\",\"key\":\"k\",\"kind\":\"land\",\"actor\":\"agent-a\",\"reason\":\"r\",\"at\":5,\
          \"phase\":\"intent\",\"moves\":[],\"values\":[{\"name\":\"folder_tree\",\"value\":\"t1\"}]}\n"
     );
 }
