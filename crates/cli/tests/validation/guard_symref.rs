@@ -1,4 +1,4 @@
-//! S-136/S-152/S-153: installed Land hooks -> Cargo's CLI run_guard_hook -> Land guard_decide and Gitio.
+//! Installed Land hooks -> Cargo's CLI run_guard_hook -> Land guard_decide and Gitio.
 //! A disposable TestRepo owns the main and linked worktree; real Git supplies symbolic reference transactions.
 //! The binary's own folder is first on PATH. No intent, prebuilt executable, fake hook or synthetic hook input.
 

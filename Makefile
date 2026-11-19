@@ -1,5 +1,5 @@
-# Mortar workspace targets called by codeteam's zone.mk and by agents.
-# MAKEFILES=<codeteam>/zone/zone.mk supplies zone-test, zone-test-one, zone-test-status and warm.
+# Mortar workspace targets: test-one, test-group, check, test and accept. A make file named in MAKEFILES may add
+# its own targets beside them.
 CARGO ?= cargo
 .PHONY: test-one test-group check test accept
 
@@ -19,11 +19,12 @@ check:
 test:
 	@$(MAKE) --no-print-directory test-group GROUP=$(GROUP)
 
-# The Done list (mission), on throwaway repositories (S-123; the Designer's ACCEPT/00-index.md): builds every binary
-# of the cli package (mortar, and mr once the cli declares it, S-133), runs the cli package's ignored tests in the
-# test target accept one at a time, and prints the report found at $(ACCEPT_REPORT). That target is the acceptance
-# drive the cli lane writes (ACCEPT-0, crates/cli/tests/accept). ACCEPT_AGENT and ACCEPT_MOOT_COPY pass through from
-# the environment for the drive to read. Exits with cargo test's status.
+# The acceptance drive, on throwaway repositories: builds every binary of the cli package (mortar and mr), runs
+# the cli package's ignored tests in the test target accept (crates/cli/tests/accept) one at a time, and prints the
+# report found at $(ACCEPT_REPORT). ACCEPT_AGENT, ACCEPT_MOOT_COPY and ACCEPT_TEAMS pass through from the environment
+# for the drive to read; a step whose variable is unset is reported as not run. ACCEPT_TEAMS is the folder of team
+# manifests the disk step reads the registered repositories from: no default, and with ACCEPT_MOOT_COPY set and
+# ACCEPT_TEAMS unset the disk step fails. Exits with cargo test's status.
 ACCEPT_REPORT ?= $(CURDIR)/target/accept/report.txt
 accept:
 	$(CARGO) build -p cli --bins

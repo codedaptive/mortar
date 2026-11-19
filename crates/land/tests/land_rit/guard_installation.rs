@@ -1,5 +1,7 @@
 //! Land -> Gitio RITs joining guard_install, guard_status and read_guard_config on disposable TestRepos.
-//! guard_installation.rs holds eleven real-repository guard cases with literal byte/state oracles.
+//! guard_installation.rs holds ten real-repository guard cases with literal byte/state oracles.
+//! check_hooks_path.rs covers the relative-path check's refusal in isolation, not its ordering with guard_install.
+//! CLI run_guard_install owns that ordering.
 //! Every setup and public-API Git call isolates global/system config; TestRepo removes its repository on drop.
 
 use std::ffi::OsString;
@@ -60,8 +62,9 @@ fn repo() -> (TestRepo, PathBuf) {
     (repo, root)
 }
 
-fn is_executable(path: &Path) -> bool {
-    fs::metadata(path).unwrap().permissions().mode() & 0o111 != 0
+fn hook_mode(path: &Path) -> u32 {
+    // Include setuid, setgid and sticky bits as well as rwx bits; file type is not part of the installed permissions.
+    fs::metadata(path).unwrap().permissions().mode() & 0o7777
 }
 
 fn installed(hooks_dir: PathBuf) -> GuardState {
@@ -76,8 +79,8 @@ fn fresh_install_writes_config_and_hooks() {
     let hooks = root.join(".git/hooks");
     assert_eq!(fs::read_to_string(hooks.join("reference-transaction")).unwrap(), REFERENCE_TRANSACTION);
     assert_eq!(fs::read_to_string(hooks.join("pre-push")).unwrap(), PRE_PUSH);
-    assert!(is_executable(&hooks.join("reference-transaction")));
-    assert!(is_executable(&hooks.join("pre-push")));
+    assert_eq!(hook_mode(&hooks.join("reference-transaction")), 0o755);
+    assert_eq!(hook_mode(&hooks.join("pre-push")), 0o755);
     assert_eq!(guard_status(&git(&root)).unwrap(), installed(hooks));
 }
 
@@ -114,18 +117,6 @@ fn a_foreign_reference_transaction_is_refused_and_nothing_written() {
     assert_eq!(fs::read_to_string(&foreign).unwrap(), FOREIGN);
     assert!(!root.join(".git/hooks/pre-push").exists());
     assert!(!root.join(".git/mortar/guard.json").exists());
-}
-
-#[test]
-fn install_follows_a_relative_hooks_path() {
-    let (_repo, root) = repo();
-    run_git(&root, &["config", "core.hooksPath", "myhooks"]);
-    guard_install(&git(&root), &refs()).unwrap();
-    assert_eq!(guard_status(&git(&root)).unwrap(), installed(root.join("myhooks")));
-    let hooks = root.join("myhooks");
-    assert_eq!(fs::read_to_string(hooks.join("reference-transaction")).unwrap(), REFERENCE_TRANSACTION);
-    assert_eq!(fs::read_to_string(hooks.join("pre-push")).unwrap(), PRE_PUSH);
-    assert!(is_executable(&hooks.join("pre-push")));
 }
 
 #[test]
