@@ -205,7 +205,7 @@ fn attempt_variants_have_no_source() {
             k: 1,
         },
         FolderError::AttemptsRemain {
-            path: PathBuf::from("/wt/WO-1"),
+            path: PathBuf::from("/wt/r1"),
             attempts: vec!["refs/heads/try/a/b/1".to_string()],
         },
         FolderError::AttemptRefsLeft {

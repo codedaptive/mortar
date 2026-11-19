@@ -48,13 +48,13 @@ pub enum FolderError {
     /// keep found no attempt branch (short name) for the attempt asked for.
     AttemptMissing { branch: String },
     /// keep or drop_attempts refused: the attempts at `paths`, each named by its folder, or by its full branch name
-    /// when it has no folder, are not marked saved by the caller (S-32); nothing was touched.
+    /// when it has no folder, are not marked saved by the caller; nothing was touched.
     AttemptsUnsaved { paths: Vec<PathBuf> },
     /// remove refused the request folder at `path`: attempt branches (full names) or attempt folders (paths, as
-    /// display text) of its request remain (S-82); nothing changed.
+    /// display text) of its request remain; nothing changed.
     AttemptsRemain { path: PathBuf, attempts: Vec<String> },
     /// keep or drop_attempts refused: the attempt folders at `paths` have lost their try branch (orphans); nothing
-    /// was touched; next step: remake_orphans, which the caller runs (S-96).
+    /// was touched; next step: remake_orphans, which the caller runs.
     OrphanAttempt { paths: Vec<PathBuf> },
     /// remake_orphans refused: the orphan attempt folders at `paths` have no trysnap ref, or its commit has no
     /// parent, so Mortar holds no copy of them; nothing changed; next step: copy out anything wanted, then remove
@@ -77,7 +77,7 @@ pub enum FolderError {
         new: Oid,
     },
     /// remove refused the folder at `path`: its work is not saved, or the snapshot size cap (`cap` bytes, None
-    /// when the caller does not know it) refused the files at `refused`, so they are in no snapshot (S-32).
+    /// when the caller does not know it) refused the files at `refused`, so they are in no snapshot.
     NotRemovedUnsaved {
         path: PathBuf,
         refused: Vec<PathBuf>,
@@ -107,7 +107,7 @@ pub enum FolderError {
     /// remove took the folder at `path` away, but the ref `moved` was not where remove read it when the delete op
     /// ran (`at`: where it is now, None when absent), so neither `branch` nor its snapshot ref was deleted. The
     /// branch is already contained in its zone, so the work they hold is in the zone; a ref sweep (sweep_refs)
-    /// deletes both once nothing holds the branch (S-52 (1)).
+    /// deletes both once nothing holds the branch and it is still contained in its zone.
     RemovedRefsLeft {
         path: PathBuf,
         branch: String,
@@ -115,7 +115,7 @@ pub enum FolderError {
         at: Option<Oid>,
     },
     /// sweep_refs refused the caller's extra ref `refname` for `reason` (a phrase that follows the name): it is
-    /// under refs/heads/, refs/mortar/ or refs/remotes/, or protected (S-53, S-54); nothing was swept.
+    /// under refs/heads/, refs/mortar/ or refs/remotes/, or protected; nothing was swept.
     ExtraRefRefused { refname: String, reason: String },
     /// A file system call on `path` failed.
     Io {

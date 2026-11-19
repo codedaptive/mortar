@@ -1,4 +1,4 @@
-//! WO-folders-sweep-replayed, S-121 (2): sweep_refs and disk's sweep figure take the replay-record refs
+//! sweep_refs and disk's sweep figure take the replay-record refs
 //! (refs/mortar/replayed/<zone>/<source>) of zones not in the caller's zone list, and keep a listed zone's; real git
 //! and the real op log in a throwaway repository.
 use super::maintenance_support::*;

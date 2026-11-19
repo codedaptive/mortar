@@ -1,5 +1,5 @@
 //! remove of a request folder against its attempts in a throwaway repository: the AttemptsRemain cases
-//! src/remove/attempts_refusal.rs's header names (S-82), an orphan attempt folder left (remove refuses until
+//! src/remove/attempts_refusal.rs's header names, an orphan attempt folder left (remove refuses until
 //! remake_orphans and keep or drop_attempts clear it; attempts_keep.rs and attempts_drop.rs cover that), and remove of
 //! an attempt folder itself.
 use super::attempt_support::{try_ref, Attempts, REQ_REF};

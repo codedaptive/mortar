@@ -1,10 +1,10 @@
-//! The paths of a cone that git's cone-mode commands accept: top-level files dropped (S-126).
+//! The paths of a cone that git's cone-mode commands accept: top-level files dropped.
 
 use gitio::PathKind;
 
 /// `cone` without its top-level files, in its own order. Git's cone-mode sparse-checkout set and add refuse a
 /// top-level file once the index is filled ("'<path>' is not a directory"), and cone mode always checks out the
-/// top-level files, so dropping them changes nothing in the checkout (S-126).
+/// top-level files, so dropping them changes nothing in the checkout.
 ///
 /// A path holding a '/' is kept without asking `kind_of`. For a top-level path `kind_of` is asked once, and the
 /// path is dropped only when it answers File; Folder, Gitlink and None (absent from the tree, which git's cone

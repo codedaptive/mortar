@@ -9,7 +9,7 @@ use testkit::write_git_shim;
 
 #[test]
 fn need_widens_real_cone_and_record_repeat_is_inert_and_repeated_make_keeps_needed_paths() {
-    // Joins need -> gitio sparse_add -> S-18 record -> gaps -> make/refill union of work-order and needed paths.
+    // Joins need -> gitio sparse_add -> folder record -> gaps -> make/refill union of work-order and needed paths.
     let f = Fixture::new();
     run(&f.git, &["update-ref", "refs/heads/zone/red", f.head.as_str()]);
     let path = f.repo.path.join("folder");

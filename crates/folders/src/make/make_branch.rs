@@ -1,6 +1,6 @@
 //! Makes a folder's branch at a commit through the op log, and makes it again when it was deleted after.
-//! No unit test: it appends to the op log and runs git (S-5); branch_op_tests and branch_step_after_tests cover
-//! its decisions. Nagatha's integration group is to cover, in a throwaway repository: a new branch is made at
+//! No unit test: it appends to the op log and runs git; branch_op_tests and branch_step_after_tests cover
+//! its decisions. The integration group is to cover, in a throwaway repository: a new branch is made at
 //! the commit and its op is in mortar/oplog.jsonl; a second call at the same commit moves nothing and logs no
 //! new op; a branch deleted after it was made is made again by an op whose key ends in its op id; a branch
 //! already at another commit refuses with BranchExists.

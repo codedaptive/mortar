@@ -1,6 +1,6 @@
 //! Makes a request's attempt folders: attempt k on try/<zone>/<request>/<k>, cut from the request branch's tip, in a
-//! sparse worktree at <dir>/try-<k> (S-69).
-//! No unit test: it takes a lock, appends to the op log, runs git and writes files (S-5). request_branch_tests,
+//! sparse worktree at <dir>/try-<k>.
+//! No unit test: it takes a lock, appends to the op log, runs git and writes files. request_branch_tests,
 //! attempt_branch_tests, attempt_path_tests, sparse_paths_tests, plan_attempts_tests, branch_op_tests,
 //! branch_step_after_tests, repeat_decision_tests, skip_refill_tests, refill_cone_tests, branch_holder_tests and
 //! attach_head_request_tests cover its decisions. tests/folders/attempts_make.rs covers, in a throwaway repository:

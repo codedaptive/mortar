@@ -1,5 +1,5 @@
 //! Writes a folder's record into its git dir, whole or not at all.
-//! No unit test: it writes and renames real files (S-5); encode_folder_record_tests covers the text. Nagatha's
+//! No unit test: it writes and renames real files; encode_folder_record_tests covers the text. The
 //! integration group is to cover: the file holds the encoded record and one newline; writing again replaces it;
 //! no temp file is left beside it.
 

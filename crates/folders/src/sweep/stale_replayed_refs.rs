@@ -1,5 +1,5 @@
 //! Which replay-record refs (`refs/mortar/replayed/<zone>/<source>`) are stale, so sweep_refs may delete them.
-//! S-121 (2): a live zone's records are left to the publishing zone's after_publish (land); the sweep removes the
+//! A live zone's records are left to the publishing zone's after_publish (land); the sweep removes the
 //! family only for removed zones, a zone no longer in mortar's config zones. The caller passes that zone list.
 //! Its tests are zone unit tests in stale_replayed_refs_tests: the function is pure and runs no git.
 

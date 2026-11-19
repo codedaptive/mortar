@@ -1,4 +1,4 @@
-//! remake_orphans refusals in a throwaway repository beyond attempts_remake.rs's (S-96 (2), S-98): an orphan whose
+//! remake_orphans refusals in a throwaway repository beyond attempts_remake.rs's: an orphan whose
 //! folder has lost its Mortar folder record is NotAFolder naming that folder, with nothing changed.
 use super::attempt_support::{trysnap_ref, try_ref, Attempts};
 use crate::support::run;

@@ -1,5 +1,5 @@
 //! sweep_refs against attempts' trysnap refs in a throwaway repository: the cases src/sweep/sweep_refs.rs's header
-//! names for them (S-69, S-82). A request is closed when its request branch and every attempt branch are gone.
+//! names for them. A request is closed when its request branch and every attempt branch are gone.
 use super::attempt_support::{trysnap_ref, Attempts, REQ_REF};
 use super::maintenance_support::{assert_delete_pair, caller, records, refs, sweep, ACTOR, SNAP};
 use crate::support::{run, Fixture};

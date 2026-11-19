@@ -1,6 +1,6 @@
 //! Runs one step of making or widening a folder while holding the folders lock.
-//! No unit test: it takes and releases a real lock file, runs `hostname`, and appends to the op log (S-5).
-//! Nagatha's integration group is to cover, in a throwaway repository: work runs with `mortar/locks/folders.lock`
+//! No unit test: it takes and releases a real lock file, runs `hostname`, and appends to the op log.
+//! The integration group is to cover, in a throwaway repository: work runs with `mortar/locks/folders.lock`
 //! present and the file is gone after; a stale lock left by a dead pid is taken over and a lock-takeover op is
 //! logged before work runs; a dead same-host takeover guard removed during the acquire is logged as one
 //! takeover-guard-removal op, both when the acquire wins the lock and when it refuses; a lock held by a live pid
@@ -14,7 +14,7 @@ use oplog::{with_lock, HeldLockError, LockName, PidProbe};
 use super::FolderError;
 
 /// Takes oplog's folders lock (LockName::Folders) under `common` for holder key `key` and runs `work` through
-/// oplog::with_lock, which logs the S-30 takeover-guard-removal ops and the S-4 lock-takeover op in the order its
+/// oplog::with_lock, which logs the takeover-guard-removal ops and the lock-takeover op in the order its
 /// doc gives, runs work under the lock and releases the lock whatever work returned. HeldLockError::Lock becomes
 /// FolderError::Lock, HeldLockError::Oplog becomes FolderError::Oplog, and work's own FolderError is returned
 /// untouched.

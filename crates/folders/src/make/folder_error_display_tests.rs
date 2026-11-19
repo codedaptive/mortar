@@ -104,11 +104,11 @@ fn disk_probe_names_the_path_and_reason() {
 fn different_folder_names_a_request_folder() {
     let err = FolderError::DifferentFolder {
         path: PathBuf::from("/wt/a"),
-        existing: existing(FolderKind::Request, Some("WO-1")),
+        existing: existing(FolderKind::Request, Some("r1")),
     };
     assert_eq!(
         text(err),
-        "/wt/a is already the request folder for zone folders, request WO-1; remove it or choose another path"
+        "/wt/a is already the request folder for zone folders, request r1; remove it or choose another path"
     );
 }
 
@@ -145,11 +145,11 @@ fn branch_checked_out_names_branch_and_holder() {
 #[test]
 fn branch_exists_names_the_branch() {
     let err = FolderError::BranchExists {
-        branch: "req/folders/WO-1".to_string(),
+        branch: "req/folders/r1".to_string(),
     };
     assert_eq!(
         text(err),
-        "branch req/folders/WO-1 already exists at another commit or was not made by mortar at this one; the folder \
+        "branch req/folders/r1 already exists at another commit or was not made by mortar at this one; the folder \
          was not made"
     );
 }
@@ -197,14 +197,14 @@ fn move_refused_names_the_folder_and_every_path_in_the_way() {
 #[test]
 fn branch_elsewhere_names_where_the_branch_is_and_both_tips() {
     let err = FolderError::BranchElsewhere {
-        branch: "refs/heads/req/folders/WO-1".to_string(),
+        branch: "refs/heads/req/folders/r1".to_string(),
         at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
         old: Oid::parse("489d82745705a031306253da29bdad7aee19d2e5").unwrap(),
         new: Oid::parse("1111111111111111111111111111111111111111").unwrap(),
     };
     assert_eq!(
         text(err),
-        "branch refs/heads/req/folders/WO-1 is at 2222222222222222222222222222222222222222, neither the move's old \
+        "branch refs/heads/req/folders/r1 is at 2222222222222222222222222222222222222222, neither the move's old \
          tip 489d82745705a031306253da29bdad7aee19d2e5 nor its new tip 1111111111111111111111111111111111111111"
     );
 }
@@ -212,14 +212,14 @@ fn branch_elsewhere_names_where_the_branch_is_and_both_tips() {
 #[test]
 fn branch_elsewhere_with_no_commit_says_so() {
     let err = FolderError::BranchElsewhere {
-        branch: "refs/heads/req/folders/WO-1".to_string(),
+        branch: "refs/heads/req/folders/r1".to_string(),
         at: None,
         old: Oid::parse("489d82745705a031306253da29bdad7aee19d2e5").unwrap(),
         new: Oid::parse("1111111111111111111111111111111111111111").unwrap(),
     };
     assert_eq!(
         text(err),
-        "branch refs/heads/req/folders/WO-1 is at no commit, neither the move's old tip \
+        "branch refs/heads/req/folders/r1 is at no commit, neither the move's old tip \
          489d82745705a031306253da29bdad7aee19d2e5 nor its new tip 1111111111111111111111111111111111111111"
     );
 }
@@ -271,12 +271,12 @@ fn not_removed_unsaved_with_no_cap_leaves_the_cap_out() {
 fn not_joined_names_both_branches_and_the_next_step() {
     let err = FolderError::NotJoined {
         path: PathBuf::from("/wt/a"),
-        branch: "refs/heads/req/folders/WO-1".to_string(),
+        branch: "refs/heads/req/folders/r1".to_string(),
         zone_branch: "refs/heads/zone/folders".to_string(),
     };
     assert_eq!(
         text(err),
-        "/wt/a was not removed: branch refs/heads/req/folders/WO-1 is not contained in refs/heads/zone/folders; \
+        "/wt/a was not removed: branch refs/heads/req/folders/r1 is not contained in refs/heads/zone/folders; \
          next step: mr join"
     );
 }
@@ -296,12 +296,12 @@ fn zone_folder_names_the_zone() {
 #[test]
 fn ref_moved_names_the_ref_and_where_it_is() {
     let err = FolderError::RefMoved {
-        refname: "refs/mortar/snap/folders/WO-1".to_string(),
+        refname: "refs/mortar/snap/folders/r1".to_string(),
         at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
     };
     assert_eq!(
         text(err),
-        "ref refs/mortar/snap/folders/WO-1 moved while it was being deleted (now at \
+        "ref refs/mortar/snap/folders/r1 moved while it was being deleted (now at \
          2222222222222222222222222222222222222222); nothing was deleted; run again"
     );
 }
@@ -309,12 +309,12 @@ fn ref_moved_names_the_ref_and_where_it_is() {
 #[test]
 fn ref_moved_with_no_commit_says_so() {
     let err = FolderError::RefMoved {
-        refname: "refs/heads/req/folders/WO-1".to_string(),
+        refname: "refs/heads/req/folders/r1".to_string(),
         at: None,
     };
     assert_eq!(
         text(err),
-        "ref refs/heads/req/folders/WO-1 moved while it was being deleted (now at no commit); nothing was deleted; \
+        "ref refs/heads/req/folders/r1 moved while it was being deleted (now at no commit); nothing was deleted; \
          run again"
     );
 }
@@ -322,13 +322,13 @@ fn ref_moved_with_no_commit_says_so() {
 #[test]
 fn attempt_refs_left_names_the_ref_where_it_is_and_the_removed_folders() {
     let err = FolderError::AttemptRefsLeft {
-        moved: "refs/heads/try/folders/WO-1/2".to_string(),
+        moved: "refs/heads/try/folders/r1/2".to_string(),
         at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
         removed: vec![PathBuf::from("/wt/try-1"), PathBuf::from("/wt/try-2")],
     };
     assert_eq!(
         text(err),
-        "ref refs/heads/try/folders/WO-1/2 moved (now at 2222222222222222222222222222222222222222) before the attempt \
+        "ref refs/heads/try/folders/r1/2 moved (now at 2222222222222222222222222222222222222222) before the attempt \
          branches were deleted; every attempt branch is kept; the attempt folders /wt/try-1, /wt/try-2 were already \
          removed; next step: run the same command again with the same saved attempts"
     );
@@ -338,14 +338,14 @@ fn attempt_refs_left_names_the_ref_where_it_is_and_the_removed_folders() {
 fn removed_refs_left_names_the_folder_both_refs_and_where_the_moved_one_is() {
     let err = FolderError::RemovedRefsLeft {
         path: PathBuf::from("/wt/a"),
-        branch: "refs/heads/req/folders/WO-1".to_string(),
-        moved: "refs/mortar/snap/folders/WO-1".to_string(),
+        branch: "refs/heads/req/folders/r1".to_string(),
+        moved: "refs/mortar/snap/folders/r1".to_string(),
         at: Some(Oid::parse("2222222222222222222222222222222222222222").unwrap()),
     };
     assert_eq!(
         text(err),
-        "/wt/a was removed, but ref refs/mortar/snap/folders/WO-1 moved (now at \
-         2222222222222222222222222222222222222222) before branch refs/heads/req/folders/WO-1 and its snapshot ref \
+        "/wt/a was removed, but ref refs/mortar/snap/folders/r1 moved (now at \
+         2222222222222222222222222222222222222222) before branch refs/heads/req/folders/r1 and its snapshot ref \
          were deleted; both are left as they are; the work they hold is in the zone; next step: none needed now; \
          the harness's ref sweep deletes both once nothing holds the branch"
     );
@@ -355,14 +355,14 @@ fn removed_refs_left_names_the_folder_both_refs_and_where_the_moved_one_is() {
 fn removed_refs_left_with_no_commit_says_so() {
     let err = FolderError::RemovedRefsLeft {
         path: PathBuf::from("/wt/a"),
-        branch: "refs/heads/req/folders/WO-1".to_string(),
-        moved: "refs/heads/req/folders/WO-1".to_string(),
+        branch: "refs/heads/req/folders/r1".to_string(),
+        moved: "refs/heads/req/folders/r1".to_string(),
         at: None,
     };
     assert_eq!(
         text(err),
-        "/wt/a was removed, but ref refs/heads/req/folders/WO-1 moved (now at no commit) before branch \
-         refs/heads/req/folders/WO-1 and its snapshot ref were deleted; both are left as they are; the work they \
+        "/wt/a was removed, but ref refs/heads/req/folders/r1 moved (now at no commit) before branch \
+         refs/heads/req/folders/r1 and its snapshot ref were deleted; both are left as they are; the work they \
          hold is in the zone; next step: none needed now; the harness's ref sweep deletes both once nothing holds \
          the branch"
     );
@@ -398,11 +398,11 @@ fn extra_ref_refused_for_a_protected_ref() {
 fn different_folder_names_an_attempt_folder_and_its_request() {
     let err = FolderError::DifferentFolder {
         path: PathBuf::from("/wt/a"),
-        existing: existing(FolderKind::Attempt(2), Some("WO-1")),
+        existing: existing(FolderKind::Attempt(2), Some("r1")),
     };
     assert_eq!(
         text(err),
-        "/wt/a is already attempt 2's folder for zone folders, request WO-1; remove it or choose another path"
+        "/wt/a is already attempt 2's folder for zone folders, request r1; remove it or choose another path"
     );
 }
 
@@ -421,22 +421,22 @@ fn different_folder_names_an_attempt_folder_with_no_request() {
 #[test]
 fn request_branch_missing_names_the_branch_and_the_next_step() {
     let err = FolderError::RequestBranchMissing {
-        branch: "req/folders/WO-1".to_string(),
+        branch: "req/folders/r1".to_string(),
     };
     assert_eq!(
         text(err),
-        "request branch req/folders/WO-1 does not exist; make the request folder first"
+        "request branch req/folders/r1 does not exist; make the request folder first"
     );
 }
 
 #[test]
 fn attempt_missing_names_the_branch_and_what_keep_leaves() {
     let err = FolderError::AttemptMissing {
-        branch: "try/folders/WO-1/3".to_string(),
+        branch: "try/folders/r1/3".to_string(),
     };
     assert_eq!(
         text(err),
-        "no attempt branch try/folders/WO-1/3; nothing changed; if keep already ran, the request branch holds the \
+        "no attempt branch try/folders/r1/3; nothing changed; if keep already ran, the request branch holds the \
          kept attempt; an attempt whose folder lost its branch cannot be kept: keep another attempt or drop them all"
     );
 }
@@ -457,12 +457,12 @@ fn attempts_unsaved_names_every_folder_and_the_next_step() {
 #[test]
 fn attempts_remain_names_the_folder_every_attempt_and_the_next_step() {
     let err = FolderError::AttemptsRemain {
-        path: PathBuf::from("/wt/WO-1"),
+        path: PathBuf::from("/wt/r1"),
         attempts: vec!["refs/heads/try/z/r/1".to_string(), "/wt/try-2".to_string()],
     };
     assert_eq!(
         text(err),
-        "/wt/WO-1 was not removed: attempts of its request remain: refs/heads/try/z/r/1, /wt/try-2; nothing \
+        "/wt/r1 was not removed: attempts of its request remain: refs/heads/try/z/r/1, /wt/try-2; nothing \
          changed; next step: have the harness keep one attempt or drop them all; an attempt folder that lost its \
          branch is re-made from its snapshot when the harness keeps or drops, and one with no snapshot: copy out \
          anything wanted and remove it by hand"
@@ -496,13 +496,13 @@ fn orphan_without_snapshot_names_every_folder_and_removal_by_hand() {
 #[test]
 fn request_moved_on_names_both_branches_and_the_next_step() {
     let err = FolderError::RequestMovedOn {
-        branch: "req/folders/WO-1".to_string(),
-        attempt: "try/folders/WO-1/2".to_string(),
+        branch: "req/folders/r1".to_string(),
+        attempt: "try/folders/r1/2".to_string(),
     };
     assert_eq!(
         text(err),
-        "request branch req/folders/WO-1 has commits attempt branch try/folders/WO-1/2 does not hold; keeping \
-         try/folders/WO-1/2 would drop them; nothing changed; next step: bring them into try/folders/WO-1/2 or make \
+        "request branch req/folders/r1 has commits attempt branch try/folders/r1/2 does not hold; keeping \
+         try/folders/r1/2 would drop them; nothing changed; next step: bring them into try/folders/r1/2 or make \
          the attempts again"
     );
 }

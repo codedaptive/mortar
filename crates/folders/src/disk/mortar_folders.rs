@@ -1,5 +1,5 @@
 //! The repository's worktrees that are Mortar folders.
-//! No unit test: it runs git and reads files (S-5). Nagatha's integration group is to cover, in a throwaway
+//! No unit test: it runs git and reads files. The integration group is to cover, in a throwaway
 //! repository: a zone folder and a request folder are listed with their records; the main checkout, which has no
 //! record, is not; a worktree whose folder was deleted (prunable) is not.
 

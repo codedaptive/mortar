@@ -1,4 +1,4 @@
-//! What of a request's attempts is left: its attempt branches and attempt folders, as remove reads them (S-82).
+//! What of a request's attempts is left: its attempt branches and attempt folders, as remove reads them.
 
 use gitio::{Oid, Worktree};
 

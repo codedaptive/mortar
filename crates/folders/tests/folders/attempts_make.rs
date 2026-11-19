@@ -1,4 +1,4 @@
-//! make_attempts in a throwaway repository: the cases src/attempts/make_attempts.rs's header names (S-69).
+//! make_attempts in a throwaway repository: the cases src/attempts/make_attempts.rs's header names.
 use super::attempt_support::{make, try_ref, Attempts, REQ_REF};
 use super::maintenance_support::records;
 use crate::support::{assert_branch_op, assert_ordinary, Fixture};

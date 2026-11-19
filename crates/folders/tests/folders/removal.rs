@@ -1,4 +1,4 @@
-//! #1019: folders::remove -> real gitio worktree removal -> oplog transactional ref deletion/repeat.
+//! folders::remove -> real gitio worktree removal -> oplog transactional ref deletion/repeat.
 use super::maintenance_support::*;
 use crate::support::{run, setup, write};
 use folders::{make_zone_folder, FolderError};

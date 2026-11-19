@@ -91,7 +91,7 @@ fn different_record_refuses_naming_existing_folder_without_replacing_record_or_w
 
 #[test]
 fn same_record_repeat_during_conflicted_rebase_preserves_unmerged_index_and_work() {
-    // Joins request make/refill -> real git rebase conflict -> preservation of replay state (S-36, lane #514).
+    // Joins request make/refill -> real git rebase conflict -> preservation of replay state.
     let f = Fixture::new();
     run(&f.git, &["update-ref", "refs/heads/zone/red", f.head.as_str()]);
     let path = f.repo.path.join("folder");
@@ -122,5 +122,5 @@ fn same_record_repeat_during_conflicted_rebase_preserves_unmerged_index_and_work
     assert_eq!(read_folder_record(&git_dir).unwrap(), Some(record.clone()));
     assert_eq!(fs::read(oplog_path(&f.common)).unwrap(), log_before);
     assert!(!f.common.join("mortar/locks/folders.lock").exists());
-    assert_eq!(result.unwrap(), record, "S-36: same record is returned without refusal");
+    assert_eq!(result.unwrap(), record, "same record is returned without refusal");
 }

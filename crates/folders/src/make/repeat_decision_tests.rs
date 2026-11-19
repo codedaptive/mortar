@@ -9,7 +9,7 @@ fn record() -> FolderRecord {
     FolderRecord {
         kind: FolderKind::Request,
         zone: "folders".to_string(),
-        request: Some("WO-folders-1".to_string()),
+        request: Some("rf1".to_string()),
         base: Oid::parse("489d82745705a031306253da29bdad7aee19d2e5").unwrap(),
         work_order_paths: vec!["crates/folders".to_string()],
         needed_paths: vec![],
@@ -52,7 +52,7 @@ fn a_different_zone_is_different() {
 #[test]
 fn a_different_request_is_different() {
     let other = FolderRecord {
-        request: Some("WO-folders-2".to_string()),
+        request: Some("rf2".to_string()),
         ..record()
     };
     assert_eq!(repeat_decision(&record(), &other), Repeat::Different);

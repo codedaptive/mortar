@@ -1,9 +1,9 @@
 //! How many refs sweep_refs would delete now, and the bytes only they hold, for the disk report's sweep figure.
-//! No unit test: it runs git (S-5); the whole choice of refs is sweep's own: joined_leftovers picks the contained
+//! No unit test: it runs git; the whole choice of refs is sweep's own: joined_leftovers picks the contained
 //! branches and sweep_pick the refs, covered by joined_leftovers_tests, stale_replayed_refs_tests,
 //! leftover_branches_tests, extra_ref_verdict_tests, sweep_pick_tests and closed_snap_refs_tests.
 //! tests/folders/sweeps_replayed.rs covers the replay-record refs
-//! (refs/mortar/replayed/<zone>/<source>, S-121 (2)): the disk report's sweep figure counts those of zones not in
+//! (refs/mortar/replayed/<zone>/<source>): the disk report's sweep figure counts those of zones not in
 //! the zone list, and the count equals the refs sweep_refs deletes. The folders zone's other integration cases are
 //! not yet written; they are to cover, in a throwaway repository: a closed request's snapshot ref with objects of
 //! its own counts them, an open request's does not; a closed request's attempt snapshot ref
@@ -21,10 +21,9 @@ use crate::sweep::{joined_leftovers, leftover_branches, sweep_pick};
 
 /// Picks the refs sweep_refs would delete from `refs` (list_refs' shape), `zones`, `extra_refs` and `protected`,
 /// the way sweep_refs does: the leftover_branches not checked out in any worktree whose tip is its merge base with
-/// its zone tip (joined, S-52 (1); joined_leftovers), then sweep_pick, replay-record refs of zones not in `zones`
-/// included (S-121 (2)). Returns how many it picked and Git::disk_usage_only
-/// over them, an upper bound (S-75). A refused extra ref is ExtraRefRefused, as sweep_refs would refuse it (S-53,
-/// S-54).
+/// its zone tip (joined; joined_leftovers), then sweep_pick, replay-record refs of zones not in `zones`
+/// included. Returns how many it picked and Git::disk_usage_only
+/// over them, an upper bound. A refused extra ref is ExtraRefRefused, as sweep_refs would refuse it.
 pub(crate) fn ref_sweep_bytes(
     git: &Git,
     refs: &[(Oid, String)],

@@ -1,8 +1,8 @@
 //! Makes one folder on its branch at a tip, or refills it when a repeat finds it already there: the steps
 //! make_request_folder and make_attempts run under the folders lock once they know the record they want.
-//! No unit test: it appends to the op log, runs git and writes files (S-5). repeat_decision_tests,
+//! No unit test: it appends to the op log, runs git and writes files. repeat_decision_tests,
 //! branch_holder_tests, floor_check_tests, branch_op_tests, branch_step_after_tests, skip_refill_tests,
-//! refill_cone_tests and attach_head_request_tests cover its decisions. Nagatha's integration group is to cover it
+//! refill_cone_tests and attach_head_request_tests cover its decisions. The integration group is to cover it
 //! through make_request_folder's and make_attempts' cases.
 
 use std::path::Path;

@@ -1,4 +1,4 @@
-//! What keep(k) removes and deletes, or why it refuses, before anything is touched (S-69, S-93, S-96 (2)).
+//! What keep(k) removes and deletes, or why it refuses, before anything is touched.
 
 use std::path::PathBuf;
 

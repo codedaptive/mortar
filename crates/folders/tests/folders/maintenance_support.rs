@@ -1,4 +1,4 @@
-//! Private real-repository fixtures for WO-orc-folders-it-4; caller holds lock and recovers.
+//! Private real-repository fixtures shared by the zone integration tests; caller holds lock and recovers.
 use crate::support::{run, setup, Fixture};
 use folders::{make_request_folder, FolderError};
 use gitio::{Git, Oid};

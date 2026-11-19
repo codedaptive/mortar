@@ -13,7 +13,7 @@ fn request_record_worked_example() {
     let r = FolderRecord {
         kind: FolderKind::Request,
         zone: "folders".to_string(),
-        request: Some("WO-folders-1".to_string()),
+        request: Some("rf1".to_string()),
         base: oid("0123456789abcdef0123456789abcdef01234567"),
         work_order_paths: vec!["crates/folders/src/record".to_string(), "crates/folders/src/plan".to_string()],
         needed_paths: vec!["crates/gitio".to_string()],
@@ -21,7 +21,7 @@ fn request_record_worked_example() {
     };
     assert_eq!(
         encode_folder_record(&r),
-        r#"{"kind":"request","zone":"folders","request":"WO-folders-1","base":"0123456789abcdef0123456789abcdef01234567","work_order_paths":["crates/folders/src/record","crates/folders/src/plan"],"needed_paths":["crates/gitio"],"parent":"workcrews/folders"}"#
+        r#"{"kind":"request","zone":"folders","request":"rf1","base":"0123456789abcdef0123456789abcdef01234567","work_order_paths":["crates/folders/src/record","crates/folders/src/plan"],"needed_paths":["crates/gitio"],"parent":"workcrews/folders"}"#
     );
 }
 
@@ -69,14 +69,14 @@ fn attempt_record_writes_its_number_right_after_kind() {
     let r = FolderRecord {
         kind: FolderKind::Attempt(3),
         zone: "folders".to_string(),
-        request: Some("WO-folders-6".to_string()),
+        request: Some("rf6".to_string()),
         base: oid("0123456789abcdef0123456789abcdef01234567"),
         work_order_paths: vec!["crates/folders/src/record".to_string()],
         needed_paths: Vec::new(),
-        parent: Some("req/folders/WO-folders-6".to_string()),
+        parent: Some("req/folders/rf6".to_string()),
     };
     assert_eq!(
         encode_folder_record(&r),
-        r#"{"kind":"attempt","attempt":"3","zone":"folders","request":"WO-folders-6","base":"0123456789abcdef0123456789abcdef01234567","work_order_paths":["crates/folders/src/record"],"needed_paths":[],"parent":"req/folders/WO-folders-6"}"#
+        r#"{"kind":"attempt","attempt":"3","zone":"folders","request":"rf6","base":"0123456789abcdef0123456789abcdef01234567","work_order_paths":["crates/folders/src/record"],"needed_paths":[],"parent":"req/folders/rf6"}"#
     );
 }

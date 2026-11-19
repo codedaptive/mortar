@@ -6,7 +6,7 @@ use super::FolderDisk;
 use crate::plan::SweepEstimate;
 
 /// bytes: the build_bytes of the folders whose path is in `idle`, plus `refs_bytes`, the objects reachable only
-/// from the `swept_refs` refs a ref sweep deletes (both sums saturating). An upper bound, as refs_bytes is (S-75),
+/// from the `swept_refs` refs a ref sweep deletes (both sums saturating). An upper bound, as refs_bytes is,
 /// so the reason says "frees up to": the bytes, the build part with its folder count and `idle_days`, and the refs
 /// part with its ref count.
 pub fn sweep_figure(

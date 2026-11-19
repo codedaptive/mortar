@@ -1,4 +1,4 @@
-//! One orphan attempt to re-make, as remake_plan plans it (S-98).
+//! One orphan attempt to re-make, as remake_plan plans it.
 //! A bare type; remake_plan_tests exercises it.
 
 use std::path::PathBuf;

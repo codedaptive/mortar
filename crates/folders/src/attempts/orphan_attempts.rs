@@ -1,4 +1,4 @@
-//! A request's attempt folders whose attempt branch is gone (S-69, S-82).
+//! A request's attempt folders whose attempt branch is gone.
 
 use std::path::PathBuf;
 

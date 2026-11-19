@@ -1,4 +1,4 @@
-//! #1019: disk/sweep_build -> real worktree discovery, file/symlink sizes and controlled filesystem mtimes.
+//! disk/sweep_build -> real worktree discovery, file/symlink sizes and controlled filesystem mtimes.
 use super::maintenance_support::*;
 use crate::support::{run, setup, write};
 use folders::{disk, make_request_folder, make_zone_folder, sweep_build};
@@ -57,7 +57,7 @@ fn disk_sweep_figure_matches_exact_idle_build_deletion_while_recent_folder_main_
     write(&zone, "target/build", b"1234567"); write(&zone, "nested/target/keep", b"ok");
     write(&m.folder, "target/build", b"12345"); write(&m.f.repo.path, "target/main-build", b"main stays\n");
     stamp_tree(&zone, 1_000_000_000); stamp_tree(&m.folder, 1_000_000_000);
-    stamp(&m.folder.join("target/build"), 2_000_000_000); // A build-file touch alone keeps the folder active (S-52).
+    stamp(&m.folder.join("target/build"), 2_000_000_000); // A build-file touch alone keeps the folder active.
     let before_refs = refs(&m.f.git); let before_log = log(&m.f);
     let report = disk(&m.f.git, 1, &[], &[], &[]).unwrap(); assert_eq!(report.sweep.bytes, 7);
     let result = sweep_build(&m.f.git, 1).unwrap();

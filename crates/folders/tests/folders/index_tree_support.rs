@@ -1,4 +1,4 @@
-//! Fixture for the WO-folders-4c ZITs of move_folder with an index tree (S-87, S-88): a request folder at the old tip
+//! Fixture for the ZITs of move_folder with an index tree: a request folder at the old tip
 //! O whose resolved path holds the resolution bytes, the index tree t (O's tree with the resolution: the content
 //! gitio's tree_with_paths gives join, here taken from a commit's tree) and the new tip N, which changes the zone
 //! path, keeps the resolution and adds a path. The caller runs move_folder with Some(t) under the caller's lock after
@@ -50,7 +50,7 @@ impl TreeFixture {
         Self { f, folder, local, old, tree, new }
     }
 
-    /// The request branch put at N, as join's own op does before the caller moves the folder (S-47).
+    /// The request branch put at N, as join's own op does before the caller moves the folder.
     pub fn branch_at_new(&self) {
         run(&self.f.git, &["update-ref", BRANCH, self.new.as_str(), self.old.as_str()]);
     }

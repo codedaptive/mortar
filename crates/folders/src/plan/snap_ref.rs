@@ -1,4 +1,4 @@
-//! A request's snapshot ref name: `refs/mortar/snap/<zone>/<request>` (S-19).
+//! A request's snapshot ref name: `refs/mortar/snap/<zone>/<request>`.
 
 use super::{check_name, PlanError, SNAP_REF_PREFIX};
 

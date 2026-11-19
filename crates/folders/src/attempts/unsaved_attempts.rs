@@ -1,4 +1,4 @@
-//! The attempts a keep or a drop would discard without the caller's saved mark (S-32).
+//! The attempts a keep or a drop would discard without the caller's saved mark.
 
 use std::path::PathBuf;
 

@@ -1,9 +1,8 @@
-//! WO-orc-folders-it-1: SPEC-folders WO-folders-1, WO-folders-2, Tests; S-18, S-26, S-27.
-//! index_tree_moves: WO-folders-4c, S-87, S-88.
+//! The folders zone's integration tests.
+//! index_tree_moves: move_folder with an index tree.
 //! attempts_make, attempts_keep, attempts_drop, attempts_remove, attempts_sweep (fixtures in attempt_support):
-//! WO-folders-6c, S-69, S-82, S-93; attempts_remake, attempts_remake_refusals and the orphan cases: WO-folders-6d,
-//! S-96 (2), S-98.
-//! root_files: WO-folders-sparse-files, S-126.
+//! the attempt folder lifecycle; attempts_remake, attempts_remake_refusals and the orphan cases: remaking attempts.
+//! root_files: top-level files given as folder paths.
 //! Real gitio worktrees, oplog transactions/locks and OS disk queries in disposable TestRepo fixtures.
 #[path = "../support/mod.rs"]
 mod support;

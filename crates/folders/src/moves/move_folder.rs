@@ -1,8 +1,8 @@
 //! Moves a folder from one tip to another: its files and index by gitio, then its branch by one op-log op.
-//! No unit test for the git and op-log path: it runs git and appends to the op log (S-5). move_folder_tests covers
+//! No unit test for the git and op-log path: it runs git and appends to the op log. move_folder_tests covers
 //! the unsaved refusal, move_attempts_tests the tries made at the files-and-index move, branch_move_for_tests where
 //! the branch stands against the two tips, moved_or_refused_tests a gitio refusal, and move_op_tests the op as data.
-//! Nagatha's integration group is to cover, in a throwaway repository: a moved folder over unsaved work is refused;
+//! The integration group is to cover, in a throwaway repository: a moved folder over unsaved work is refused;
 //! after join's rebase (the branch already at the new tip) the folder's files and index move and no op is logged;
 //! with the branch at the old tip, one folder-move op moves it; a local change in the way refuses with nothing logged
 //! and the branch unmoved. The index-tree cases (after a resolve, a repeat after a completed move, a run killed
@@ -22,7 +22,7 @@ use crate::make::FolderError;
 
 /// Moves `folder` from tip `old` to tip `new`. `saved` is the caller's answer to whether the folder's work is saved;
 /// false is NotSaved before any git run. A detached HEAD is NotAFolder; a branch at neither tip is BranchElsewhere,
-/// before anything changes. The files and index then move by the tries of move_attempts (S-88): without
+/// before anything changes. The files and index then move by the tries of move_attempts: without
 /// `index_tree`, the plain move from `old`; with `index_tree` t, the plain move first and, only if git refuses it,
 /// the index set to t and a move from t. git refusing every try is MoveRefused naming the last refusal's paths, with
 /// nothing logged, the branch not moved and, with t, the index left at t. A branch already at `new` (join moved it

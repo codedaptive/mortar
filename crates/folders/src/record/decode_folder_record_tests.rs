@@ -29,7 +29,7 @@ fn records() -> Vec<FolderRecord> {
         FolderRecord {
             kind: FolderKind::Request,
             zone: "join".to_string(),
-            request: Some("WO-join-7".to_string()),
+            request: Some("rj7".to_string()),
             base: oid("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
             work_order_paths: strings(&["crates/join/src", "crates/join/tests", "Cargo.lock"]),
             needed_paths: strings(&["crates/gitio"]),
@@ -120,7 +120,7 @@ fn missing_key_is_refused_by_name() {
 
 #[test]
 fn unknown_key_is_refused_by_name() {
-    let text = zone_with("", "").replace("\"parent\":null", "\"parent\":null,\"owner\":\"simms\"");
+    let text = zone_with("", "").replace("\"parent\":null", "\"parent\":null,\"owner\":\"agent-b\"");
     assert_eq!(refused(&text), "unknown key \"owner\"");
 }
 
@@ -164,7 +164,7 @@ fn base_that_is_not_an_oid_is_refused_naming_it() {
 
 #[test]
 fn zone_record_with_a_request_is_refused() {
-    assert_eq!(refused(&zone_with("request", "\"WO-1\"")), "a zone record has request \"WO-1\"; it must be null");
+    assert_eq!(refused(&zone_with("request", "\"r1\"")), "a zone record has request \"r1\"; it must be null");
 }
 
 #[test]
@@ -206,33 +206,33 @@ fn kind_with(kind: &str, attempt: Option<&str>, request: &str) -> String {
 #[test]
 fn attempt_numbers_decode_across_the_range() {
     for (text, k) in [("\"1\"", 1), ("\"2\"", 2), ("\"9\"", 9), ("\"10\"", 10), ("\"4294967295\"", 4294967295)] {
-        let r = decode_folder_record(&kind_with("attempt", Some(text), "\"WO-folders-6\""));
+        let r = decode_folder_record(&kind_with("attempt", Some(text), "\"rf6\""));
         assert_eq!(r.map(|r| r.kind), Ok(FolderKind::Attempt(k)));
     }
 }
 
 #[test]
 fn attempt_text_decodes_to_its_number() {
-    let r = decode_folder_record(&kind_with("attempt", Some("\"12\""), "\"WO-1\""));
-    assert_eq!(r.map(|r| (r.kind, r.request)), Ok((FolderKind::Attempt(12), Some("WO-1".to_string()))));
+    let r = decode_folder_record(&kind_with("attempt", Some("\"12\""), "\"r1\""));
+    assert_eq!(r.map(|r| (r.kind, r.request)), Ok((FolderKind::Attempt(12), Some("r1".to_string()))));
 }
 
 #[test]
 fn attempt_record_without_its_number_is_refused() {
-    assert_eq!(refused(&kind_with("attempt", None, "\"WO-1\"")), "missing key \"attempt\"");
+    assert_eq!(refused(&kind_with("attempt", None, "\"r1\"")), "missing key \"attempt\"");
 }
 
 #[test]
 fn attempt_key_on_a_zone_or_request_record_is_refused() {
     assert_eq!(refused(&kind_with("zone", Some("\"1\""), "null")), "\"attempt\" key on a zone record");
-    assert_eq!(refused(&kind_with("request", Some("\"1\""), "\"WO-1\"")), "\"attempt\" key on a request record");
+    assert_eq!(refused(&kind_with("request", Some("\"1\""), "\"r1\"")), "\"attempt\" key on a request record");
 }
 
 #[test]
 fn attempt_number_that_is_not_one_spelling_of_1_to_u32_max_is_refused_naming_it() {
     for value in ["0", "01", "", "x", "4294967296", "+3", " 3", "-1"] {
         assert_eq!(
-            refused(&kind_with("attempt", Some(&format!("\"{value}\"")), "\"WO-1\"")),
+            refused(&kind_with("attempt", Some(&format!("\"{value}\"")), "\"r1\"")),
             format!("attempt \"{value}\" is not a decimal number from 1 to 4294967295 with no leading zero")
         );
     }
@@ -240,7 +240,7 @@ fn attempt_number_that_is_not_one_spelling_of_1_to_u32_max_is_refused_naming_it(
 
 #[test]
 fn attempt_number_that_is_not_a_string_is_refused() {
-    assert_eq!(refused(&kind_with("attempt", Some("null"), "\"WO-1\"")), "attempt is not a string");
+    assert_eq!(refused(&kind_with("attempt", Some("null"), "\"r1\"")), "attempt is not a string");
 }
 
 #[test]

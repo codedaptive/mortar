@@ -1,5 +1,5 @@
 //! What is at the path where a folder is to be made: nothing, a folder mortar made, or something in the way.
-//! No unit test: it reads the worktree list, the file system and a record file (S-5). Nagatha's integration
+//! No unit test: it reads the worktree list, the file system and a record file. The integration
 //! group is to cover, in a throwaway repository: an absent path and an empty directory answer None; a folder
 //! made by make_request_folder answers its record, also when named through a symlinked parent (macOS /var);
 //! a worktree added by plain git answers NotAFolder "a worktree with no Mortar folder record"; a directory

@@ -1,5 +1,5 @@
 //! What sweep_build cleared.
-//! A bare type; Nagatha's integration group covers it through sweep_build's cases.
+//! A bare type; the integration group covers it through sweep_build's cases.
 
 use std::path::PathBuf;
 

@@ -28,8 +28,8 @@ fn four_segments_count_under_the_first_three() {
 
 #[test]
 fn five_segments_count_under_the_first_three() {
-    assert_eq!(one("refs/heads/req/folders/WO-1"), vec![("refs/heads/req".to_string(), 1)]);
-    assert_eq!(one("refs/mortar/snap/folders/WO-1"), vec![("refs/mortar/snap".to_string(), 1)]);
+    assert_eq!(one("refs/heads/req/folders/r1"), vec![("refs/heads/req".to_string(), 1)]);
+    assert_eq!(one("refs/mortar/snap/folders/r1"), vec![("refs/mortar/snap".to_string(), 1)]);
 }
 
 #[test]
@@ -51,9 +51,9 @@ fn no_refs_give_no_namespaces() {
 fn counts_aggregate_and_sort_by_namespace() {
     let input = refs(&[
         "refs/tags/v1",
-        "refs/mortar/snap/folders/WO-1",
+        "refs/mortar/snap/folders/r1",
         "refs/heads/main",
-        "refs/mortar/snap/join/WO-2",
+        "refs/mortar/snap/join/r2",
         "refs/heads/dev",
     ]);
     assert_eq!(

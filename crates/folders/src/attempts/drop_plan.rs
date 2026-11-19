@@ -1,4 +1,4 @@
-//! What drop_attempts removes and deletes, or why it refuses, before anything is touched (S-82, S-96 (2)).
+//! What drop_attempts removes and deletes, or why it refuses, before anything is touched.
 
 use std::path::PathBuf;
 

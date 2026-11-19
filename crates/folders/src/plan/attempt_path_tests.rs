@@ -6,8 +6,8 @@ use super::attempt_path;
 
 #[test]
 fn puts_attempt_k_at_try_k() {
-    assert_eq!(attempt_path(Path::new("/w/WO-6-tries"), 1), PathBuf::from("/w/WO-6-tries/try-1"));
-    assert_eq!(attempt_path(Path::new("/w/WO-6-tries"), 3), PathBuf::from("/w/WO-6-tries/try-3"));
+    assert_eq!(attempt_path(Path::new("/w/r6-tries"), 1), PathBuf::from("/w/r6-tries/try-1"));
+    assert_eq!(attempt_path(Path::new("/w/r6-tries"), 3), PathBuf::from("/w/r6-tries/try-3"));
 }
 
 #[test]
