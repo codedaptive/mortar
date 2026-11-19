@@ -1,0 +1,132 @@
+# Small-files charter rule 1, its first line: one public function, type or trait per file. Reports every public
+# function, struct, enum, union, trait or type alias in a file that holds another one, at the top level or at any
+# depth of inline modules (methods in impl and trait blocks are not counted). Public is any visibility but pub(self).
+# mod, use, const and static are not counted. One name declared twice as the same kind (cfg twins) counts once.
+# Not checked here: the charter's second line (a type's methods each in their own file). Its cases:
+# rules/cases/one-public-symbol-per-file-test.yml.
+id: one-public-symbol-per-file
+language: rust
+message: "`$NAME` is one of several public functions, types or traits in this file"
+severity: error
+utils:
+  public:
+    has:
+      kind: visibility_modifier
+      not:
+        regex: '^pub\(\s*(in\s+)?self\s*\)$'
+  placed:
+    any:
+      - inside:
+          kind: source_file
+      - inside:
+          kind: declaration_list
+          inside:
+            kind: mod_item
+  symbol:
+    all:
+      - any:
+          - kind: function_item
+          - kind: struct_item
+          - kind: enum_item
+          - kind: union_item
+          - kind: trait_item
+          - kind: type_item
+      - matches: placed
+      - matches: public
+rule:
+  all:
+    - matches: symbol
+    - has:
+        field: name
+        pattern: $NAME
+    - any:
+        - all:
+            - kind: function_item
+            - inside:
+                stopBy: end
+                kind: source_file
+                has:
+                  stopBy: end
+                  all:
+                    - matches: symbol
+                    - not:
+                        all:
+                          - kind: function_item
+                          - has:
+                              field: name
+                              pattern: $NAME
+        - all:
+            - kind: struct_item
+            - inside:
+                stopBy: end
+                kind: source_file
+                has:
+                  stopBy: end
+                  all:
+                    - matches: symbol
+                    - not:
+                        all:
+                          - kind: struct_item
+                          - has:
+                              field: name
+                              pattern: $NAME
+        - all:
+            - kind: enum_item
+            - inside:
+                stopBy: end
+                kind: source_file
+                has:
+                  stopBy: end
+                  all:
+                    - matches: symbol
+                    - not:
+                        all:
+                          - kind: enum_item
+                          - has:
+                              field: name
+                              pattern: $NAME
+        - all:
+            - kind: union_item
+            - inside:
+                stopBy: end
+                kind: source_file
+                has:
+                  stopBy: end
+                  all:
+                    - matches: symbol
+                    - not:
+                        all:
+                          - kind: union_item
+                          - has:
+                              field: name
+                              pattern: $NAME
+        - all:
+            - kind: trait_item
+            - inside:
+                stopBy: end
+                kind: source_file
+                has:
+                  stopBy: end
+                  all:
+                    - matches: symbol
+                    - not:
+                        all:
+                          - kind: trait_item
+                          - has:
+                              field: name
+                              pattern: $NAME
+        - all:
+            - kind: type_item
+            - inside:
+                stopBy: end
+                kind: source_file
+                has:
+                  stopBy: end
+                  all:
+                    - matches: symbol
+                    - not:
+                        all:
+                          - kind: type_item
+                          - has:
+                              field: name
+                              pattern: $NAME
