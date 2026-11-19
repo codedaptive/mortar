@@ -10,7 +10,7 @@ use gitio::{MergeTreeOutcome, Oid};
 /// author (its raw date unchanged); the committer is left to git's own identity, as git replay does. A commit that
 /// becomes empty is dropped: when the merged tree equals the running tip's tree and the commit changed its parent's
 /// tree, no commit is written. A commit already empty at its source (its tree equals its parent's) is kept. git's
-/// replay decides empties the same way, so both replay paths give one answer (S-121). Conflicted: the tree and its
+/// replay decides empties the same way, so both replay paths give one answer. Conflicted: the tree and its
 /// files, and no commit is written. A root or merge commit is refused before any merge, and so is a commit whose
 /// author date is empty, since commit_tree cannot hand an empty date back unchanged.
 pub(crate) fn replay_commit(

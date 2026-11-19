@@ -1,7 +1,7 @@
 //! tree_refusal: a folder refusal is ConflictedPathIsFolder naming its path as given; a Git failure with an exit
 //! code or args passes through equal; a wrong-shape refusal (no code, no args) is refused naming no path.
-//! The typed refusals whose reason is gitio's Display are tested in tests/join_rit/tree_refusals.rs (S-101),
-//! except an overlap with neither path in files, which resolve cannot reach (S-109).
+//! The typed refusals whose reason is gitio's Display are tested in tests/join_rit/tree_refusals.rs,
+//! except an overlap with neither path in files, which resolve cannot reach.
 
 use crate::tree_refusal::tree_refusal;
 use crate::JoinRunError;

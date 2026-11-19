@@ -1,9 +1,9 @@
 //! overlap: which open requests of a zone change the same paths, before anyone joins.
-//! No unit test: it runs git; pair_overlaps_tests covers its decisions. Nagatha's integration tests are to cover,
-//! in a throwaway repository (WO-join-4): two requests changing the same file are listed as a pair with that
-//! path; requests changing different files give no pair; a request whose tip is its snapshot commit (unsaved work)
-//! is compared by that commit; a rename shows its old and new path; overlap moves no ref and writes nothing (refs
-//! and worktree unchanged after); a missing base or tip commit gives JoinError::Git.
+//! No unit test: it runs git; pair_overlaps_tests covers its decisions. Integration tests are to cover, in a
+//! throwaway repository: two requests changing the same file are listed as a pair with that path; requests changing
+//! different files give no pair; a request whose tip is its snapshot commit (unsaved work) is compared by that
+//! commit; a rename shows its old and new path; overlap moves no ref and writes nothing (refs and worktree unchanged
+//! after); a missing base or tip commit gives JoinError::Git.
 
 use crate::pair_overlaps::pair_overlaps;
 use crate::{JoinError, OpenRequest, OverlapPair};

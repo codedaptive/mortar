@@ -1,4 +1,4 @@
-//! #1179/#1193, SPEC-join WO-join-3/S50/S62/S64: public join/resolve/replay with real Git and caller-held locks.
+//! Public join/resolve/replay with real Git and caller-held locks.
 use super::{author, join_refs, oid, Fixture, JOIN_ZONE, REQUEST_REF, ZONE_REF};
 use gitio::{Git, Oid, RunOpts};
 use join::{JoinAnswer, JoinError, JoinRunError};

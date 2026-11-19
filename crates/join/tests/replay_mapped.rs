@@ -1,4 +1,4 @@
-//! WO-join-8 (S-121 (1)): public join::replay_mapped with real git, under both runner setups (native replay
+//! Public join::replay_mapped with real git, under both runner setups (native replay
 //! available, and forced unavailable). replay_mapped always replays commit by commit, so neither setup may reach
 //! git's replay; each source commit maps to the running tip after it. Its own Fixture, as join_rit keeps its own.
 use gitio::{Git, Oid, Person, RunOpts};

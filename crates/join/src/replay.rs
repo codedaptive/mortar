@@ -1,5 +1,5 @@
 //! replay: replay a request's commits onto a new base, moving no ref.
-//! No unit test: it only joins replay_in to gitio::Git; replay_in_tests cover the decisions. Nagatha's integration
+//! No unit test: it only joins replay_in to gitio::Git; replay_in_tests cover the decisions. Integration
 //! tests are to cover it: a clean replay giving the new tip with no ref moved; a conflict naming the commit, tree
 //! and files; a `merge=union` file merging clean through `--attr-source` on both paths; a missing onto refused.
 

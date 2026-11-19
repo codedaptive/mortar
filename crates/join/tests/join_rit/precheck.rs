@@ -1,4 +1,4 @@
-//! S-148: public Join pre-check -> real Gitio state/ref I/O -> Oplog undo -> Join restore.
+//! Public Join pre-check -> real Gitio state/ref I/O -> Oplog undo -> Join restore.
 //! Each case owns Scenario's disposable repository and uses actual resolve records, never a private state codec.
 use super::restore_support::{tree, Scenario, ACTOR, REQUEST, ZONE};
 use join::{JoinAnswer, JoinRunError, PausedJoin};

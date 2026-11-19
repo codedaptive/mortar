@@ -9,7 +9,7 @@ use gitio::Oid;
 /// Writes a commit of `resolved_tree` (built by continue_replay) on the state's replayed tip, with the conflicted
 /// commit's message (trailers and change ID kept) and author (its raw date unchanged); the committer is left to
 /// git's own identity, as replay_commit does. A conflicted commit whose author date is empty is refused before any
-/// commit is written, since commit_tree cannot hand an empty date back unchanged (S-43).
+/// commit is written, since commit_tree cannot hand an empty date back unchanged.
 pub(crate) fn resolved_commit(
     git: &impl ReplayGit,
     state: &JoinState,

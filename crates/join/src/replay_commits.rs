@@ -1,10 +1,10 @@
 //! replay_commits: replay a list of commits one by one onto a running tip. The loop's decisions (mapping, drops,
 //! the conflicted stop) are map_steps_tests'; replay_commits_tests covers only the empty list. Cases with commits run
-//! replay_commit underneath, so they are ZITs (tests/replay.rs, tests/replay_mapped.rs; rule 11):
-//! - a start that is not onto is the first merge's ours and the first commit's parent (SPEC-join §WO-join-1: "onto
-//!   the running tip");
-//! - a conflict at the first listed commit stops at start with the rest remaining (S-21: "the replayed tip so far,
-//!   remaining commits").
+//! replay_commit underneath, so they are ZITs (tests/replay.rs, tests/replay_mapped.rs):
+//! - a start that is not onto is the first merge's ours and the first commit's parent, since each commit is replayed
+//!   onto the running tip;
+//! - a conflict at the first listed commit stops at start, the tip replayed so far, with the rest of the commits
+//!   remaining.
 
 use crate::map_steps::map_steps;
 use crate::replay_commit::replay_commit;

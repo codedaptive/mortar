@@ -4,7 +4,7 @@ use std::path::PathBuf;
 #[test]
 fn rit_a_an_overlap_outside_current_files_names_the_all_files_path() {
     // resolve -> continue_replay (current files succeeds) -> resolved_folder_tree -> typed refusal/Display.
-    // S-109: a typed overlap with neither path in the MAPPED set is unreachable. The public final handoff
+    // A typed overlap with neither path in the MAPPED set is unreachable. The public final handoff
     // instead must map against all_files, even when both overlap paths are absent from the current round.
     let f = Fixture::new();
     f.state(r#"["src/a.rs"]"#, r#"["lib","lib/x","src/a.rs"]"#, true);

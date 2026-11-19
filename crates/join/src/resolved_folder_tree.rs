@@ -1,4 +1,4 @@
-//! resolved_folder_tree: the tree the caller moves the folder from after a resolve completes the replay (S-87).
+//! resolved_folder_tree: the tree the caller moves the folder from after a resolve completes the replay.
 //! resolved_folder_tree_tests covers the calls made, an earlier round's path taken, and a refused path.
 
 use crate::join_state::JoinState;
@@ -9,7 +9,7 @@ use gitio::Oid;
 
 /// The old request tip's tree with every path resolved in this join, all rounds (`state.all_files`), taken from
 /// `caller_tree`, the folder's tree. Its other paths stay as the old tip has them, so the folder's edits outside the
-/// resolved paths remain local edits when it moves (S-87, S-50). A failure reading the old tip is Git; a failure
+/// resolved paths remain local edits when it moves. A failure reading the old tip is Git; a failure
 /// building the tree is mapped by tree_refusal against all_files. Writes a tree object; moves no ref.
 pub(crate) fn resolved_folder_tree(
     git: &impl ReplayGit,

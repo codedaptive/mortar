@@ -1,4 +1,3 @@
-//! WO-orc-join-it-4 (#889/#858), SPEC-join WO-join-4, S-45.
 //! Joins join::overlap -> gitio::Git::changed_files -> real Git commit trees.
 //! Reuses this integration target's private real-repository fixture; no production source inclusion.
 use super::{author, Fixture};

@@ -34,7 +34,7 @@ fn kill_and_repeat(mode: &str) {
     assert_eq!(r.log(), log);
 }
 
-/// Shared actual kill/reap protocol for both the original single-round tests and S-87's two-round handoff.
+/// Shared actual kill/reap protocol for both the original single-round tests and the handoff across two rounds.
 pub(super) fn kill_at_boundary(r: &Paused, tree: &Oid, mode: &str) {
     let common = r.f.repo.path.join(".git");
     let shim = common.join("kill-resolve-boundary.sh"); let marker = common.join("resolve-boundary"); let pid_file = common.join("resolve-worker.pid");

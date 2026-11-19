@@ -1,4 +1,5 @@
-//! join: see the Mortar mission (Layout).
+//! join: replays a request's commits onto its zone, joins the request, pauses a conflicted join for `resolve`,
+//! restores a paused join after an undo, and lists the paths open requests both change (overlap).
 
 mod accumulate_paths;
 mod after_replay;

@@ -1,4 +1,4 @@
-//! #1258/S-87/S-89 split: resolve -> persisted handoff tree -> real gitio index/file movement, no new dependency.
+//! Folder trees over rounds: resolve -> persisted handoff tree -> real gitio index/file movement, no new dependency.
 use super::*;
 
 #[test]
@@ -7,14 +7,14 @@ fn two_round_resolution_returns_every_rounds_paths_over_old_tip_then_real_folder
     let answer = r.resolve(&caller_tree).unwrap();
     assert_answer(answer, &r, &to, &folder_tree);
     assert_one_rebase(&r, &to);
-    // S87's tree is NOT the final replay tree or the entire caller tree: it keeps the old tip's outside/one.
+    // The saved folder tree is NOT the final replay tree or the entire caller tree: it keeps the old tip's outside/one.
     assert_ne!(folder_tree, caller_tree);
     assert_ne!(folder_tree, r.f.git.commit_info(&to).unwrap().tree);
     assert_eq!(r.f.blob(&folder_tree, "outside"), b"old outside\n");
     assert_eq!(r.f.blob(&folder_tree, "one"), b"one\n");
     let log = r.log(); let refs = r.f.state().0;
     // Consume the handoff through the public gitio primitives already available to this crate's callers.
-    // This proves tree semantics and real movement, not folders::move_folder's S88 fallback orchestration.
+    // This proves tree semantics and real movement, not folders::move_folder's fallback orchestration.
     let moved = caller(&r.f.git, &r.f, || {
         r.f.git.set_index(&r.f.repo.path, &folder_tree).map_err(JoinRunError::Git)?;
         assert_eq!(fs::read(r.f.repo.path.join("one")).unwrap(), b"unrelated local edit\n", "set_index changes no files");
@@ -63,7 +63,8 @@ fn killed_after_the_final_two_round_op_repeats_the_same_folder_tree_from_durable
     assert_answer(r.resolve(&invalid_tree).unwrap(), &r, &to, &folder_tree);
     assert_one_rebase(&r, &to);
     assert_eq!(fs::read(r.f.repo.path.join(&r.path)).unwrap(), b"<<<<<<< later edit must not be reread\n");
-    assert!(matches!(r.resolve(&invalid_tree), Err(JoinRunError::NothingToResolve { .. })), "S89 post-removal recovery is not built by3d");
+    assert!(matches!(r.resolve(&invalid_tree), Err(JoinRunError::NothingToResolve { .. })),
+        "once the state is removed, resolve does not recover the folder tree from the op");
 }
 
 struct Ready { r: Paused, caller_tree: Oid, folder_tree: Oid, to: Oid }

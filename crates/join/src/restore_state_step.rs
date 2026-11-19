@@ -8,7 +8,7 @@ use crate::restore_step::RestoreStep;
 /// repeat); a state file equal to the recorded state once its rebased_to and folder_tree are cleared -> Write; any
 /// other state file -> StatePresent. It never answers Stale.
 /// Why a file with rebased_to and folder_tree set is overwritten: it is the undone resolve's own state, left by a kill
-/// after its final op and before the file's removal (S-87); kept, a resolve would read rebased_to and redo the move
+/// after its final op and before the file's removal; kept, a resolve would read rebased_to and redo the move
 /// the undo reversed. Any other paused join is never overwritten.
 pub(crate) fn restore_state_step(existing: Option<&JoinState>, recorded: &JoinState) -> RestoreStep {
     let Some(existing) = existing else {

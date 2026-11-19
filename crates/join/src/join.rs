@@ -1,12 +1,11 @@
-//! join: joins a request ref to its zone. It takes no lock: the caller holds join-<zone> and has run recover
-//! (S-47, S-16).
+//! join: joins a request ref to its zone. It takes no lock: the caller holds join-<zone> and has run recover.
 //! No unit test: it runs git, applies ops and, through pause, writes real files; decide_join_tests,
 //! after_replay_tests, encode_join_state_tests, fast_forward_op_tests, rebase_op_tests and op_applied_tests cover
 //! its decisions.
-//! Nagatha's integration tests are to cover, in a throwaway repository: a fast-forward join; a zone moved under a
-//! request rebases and stops with the request ref moved and the zone not moved (SPEC-join §Tests; S-20); a conflict
-//! lists the files, writes mortar-join.json and moves no ref; a repeat of a joined request answers Joined and moves
-//! nothing (SPEC-join §WO-join-2, WO-join-2); a missing zone or request ref is refused (ZoneMissing, RequestMissing).
+//! Integration tests are to cover, in a throwaway repository: a fast-forward join; a zone moved under a request
+//! rebases and stops with the request ref moved and the zone not moved; a conflict lists the files, writes
+//! mortar-join.json and moves no ref; a repeat of a joined request answers Joined and moves nothing; a missing zone
+//! or request ref is refused (ZoneMissing, RequestMissing).
 
 use crate::after_replay::after_replay;
 use crate::after_replay_step::AfterReplayStep;
@@ -27,7 +26,7 @@ use std::path::Path;
 /// behind the request moves the zone ref forward by one op, applied with the zone ref protected, so a move that is
 /// not a fast-forward is refused. Otherwise the request's commits after the fork are replayed onto the zone tip:
 /// clean, the request ref moves to the replayed tip by one op, the zone does not move, and Rebased carries the
-/// request ref's old and new tips so the caller can move the request's folder (S-47), with no folder_tree (the
+/// request ref's old and new tips so the caller can move the request's folder, with no folder_tree (the
 /// folder moves from `from`); conflicted, no ref moves and
 /// the state is written to `folder`'s git dir as mortar-join.json. Ops name `actor` as who moved the refs. Each
 /// op's key carries its op id, so a done record already holding that key means this join moved nothing: it is

@@ -11,11 +11,11 @@ fn oid(hex: &str) -> Oid {
 }
 
 #[test]
-fn replay_carries_the_replay_refusal_and_says_nothing_moved() {
+fn replay_carries_the_replay_refusal_and_says_join_moved_no_ref() {
     let text = JoinRunError::Replay(JoinError::TipMissing("refs/heads/topic".to_string())).to_string();
     assert_eq!(
         text,
-        "join replay: tip ref refs/heads/topic does not exist (read by its full name); no ref was moved"
+        "join replay: tip ref refs/heads/topic does not exist (read by its full name); join moved no ref"
     );
 }
 
@@ -55,18 +55,20 @@ fn request_missing_names_the_request_ref() {
 }
 
 #[test]
-fn unrelated_names_both_refs_and_says_nothing_moved() {
+fn unrelated_names_both_refs_and_says_join_moved_no_ref() {
     let error = JoinRunError::Unrelated {
         zone_ref: "refs/heads/zone/join".to_string(),
         request_ref: "refs/heads/req/one".to_string(),
     };
-    let text = error.to_string();
-    assert!(text.contains("refs/heads/req/one shares no history with zone ref refs/heads/zone/join"), "{text}");
-    assert!(text.contains("no ref was moved"), "{text}");
+    assert_eq!(
+        error.to_string(),
+        "request ref refs/heads/req/one shares no history with zone ref refs/heads/zone/join; join refuses and \
+         moved no ref"
+    );
 }
 
 #[test]
-fn op_failed_names_the_op_and_its_key_and_says_nothing_moved() {
+fn op_failed_names_the_op_and_its_key_and_says_join_moved_no_ref() {
     let record = OpRecord {
         op_id: "op-7".to_string(),
         key: "join-rebase:refs/heads/req/one:k".to_string(),
@@ -78,14 +80,15 @@ fn op_failed_names_the_op_and_its_key_and_says_nothing_moved() {
         moves: vec![RefMove { refname: "refs/heads/req/one".to_string(), old: Some(oid(OLD)), new: oid(NEW) }],
         result: Some(OpResult::Stale { refname: "refs/heads/req/one".to_string(), actual: None }),
     };
-    let text = JoinRunError::OpFailed(record).to_string();
-    assert!(text.contains("op op-7 (key join-rebase:refs/heads/req/one:k) failed"), "{text}");
-    assert!(text.contains("not at its expected value"), "{text}");
-    assert!(text.contains("nothing was moved; run the command again to read the refs afresh"), "{text}");
+    assert_eq!(
+        JoinRunError::OpFailed(record).to_string(),
+        "op op-7 (key join-rebase:refs/heads/req/one:k) failed: a ref was not at its expected value, so join moved \
+         no ref; run the command again to read the refs afresh"
+    );
 }
 
 #[test]
-fn op_repeated_names_the_key_and_says_nothing_moved() {
+fn op_repeated_names_the_key_and_says_join_moved_no_ref() {
     let record = OpRecord {
         op_id: "op-8".to_string(),
         key: "join-fast-forward:refs/heads/zone/join:op-8".to_string(),
@@ -97,16 +100,19 @@ fn op_repeated_names_the_key_and_says_nothing_moved() {
         moves: vec![RefMove { refname: "refs/heads/zone/join".to_string(), old: Some(oid(OLD)), new: oid(NEW) }],
         result: Some(OpResult::Moved),
     };
-    let text = JoinRunError::OpRepeated(record).to_string();
-    assert!(text.contains("op key join-fast-forward:refs/heads/zone/join:op-8 is already done"), "{text}");
-    assert!(text.contains("so this command moved nothing; run it again"), "{text}");
+    assert_eq!(
+        JoinRunError::OpRepeated(record).to_string(),
+        "op key join-fast-forward:refs/heads/zone/join:op-8 is already done in the op log, so join moved no ref; run \
+         the command again"
+    );
 }
 
 #[test]
 fn state_path_names_the_path_and_says_it_is_not_utf8() {
-    let text = JoinRunError::StatePath(PathBuf::from("src/a.rs")).to_string();
-    assert!(text.contains("conflicted path src/a.rs is not UTF-8"), "{text}");
-    assert!(text.contains("mortar-join.json"), "{text}");
+    assert_eq!(
+        JoinRunError::StatePath(PathBuf::from("src/a.rs")).to_string(),
+        "conflicted path src/a.rs is not UTF-8, so mortar-join.json cannot record it; join moved no ref"
+    );
 }
 
 #[test]
@@ -115,10 +121,11 @@ fn state_write_names_the_path_and_the_io_error() {
         path: PathBuf::from("/repo/.git/mortar-join.json.tmp"),
         source: std::io::Error::new(std::io::ErrorKind::PermissionDenied, "denied here"),
     };
-    let text = error.to_string();
-    assert!(text.starts_with("/repo/.git/mortar-join.json.tmp: denied here"), "{text}");
-    assert!(text.contains("mortar-join.json was not written"), "{text}");
-    assert!(text.ends_with("check that folder and its permissions, then run the command again"), "{text}");
+    assert_eq!(
+        error.to_string(),
+        "/repo/.git/mortar-join.json.tmp: denied here; mortar-join.json was not written and join moved no ref; check \
+         that folder and its permissions, then run the command again"
+    );
 }
 
 #[test]
@@ -138,7 +145,7 @@ fn still_marked_names_each_file_and_its_lines() {
     ]);
     assert_eq!(
         error.to_string(),
-        "conflict markers remain; no commit was made and no ref was moved:\n  src/a.rs (lines 3, 7, 11)\n  b.txt \
+        "conflict markers remain; join made no commit and moved no ref:\n  src/a.rs (lines 3, 7, 11)\n  b.txt \
          (lines 1)\nremove them, then run `mr resolve` again"
     );
 }
@@ -155,7 +162,7 @@ fn state_stale_names_the_ref_both_tips_the_kept_file_and_the_way_out() {
         error.to_string(),
         "request ref refs/heads/request/r1 is at 2222222222222222222222222222222222222222, not at \
          1111111111111111111111111111111111111111 where the paused join left it, so /repo/.git/mortar-join.json no \
-         longer describes the request; the state file was kept and no ref was moved. To start over: remove \
+         longer describes the request; the state file was kept and join moved no ref. To start over: remove \
          /repo/.git/mortar-join.json, then run `mr join` to replay the request afresh"
     );
 }
@@ -172,7 +179,7 @@ fn state_stale_with_the_ref_gone_says_it_does_not_exist() {
         error.to_string(),
         "request ref refs/heads/request/r1 does not exist, not at 1111111111111111111111111111111111111111 where the \
          paused join left it, so /repo/.git/mortar-join.json no longer describes the request; the state file was \
-         kept and no ref was moved. To start over: remove /repo/.git/mortar-join.json, then run `mr join` to \
+         kept and join moved no ref. To start over: remove /repo/.git/mortar-join.json, then run `mr join` to \
          replay the request afresh"
     );
 }
@@ -185,7 +192,7 @@ fn state_read_names_the_path_and_the_io_error() {
     };
     assert_eq!(
         error.to_string(),
-        "/repo/.git/mortar-join.json: denied here; the join state could not be read and no ref was moved"
+        "/repo/.git/mortar-join.json: denied here; the join state could not be read and join moved no ref"
     );
 }
 
@@ -197,8 +204,7 @@ fn state_corrupt_names_the_path_and_the_reason() {
     };
     assert_eq!(
         error.to_string(),
-        "/repo/.git/mortar-join.json is not a state join wrote: expected \"onto\" at byte 60; resolve refuses and no \
-         ref was moved"
+        "/repo/.git/mortar-join.json is not a state join wrote: expected \"onto\" at byte 60; join moved no ref"
     );
 }
 
@@ -223,7 +229,7 @@ fn file_read_names_the_path_and_the_io_error() {
     };
     assert_eq!(
         error.to_string(),
-        "/repo/src/a.rs: denied here; the conflicted file could not be checked for markers and no ref was moved"
+        "/repo/src/a.rs: denied here; the conflicted file could not be checked for markers and join moved no ref"
     );
 }
 
@@ -232,8 +238,8 @@ fn conflicted_path_is_folder_names_the_path_and_the_way_out() {
     let text = JoinRunError::ConflictedPathIsFolder { path: PathBuf::from("src/gen") }.to_string();
     assert_eq!(
         text,
-        "conflicted path src/gen names a folder; nothing was committed and no ref was moved. A conflicted path \
-         must be a file or removed: make it one, then run `mr resolve` again"
+        "conflicted path src/gen names a folder; join moved no ref. A conflicted path must be a file or removed: \
+         make it one, then run `mr resolve` again"
     );
 }
 
@@ -244,7 +250,7 @@ fn conflicted_path_refused_names_the_path_and_gits_reason() {
     assert_eq!(
         text,
         "conflicted path lib was refused: not usable paths (one is a folder holding the other): \"lib\" and \
-         \"lib/x\"; nothing was committed and no ref was moved"
+         \"lib/x\"; join moved no ref"
     );
 }
 
@@ -254,7 +260,7 @@ fn conflicted_path_refused_without_a_path_says_the_paths_were_refused() {
     let text = JoinRunError::ConflictedPathRefused { path: None, reason }.to_string();
     assert_eq!(
         text,
-        "the conflicted paths were refused: not ls-tree records for the paths asked (no final NUL): \"x\"; nothing \
-         was committed and no ref was moved"
+        "the conflicted paths were refused: not ls-tree records for the paths asked (no final NUL): \"x\"; join \
+         moved no ref"
     );
 }

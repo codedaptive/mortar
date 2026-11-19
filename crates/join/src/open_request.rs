@@ -1,4 +1,4 @@
-//! OpenRequest: one open request of a zone, as overlap's caller hands it in. A declaration only; Nagatha's overlap
+//! OpenRequest: one open request of a zone, as overlap's caller hands it in. A declaration only; overlap's
 //! integration cases (listed in overlap.rs) are to exercise it.
 
 use gitio::Oid;

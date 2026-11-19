@@ -1,7 +1,7 @@
 //! save_join_state: encodes a JoinState and writes it as mortar-join.json in a git dir.
-//! No unit test: it writes real files (S-5); encode_join_state_tests covers the text. Nagatha's integration tests
-//! are to cover, in a throwaway repository: a conflict writes the state to mortar-join.json in the folder's git dir
-//! (SPEC-join §WO-join-2, S-21); resolve reads that state back (WO-join-3 Goal 1).
+//! No unit test: it writes real files; encode_join_state_tests covers the text. Integration tests are to cover, in
+//! a throwaway repository: a conflict writes the state to mortar-join.json in the folder's git dir; resolve reads
+//! that state back.
 
 use crate::encode_join_state::encode_join_state;
 use crate::join_state::JoinState;

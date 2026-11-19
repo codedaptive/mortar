@@ -1,4 +1,4 @@
-//! WO-join-rit-9: real join/resolve -> Gitio objects/ref I/O -> Oplog undo/valued log -> restore fixtures.
+//! Real join/resolve -> Gitio objects/ref I/O -> Oplog undo/valued log -> restore fixtures.
 //! Reuses join_rit's disposable/config-isolated repository; no private Join state or codec is imported.
 
 use super::support::Fixture;
