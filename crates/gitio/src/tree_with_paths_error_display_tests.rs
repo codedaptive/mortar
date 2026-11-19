@@ -1,5 +1,4 @@
-//! TreeWithPathsError's Display text: its refusal's and its git error's text, and as std::error::Error shows it.
-use gitio::{GitError, TreeWithPathsError, TreeWithPathsRefusal};
+use crate::{GitError, TreeWithPathsError, TreeWithPathsRefusal};
 use std::path::PathBuf;
 
 fn folder(path: &str) -> TreeWithPathsError {

@@ -1,6 +1,6 @@
 //! Display for TreeWithPathsError: the refusal's reason, or the git error as GitError shows it.
-//! Its tests are ZUTs in tests/display/tree_with_paths_error.rs: Display only formats, so they use only pure code of
-//! the kit.
+//! Its tests are ZUTs in tree_with_paths_error_display_tests.rs: Display only formats, so they use only pure code
+//! of the kit.
 
 use crate::TreeWithPathsError;
 use std::fmt;
