@@ -3,7 +3,7 @@
 //! proves its own rules with fakes: the record is checked before any read, the state is read once, the record's and
 //! the read's errors pass through, StatePresent carries the path read, and Write and AlreadyRestored are Ok. The
 //! record decision is proved by recorded_join_state_tests, the state-file decision by restore_state_step_tests; the
-//! chain with the real deciders in a real repository is covered by RITs (check_restore_join_state.rs header).
+//! chain with the real deciders in a real repository is tested in tests/join_rit/precheck.rs and precheck_crash.rs.
 
 use crate::join_state::JoinState;
 use crate::restore_step::RestoreStep;

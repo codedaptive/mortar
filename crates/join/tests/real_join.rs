@@ -1,5 +1,5 @@
-//! ZIT: public join::join, join::resolve and join::paused_join with real git in one throwaway repository; the op log
-//! read with oplog::read_valued_log.
+//! Tests the public join::join, join::resolve and join::paused_join with real git in one throwaway repository; the
+//! op log read with oplog::read_valued_log.
 use gitio::{Git, Oid, RunOpts};
 use join::{JoinAnswer, JoinRunError, PausedJoin};
 use oplog::{with_lock, KillPidProbe, LockName, OpPhase};
