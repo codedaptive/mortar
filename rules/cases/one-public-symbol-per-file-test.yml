@@ -67,7 +67,7 @@ invalid:
   - |
     pub struct Folder;
     pub type Folders = Vec<Folder>;
-  # Two names, each under two cfgs: the second name is reported.
+  # Two names, each under two cfgs: all four items are reported, since each sees the other name.
   - |
     #[cfg(unix)]
     pub(crate) fn kill_group(pid: u32) {}
