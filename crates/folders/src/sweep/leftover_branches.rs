@@ -1,5 +1,5 @@
 //! Which request branches are checked out nowhere and have a zone branch to be joined to, so sweep_refs may test
-//! them for containment (S-52 (1)).
+//! them for containment.
 
 use gitio::Oid;
 

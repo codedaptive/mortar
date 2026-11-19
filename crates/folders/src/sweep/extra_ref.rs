@@ -1,4 +1,4 @@
-//! What sweep_refs does with one ref its caller named (S-53, S-54).
+//! What sweep_refs does with one ref its caller named.
 //! A bare type; extra_ref_verdict_tests exercises it.
 
 use gitio::Oid;

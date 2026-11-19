@@ -1,4 +1,4 @@
-//! An attempt's branch name: `try/<zone>/<request>/<k>` (S-69).
+//! An attempt's branch name: `try/<zone>/<request>/<k>`.
 
 use super::{check_name, PlanError};
 

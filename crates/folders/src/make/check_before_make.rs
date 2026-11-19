@@ -1,6 +1,6 @@
 //! The checks both make functions run, under the lock, before the folder's branch, worktree or record is written.
-//! No unit test: it reads the worktree list, the file system and free disk (S-5); repeat_decision_tests,
-//! branch_holder_tests and floor_check_tests cover its decisions. Nagatha's integration group is to cover,
+//! No unit test: it reads the worktree list, the file system and free disk; repeat_decision_tests,
+//! branch_holder_tests and floor_check_tests cover its decisions. The integration group is to cover,
 //! through make_zone_folder and make_request_folder: a repeat finds the record already there; a different
 //! folder at the path refuses with DifferentFolder; a branch checked out elsewhere refuses with
 //! BranchCheckedOut; a disk under the floor refuses with BelowFloor and leaves no branch and no worktree.

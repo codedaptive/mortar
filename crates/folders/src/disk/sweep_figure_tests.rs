@@ -16,7 +16,7 @@ fn folder(path: &str, files_bytes: u64, build_bytes: u64) -> FolderDisk {
         record: FolderRecord {
             kind: FolderKind::Request,
             zone: "folders".to_string(),
-            request: Some("WO-1".to_string()),
+            request: Some("r1".to_string()),
             base: Oid::parse("0123456789abcdef0123456789abcdef01234567").unwrap(),
             work_order_paths: Vec::new(),
             needed_paths: Vec::new(),

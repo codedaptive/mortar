@@ -1,5 +1,5 @@
 //! Clears the build dirs of idle folders.
-//! No unit test: it reads and deletes files (S-5); idle_folders_tests covers the choice. Nagatha's integration
+//! No unit test: it reads and deletes files; idle_folders_tests covers the choice. The integration
 //! group is to cover, in a throwaway repository: a build dir in a folder idle that long is deleted and its bytes
 //! reported, while a folder touched since keeps its build dir; nothing else in the idle folder is deleted; the main
 //! checkout's target/ is never touched; a build dir that is a symlink is left alone; a folder counted in disk's
@@ -16,7 +16,7 @@ use crate::make::FolderError;
 /// measure_folder (the measure disk's sweep figure uses), is that old (idle_folders). Only a build dir that is a
 /// directory, not a symlink, is deleted, and its bytes as measure_folder measured them are counted as freed;
 /// nothing else in the folder is touched. The main checkout has no folder record, so it is never swept. An io
-/// failure is Io naming the path. Takes no lock (S-16).
+/// failure is Io naming the path. Takes no lock.
 pub fn sweep_build(git: &Git, idle_days: u64) -> Result<SweepBuildOutcome, FolderError> {
     let mut measured = Vec::new();
     for (path, _) in mortar_folders(git)? {

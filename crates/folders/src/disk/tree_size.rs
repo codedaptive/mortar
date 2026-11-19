@@ -1,5 +1,5 @@
 //! What measure_tree measured.
-//! A bare type; Nagatha's integration group covers it through measure_tree's cases.
+//! A bare type; the integration group covers it through measure_tree's cases.
 
 /// `bytes`, the apparent size of a tree's files; `newest`, its newest mtime in unix seconds (None: nothing found).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

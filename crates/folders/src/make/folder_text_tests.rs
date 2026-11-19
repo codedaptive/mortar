@@ -25,8 +25,8 @@ fn zone_record_reads_as_the_zone_folder() {
 #[test]
 fn request_record_with_a_request_names_it() {
     assert_eq!(
-        folder_text(&record(FolderKind::Request, Some("WO-folders-6"))),
-        "the request folder for zone folders, request WO-folders-6"
+        folder_text(&record(FolderKind::Request, Some("rf6"))),
+        "the request folder for zone folders, request rf6"
     );
 }
 
@@ -38,8 +38,8 @@ fn request_record_with_no_request_reads_as_a_request_folder() {
 #[test]
 fn attempt_record_with_a_request_names_attempt_and_request() {
     assert_eq!(
-        folder_text(&record(FolderKind::Attempt(2), Some("WO-folders-6"))),
-        "attempt 2's folder for zone folders, request WO-folders-6"
+        folder_text(&record(FolderKind::Attempt(2), Some("rf6"))),
+        "attempt 2's folder for zone folders, request rf6"
     );
 }
 

@@ -1,4 +1,4 @@
-//! What remake_orphans re-makes, or why it refuses, before anything is touched (S-96 (2), S-98).
+//! What remake_orphans re-makes, or why it refuses, before anything is touched.
 
 use std::path::PathBuf;
 

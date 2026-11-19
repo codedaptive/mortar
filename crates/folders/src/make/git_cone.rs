@@ -1,5 +1,5 @@
-//! The cone a folder hands git's cone-mode commands: its top-level files dropped, by what its tree holds (S-126).
-//! No unit test: it runs git (S-5); cone_folders_tests cover the decision; tests/folders/root_files.rs covers it in
+//! The cone a folder hands git's cone-mode commands: its top-level files dropped, by what its tree holds.
+//! No unit test: it runs git; cone_folders_tests cover the decision; tests/folders/root_files.rs covers it in
 //! a throwaway repository.
 
 use std::path::Path;

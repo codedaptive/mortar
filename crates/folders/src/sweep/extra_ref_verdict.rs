@@ -1,11 +1,11 @@
-//! Whether sweep_refs may delete a ref its caller named (S-53, S-54).
+//! Whether sweep_refs may delete a ref its caller named.
 
 use gitio::Oid;
 use oplog::ProtectedRef;
 
 use super::ExtraRef;
 
-/// Namespaces Mortar, git and the remotes own; a caller's ref list never reaches into them (S-53, S-54).
+/// Namespaces Mortar, git and the remotes own; a caller's ref list never reaches into them.
 const REFUSED_PREFIXES: [&str; 3] = ["refs/heads/", "refs/mortar/", "refs/remotes/"];
 
 /// Refuse "is under <prefix>" for a name under refs/heads/, refs/mortar/ or refs/remotes/, then "is protected by

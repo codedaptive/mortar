@@ -1,4 +1,4 @@
-//! #1019, S-52(1)/S-53/S-54: sweep_refs joins real branch containment/worktree discovery, oplog and maintenance.
+//! sweep_refs joins real branch containment/worktree discovery, oplog and maintenance.
 use super::maintenance_support::*;
 use crate::support::run;
 use folders::FolderError;

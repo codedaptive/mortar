@@ -1,7 +1,8 @@
 //! Keeps one attempt: removes every attempt folder, then one folder-keep op moves the request branch to the kept
-//! attempt's tip and deletes every attempt branch (S-69, S-93). An attempt folder whose branch is gone (an orphan) is
-//! OrphanAttempt before anything is touched; next step: remake_orphans, which the caller runs first (S-96 (2)).
-//! No unit test: it runs git and appends to the op log (S-5). request_branch_tests, attempt_branch_tests,
+//! attempt's tip and deletes every attempt branch. Before anything is touched, attempt k's folder with its branch
+//! gone is AttemptMissing, and any other attempt folder whose branch is gone (an orphan) is OrphanAttempt; next
+//! step: remake_orphans, which the caller runs first.
+//! No unit test: it runs git and appends to the op log. request_branch_tests, attempt_branch_tests,
 //! request_held_tests, keep_op_tests, ref_moved_from_tests, attempt_refs_left_tests, keep_plan_tests,
 //! attempts_of_tests and orphan_attempts_tests cover its decisions.
 //! A kill between the removals and the op leaves the remaining folders and every branch; a repeat given the same saved
@@ -27,16 +28,16 @@ use crate::make::{ref_moved_from, FolderError};
 use crate::plan::{attempt_branch, request_branch};
 
 /// Keeps attempt `k` of `request` in `zone` and returns (the request branch's tip before, the kept tip), so the caller
-/// can move the request folder with move_folder(old, new) (S-49). `saved` is the caller's is_saved per attempt to be
-/// dropped, as (k, saved) (S-32). Before anything is touched: the request branch must exist (RequestBranchMissing),
+/// can move the request folder with move_folder(old, new). `saved` is the caller's is_saved per attempt to be
+/// dropped, as (k, saved). Before anything is touched: the request branch must exist (RequestBranchMissing),
 /// attempt k must exist (AttemptMissing, which is also the answer for an orphan k, as it has no branch), no attempt
 /// folder may have lost its branch (OrphanAttempt naming them; next step: remake_orphans, which the caller runs), every
-/// other attempt, with a folder or not, must be saved (AttemptsUnsaved, S-32, S-93), and the kept tip must descend
+/// other attempt, with a folder or not, must be saved (AttemptsUnsaved), and the kept tip must descend
 /// from the request tip (RequestMovedOn). Then git removes each attempt folder without force, the kept attempt's last,
 /// so git itself refuses modified or untracked files (Git, the op not run; folders removed before the refused one stay
 /// removed). Then the folder-keep op runs; see apply_keep. A try branch or the request branch moved between the read
 /// and the op is AttemptRefsLeft, naming the folders already removed; every branch is kept. The caller holds the lock
-/// and runs oplog::recover first (S-16, S-25); keep takes no lock itself. After a completed keep no attempt branch is
+/// and runs oplog::recover first; keep takes no lock itself. After a completed keep no attempt branch is
 /// left, so a repeat is AttemptMissing.
 pub fn keep(
     git: &Git,

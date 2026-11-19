@@ -1,4 +1,4 @@
-//! Private real-repository fixtures for the attempt zone integration tests (WO-folders-6c, WO-folders-6d): zone branch
+//! Private real-repository fixtures for the attempt zone integration tests: zone branch
 //! red, request folder one on req/red/one, its attempt folders made by make_attempts, and their trysnap commits, in a
 //! disposable TestRepo.
 use super::maintenance_support::{caller, log, refs, ACTOR};
@@ -57,7 +57,7 @@ impl Attempts {
     pub fn trysnaps(&self, n: u32) {
         for k in 1..=n { run(&self.f.git, &["update-ref", &trysnap_ref(k), self.f.head.as_str()]); }
     }
-    /// Writes attempt k's trysnap commit as a save would (SPEC-snapshot WO-snapshot-1) and points its trysnap ref at
+    /// Writes attempt k's trysnap commit as a save would and points its trysnap ref at
     /// it: parents [try tip, the previous trysnap commit when the ref is set], author saver(). With `change` a new file
     /// kit/zone/saved-<k> is written in the folder first, so the commit's tree is the folder's files and differs from
     /// the try tip's tree; without it, the tree is the try tip's. The folder's index is left at the try tip's tree.

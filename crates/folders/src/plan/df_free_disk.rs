@@ -1,5 +1,5 @@
 //! Free disk as `df` reports it: runs `df -P -k <path>`; read_df_available reads the output.
-//! No unit test: it runs a real program against a real volume. Covered by Nagatha's integration
+//! No unit test: it runs a real program against a real volume. Covered by the integration
 //! group: free_bytes on the test's temp folder answers a positive figure.
 
 use std::path::Path;

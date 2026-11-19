@@ -23,34 +23,34 @@ fn moves_the_request_branch_then_deletes_each_attempt_branch() {
         tip: oid(T2),
         remove: vec![PathBuf::from("/t/try-1"), PathBuf::from("/t/try-2")],
         delete: vec![
-            ("refs/heads/try/folders/WO-6/1".to_string(), oid(T1)),
-            ("refs/heads/try/folders/WO-6/2".to_string(), oid(T2)),
+            ("refs/heads/try/folders/r6/1".to_string(), oid(T1)),
+            ("refs/heads/try/folders/r6/2".to_string(), oid(T2)),
         ],
     };
-    let op = keep_op("op-1".to_string(), "bilby".to_string(), 1763030400, "refs/heads/req/folders/WO-6", &oid(REQ), &kept)
+    let op = keep_op("op-1".to_string(), "agent-a".to_string(), 1763030400, "refs/heads/req/folders/r6", &oid(REQ), &kept)
         .unwrap();
     assert_eq!(
         op,
         Op {
             op_id: "op-1".to_string(),
-            key: "folders:keep:refs/heads/req/folders/WO-6@2222222222222222222222222222222222222222".to_string(),
+            key: "folders:keep:refs/heads/req/folders/r6@2222222222222222222222222222222222222222".to_string(),
             kind: "folder-keep".to_string(),
-            actor: "bilby".to_string(),
-            reason: "keep 2222222222222222222222222222222222222222 on refs/heads/req/folders/WO-6".to_string(),
+            actor: "agent-a".to_string(),
+            reason: "keep 2222222222222222222222222222222222222222 on refs/heads/req/folders/r6".to_string(),
             at: 1763030400,
             moves: vec![
                 RefMove {
-                    refname: "refs/heads/req/folders/WO-6".to_string(),
+                    refname: "refs/heads/req/folders/r6".to_string(),
                     old: Some(oid(REQ)),
                     new: oid(T2),
                 },
                 RefMove {
-                    refname: "refs/heads/try/folders/WO-6/1".to_string(),
+                    refname: "refs/heads/try/folders/r6/1".to_string(),
                     old: Some(oid(T1)),
                     new: oid(ZERO),
                 },
                 RefMove {
-                    refname: "refs/heads/try/folders/WO-6/2".to_string(),
+                    refname: "refs/heads/try/folders/r6/2".to_string(),
                     old: Some(oid(T2)),
                     new: oid(ZERO),
                 },
@@ -68,6 +68,6 @@ fn a_sha256_attempt_branch_is_deleted_by_64_zeros() {
         delete: vec![("refs/heads/try/a/b/1".to_string(), tip)],
     };
     let request = oid("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
-    let op = keep_op("op-2".to_string(), "simms".to_string(), 7, "refs/heads/req/a/b", &request, &kept).unwrap();
+    let op = keep_op("op-2".to_string(), "agent-b".to_string(), 7, "refs/heads/req/a/b", &request, &kept).unwrap();
     assert_eq!(op.moves[1].new, oid("0000000000000000000000000000000000000000000000000000000000000000"));
 }

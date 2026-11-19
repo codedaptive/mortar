@@ -1,5 +1,5 @@
 //! One folder's size and last touch, the one measure both disk and sweep_build judge idleness by.
-//! No unit test: it reads the file system (S-5). Nagatha's integration group is to cover, in a throwaway
+//! No unit test: it reads the file system. The integration group is to cover, in a throwaway
 //! directory: files leaves out `.git` and the build dir, build is the build dir alone, newest is the later of the
 //! two; a folder with no build dir has build 0 and newest from its files.
 

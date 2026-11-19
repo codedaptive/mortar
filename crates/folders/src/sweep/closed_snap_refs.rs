@@ -1,11 +1,11 @@
 //! Which snapshot refs, a request's and its attempts', belong to closed requests, so sweep_refs may delete them. A
 //! closed request is one whose request branch and every attempt branch (`refs/heads/try/<zone>/<request>/<k>` with
-//! attempt_number(k) Some, S-69) are gone. keep and drop_attempts delete every attempt branch; remove refuses
+//! attempt_number(k) Some) are gone. keep and drop_attempts delete every attempt branch; remove refuses
 //! (AttemptsRemain) while an attempt branch or attempt folder remains, so a request with an attempt branch has not
 //! been removed and stays open. Any other branch under that prefix (`01`, `0`, `1/x`) is not Mortar's: it does not
 //! keep a request open, and the sweep picks only snap and trysnap refs, so that branch is never touched.
-//! A request branch left behind is leftover_branches' case (S-52 (1)); t3code's checkpoint refs come in as
-//! the caller's extra refs (S-53, S-54).
+//! A request branch left behind is leftover_branches' case; t3code's checkpoint refs come in as
+//! the caller's extra refs.
 
 use gitio::Oid;
 
@@ -15,7 +15,7 @@ use crate::plan::{attempt_number, SNAP_REF_PREFIX, TRYSNAP_REF_PREFIX};
 /// input order. Only a ref named SNAP_REF_PREFIX + `<zone>/<request>` (two non-empty segments) or
 /// TRYSNAP_REF_PREFIX + `<zone>/<request>/<k>` (three non-empty segments) is considered; any other is left alone.
 /// Its request is open while `refs` holds `refs/heads/req/<zone>/<request>` or an attempt branch, a ref named
-/// exactly `refs/heads/try/<zone>/<request>/<k>` with attempt_number(k) Some (S-69), and closed otherwise.
+/// exactly `refs/heads/try/<zone>/<request>/<k>` with attempt_number(k) Some, and closed otherwise.
 pub fn closed_snap_refs(refs: &[(Oid, String)]) -> Vec<(String, Oid)> {
     refs.iter()
         .filter(|(_, name)| match zone_request(name) {

@@ -1,5 +1,5 @@
-//! drop_attempts in a throwaway repository: the cases src/attempts/drop_attempts.rs's header names (S-82), an orphan
-//! attempt folder refused, and a drop after remake_orphans going through (S-96 (2), S-98).
+//! drop_attempts in a throwaway repository: the cases src/attempts/drop_attempts.rs's header names, an orphan
+//! attempt folder refused, and a drop after remake_orphans going through.
 use super::attempt_support::{trysnap_ref, try_ref, worktrees, Attempts, REQ_REF};
 use super::maintenance_support::{caller, child, instrument, records, ACTOR};
 use crate::support::{run, write};

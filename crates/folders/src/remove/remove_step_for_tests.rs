@@ -9,7 +9,7 @@ use crate::record::FolderKind;
 
 const TIP: &str = "0123456789abcdef0123456789abcdef01234567";
 const OTHER: &str = "fedcba9876543210fedcba9876543210fedcba98";
-const BRANCH: &str = "refs/heads/req/folders/WO-folders-5";
+const BRANCH: &str = "refs/heads/req/folders/rf5";
 
 fn oid(hex: &str) -> Oid {
     Oid::parse(hex).unwrap()

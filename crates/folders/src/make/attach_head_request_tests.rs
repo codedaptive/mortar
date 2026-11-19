@@ -7,8 +7,8 @@ use super::attach_head_request::attach_head_request;
 
 #[test]
 fn points_head_at_the_full_branch_ref() {
-    let (args, _) = attach_head_request(Path::new("/wt/req"), "req/folders/WO-folders-1");
-    let want: Vec<OsString> = ["symbolic-ref", "HEAD", "refs/heads/req/folders/WO-folders-1"]
+    let (args, _) = attach_head_request(Path::new("/wt/req"), "req/folders/rf1");
+    let want: Vec<OsString> = ["symbolic-ref", "HEAD", "refs/heads/req/folders/rf1"]
         .iter()
         .map(OsString::from)
         .collect();

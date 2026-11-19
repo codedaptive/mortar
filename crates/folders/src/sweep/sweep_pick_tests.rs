@@ -1,6 +1,6 @@
 //! sweep_pick: a joined branch comes with its snapshot ref, or alone when it has none; closed snapshot refs, then
 //! joined branches, then accepted extras, in that order; a duplicate refname is dropped; a refused extra is
-//! ExtraRefRefused with nothing picked; a skipped extra is absent. With replay-record refs (S-121 (2)): one of a
+//! ExtraRefRefused with nothing picked; a skipped extra is absent. With replay-record refs: one of a
 //! zone not in the zone list comes after the closed snapshot refs and before the joined branches and the extras; a
 //! listed zone's is absent; one listed twice is picked once; a refused extra is ExtraRefRefused with nothing
 //! picked, even with a stale one present.

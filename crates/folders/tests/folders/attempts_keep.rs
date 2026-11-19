@@ -1,6 +1,6 @@
 //! keep in a throwaway repository: the cases src/attempts/keep.rs's header names, orphan attempt folders refused and
-//! then kept past after remake_orphans (S-96 (2), S-98), and AttemptRefsLeft from a ref moved between keep's read and
-//! its op (S-69, S-93).
+//! then kept past after remake_orphans, and AttemptRefsLeft from a ref moved between keep's read and
+//! its op.
 use super::attempt_support::{trysnap_ref, try_ref, worktrees, Attempts, REQ_REF};
 use super::maintenance_support::{child, instrument, records, ACTOR};
 use crate::support::{run, write};

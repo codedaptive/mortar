@@ -1,4 +1,4 @@
-//! WO-folders-4c, S-87/S-88: move_folder with an index tree t, the four index-tree cases named in
+//! move_folder with an index tree t, the four index-tree cases named in
 //! move_folder.rs's header, each on its own throwaway repository. Joins folders::move_folder -> gitio
 //! set_index/folder_move -> real sparse index and files, under the caller's lock with oplog::recover first.
 use super::index_tree_support::{TreeFixture, ADDED, KEEP, RESOLVED, ZONE};

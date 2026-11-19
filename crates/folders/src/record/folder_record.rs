@@ -1,4 +1,4 @@
-//! What mortar records about a folder it made (S-18), kept in that folder's git dir.
+//! What mortar records about a folder it made, kept in that folder's git dir.
 //! A bare type; encode_folder_record_tests and decode_folder_record_tests exercise it.
 
 use gitio::Oid;

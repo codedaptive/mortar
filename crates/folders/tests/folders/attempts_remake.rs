@@ -1,6 +1,7 @@
-//! remake_orphans in a throwaway repository: the cases src/attempts/remake_orphans.rs's header names (S-96 (2),
-//! S-98). Each orphan is made by committing in an attempt folder, writing its trysnap commit (attempt_support's
-//! trysnap) and deleting its try branch by hand.
+//! remake_orphans in a throwaway repository: the cases src/attempts/remake_orphans.rs's header names.
+//! Each orphan is made by writing its trysnap commit (attempt_support's trysnap), some after committing in the
+//! attempt folder, then deleting its try branch by hand; two of the refusal test's orphans instead have no trysnap
+//! ref, or one set by update-ref to the fixture's parentless head.
 use super::attempt_support::{oid, trysnap_ref, try_ref, Attempts, REQ_REF};
 use super::maintenance_support::{records, ACTOR};
 use crate::support::{run, write};

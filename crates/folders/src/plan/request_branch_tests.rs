@@ -4,12 +4,12 @@ use super::request_branch;
 
 #[test]
 fn names_req_zone_request() {
-    assert_eq!(request_branch("folders", "WO-folders-1").unwrap(), "req/folders/WO-folders-1");
+    assert_eq!(request_branch("folders", "rf1").unwrap(), "req/folders/rf1");
 }
 
 #[test]
 fn refuses_a_bad_zone() {
-    assert_eq!(request_branch(".z", "WO-1").unwrap_err().reason, "zone name \".z\" starts with '.' or '-'");
+    assert_eq!(request_branch(".z", "r1").unwrap_err().reason, "zone name \".z\" starts with '.' or '-'");
 }
 
 #[test]

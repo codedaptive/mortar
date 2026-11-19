@@ -1,5 +1,5 @@
 //! How many bytes a folder tree holds and when it was last touched.
-//! No unit test: it reads the file system (S-5). Nagatha's integration group is to cover, in a throwaway
+//! No unit test: it reads the file system. The integration group is to cover, in a throwaway
 //! directory: a tree of files gives the sum of their lengths and the newest mtime; a top-level entry named in skip
 //! is left out, and the same name deeper down is counted; a symlink counts its own length, its target is never
 //! read; a missing path gives zero bytes and no time.

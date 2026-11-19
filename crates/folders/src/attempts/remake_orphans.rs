@@ -1,6 +1,6 @@
 //! Re-makes a request's orphan attempt folders (their try branch gone) from their trysnap refs, so keep and
-//! drop_attempts meet ordinary attempts (S-96 (2), S-98).
-//! No unit test: it runs git and appends to the op log (S-5). remake_plan_tests, remade_message_tests,
+//! drop_attempts meet ordinary attempts.
+//! No unit test: it runs git and appends to the op log. remake_plan_tests, remade_message_tests,
 //! remade_trailers_tests, refill_cone_tests, branch_step_after_tests and orphan_attempts_tests
 //! cover its decisions. tests/folders/attempts_remake.rs covers, in a throwaway repository: an
 //! orphan with a trysnap ref gets its try branch at a new commit holding the snapshot's tree, with the snapshot's
@@ -30,13 +30,13 @@ use crate::make::{git_cone, make_branch, read_folder_record, refill_cone, Folder
 use crate::plan::{attempt_branch, request_branch, TRYSNAP_REF_PREFIX};
 
 /// Re-makes every orphan attempt folder of `request` in `zone` (orphan_attempts) and returns their folders in k order.
-/// The caller holds the lock and runs oplog::recover first (S-16, S-25); remake_orphans takes no lock itself. The names
+/// The caller holds the lock and runs oplog::recover first; remake_orphans takes no lock itself. The names
 /// must make a request branch (Plan). No orphans: Ok(empty), nothing changed, which is also what a repeat after a
 /// completed call finds. Each orphan k's snapshot T is the commit its trysnap ref `<zone>/<request>/<k>` names; an
 /// orphan with no such ref, or whose T has no parent, is OrphanWithoutSnapshot for all of them before anything is
 /// touched (remake_plan); so is an orphan whose folder has no Mortar folder record (NotAFolder naming it), and a
 /// record whose cone is unusable (Plan, refill_cone). Each cone is the record's without its top-level files, read
-/// from the snapshot's tree since HEAD is unborn (git_cone, S-126). Every folder, whatever its cone, is checked, also
+/// from the snapshot's tree since HEAD is unborn (git_cone). Every folder, whatever its cone, is checked, also
 /// before anything is touched, with a read-only sparse_list: a folder that is not sparse in cone mode is Git, so remake
 /// never leaves such a folder with a full index and its files missing. Then, in k order: a new commit R holding T's
 /// tree with T's first parent P as its one parent, its message remade_message with remade_trailers drawn from P's

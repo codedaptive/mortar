@@ -1,4 +1,4 @@
-//! The folder record (S-18): its type, its one-line JSON form, and where it lives.
+//! The folder record: its type, its one-line JSON form, and where it lives.
 
 mod decode_folder_record;
 mod encode_folder_record;

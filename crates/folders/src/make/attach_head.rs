@@ -1,5 +1,5 @@
 //! Points a folder's HEAD at its branch.
-//! No unit test: it runs git (S-5); attach_head_request_tests covers the run's arguments. Nagatha's
+//! No unit test: it runs git; attach_head_request_tests covers the run's arguments. The
 //! integration group is to cover: a worktree added detached at a branch's commit lists that branch after
 //! attach_head, and its HEAD commit is unchanged.
 

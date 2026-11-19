@@ -1,4 +1,4 @@
-//! Where a folder's record lives inside its git dir (S-18).
+//! Where a folder's record lives inside its git dir.
 
 use std::path::{Path, PathBuf};
 

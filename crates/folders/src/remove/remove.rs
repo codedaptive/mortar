@@ -1,10 +1,10 @@
 //! Removes a request folder whose work has joined: its worktree by gitio, then its branch and snapshot ref by one
-//! op-log op. No unit test for the git and op-log path: it runs git and appends to the op log (S-5). remove_tests
+//! op-log op. No unit test for the git and op-log path: it runs git and appends to the op log. remove_tests
 //! covers the unsaved refusal, unsaved_refusal_tests its four cases, remove_step_for_tests the folder's kind, HEAD and
 //! containment, step_refusal_tests each refusal, repeat_step_for_tests a repeated op, and remove_op_tests the op as
 //! data; attempts_refusal's header names the tests of the attempts check. A kill between worktree_remove and the op
 //! leaves the branch, contained in its zone, with no folder; no work is lost, and sweep_refs deletes it and its
-//! snapshot ref (S-52 (1)). tests/folders/removal.rs covers, in a throwaway repository: a joined, saved request
+//! snapshot ref. tests/folders/removal.rs covers, in a throwaway repository: a joined, saved request
 //! folder is removed with its branch and snapshot ref deleted by one folder-remove op in mortar/oplog.jsonl; a repeat
 //! after that op was logged and the branch was made again at the same tip deletes it again; a branch not joined is
 //! NotJoined, with nothing changed; a zone folder is ZoneFolder; a detached HEAD, an unborn branch and a worktree with
@@ -27,20 +27,20 @@ use crate::make::{read_folder_record, FolderError};
 use crate::plan::{request_branch, snap_ref, zone_branch};
 use crate::record::FolderKind;
 
-/// Removes the request folder at `folder`. `saved` is the caller's is_saved with no refused file (S-32); false, or any
+/// Removes the request folder at `folder`. `saved` is the caller's is_saved with no refused file; false, or any
 /// file in `refused` (those the snapshot size cap of `cap` bytes refused), is NotRemovedUnsaved before any git run. A
 /// HEAD with no branch or no commit, a worktree with no folder record, a request record with no request, or HEAD on
 /// another branch than the record's request branch is NotAFolder; an attempt folder is AttemptFolder, as soon as its
 /// record is read; a zone folder is ZoneFolder; a missing zone branch is ZoneBranchMissing; a branch not contained in
 /// its zone branch is NotJoined; a request whose attempt branches (refs/heads/try/<zone>/<request>/<k>, k an attempt
 /// number) or attempt folders remain is AttemptsRemain (attempts_refusal), naming the branches by full name and the
-/// folders by path as display text, with nothing changed; the next step is keep or drop_attempts (S-82); an attempt
+/// folders by path as display text, with nothing changed; the next step is keep or drop_attempts; an attempt
 /// folder whose branch is gone is refused by both (OrphanAttempt) until remake_orphans, which the caller runs first,
 /// makes it ordinary, and with no snapshot to re-make it from it is copied out and removed by hand. Then git
 /// removes the worktree without force, so git itself refuses modified or untracked files (Git, nothing deleted), and
 /// one folder-remove op deletes the branch and the snapshot ref, if there is one; a ref not where it was read keeps
 /// both refs and is RemovedRefsLeft, since the worktree is already gone. The caller holds the lock and runs
-/// oplog::recover first (S-16, S-25); remove takes no lock itself.
+/// oplog::recover first; remove takes no lock itself.
 pub fn remove(
     git: &Git,
     folder: &Path,

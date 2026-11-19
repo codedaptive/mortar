@@ -1,4 +1,4 @@
-//! Top-level files given as folder paths (S-126, WO-folders-sparse-files) in a throwaway repository: make and its
+//! Top-level files given as folder paths in a throwaway repository: make and its
 //! repeat for request and zone folders, need, and remake_orphans hand git's cone-mode sparse_set / sparse_add only
 //! directories, while the folder record keeps the paths exactly as given; a refill with only top-level files checks
 //! out the top-level files alone; an orphan attempt whose record holds only top-level files is remade with its try ref

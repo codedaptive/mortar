@@ -1,5 +1,5 @@
-//! Attempt folders (S-69, S-82): making a request's attempts, re-making its orphan attempts from their snapshots
-//! (S-98), keeping one and dropping them all, and as data the attempts to make, the attempts a repository holds, the
+//! Attempt folders: making a request's attempts, re-making its orphan attempts from their snapshots,
+//! keeping one and dropping them all, and as data the attempts to make, the attempts a repository holds, the
 //! attempt folders whose branch is gone, what of a request's attempts is left, which are unsaved, what keeping one
 //! removes, deletes and moves, what dropping them removes and deletes, and how an orphan attempt is re-made from its
 //! snapshot: at which tree and parent, with which message and trailers.

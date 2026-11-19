@@ -1,5 +1,5 @@
 //! Reads a folder's record from its git dir.
-//! No unit test: it reads a real file (S-5); decode_folder_record_tests covers the decoding. Nagatha's
+//! No unit test: it reads a real file; decode_folder_record_tests covers the decoding. The
 //! integration group is to cover: a record written by write_folder_record reads back equal; a git dir with no
 //! record reads None; a record file holding text that is not a record refuses with FolderError::Record naming
 //! the file.

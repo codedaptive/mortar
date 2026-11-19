@@ -1,4 +1,4 @@
-//! A zone's branch name: `zone/<zone>` (S-17).
+//! A zone's branch name: `zone/<zone>`.
 
 use super::{check_name, PlanError};
 

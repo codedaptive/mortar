@@ -17,10 +17,10 @@ fn oid(hex: &str) -> Oid {
 fn rec(phase: OpPhase, result: OpResult) -> OpRecord {
     OpRecord {
         op_id: "op-1".to_string(),
-        key: format!("folders:branch:req/folders/WO-1@{TIP}"),
+        key: format!("folders:branch:req/folders/r1@{TIP}"),
         kind: "folder-branch".to_string(),
-        actor: "bilby".to_string(),
-        reason: "make folder branch req/folders/WO-1".to_string(),
+        actor: "agent-a".to_string(),
+        reason: "make folder branch req/folders/r1".to_string(),
         at: 1,
         phase,
         moves: Vec::new(),
@@ -61,7 +61,7 @@ fn failed_exists() {
     let failed = rec(
         OpPhase::Failed,
         OpResult::Stale {
-            refname: "refs/heads/req/folders/WO-1".to_string(),
+            refname: "refs/heads/req/folders/r1".to_string(),
             actual: Some(oid(OTHER)),
         },
     );

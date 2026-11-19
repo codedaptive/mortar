@@ -1,4 +1,4 @@
-//! Private fixtures for WO-orc-folders-it-2; real sparse request folders and caller-held lock/recovery.
+//! Private fixtures for the move_folder ZITs; real sparse request folders and caller-held lock/recovery.
 use crate::support::{run, setup, write, Fixture};
 use folders::{make_request_folder, move_folder, FolderError};
 use gitio::{Git, Oid};
@@ -68,7 +68,7 @@ impl MoveFixture {
 
 pub fn caller_move(git: &Git, common: &Path, folder: &Path, old: &Oid, new: &Oid, saved: bool)
     -> Result<(), HeldLockError<FolderError>> {
-    // The caller, not folders::move_folder, owns this precondition (S-16/S-25/S-49).
+    // The caller, not folders::move_folder, owns this precondition.
     with_lock(git, common, &LockName::Join("red".into()), "move-folder-caller", &KillPidProbe, || {
         oplog::recover(git, common).map_err(FolderError::Oplog)?;
         move_folder(git, folder, old, new, saved, ACTOR, None)

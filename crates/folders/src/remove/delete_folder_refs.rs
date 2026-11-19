@@ -1,6 +1,6 @@
 //! Deletes a removed folder's branch and snapshot ref by one folder-remove op, and answers a repeat of it.
-//! No unit test: it appends to the op log and runs git (S-5); remove_op_tests covers the op as data,
-//! repeat_step_for_tests the repeat decision and ref_moved_from_tests the stale ref. Nagatha's integration group
+//! No unit test: it appends to the op log and runs git; remove_op_tests covers the op as data,
+//! repeat_step_for_tests the repeat decision and ref_moved_from_tests the stale ref. The integration group
 //! is to cover it through remove's cases.
 
 use std::path::Path;

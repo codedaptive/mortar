@@ -11,8 +11,8 @@ fn refusal(step: RemoveStep) -> Option<FolderError> {
         step,
         Path::new("/wt/req-a"),
         "folders",
-        "refs/heads/req/folders/WO-1",
-        "refs/heads/req/folders/WO-2",
+        "refs/heads/req/folders/r1",
+        "refs/heads/req/folders/r2",
         "refs/heads/zone/folders",
     )
 }
@@ -40,7 +40,7 @@ fn off_branch_is_not_a_folder_naming_head_and_expected() {
             assert_eq!(path, PathBuf::from("/wt/req-a"));
             assert_eq!(
                 reason,
-                "its HEAD is on refs/heads/req/folders/WO-1, not its request branch refs/heads/req/folders/WO-2"
+                "its HEAD is on refs/heads/req/folders/r1, not its request branch refs/heads/req/folders/r2"
             );
         }
         other => panic!("expected NotAFolder, got {other:?}"),
@@ -56,7 +56,7 @@ fn not_joined_names_the_branch_and_zone_branch() {
             zone_branch,
         }) => {
             assert_eq!(path, PathBuf::from("/wt/req-a"));
-            assert_eq!(branch, "refs/heads/req/folders/WO-1");
+            assert_eq!(branch, "refs/heads/req/folders/r1");
             assert_eq!(zone_branch, "refs/heads/zone/folders");
         }
         other => panic!("expected NotJoined, got {other:?}"),

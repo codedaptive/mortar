@@ -1,13 +1,13 @@
 //! Makes a zone's standing folder: a sparse worktree on zone/<zone>, making the branch through the op log when
-//! it is new (S-27).
-//! No unit test: it takes a lock, appends to the op log, runs git and writes files (S-5). zone_branch_tests,
+//! it is new.
+//! No unit test: it takes a lock, appends to the op log, runs git and writes files. zone_branch_tests,
 //! sparse_paths_tests, zone_start_for_tests, branch_step_after_tests, repeat_decision_tests, skip_refill_tests,
 //! refill_cone_tests, branch_holder_tests and attach_head_request_tests cover its decisions.
-//! Nagatha's integration group is to cover, in a throwaway repository: a zone folder on an existing zone/<zone> uses
+//! The integration group is to cover, in a throwaway repository: a zone folder on an existing zone/<zone> uses
 //! the branch as it is, at its tip with HEAD on the branch, and logs no branch op; with no zone branch and a start
 //! commit, the branch is made at the start by an op logged in mortar/oplog.jsonl; with neither, ZoneBranchMissing; a
 //! second call refills the folder (finishing a fill that was interrupted) and answers the same record; a repeat on a
-//! folder with unmerged entries returns the record and leaves the folder untouched (S-36); a folders lock held by a
+//! folder with unmerged entries returns the record and leaves the folder untouched; a folders lock held by a
 //! live process refuses with FolderError::Lock and makes nothing.
 
 use gitio::Oid;

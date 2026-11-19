@@ -1,4 +1,4 @@
-//! The trailers of the commit an orphan attempt is re-made at (S-98, S-34, S-83).
+//! The trailers of the commit an orphan attempt is re-made at.
 
 use oplog::MortarTrailers;
 

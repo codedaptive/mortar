@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use crate::make::FolderError;
 
 /// NotRemovedUnsaved for `folder` when `saved` is false or `refused` names any file; None otherwise. The caller
-/// passes `saved` as is_saved and no refused file (S-32); a refused list refuses on its own as well, since those
+/// passes `saved` as is_saved and no refused file; a refused list refuses on its own as well, since those
 /// files are in no snapshot. `cap` is the size cap in bytes, carried into the refusal's text.
 pub(crate) fn unsaved_refusal(folder: &Path, saved: bool, refused: &[PathBuf], cap: Option<u64>) -> Option<FolderError> {
     if saved && refused.is_empty() {

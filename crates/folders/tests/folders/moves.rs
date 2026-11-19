@@ -1,4 +1,4 @@
-//! WO-orc-folders-it-2 #891, SPEC-folders WO-folders-4/S-49 and the #880 crash gap.
+//! move_folder's refusals, moves and repeats, including a crash between the folder move and the branch operation.
 //! Joins folders::move_folder -> gitio::folder_move -> real sparse index/files and oplog::apply.
 use super::move_support::{assert_move_op, caller_move, MoveFixture, BRANCH};
 use crate::support::{run, write};
@@ -26,7 +26,7 @@ fn unsaved_folder_is_refused_with_save_next_step_and_no_ref_index_file_or_log_ch
 
 #[test]
 fn branch_already_at_new_gets_its_stale_files_and_index_moved_without_another_operation() {
-    // S-47/S-49 caller already moved the real branch; folders only catches up index/files.
+    // The caller already moved the real branch; folders only catches up index/files.
     let m = MoveFixture::new();
     run(&m.f.git, &["update-ref", BRANCH, m.new.as_str(), m.f.head.as_str()]);
     assert_eq!(run(&m.local, &["write-tree"]), run(&m.f.git, &["rev-parse", &format!("{}^{{tree}}", m.f.head)]));
@@ -92,7 +92,7 @@ fn local_unstaged_staged_and_untracked_obstructions_refuse_without_branch_entry_
 
 #[test]
 fn ignored_obstruction_is_replaced_by_the_target_blob_while_unrelated_ignored_work_survives() {
-    // #1179/S-55: move_folder -> gitio protection skips ignored files, then real sparse move installs target.
+    // move_folder -> gitio protection skips ignored files, then real sparse move installs target.
     let m = MoveFixture::new();
     fs::write(m.f.common.join("info/exclude"), b"/kit/zone/new\n/local-ignored\n").unwrap();
     write(&m.folder, "kit/zone/new", b"ignored bytes may be replaced\n");
@@ -112,7 +112,7 @@ fn ignored_obstruction_is_replaced_by_the_target_blob_while_unrelated_ignored_wo
 
 #[test]
 fn tracked_local_edits_refuse_the_move_without_ref_index_file_or_log_changes() {
-    // WO-orc-folders-it-3 #975, move_folder case 4: folders -> real gitio refusal -> no oplog operation.
+    // move_folder case 4: folders -> real gitio refusal -> no oplog operation.
     // saved=true deliberately reaches gitio's protection, rather than the early NotSaved guard.
     for staged in [false, true] {
         let m = MoveFixture::new();
