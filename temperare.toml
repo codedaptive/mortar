@@ -26,7 +26,8 @@ fix = "Move each public function, type or trait but one into its own file named 
 
 # kill_process_group.rs holds both functions that call its two extern declarations, the crate's only unsafe code:
 # settled ruling S-38 (Orc-Mortar, 2026-11-13, Coord-snapshot #565) put the second extern, waitid, in the same file.
-# Each exception names one function (what matches the finding's message), so any other public item there is reported.
+# Each exception names one function (what matches the finding's message), so any other public item there with another name is reported.
+# The match is by name only: another public item spelled the same (a struct kill_process_group) would be silenced too.
 [[exception]]
 rule = "one-public-symbol-per-file"
 path = "crates/snapshot/src/kill_process_group.rs"

@@ -24,8 +24,8 @@ check "a module ending in integration refuses" crates/cli/src/foo_integration un
 check "a module under one ending in integration refuses" crates/cli/src/x_integration/y unit 2 "$module_refusal"
 check "a module starting with integration runs" crates/folders/src/integration_folder unit 0 "test -p folders --lib integration_folder:: -- --skip integration::"
 check "a plain module runs" crates/cli/src/install unit 0 "test -p cli --lib install:: -- --skip integration::"
-check "a path inside a test target refuses" crates/cli/tests/cli_rit/rit9 integration 2 "$target_refusal"
-check "a double slash inside a target names the target" crates/cli/tests//cli_rit/rit9 integration 2 "$target_refusal"
+check "a path inside a test target refuses" crates/cli/tests/cli_rit/support.rs integration 2 "$target_refusal"
+check "a double slash inside a target names the target" crates/cli/tests//cli_rit/support.rs integration 2 "$target_refusal"
 check "a double and trailing slash runs the target" crates/cli/tests//cli_rit/ integration 0 "test -p cli --test cli_rit"
 check "a plain target runs" crates/cli/tests/cli_rit integration 0 "test -p cli --test cli_rit"
 
