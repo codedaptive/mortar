@@ -432,6 +432,8 @@ mod tree_entry_error_tests;
 #[cfg(test)]
 mod tree_entry_request_tests;
 #[cfg(test)]
+mod tree_with_paths_error_display_tests;
+#[cfg(test)]
 mod tree_with_paths_error_tests;
 #[cfg(test)]
 mod tree_with_paths_list_request_tests;
