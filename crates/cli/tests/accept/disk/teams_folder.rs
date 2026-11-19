@@ -1,4 +1,4 @@
-//! The folder of codeteam's team manifests, from the value of ACCEPT_TEAMS. Pure: the caller reads the variable.
+//! The folder of team manifests, from the value of ACCEPT_TEAMS. Pure: the caller reads the variable.
 
 use std::ffi::OsString;
 use std::path::PathBuf;
@@ -9,5 +9,5 @@ pub fn teams_folder(value: Option<OsString>) -> Result<PathBuf, String> {
     value
         .filter(|value| !value.is_empty())
         .map(PathBuf::from)
-        .ok_or_else(|| "ACCEPT_TEAMS is not set: set it to the folder of codeteam's team manifests".to_string())
+        .ok_or_else(|| "ACCEPT_TEAMS is not set: set it to the folder of team manifests".to_string())
 }
