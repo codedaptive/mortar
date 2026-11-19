@@ -101,7 +101,7 @@ Three folder kinds exist. In a **request folder** all six verbs work. In a **zon
 
 Ask before you install anything. Then:
 
-1. **Check the machine.** A Unix system (not Windows), `git --version` at 2.40 or newer, and a Rust toolchain (`cargo --version`).
+1. **Check the machine.** A Unix system (not Windows), `git --version` at 2.46 or newer, and a Rust toolchain (`cargo --version`).
 2. **Build.**
 
        git clone https://github.com/codedaptive/mortar.git

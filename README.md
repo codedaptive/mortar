@@ -23,7 +23,7 @@ The command is `mr`; `mortar` is the long name for the same program. An agent ne
 
 ## Install
 
-Mortar is built from source. It needs a Rust toolchain with Cargo, and `git` 2.40 or newer on the path.
+Mortar is built from source. It needs a Rust toolchain with Cargo, and `git` 2.46 or newer on the path.
 
 ```
 git clone https://github.com/codedaptive/mortar.git

@@ -1,13 +1,15 @@
 #!/bin/sh
 # test_one_tests.sh: checks test_one.sh's path handling. Each case runs test_one.sh with CARGO=echo, so cargo is
-# never called and no test runs, and compares its whole output and exit code with what they must be.
+# never called and no test runs, and compares its whole output (bar trailing newlines) and exit code with what they
+# must be.
 # Run from the repository root (make script-test).
 set -u
 here=$(dirname "$0")
 fails=0
 
-# check NAME DIR GROUP EXIT OUTPUT: test_one.sh exits EXIT and prints exactly OUTPUT. CARGO_TEST_ARGS is cleared, since
-# test_one.sh reads it and a value left in the environment would change the command it prints.
+# check NAME DIR GROUP EXIT OUTPUT: test_one.sh exits EXIT and prints exactly OUTPUT, bar trailing newlines.
+# CARGO_TEST_ARGS is cleared, since test_one.sh reads it and a value left in the environment would change the command
+# it prints.
 check() {
     out=$(CARGO_TEST_ARGS= CARGO=echo sh "$here/test_one.sh" "$2" "$3" 2>&1); rc=$?
     if [ "$rc" = "$4" ] && [ "$out" = "$5" ]; then echo "ok    $1"
