@@ -25,7 +25,7 @@ impl Git {
     /// when none of those holds it: a blob re-added from an older commit, or the whole tree of a parentless commit,
     /// even when another ref's tip commit has that same tree.
     ///
-    /// `--disk-usage` arrived in git 2.31, below the 2.40 floor, so there is no version check.
+    /// `--disk-usage` arrived in git 2.31, below the 2.46 floor, so there is no version check.
     ///
     /// Errors: a ref that is not a usable full ref name is refused naming it before git runs (see
     /// disk_usage_only_request); an unknown ref is refused naming it; any other exit (not a repository, a corrupt
