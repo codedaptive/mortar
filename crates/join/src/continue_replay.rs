@@ -9,8 +9,7 @@
 //! - a remaining commit that conflicts pauses with a new state whose all_files are the earlier rounds' paths then the
 //!   new round's;
 //! - a conflicted path that is a folder in the caller's tree is refused before any commit;
-//! - a missing onto (the `--attr-source` commit) is refused before any other call: before any replay, merge_tree or
-//!   attr_check.
+//! - a missing onto (the `--attr-source` commit) is refused before any other call: before any replay or merge_tree.
 
 use crate::after_replay::after_replay;
 use crate::after_replay_step::AfterReplayStep;
