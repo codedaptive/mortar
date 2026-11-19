@@ -1,5 +1,5 @@
 //! The closing record close_intent appends for one open intent.
-//! No unit test: its decisions run through open_intents_in and close_record (S-102).
+//! No unit test: its decisions run through open_intents_in and close_record.
 //! crates/oplog/tests/oplog/remote_close_record.rs proves them through close_intent on a seeded log.
 
 use super::{open_intents_in, IntentClose};

@@ -1,5 +1,5 @@
 //! A new change ID from 16 bytes of /dev/urandom; ChangeId::from_bytes does the encoding.
-//! No unit test: it reads a real device (S-5). Covered by Nagatha's integration group:
+//! No unit test: it reads a real device. Integration tests should cover:
 //! "new_change_id twice gives two different IDs" and "new_change_id gives 32 chars of k..z".
 
 use std::fs::File;

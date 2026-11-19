@@ -1,11 +1,11 @@
 //! Runs one piece of work while holding a named lock.
-//! No unit test: it takes and releases a real lock file, runs `hostname`, and appends to the op log (S-5).
-//! Nagatha's integration group is to cover, in a throwaway repository, for a lock `name`: work runs with
-//! `mortar/locks/<lock_file_name(name)>` present and the file is gone after; a stale lock left by a dead pid is
-//! taken over and a lock-takeover op is logged before work runs; a dead same-host takeover guard removed during
-//! the acquire is logged as one takeover-guard-removal op, both when the acquire wins the lock and when it
-//! refuses; a lock held by a live pid refuses with HeldLockError::Lock and work does not run; a work error is
-//! returned and the lock is still released.
+//! No unit test: it takes and releases a real lock file, runs `hostname`, and appends to the op log.
+//! Covered by the crate's integration tests (tests/oplog/with_lock.rs), in a throwaway repository, for a lock
+//! `name`: work runs with `mortar/locks/<lock_file_name(name)>` present and the file is gone after; a stale lock
+//! left by a dead pid is taken over and a lock-takeover op is logged before work runs; a dead same-host takeover
+//! guard removed during the acquire is logged as one takeover-guard-removal op, both when the acquire wins the
+//! lock and when it refuses; a lock held by a live pid refuses with HeldLockError::Lock and work does not run; a
+//! work error is returned and the lock is still released.
 
 use std::path::Path;
 
@@ -16,8 +16,8 @@ use super::{apply, new_op_id, takeover_op, HeldLockError};
 use crate::locks::{acquire_lock, host_name, lock_path, release_lock, LockName, LockRecord, PidProbe};
 use crate::store::unix_now;
 
-/// Takes the lock `name` under `common` for holder key `key`, logs each takeover guard the acquire removed as an op
-/// (S-30), then a takeover of a stale holder (S-4), runs `work`, and releases the lock whatever work or the
+/// Takes the lock `name` under `common` for holder key `key`, logs each takeover guard the acquire removed as an op,
+/// then a takeover of a stale holder, runs `work`, and releases the lock whatever work or the
 /// logging returned. The guard ops come first because those removals happened before the lock was won; a failed
 /// apply skips the rest of the logging and work. When the acquire refuses, its guard ops are still applied and the
 /// refusal is returned as HeldLockError::Lock, unless applying a guard op failed: then that HeldLockError::Oplog

@@ -1,10 +1,11 @@
 //! Applies one op as apply does, after refusing any move of a protected ref that is not a fast-forward or a
-//! creation (S-29).
-//! No unit test: it reads the log file and runs git (S-5); find_done_record_tests, check_ref_moves_tests and
-//! protected_move_verdict_tests cover its decisions. Nagatha's integration group should cover, in a throwaway
-//! repository: a done key returns Repeated even when a protected ref would now be refused; a rewind, a sideways
-//! move or a delete of a protected ref returns Protected with nothing appended to the log; a fast-forward or a
-//! creation of a protected ref applies as apply does; unprotected refs move as apply moves them.
+//! creation.
+//! No unit test: it reads the log file and runs git; find_done_record_tests, check_ref_moves_tests and
+//! protected_move_verdict_tests cover its decisions. Covered by the crate's integration tests
+//! (tests/oplog/protection.rs), in a throwaway repository: a done key returns Repeated even when a protected ref
+//! would now be refused; a rewind, a sideways move or a delete of a protected ref returns Protected with nothing
+//! appended to the log; a fast-forward or a creation of a protected ref applies as apply does; unprotected refs
+//! move as apply moves them.
 
 use std::path::Path;
 

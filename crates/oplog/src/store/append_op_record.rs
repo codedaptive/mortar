@@ -1,6 +1,6 @@
-//! Appends one record, with no values, to the op log and syncs it to disk (S-1).
-//! No unit test: it writes a real file (S-5) through append_valued_record, whose header lists what
-//! Nagatha's integration group should cover.
+//! Appends one record, with no values, to the op log and syncs it to disk.
+//! No unit test: it writes a real file through append_valued_record, whose header names what the
+//! integration tests cover.
 
 use std::path::Path;
 

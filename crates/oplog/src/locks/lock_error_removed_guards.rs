@@ -1,4 +1,4 @@
-//! The takeover guards an acquire removed before it refused, read off the refusal so each is logged (S-30).
+//! The takeover guards an acquire removed before it refused, read off the refusal so each is logged.
 
 use super::{LockError, LockRecord};
 

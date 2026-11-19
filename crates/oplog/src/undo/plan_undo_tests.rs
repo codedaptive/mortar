@@ -44,14 +44,14 @@ fn now(refname: &str, value: Option<&str>) -> (String, Option<Oid>) {
 
 #[test]
 fn update_is_reversed() {
-    let records = vec![rec("op-1", "simms", vec![mv(MAIN, Some(A), B)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(MAIN, Some(A), B)])];
     let moves = plan_undo(&records, 0, &[now(MAIN, Some(B))]).unwrap();
     assert_eq!(moves, vec![mv(MAIN, Some(B), A)]);
 }
 
 #[test]
 fn create_is_reversed_to_a_delete() {
-    let records = vec![rec("op-1", "simms", vec![mv(MAIN, None, B)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(MAIN, None, B)])];
     let moves = plan_undo(&records, 0, &[now(MAIN, Some(B))]).unwrap();
     assert_eq!(moves, vec![mv(MAIN, Some(B), ZERO)]);
 }
@@ -60,14 +60,14 @@ fn create_is_reversed_to_a_delete() {
 fn create_of_a_sha256_ref_is_reversed_to_sixty_four_zeros() {
     let b64 = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
     let zero64 = "0000000000000000000000000000000000000000000000000000000000000000";
-    let records = vec![rec("op-1", "simms", vec![mv(MAIN, None, b64)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(MAIN, None, b64)])];
     let moves = plan_undo(&records, 0, &[now(MAIN, Some(b64))]).unwrap();
     assert_eq!(moves, vec![mv(MAIN, Some(b64), zero64)]);
 }
 
 #[test]
 fn delete_is_reversed_to_a_create() {
-    let records = vec![rec("op-1", "simms", vec![mv(MAIN, Some(A), ZERO)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(MAIN, Some(A), ZERO)])];
     let moves = plan_undo(&records, 0, &[now(MAIN, None)]).unwrap();
     assert_eq!(moves, vec![mv(MAIN, None, A)]);
 }
@@ -75,7 +75,7 @@ fn delete_is_reversed_to_a_create() {
 #[test]
 fn a_move_that_changes_nothing_is_left_out() {
     let other = "refs/heads/other";
-    let records = vec![rec("op-1", "simms", vec![mv(other, Some(C), C), mv(MAIN, Some(A), B)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(other, Some(C), C), mv(MAIN, Some(A), B)])];
     let moves = plan_undo(&records, 0, &[now(other, Some(A)), now(MAIN, Some(B))]).unwrap();
     assert_eq!(moves, vec![mv(MAIN, Some(B), A)]);
 }
@@ -83,9 +83,9 @@ fn a_move_that_changes_nothing_is_left_out() {
 #[test]
 fn moved_since_by_a_logged_op_names_the_latest_mover() {
     let records = vec![
-        rec("op-1", "simms", vec![mv(MAIN, Some(A), B)]),
-        rec("op-2", "nagatha", vec![mv(MAIN, Some(B), C)]),
-        rec("op-3", "kong", vec![mv(MAIN, Some(C), A)]),
+        rec("op-1", "agent-a", vec![mv(MAIN, Some(A), B)]),
+        rec("op-2", "agent-b", vec![mv(MAIN, Some(B), C)]),
+        rec("op-3", "agent-c", vec![mv(MAIN, Some(C), A)]),
     ];
     match plan_undo(&records, 0, &[now(MAIN, Some(A))]) {
         Err(OplogError::MovedSince { op_id, refname, left, actual, moved_by }) => {
@@ -93,7 +93,7 @@ fn moved_since_by_a_logged_op_names_the_latest_mover() {
             assert_eq!(refname, MAIN);
             assert_eq!(left, Some(oid(B)));
             assert_eq!(actual, Some(oid(A)));
-            assert_eq!(moved_by, Some(("op-3".to_string(), "kong".to_string())));
+            assert_eq!(moved_by, Some(("op-3".to_string(), "agent-c".to_string())));
         }
         other => panic!("expected MovedSince, got {other:?}"),
     }
@@ -101,7 +101,7 @@ fn moved_since_by_a_logged_op_names_the_latest_mover() {
 
 #[test]
 fn moved_with_no_logged_op_names_no_mover() {
-    let records = vec![rec("op-1", "simms", vec![mv(MAIN, Some(A), B)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(MAIN, Some(A), B)])];
     match plan_undo(&records, 0, &[now(MAIN, Some(C))]) {
         Err(OplogError::MovedSince { op_id, refname, left, actual, moved_by }) => {
             assert_eq!(op_id, "op-1");
@@ -116,7 +116,7 @@ fn moved_with_no_logged_op_names_no_mover() {
 
 #[test]
 fn a_created_ref_absent_now_is_moved_since_with_actual_absent() {
-    let records = vec![rec("op-1", "simms", vec![mv(MAIN, None, B)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(MAIN, None, B)])];
     match plan_undo(&records, 0, &[]) {
         Err(OplogError::MovedSince { op_id, refname, left, actual, moved_by }) => {
             assert_eq!(op_id, "op-1");
@@ -132,7 +132,7 @@ fn a_created_ref_absent_now_is_moved_since_with_actual_absent() {
 #[test]
 fn the_first_moved_ref_in_order_is_refused() {
     let other = "refs/heads/other";
-    let records = vec![rec("op-1", "simms", vec![mv(MAIN, Some(A), B), mv(other, Some(A), B)])];
+    let records = vec![rec("op-1", "agent-a", vec![mv(MAIN, Some(A), B), mv(other, Some(A), B)])];
     match plan_undo(&records, 0, &[now(other, Some(C)), now(MAIN, Some(C))]) {
         Err(OplogError::MovedSince { refname, .. }) => assert_eq!(refname, MAIN),
         other => panic!("expected MovedSince, got {other:?}"),

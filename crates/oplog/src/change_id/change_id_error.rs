@@ -1,5 +1,5 @@
 //! Every way reading or drawing a change ID can fail.
-//! A bare type (S-7); change_id_error_display_tests and change_id_error_source_tests exercise each variant.
+//! A bare type; change_id_error_display_tests and change_id_error_source_tests exercise each variant.
 
 /// A change ID refusal.
 #[derive(Debug)]

@@ -1,4 +1,6 @@
-//! S-29: joins real commit ancestry -> protected-move checks -> apply/undo/restore and durable log effects.
+//! A move of a protected ref passes only as a fast-forward, a creation or an unchanged value; a rewind, a sideways
+//! move or a delete is refused. Joins real commit ancestry -> protected-move checks -> apply/undo/restore and
+//! durable log effects.
 
 use crate::support::{caller, commit, refs, set_ref, test_op, Fixture};
 use gitio::Oid;

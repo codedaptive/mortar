@@ -1,6 +1,7 @@
 //! What apply did with an op.
-//! A bare type (S-7); no unit test. close_after_update_tests covers the Done and Failed records it carries,
-//! find_done_record_tests the record Repeated carries; Nagatha's apply integration tests exercise each variant.
+//! A bare type; no unit test. close_after_update_tests covers the Done and Failed records it carries,
+//! find_done_record_tests the record Repeated carries. Covered by the crate's integration tests
+//! (tests/oplog/apply.rs): each variant.
 
 use crate::store::OpRecord;
 

@@ -1,4 +1,4 @@
-//! mortar_trailer_keys: MORTAR_SQUASH_OF_KEY is the literal text "Mortar-Squash-Of" (S-57).
+//! mortar_trailer_keys: MORTAR_SQUASH_OF_KEY is the literal text "Mortar-Squash-Of".
 
 use super::MORTAR_SQUASH_OF_KEY;
 

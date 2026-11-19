@@ -1,4 +1,4 @@
-//! Mortar's trailers (S-2, S-57): Mortar-Change-Id, Mortar-Request, Mortar-Zone and Mortar-Squash-Of. The
+//! Mortar's trailers: Mortar-Change-Id, Mortar-Request, Mortar-Zone and Mortar-Squash-Of. The
 //! first three are picked from and turned into (key, value) pairs, and read and written
 //! through gitio; Mortar-Squash-Of is a key only here.
 

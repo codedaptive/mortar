@@ -8,7 +8,7 @@ use super::LockRecord;
 
 /// A lock refusal. Each variant carries what its message needs to name the holder and the file.
 /// The variants acquire can return after removing a takeover guard carry `removed_guards`, so every removal is
-/// logged even when acquire refuses (S-30). BadName, BadRecord, HostUnknown and NotOurs carry none: acquire
+/// logged even when acquire refuses. BadName, BadRecord, HostUnknown and NotOurs carry none: acquire
 /// returns BadName (from lock_path) and BadRecord (encoding `me` on its first write) only before any removal, it
 /// never returns HostUnknown, and NotOurs comes from release.
 #[derive(Debug)]

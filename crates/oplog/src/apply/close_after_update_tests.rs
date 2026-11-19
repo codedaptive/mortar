@@ -22,7 +22,7 @@ fn record(at: u64, phase: OpPhase, result: Option<OpResult>) -> OpRecord {
         op_id: "op-7".to_string(),
         key: "land:zone-a".to_string(),
         kind: "land".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "squash lands".to_string(),
         at,
         phase,

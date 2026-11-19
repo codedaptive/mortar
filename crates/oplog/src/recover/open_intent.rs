@@ -1,6 +1,6 @@
 //! Reads `<common>/mortar/oplog.jsonl` and gives one op's moves while its intent is open, for the guard hook.
-//! No unit test: it reads a real file (S-5); open_intent_moves_tests covers the
-//! decision. Nagatha's integration group should cover: on a real log written by append_op_record, an open
+//! No unit test: it reads a real file; open_intent_moves_tests covers the decision. Covered by the
+//! crate's integration tests (tests/oplog/attribution.rs): on a real log written by append_op_record, an open
 //! intent's moves come back; after close_record's Done or Failed record is appended, None; a missing log
 //! file gives None; an unreadable log path is an Io error naming the log's path; a torn last line (a record
 //! cut mid-write) is skipped, so an earlier complete intent still comes back open.

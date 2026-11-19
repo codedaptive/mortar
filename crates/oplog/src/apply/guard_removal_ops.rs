@@ -6,7 +6,7 @@ use super::guard_removal_op;
 use crate::locks::{AcquiredLock, LockError, LockRecord};
 use crate::store::Op;
 
-/// One op per takeover guard `acquired` removed, in order (S-30). A won lock names its own path and holder; a
+/// One op per takeover guard `acquired` removed, in order. A won lock names its own path and holder; a
 /// refusal names `lock_path` and `me`, the lock and the record this process tried to take it with. A refusal that
 /// carries no guards (BadName, BadRecord, HostUnknown, NotOurs), or none removed, gives no ops.
 pub(crate) fn guard_removal_ops(

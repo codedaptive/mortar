@@ -1,5 +1,5 @@
 //! The open intents recover settles: every open intent not marked with a remote.
-//! No unit test: its decisions run through open_intents_in (S-102).
+//! No unit test: its decisions run through open_intents_in.
 //! crates/oplog/tests/oplog/recoverable.rs proves them through recover on a seeded log.
 
 use super::open_intents_in;

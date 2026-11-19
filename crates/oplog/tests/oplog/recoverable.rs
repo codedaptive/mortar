@@ -16,7 +16,7 @@ fn record(op_id: &str, phase: OpPhase, result: Option<OpResult>) -> OpRecord {
         op_id: op_id.to_string(),
         key: format!("key:{op_id}"),
         kind: "publish".to_string(),
-        actor: "simms".to_string(),
+        actor: "agent-a".to_string(),
         reason: "squash publishes".to_string(),
         at: 1763030400,
         phase,
@@ -119,7 +119,7 @@ fn a_marked_intent_closed_by_a_later_record_is_not_returned() {
 
 #[test]
 fn values_are_carried_in_their_order() {
-    let values: &[(&str, &str)] = &[("folder_tree", "3f2a"), ("actor", "simms"), ("folder_tree", "")];
+    let values: &[(&str, &str)] = &[("folder_tree", "3f2a"), ("actor", "agent-a"), ("folder_tree", "")];
     assert_recovers(&[intent("op-1", values, None)], &[("op-1", values)]);
 }
 

@@ -1,6 +1,6 @@
 //! Opens a remote intent: the repeat check, the ref name check, then the intent marked with the remote; no ref
 //! transaction runs.
-//! No unit test: it reads and appends the log file and runs git (S-5). crates/oplog/tests/oplog/remote_verdict.rs
+//! No unit test: it reads and appends the log file and runs git. crates/oplog/tests/oplog/remote_verdict.rs
 //! covers its decision on a seeded log. The integration tests in crates/oplog/tests/oplog/remote_intents.rs cover,
 //! in a throwaway repository: a fresh op opens an intent with no ref moving, which reads back marked with the remote; a
 //! second call with a key whose marked intent is still open answers AlreadyOpen and appends nothing; a key
@@ -16,8 +16,8 @@ use crate::store::{append_marked_record, intent_record, read_marked_log, MarkedR
 /// Writes the intent record for `op` to the log at `<common>/mortar/oplog.jsonl`, marked with `remote` (the
 /// remote's name) and with no values. It runs no ref transaction: the moves happen on the remote.
 ///
-/// The caller holds the lock and has run recover first (S-16). recover leaves this intent open; the caller
-/// closes it with close_intent once it knows the remote's answer (S-103).
+/// The caller holds the lock and has run recover first. recover leaves this intent open; the caller
+/// closes it with close_intent once it knows the remote's answer.
 ///
 /// A key already done answers Repeated, and a key whose marked intent is still open answers AlreadyOpen;
 /// both write nothing (remote_intent_verdict). Otherwise a move whose ref name is unusable returns BadMove,

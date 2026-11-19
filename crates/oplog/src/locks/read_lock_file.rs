@@ -1,6 +1,7 @@
 //! Reads a lock file and decodes its record; a missing file is no holder.
-//! No unit test: it reads real files (S-5). Covered by Nagatha's integration group: refusal while
-//! held (names the holder), a malformed lock file refused naming its path, release of a missing lock.
+//! No unit test: it reads real files. Covered by the crate's integration tests (tests/oplog/locks.rs): refusal
+//! while held (names the holder), release of a missing lock. Integration tests should cover: a malformed lock
+//! file refused naming its path.
 
 use std::io::ErrorKind;
 use std::path::Path;

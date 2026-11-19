@@ -9,7 +9,7 @@ const ID_A: &str = "kzlymxnwovpuqtrssrtqupvowxnymlzk";
 fn full() -> MortarTrailers {
     MortarTrailers {
         change_id: Some(ChangeId::parse(ID_A).unwrap()),
-        request: Some("WO-oplog-4".to_string()),
+        request: Some("r1".to_string()),
         zone: Some("oplog".to_string()),
     }
 }
@@ -22,7 +22,7 @@ fn pairs(list: &[(&str, &str)]) -> Vec<(String, String)> {
 fn all_three_in_order() {
     let expected = pairs(&[
         ("Mortar-Change-Id", ID_A),
-        ("Mortar-Request", "WO-oplog-4"),
+        ("Mortar-Request", "r1"),
         ("Mortar-Zone", "oplog"),
     ]);
     assert_eq!(mortar_trailer_pairs(&full()), expected);
@@ -31,7 +31,7 @@ fn all_three_in_order() {
 #[test]
 fn absent_change_id_is_skipped() {
     let trailers = MortarTrailers { change_id: None, ..full() };
-    let expected = pairs(&[("Mortar-Request", "WO-oplog-4"), ("Mortar-Zone", "oplog")]);
+    let expected = pairs(&[("Mortar-Request", "r1"), ("Mortar-Zone", "oplog")]);
     assert_eq!(mortar_trailer_pairs(&trailers), expected);
 }
 
@@ -45,7 +45,7 @@ fn absent_request_is_skipped() {
 #[test]
 fn absent_zone_is_skipped() {
     let trailers = MortarTrailers { zone: None, ..full() };
-    let expected = pairs(&[("Mortar-Change-Id", ID_A), ("Mortar-Request", "WO-oplog-4")]);
+    let expected = pairs(&[("Mortar-Change-Id", ID_A), ("Mortar-Request", "r1")]);
     assert_eq!(mortar_trailer_pairs(&trailers), expected);
 }
 
@@ -57,7 +57,7 @@ fn all_absent_is_empty() {
 #[test]
 fn pick_reads_back_what_pairs_gives() {
     let ids = [None, Some("kzlymxnwovpuqtrssrtqupvowxnymlzk"), Some("zzzzzzzzzzzzzzzzkkkkkkkkkkkkkkkk")];
-    let texts = [None, Some("WO-a"), Some("with spaces: and a colon")];
+    let texts = [None, Some("R3"), Some("with spaces: and a colon")];
     for change_id in ids {
         for request in texts {
             for zone in texts {

@@ -29,7 +29,7 @@ pub enum OplogError {
     /// An op with a move whose ref name is empty, holds a NUL, is not a full refs/ name, or is refused by git
     /// check-ref-format, found before anything is written: the ref and why.
     BadMove { refname: String, reason: String },
-    /// A move of a protected ref that is neither a fast-forward nor a creation (S-29): `current` is what the ref
+    /// A move of a protected ref that is neither a fast-forward nor a creation: `current` is what the ref
     /// holds (None: absent), `new` what the op asked for (all-zero: a delete), `by` who protects it.
     Protected {
         refname: String,

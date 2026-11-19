@@ -29,10 +29,10 @@ fn rec(op_id: &str, key: &str, actor: &str, refs: &[&str]) -> OpRecord {
 
 fn log() -> Vec<OpRecord> {
     vec![
-        rec("op-1", "land:zone-a", "simms", &["refs/heads/landing"]),
-        rec("op-2", "land:zone-b", "nagatha", &["refs/heads/main", "refs/heads/landing"]),
-        rec("op-3", "land:zone-a", "nagatha", &["refs/heads/main"]),
-        rec("op-4", "lock:land", "simms", &[]),
+        rec("op-1", "land:zone-a", "agent-a", &["refs/heads/landing"]),
+        rec("op-2", "land:zone-b", "agent-b", &["refs/heads/main", "refs/heads/landing"]),
+        rec("op-3", "land:zone-a", "agent-b", &["refs/heads/main"]),
+        rec("op-4", "lock:land", "agent-a", &[]),
     ]
 }
 
@@ -57,14 +57,14 @@ fn key_keeps_records_with_that_key() {
 #[test]
 fn actor_keeps_records_with_that_actor() {
     let log = log();
-    let found = filter_history(&log, &HistoryFilter::Actor("simms".to_string()));
+    let found = filter_history(&log, &HistoryFilter::Actor("agent-a".to_string()));
     assert_eq!(ids(found), vec!["op-1", "op-4"]);
 }
 
 #[test]
 fn no_match_is_empty() {
     let log = log();
-    let found = filter_history(&log, &HistoryFilter::Actor("kong".to_string()));
+    let found = filter_history(&log, &HistoryFilter::Actor("agent-c".to_string()));
     assert_eq!(ids(found), Vec::<&str>::new());
 }
 

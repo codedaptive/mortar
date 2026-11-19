@@ -7,7 +7,7 @@ use crate::store::Op;
 
 /// One op per guard in `removed_guards`, in order, each with its op ID from one call of `next_op_id`; an empty
 /// list gives no ops. The caller passes `(&lock.path, &lock.record, &lock.removed_guards)` after a successful
-/// acquire, or `(the lock's path, me, err.removed_guards())` after a refusal, and logs each op (S-4, S-30).
+/// acquire, or `(the lock's path, me, err.removed_guards())` after a refusal, and logs each op.
 /// Each op has no moves, kind `takeover-guard-removal`, actor `me` as `<pid>@<host>`, and key
 /// `takeover-guard-removal:<guard path>:<old pid>@<old host>:<old since>`, where the guard path is
 /// `takeover_guard_path(lock_path)` and "old" is the removed guard's holder, so a repeat of the same removal

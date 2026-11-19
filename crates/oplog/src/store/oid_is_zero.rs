@@ -1,4 +1,4 @@
-//! The one check for git's all-zero object id, which as a move's new value deletes the ref (S-9); protect, undo,
+//! The one check for git's all-zero object id, which as a move's new value deletes the ref; protect, undo,
 //! recover and the error display all use it.
 
 use gitio::Oid;

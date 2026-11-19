@@ -14,7 +14,7 @@ fn intent_holds_every_planned_move() {
         op_id: "18f3a-2a-0".to_string(),
         key: "join:zone-b".to_string(),
         kind: "join".to_string(),
-        actor: "bilby".to_string(),
+        actor: "agent-d".to_string(),
         reason: "replay onto integration".to_string(),
         at: 1763030400,
         moves: vec![
@@ -36,7 +36,7 @@ fn intent_holds_every_planned_move() {
             op_id: "18f3a-2a-0".to_string(),
             key: "join:zone-b".to_string(),
             kind: "join".to_string(),
-            actor: "bilby".to_string(),
+            actor: "agent-d".to_string(),
             reason: "replay onto integration".to_string(),
             at: 1763030400,
             phase: OpPhase::Intent,

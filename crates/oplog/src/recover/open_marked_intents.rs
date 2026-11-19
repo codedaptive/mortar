@@ -1,6 +1,6 @@
 //! The open intents in a marked log, with their values and remote marks: for cli's status to read without
-//! settling them (S-85).
-//! No unit test: its decisions run through open_intents_in (S-102).
+//! settling them.
+//! No unit test: its decisions run through open_intents_in.
 //! crates/oplog/tests/oplog/open_marked_intents.rs proves them on marked logs built from MarkedRecord values.
 
 use super::open_intents_in;

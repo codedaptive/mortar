@@ -1,7 +1,7 @@
 //! Reads the op log file whole and decodes it, without the records' values.
-//! No unit test: it reads a real file (S-5) through read_valued_log; plain_log_tests covers dropping the
-//! values. Nagatha's integration group should cover: a log whose lines carry values reads as the same
-//! records without them.
+//! No unit test: it reads a real file through read_valued_log; plain_log_tests covers dropping the
+//! values. Covered by the crate's integration tests (tests/oplog/values.rs): a log whose lines carry values
+//! reads as the same records without them.
 
 use std::path::Path;
 

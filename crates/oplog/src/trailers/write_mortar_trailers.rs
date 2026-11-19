@@ -1,7 +1,6 @@
-//! Writing Mortar's trailers onto a message through git, last (S-10); mortar_trailer_pairs makes the pairs.
-//! No unit test: it runs git (S-5). Covered by Nagatha's integration group: "write_mortar_trailers then
-//! read_mortar_trailers round trip" and "a message already holding an older Mortar-Change-Id reads back the
-//! one written last".
+//! Writing Mortar's trailers onto a message through git, last; mortar_trailer_pairs makes the pairs.
+//! No unit test: it runs git. Integration tests should cover: "write_mortar_trailers then read_mortar_trailers
+//! round trip" and "a message already holding an older Mortar-Change-Id reads back the one written last".
 
 use gitio::{Git, GitError};
 

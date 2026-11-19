@@ -1,5 +1,5 @@
 //! Every way reading Mortar's trailers can fail.
-//! A bare type (S-7); mortar_trailer_error_display_tests and mortar_trailer_error_source_tests exercise each
+//! A bare type; mortar_trailer_error_display_tests and mortar_trailer_error_source_tests exercise each
 //! variant.
 
 use gitio::GitError;

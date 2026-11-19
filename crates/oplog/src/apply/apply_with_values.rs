@@ -1,20 +1,23 @@
 //! Applies one op with the caller's values: the repeat check, the ref name check, the intent, one ref
 //! transaction, the closing record; the values are written in the intent and the closing record.
-//! No unit test: it reads and appends the log file and runs git (S-5). find_done_in_tests,
+//! No unit test: it reads and appends the log file and runs git. find_done_in_tests,
 //! check_ref_moves_tests, ref_format_verdict_tests, ref_updates_tests and close_after_update_tests cover its
-//! decisions. Nagatha's integration group should cover, in a throwaway repository: a fresh op moves every ref
-//! and leaves an intent then a done record, both carrying the values, which read_valued_log returns in order;
-//! a second apply with the same key returns Repeated with the first done record and that record's values (not
-//! the second call's), moves nothing and appends nothing; a move with an unusable ref name (empty, holding a
-//! NUL, not a full refs/ name, or refused by git check-ref-format) is refused with OplogError::BadMove before
-//! anything is written; refs/heads/a..b refused with no intent written; a stale expected value moves nothing
-//! and leaves an intent then a failed record naming the ref and its actual value (absent: null), both carrying
-//! the values; an op with no moves closes done; an all-zero new deletes the ref; a git failure in the
-//! transaction returns OplogError::Git with the intent left open; an error reading the refused ref after a
-//! stale refusal returns that error with the intent open; a kill after Stale, then recover, closes an op that
-//! changes a ref as failed recording each ref's actual value, and an op that changes no ref as done; a
-//! reference-transaction hook sees MORTAR_OP=<op_id> on the transaction, while the name checks and the stale
-//! read do not need it.
+//! decisions. Covered by the crate's integration tests, in a throwaway repository: a fresh op moves every ref
+//! and leaves an intent then a done record, both carrying the values, which read_valued_log returns in order
+//! (tests/oplog/values.rs); a second apply with the same key returns Repeated with the first done record and
+//! that record's values (not the second call's) and appends nothing (tests/oplog/values.rs), and moves nothing
+//! (tests/oplog/apply.rs); a move with a ref name that is not a full refs/ name, or is refused by git
+//! check-ref-format, is refused with OplogError::BadMove before anything is written, no intent written
+//! (tests/oplog/ref_names.rs); a stale expected value moves nothing and leaves an
+//! intent then a failed record naming the ref and its actual value, both carrying the values
+//! (tests/oplog/values.rs); an op with no moves closes done (tests/oplog/takeover_guards.rs); an all-zero new
+//! deletes the ref (tests/oplog/undo_restore.rs); a reference-transaction hook sees MORTAR_OP=<op_id> on the
+//! transaction (tests/oplog/attribution.rs). Integration tests should cover: a move with an empty ref name or one
+//! holding a NUL is refused with OplogError::BadMove before anything is written; a stale refusal of an absent ref
+//! records its actual value as null; a git failure in the transaction returns OplogError::Git with the intent left
+//! open; an error reading the refused ref after a stale refusal returns that error with the intent open; a kill
+//! after Stale, then recover, closes an op that changes a ref as failed recording each ref's actual value, and an
+//! op that changes no ref as done; the name checks and the stale read do not need MORTAR_OP.
 
 use std::path::Path;
 
@@ -41,8 +44,8 @@ use crate::store::{
 /// the name check and the read after a stale refusal run with the plain `git`.
 ///
 /// The transaction runs even with no moves: git accepts an empty one. A git error in the transaction returns
-/// with the intent open, and recover settles it from the refs: done if every ref the op changes is at new,
-/// failed if no ref the op changes is.
+/// with the intent open, and recover settles it from the refs: done if every ref the op changes is at new
+/// (so done when it changes none), failed if it changes at least one ref and none of them is at new.
 /// An error reading the refused ref after Stale also returns with the intent open; recover then closes it as
 /// done when the op changes no ref; otherwise as failed, recording each ref's actual value, unless a ref the
 /// op changes already holds its new value: then done when every ref the op changes is at new, and refused as

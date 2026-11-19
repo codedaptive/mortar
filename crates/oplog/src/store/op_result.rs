@@ -7,7 +7,7 @@ use gitio::Oid;
 /// `{"outcome": "not-moved", "refs": [{"ref": "...", "actual": "<hex>"|null}, ...]}`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum OpResult {
-    /// Every ref the op changes is at its new value; an op that changes no ref is Moved too (S-13).
+    /// Every ref the op changes is at its new value; an op that changes no ref is Moved too.
     Moved,
     /// `refname` was not at its expected value; `actual` is what it held (None: the ref was absent).
     Stale {

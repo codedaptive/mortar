@@ -1,6 +1,6 @@
 //! Applies one op with no values: apply_with_values with none.
-//! No unit test: it reads and appends the log file and runs git (S-5) through apply_with_values, whose header
-//! names the tests covering its decisions and lists what Nagatha's integration group should cover.
+//! No unit test: it reads and appends the log file and runs git through apply_with_values, whose header
+//! names the tests covering its decisions and lists what the integration tests cover and should cover.
 
 use std::path::Path;
 

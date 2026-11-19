@@ -9,6 +9,6 @@ pub enum IntentClose {
     /// The op's moves were made: the closing record is done, its result Moved.
     Done,
     /// Nothing moved: each ref with the value it holds now (None: the ref is absent), as recover's failed
-    /// records carry them (S-103's Failed{refs}). The closing record is failed, its result NotMoved { refs }.
+    /// records carry them. The closing record is failed, its result NotMoved { refs }.
     Failed { refs: Vec<(String, Option<Oid>)> },
 }

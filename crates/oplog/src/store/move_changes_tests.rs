@@ -45,6 +45,6 @@ fn delete_of_absent_ref_does_not_change() {
 
 #[test]
 fn zero_old_to_zero_new_does_not_change() {
-    // old == new (S-13), even when both are the all-zero value: a logged op may carry it.
+    // old == new, even when both are the all-zero value: a logged op may carry it.
     assert!(!move_changes(&mv(Some(ZERO), ZERO)));
 }

@@ -1,7 +1,7 @@
 //! The OS answer to "is this process alive?": runs `kill -0 <pid>`; kill_status_alive reads the result.
-//! No unit test: it runs a real program against a real process (S-5). Covered by Nagatha's integration
-//! group: a live pid (this process) is alive, a dead pid is not, so stale takeover happens only on a
-//! dead pid and refusal while held on a live one.
+//! No unit test: it runs a real program against a real process. Covered by the crate's integration tests
+//! (tests/oplog/locks.rs): a live pid (this process) is alive, a dead pid is not, so stale takeover happens only
+//! on a dead pid and refusal while held on a live one.
 
 use std::process::Command;
 

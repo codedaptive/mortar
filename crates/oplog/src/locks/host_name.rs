@@ -1,6 +1,6 @@
 //! This host's name, read by running `hostname`; parse_host_name judges its output.
-//! No unit test: it runs a real program (S-5). Covered by Nagatha's integration group: acquire on a
-//! fresh dir records this host, and stale takeover of a dead pid on this host.
+//! No unit test: it runs a real program. Covered by the crate's integration tests (tests/oplog/locks.rs):
+//! acquire on a fresh dir records this host, and stale takeover of a dead pid on this host.
 
 use std::process::Command;
 

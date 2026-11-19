@@ -1,8 +1,10 @@
 //! Reads the op log and returns the records a history filter keeps.
-//! No unit test: it reads the log file (S-5); filter_history_tests covers the filtering. Nagatha's
-//! integration group should cover: a missing log returns no records; after appends, each filter (ref,
-//! key, actor) returns the matching records equal to what was appended and in log order, intents and
-//! their closing records both; torn lines are skipped; an unreadable log path is an Io error naming it.
+//! No unit test: it reads the log file; filter_history_tests covers the filtering. Covered by the crate's
+//! integration tests (tests/oplog/values_recover.rs): after appends, the actor filter returns the matching
+//! records, whose op ids the test checks are op-2 and op-2. Integration tests should cover: a missing log
+//! returns no records; after appends, each filter (ref, key, actor) returns the matching records equal to what
+//! was appended, an op's intent and its closing record both, in log order; torn lines are skipped; an
+//! unreadable log path is an Io error naming it.
 
 use std::path::Path;
 
