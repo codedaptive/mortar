@@ -4,8 +4,8 @@
 //! the file system; guard_in_place_tests, guard_installed_report_tests, guard_error_report_tests,
 //! hooks_path_report_tests (the core.hooksPath refusal), install_outcome_tests (the warning on installed outcomes only,
 //! last before next), with_path_warning_tests and path's path_warning_for_tests (the warning's decision),
-//! same_build_tests, marker_in_chunks_tests, path_entries_tests and mr_path_warning_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_guard_install_tests.rs covers it through the binary: a fresh repository gets guard.json
+//! same_build_tests, marker_in_chunks_tests, path_entries_tests and mr_path_warning_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_guard_install_tests.rs covers it through the binary: a fresh repository gets guard.json
 //! and both hooks, executable, each the guard's script (exit 0 "installed"); a repeat is "already-installed" and
 //! changes no byte; a foreign pre-push is refused exit 1 "foreign-hook" with nothing written; without --actor, exit 4;
 //! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused

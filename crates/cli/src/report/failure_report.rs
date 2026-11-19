@@ -1,5 +1,5 @@
 //! The report of a step that failed (exit 5): a git, disk, lock or op log error a verb has no text of its own for, a
-//! verb with no runner (shell/run.rs) and a missing config (back_out/run_back_out.rs and others). Install's failed
+//! verb with no runner (shell/run_in.rs) and a missing config (back_out/run_back_out.rs and others). Install's failed
 //! step has its own report (install/apply_failure.rs), as has uninstall's (install/uninstall_failure.rs); install_in
 //! builds its unrecorded_failure and state_dir_failure on this one.
 

@@ -22,7 +22,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "restore-backup";
 
-/// The host named by parse_restore_backup_args (an Err is restore-backup's usage report, exit 4, before any git);
+/// The host named by parse_restore_backup_args (an Err is restore-backup's usage report, exit 4, before the verb runs git);
 /// then, under the land lock after recover (locked_act), keyed by --key or op_key("restore-backup", the common
 /// dir), land's restore_backup of that host from the config's remote as the context's actor, reported by
 /// restore_backup_report or, when refused, backup_error_report naming that remote.

@@ -2,8 +2,8 @@
 //! names the file the second squash added and not the line both carry; squashes of two changes are refused as
 //! not-same-change (exit 1); one word, three words and a word that is not a full commit id are usage errors (exit 4)
 //! with rereview's usage line as next.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing. The squashes are made in setup through land::squash under the land lock.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
+//! The squashes are made in setup through land::squash under the land lock.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - RereviewError::Git and RereviewError::Trailers texts (git or the trailers must fail);

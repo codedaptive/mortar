@@ -1,4 +1,4 @@
-//! RIT: `mr guard install` joins CLI PATH/marker reads with Land's real guard installation,
+//! Validation: `mr guard install` joins CLI PATH/marker reads with Land's real guard installation,
 //! Gitio and Oplog locks. Each Fixture owns/removes its repository and candidates. Only child PATH changes.
 //! The 22-case inventory's directory/missing-path marker-reader cases cannot reach that reader through the binary:
 //! PATH lookup rejects them first. The marked-symlink case proves recognition after canonicalization, not that

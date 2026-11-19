@@ -2,7 +2,7 @@
 //! 4, next log's usage line), returned before the op log or git is read.
 //! ZUT: log_filters and usage_report are plain functions, used directly; the context is built by hand. cwd does not
 //! exist, so a run that read git would answer a refusal or a failure, not exit 4. The listing cases, with a real op
-//! log, are RITs in crates/cli/tests/cli_rit/run_log_tests.rs.
+//! log, are validation tests in crates/cli/tests/validation/run_log_tests.rs.
 
 use std::path::Path;
 

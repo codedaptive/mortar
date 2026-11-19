@@ -25,10 +25,10 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "would-merge";
 
-/// The squash named by parse_would_merge_args (an Err is would-merge's usage report, exit 4, before any git); then,
-/// under the land lock after recover (locked_act), keyed by --key or op_key("would-merge", the common dir), the
-/// squash read by resolve_squash and land's would_merge of it into the config's integration branch, reported by
-/// would_merge_report or, when refused, squash_error_report.
+/// The squash named by parse_would_merge_args (an Err is would-merge's usage report, exit 4, before the verb runs
+/// git); then, under the land lock after recover (locked_act), keyed by --key or op_key("would-merge", the common
+/// dir), the squash read by resolve_squash and land's would_merge of it into the config's integration branch,
+/// reported by would_merge_report or, when refused, squash_error_report.
 pub fn run_would_merge(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let Some(config) = &context.config else {

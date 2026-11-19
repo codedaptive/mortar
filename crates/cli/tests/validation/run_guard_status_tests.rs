@@ -2,8 +2,7 @@
 //! install` it is installed with the three branches in its fields; a foreign reference-transaction exits 1 naming
 //! its path; a guard.json that is not a guard config exits 1 refused naming the file; a guard.json for other branches
 //! than the config is not-installed naming both.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);

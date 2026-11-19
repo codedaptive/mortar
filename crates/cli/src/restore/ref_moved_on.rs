@@ -1,6 +1,6 @@
 //! ref_moved_on: whether a repeated `mr restore` leaves a folder alone because its ref has moved on since the
 //! done record it repeats.
-//! Its ZUT is ref_moved_on_tests; the RIT crates/cli/tests/cli_rit/run_restore_repeat_tests.rs covers it end to end
+//! Its ZUT is ref_moved_on_tests; the validation test crates/cli/tests/validation/run_restore_repeat_tests.rs covers it end to end
 //! (a repeat after a later restore leaves the folder and its ref).
 
 use gitio::Oid;

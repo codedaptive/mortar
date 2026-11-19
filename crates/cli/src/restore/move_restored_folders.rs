@@ -4,7 +4,7 @@
 //! process in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip.
-//!   The RIT crates/cli/tests/cli_rit/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder
+//!   The validation test crates/cli/tests/validation/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder
 //!   move finished by a plain repeat (Repeated, then the move), and a repeat after a later restore leaving the folder
 //!   and its ref.
 

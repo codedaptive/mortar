@@ -1,4 +1,4 @@
-//! Config setup through Cargo's actual mortar binary, shared by the RIT fixtures. No private cli API or codec.
+//! Config setup through Cargo's actual mortar binary, shared by the test fixtures. No private cli API or codec.
 use std::{path::Path, process::{Command, Stdio}};
 use super::Config;
 use crate::json::check;

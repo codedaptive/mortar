@@ -5,8 +5,8 @@ fn argv(text: &str) -> Vec<String> {
 }
 
 #[test]
-fn each_of_the_nine_reads_is_a_read() {
-    for read in ["status", "diff", "log", "show", "ls-files", "rev-parse", "blame", "grep", "cat-file"] {
+fn each_of_the_ten_reads_is_a_read() {
+    for read in ["status", "diff", "log", "show", "ls-files", "rev-parse", "blame", "grep", "cat-file", "version"] {
         assert!(git_call_is_read(&argv(&format!("git {read}"))), "{read}");
     }
 }
@@ -38,6 +38,11 @@ fn a_dash_c_value_that_names_a_read_is_not_taken_for_the_subcommand() {
 fn a_call_with_no_subcommand_is_a_read() {
     assert!(git_call_is_read(&argv("git --version")));
     assert!(git_call_is_read(&argv("git")));
+}
+
+#[test]
+fn git_call_is_read_version_is_a_read() {
+    assert!(git_call_is_read(&argv("git version")));
 }
 
 #[test]

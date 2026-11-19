@@ -1,8 +1,8 @@
 //! CLI restore's crash-repeat, unsaved-work and repeat-after-a-later-restore outcomes, and a crash-repeat refusing
 //! work added after the kill.
-//! Repo integration test: the mortar binary runs as a child in a throwaway repository (testkit's TestRepo) with a zone
+//! Validation test: the mortar binary runs as a child in a throwaway repository (testkit's TestRepo) with a zone
 //! folder, a request folder and the config `mr init` writes (zone core=src, floor 0, the default build dir),
-//! reaching folders, snapshot, gitio and oplog below cli; owned by integration from landing. The crash cases kill
+//! reaching folders, snapshot, gitio and oplog below cli; the cli lane owns it. The crash cases kill
 //! the worker (`run_restore_repeat_tests::restore_worker`, run by testkit's test_child) at testkit's git crash gate.
 
 use std::fs;

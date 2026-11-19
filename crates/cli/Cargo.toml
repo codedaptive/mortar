@@ -24,7 +24,8 @@ name = "mortar"
 path = "src/main.rs"
 
 # Both bins (`mortar`, src/main.rs, and `mr`, src/bin/mr.rs) call cli::main_entry, so the binary answers alike
-# under either name. `make accept` runs `mr` with both names on PATH (ACCEPT-0 now; ACCEPT-3/4 once their bodies are written).
+# under either name. `make accept` runs `mr` with both names on PATH (the steps drive `mr`; ACCEPT-4's agent also
+# reaches `mortar`, through the `mortar` script in its agent bin; its git shim holds only the logging git).
 [[bin]]
 name = "mr"
 path = "src/bin/mr.rs"

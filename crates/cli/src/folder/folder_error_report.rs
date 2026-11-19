@@ -3,7 +3,7 @@
 //! exit and next are folder_refusal's.
 //! No sibling test: every arm is pure, a FolderError value (its Lock, Git and Oplog errors are plain data a test
 //! can build) mapped to a Report with no I/O, so a sibling ZUT can cover each arm; folder_refusal_tests and folder_error_why_tests
-//! cover the decisions it joins, and the RITs crates/cli/tests/cli_rit/run_folder_{zone,request,remove,keep,drop}_tests.rs its
+//! cover the decisions it joins, and the validation tests crates/cli/tests/validation/run_folder_{zone,request,remove,keep,drop}_tests.rs its
 //! refusals (ZoneBranchMissing, NotRemovedUnsaved, AttemptsRemain, ZoneFolder, AttemptsUnsaved) through the binary.
 
 use folders::FolderError;

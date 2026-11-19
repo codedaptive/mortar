@@ -2,8 +2,8 @@
 //! landing there is nothing to publish and the remote is untouched; a remote main someone else moved exits 1
 //! origin-moved, with local main and integration on the commit found, the integration worktree's files at it and the
 //! squash ref kept; an extra word is a usage error (exit 4) with publish's usage line as next.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing. A bare repository in a second throwaway directory is the remote; the squash and the landing are made in
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
+//! A bare repository in a second throwaway directory is the remote; the squash and the landing are made in
 //! setup through land::squash and land::land under the land lock.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);

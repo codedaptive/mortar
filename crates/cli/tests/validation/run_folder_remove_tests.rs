@@ -1,7 +1,6 @@
 //! `mortar folder remove`: a joined, saved request folder removed with its branch and snapshot ref; unsaved work,
 //! remaining attempts and a zone folder each refused with nothing removed.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - a file the snapshot cap refuses counts as unsaved: exit 1, the cli's facts naming the file and the cap
 //!   (cli with snapshot's saved_state);

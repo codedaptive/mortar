@@ -2,8 +2,8 @@
 //! land::guard_decide, with no ref moved. With MORTAR_OP set and the op log unreadable (its path a directory), a
 //! reference-transaction committed or aborted is let through (exit 0, nothing printed) without reading the op log,
 //! and a prepared one, guarded line or not, fails on the op log (exit 5), with no ref moved.
-//! Repo integration test: each test runs the mortar binary with the hook's words and input, as git would, in a
-//! throwaway repository whose guard land::guard_install put in; owned by integration from landing.
+//! Validation test: each test runs the mortar binary with the hook's words and input, as git would, in a
+//! throwaway repository whose guard land::guard_install put in; the cli lane owns it.
 //! The installed-hook and marked-op cases are RITs in tests/operational_rit/guard.rs.
 
 use std::fs;

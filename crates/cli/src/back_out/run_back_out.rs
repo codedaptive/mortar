@@ -8,8 +8,8 @@
 //! it is); a clear that resets the index to HEAD (the folder's HEAD is already the branch's new commit) leaves no
 //! stall for the repeat to see, and the folder's files are then their owner's to bring to HEAD, unreported.
 //! No sibling test: it takes a real lock and runs git, the op log and land; back_out_report_tests,
-//! note_finished_move_tests and landing's land_error_report_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_back_out_tests.rs covers it through the binary.
+//! note_finished_move_tests and landing's land_error_report_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_back_out_tests.rs covers it through the binary.
 //! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid,
 //! exit 3; without a config, exit 1, next mr init; the LandError texts that need git, the op log or the landing
 //! state to fail for real; a back-out after a failed integration test of a landed squash; the stopped-move finish
@@ -37,9 +37,9 @@ const VERB: &str = "back-out";
 /// The same command run again, which a refused integration folder move's next ends with.
 const REPEAT: &str = "mr back-out --actor <name>";
 
-/// Any argument is back-out's usage report, before any git. Then, under the land lock after recover (locked_act),
-/// keyed by --key or op_key("back-out", the common dir): first a stopped integration folder move is finished
-/// (finish_stopped_move), then integration's tip read, land's back_out as the context's actor (refused:
+/// Any argument is back-out's usage report, before the verb runs git. Then, under the land lock after recover
+/// (locked_act), keyed by --key or op_key("back-out", the common dir): first a stopped integration folder move is
+/// finished (finish_stopped_move), then integration's tip read, land's back_out as the context's actor (refused:
 /// land_error_report), and on BackedOut the integration folder moved from the old tip to the new one
 /// (move_integration_folder), reported by back_out_report. NothingToBackOut moves no folder of its own; a finished
 /// stopped move is the first line of every report after it, refusals included (note_finished_move).

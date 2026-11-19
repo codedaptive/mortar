@@ -1,6 +1,6 @@
 //! The worktree that has the integration branch checked out, found from git's worktree list.
-//! No sibling test: it runs git. The RITs crates/cli/tests/cli_rit/run_back_out_tests.rs
-//! and crates/cli/tests/cli_rit/run_publish_tests.rs cover it through the binary.
+//! No sibling test: it runs git. The validation tests crates/cli/tests/validation/run_back_out_tests.rs
+//! and crates/cli/tests/validation/run_publish_tests.rs cover it through the binary.
 
 use std::path::PathBuf;
 

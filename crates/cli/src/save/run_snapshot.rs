@@ -31,8 +31,8 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "snapshot";
 
-/// Any argument is snapshot's usage report, before any git. Then the config, then the Mortar folder holding `cwd`
-/// (read_folder_context; context_report when it cannot be read). A zone folder has no snapshot ref:
+/// Any argument is snapshot's usage report, before the verb runs git. Then the config, then the Mortar folder
+/// holding `cwd` (read_folder_context; context_report when it cannot be read). A zone folder has no snapshot ref:
 /// zone_folder_refusal, exit 1.
 /// Under `join-<zone>` (from the verb table through lock_name_for) after recover (locked_act), keyed by
 /// --key or op_key("snapshot", the folder) as the lock's holder only (snapshot_formatted draws its own op id),

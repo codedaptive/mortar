@@ -35,13 +35,13 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "land";
 
-/// The commit read by parse_land_args (an Err is land's usage report, exit 4, before any git). Then, under the land
-/// lock after recover (locked_act), keyed by --key or op_key("land", the common dir): first a stopped integration
-/// folder move is finished (finish_stopped_move), then the squash at that commit read (resolve_squash), the origin
-/// tip read, and land's land as the context's actor (refused: land_error_report). On Landed the integration folder
-/// is moved from the origin tip to the landed commit (move_integration_folder); Conflicted and Busy move no folder.
-/// land_report reports it. A finished stopped move is the first line of every report after it, refusals included
-/// (note_finished_move).
+/// The commit read by parse_land_args (an Err is land's usage report, exit 4, before the verb runs git). Then, under
+/// the land lock after recover (locked_act), keyed by --key or op_key("land", the common dir): first a stopped
+/// integration folder move is finished (finish_stopped_move), then the squash at that commit read (resolve_squash),
+/// the origin tip read, and land's land as the context's actor (refused: land_error_report). On Landed the
+/// integration folder is moved from the origin tip to the landed commit (move_integration_folder); Conflicted and
+/// Busy move no folder. land_report reports it. A finished stopped move is the first line of every report after it,
+/// refusals included (note_finished_move).
 pub fn run_land(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let commit = match parse_land_args(&args.rest) {

@@ -1,4 +1,4 @@
-//! Input words for binary init in cli_rit, operational_rit and resolve_rit. The binary owns config encoding.
+//! Input words for binary init in validation, operational_rit and resolve_rit. The binary owns config encoding.
 use std::collections::BTreeMap;
 use super::{FormatterConfig, ZoneConfig};
 

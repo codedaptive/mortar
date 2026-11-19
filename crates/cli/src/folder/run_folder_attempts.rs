@@ -2,8 +2,8 @@
 //! made at <dir>/try-<k>, each on try/<zone>/<request>/<k> at the request's tip.
 //! A relative <dir> is taken from the request folder's toplevel, not from the subfolder it is run in.
 //! No sibling test: it takes a real lock and runs git, the op log and folders; request_folder_refusal_tests,
-//! attempts_dir_tests, folder_setup_for_tests and attempts_made_report_tests cover its decisions. The RIT
-//! crates/cli/tests/cli_rit/run_folder_attempts_tests.rs covers it through the binary: attempts at <dir>/try-<k> with
+//! attempts_dir_tests, folder_setup_for_tests and attempts_made_report_tests cover its decisions. The validation test
+//! crates/cli/tests/validation/run_folder_attempts_tests.rs covers it through the binary: attempts at <dir>/try-<k> with
 //! Attempt(k) records and try branches at the request tip, made by ops of the actor; a relative <dir> run from a
 //! subfolder taken from the request folder; run in a zone folder it is refused exit 1, nothing made; n = 0 or a <dir>
 //! that normalizes inside the request folder is exit 4.

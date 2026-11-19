@@ -2,7 +2,7 @@
 //! moved to it, every attempt folder and try branch gone, their trysnap refs kept.
 //! No sibling test: it takes a real lock and runs git, the op log, snapshot and folders;
 //! request_folder_refusal_tests, pending_keep_move_tests, attempt_saved_tests and kept_report_tests cover its
-//! decisions. The RIT crates/cli/tests/cli_rit/run_folder_keep_tests.rs covers it through the binary: keep 2 of two saved
+//! decisions. The validation test crates/cli/tests/validation/run_folder_keep_tests.rs covers it through the binary: keep 2 of two saved
 //! attempts by a folder-keep op of the actor; an unsaved attempt, and unsaved work in the request folder, refused
 //! exit 1 with nothing changed; an orphan attempt re-made and the keep of another finished in one command; a keep
 //! killed between its op and the request folder's move finished by a plain repeat, outcome already-done.

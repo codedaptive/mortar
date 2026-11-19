@@ -1,7 +1,7 @@
 //! run_need: `mr need <path> [--key <key>] [--json]`, the agent verb that adds a path to its folder's cone.
 //! No unit test: it takes the lock, runs git, the op log and folders::need; need_report_tests,
-//! missing_path_report_tests, need_error_report_tests and need_with_next_tests cover what it reports. The RIT
-//! crates/cli/tests/cli_rit/run_need_tests.rs covers, with the mortar binary in a throwaway repository:
+//! missing_path_report_tests, need_error_report_tests and need_with_next_tests cover what it reports. The validation test
+//! crates/cli/tests/validation/run_need_tests.rs covers, with the mortar binary in a throwaway repository:
 //! a wrong argument count is usage without work; a missing zone branch refuses before writing
 //! (need_with_a_missing_zone_branch_refuses_before_writing); an unreadable record of another folder does not change a
 //! completed need (need_does_not_read_other_folders_for_its_next_step). The repo integration tests are to cover, with

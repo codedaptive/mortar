@@ -5,8 +5,8 @@
 //! the moves. The repo integration tests are to cover, with the mortar binary as a child process in a throwaway
 //! repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a restore that would delete a folder's ref refuses exit 1.
-//!   The RIT crates/cli/tests/cli_rit/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder
-//!   move finished by a plain repeat (Repeated, then the move). The RIT crates/cli/tests/cli_rit/run_restore_tests.rs
+//!   The validation test crates/cli/tests/validation/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder
+//!   move finished by a plain repeat (Repeated, then the move). The validation test crates/cli/tests/validation/run_restore_tests.rs
 //!   covers a ref name git refuses coming back as BadMove, exit 1, with no ref written and no record added.
 
 use std::path::Path;

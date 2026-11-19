@@ -3,7 +3,7 @@
 //! It takes a real lock, runs git, the op log, snapshot and folders; restore_lock_tests,
 //! restore_key_tests, restore_refusal_tests, restore_error_report_tests, restore_report_tests and
 //! restore_move_refusal_report_tests cover its decisions, run_restore_tests its usage refusals before any lock or
-//! git, and the RIT crates/cli/tests/cli_rit/run_restore_tests.rs a ref name git refuses (BadMove, exit 1).
+//! git, and the validation test crates/cli/tests/validation/run_restore_tests.rs a ref name git refuses (BadMove, exit 1).
 //! The repo integration tests are to cover, with the mortar binary as a child process in a throwaway repository
 //! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip;
@@ -11,7 +11,7 @@
 //! - a restore that would delete a folder's ref refuses exit 1;
 //! - mixed refs and an unknown ref are exit 4 before any lock;
 //! - a held lock is exit 3.
-//!   The RIT crates/cli/tests/cli_rit/run_restore_repeat_tests.rs covers an unsaved request folder refusing exit 1
+//!   The validation test crates/cli/tests/validation/run_restore_repeat_tests.rs covers an unsaved request folder refusing exit 1
 //!   with nothing moved, a kill between oplog::restore and the folder move finished by a plain repeat (Repeated, then
 //!   the move), such a repeat with work added after the kill refusing exit 1 with nothing moved, and a
 //!   repeat after a later restore leaving the folder and its ref.

@@ -3,8 +3,7 @@
 //! written; no --actor, no sub-verb and an unknown sub-verb are usage errors (exit 4) with guard's usage line as next;
 //! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused
 //! (exit 1) with nothing written.
-//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
-//! landing.
+//! Validation test: drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
