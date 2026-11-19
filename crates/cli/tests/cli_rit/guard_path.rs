@@ -1,4 +1,4 @@
-//! S-169 Q4 RIT: `mr guard install` joins CLI PATH/marker reads with Land's real guard installation,
+//! RIT: `mr guard install` joins CLI PATH/marker reads with Land's real guard installation,
 //! Gitio and Oplog locks. Each Fixture owns/removes its repository and candidates. Only child PATH changes.
 //! The 22-case inventory's directory/missing-path marker-reader cases cannot reach that reader through the binary:
 //! PATH lookup rejects them first. The marked-symlink case proves recognition after canonicalization, not that
@@ -6,7 +6,7 @@
 use crate::support::{actual_git, script, Fixture};
 use std::{ffi::{OsStr, OsString}, fs, os::unix::fs::{symlink, PermissionsExt}, path::{Path, PathBuf}};
 
-// S-147's actual 37-byte signature is protocol input, not an import of CLI's private marker implementation.
+// The binary's actual 37-byte signature is protocol input, not an import of CLI's private marker implementation.
 const MARKER: &[u8] = b"\0mortar-binary-marker/S-147/7c1e4b9a\0";
 const FOREIGN: &[u8] = b"#!/bin/sh\nprintf 'candidate ran\\n' >\"$GUARD_PATH_CANDIDATE_RAN\"\nexit 97\n";
 
@@ -105,7 +105,7 @@ fn a_file_shorter_than_one_read_with_the_marker_near_the_start_has_it() {
 
 #[test]
 fn a_symlink_to_a_file_holding_the_marker_has_it() {
-    // Partial Q4 case 7: the binary canonicalizes the candidate before the marker reader receives its path.
+    // Partial inventory case 7: the binary canonicalizes the candidate before the marker reader receives its path.
     let f = Fixture::new(); let a = bin(&f, "a"); let target = f.root.join("marked-target");
     candidate(&target, &[b"head ".as_slice(), MARKER, b" tail"].concat(), true);
     symlink(&target, a.join("mr")).unwrap();

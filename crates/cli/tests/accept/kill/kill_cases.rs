@@ -1,4 +1,4 @@
-//! The cases of 03-kill.md and each one's checks, in order. A const only: case_lines_tests.rs and
+//! The cases of step 3 and each one's checks, in order. A const only: case_lines_tests.rs and
 //! kill_not_run_tests.rs read it through CaseLines.
 
 /// Each case's label, then its checks' titles; 03's "Consistent" list (CONSISTENT_ITEMS) follows each case. Case 3
@@ -49,7 +49,7 @@ pub const KILL_CASES: [(&str, &[&str]); 5] = [
             "the landing state says a publish was interrupted",
             "mr publish again: published",
             "origin's main and the local main at the landed commit, once",
-            "the push intent closed done by publish (S-103), not by recover",
+            "the push intent closed done by publish, not by recover",
         ],
     ),
 ];

@@ -1,4 +1,4 @@
-//! placement_skip: --no-place, then an unknown path, then a package-manager prefix; None otherwise (spec 07 item 1).
+//! placement_skip: --no-place, then an unknown path, then a package-manager prefix; None otherwise.
 
 use std::path::{Path, PathBuf};
 

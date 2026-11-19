@@ -1,5 +1,5 @@
-//! FinishedMove: a stopped integration folder move that finish_stopped_move finished (S-137).
-//! A bare type with no behaviour of its own, so no sibling test (S-7).
+//! FinishedMove: a stopped integration folder move that finish_stopped_move finished.
+//! A bare type with no behaviour of its own, so no sibling test.
 
 use std::path::PathBuf;
 

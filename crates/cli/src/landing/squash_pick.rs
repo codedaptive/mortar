@@ -1,5 +1,5 @@
 //! SquashPick: which squash ref carries a change ID, as pick_squash_ref answers it.
-//! No sibling test (S-7): a bare type with no behaviour of its own; pick_squash_ref_tests cover how it is chosen.
+//! No sibling test: a bare type with no behaviour of its own; pick_squash_ref_tests cover how it is chosen.
 
 use gitio::Oid;
 

@@ -1,5 +1,5 @@
-//! The verb table's entry for `mr install` (SPEC-cli 07, "mr install").
-//! A bare const (S-7); verbs_setup_tests covers it.
+//! The verb table's entry for `mr install`.
+//! A bare const; verbs_setup_tests covers it.
 
 use super::{LockNeed, VerbKind, VerbSpec};
 

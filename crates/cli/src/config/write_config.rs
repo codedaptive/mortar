@@ -1,6 +1,6 @@
 //! Writes the config into the repository's git common dir.
-//! No unit test: it writes real files (S-5); encode_config_tests covers the text. Nagatha's integration group
-//! is to cover: write then read_config reads back equal; a second write replaces the first whole, through
+//! No unit test: it writes real files; encode_config_tests covers the text. The repo integration tests
+//! are to cover: write then read_config reads back equal; a second write replaces the first whole, through
 //! config.json.tmp renamed over config.json, leaving no tmp file; a common dir with no `mortar` folder gets
 //! one.
 

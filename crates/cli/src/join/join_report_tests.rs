@@ -1,5 +1,5 @@
 //! join_report: each join answer as its exact report, after the save's lines and fields.
-//! ZUT (rule 11): join/save_part is pure and used directly.
+//! ZUT: join/save_part is pure and used directly.
 
 use std::path::PathBuf;
 
@@ -24,6 +24,7 @@ fn oid(hex: &str) -> Oid {
 fn outcome(answer: JoinAnswer) -> JoinOutcome {
     JoinOutcome {
         request_ref: REQUEST.to_string(),
+        snapshot_written: false,
         finished_move: None,
         save: SaveOutcome { commit: oid(HEAD), tree: oid(TREE), written: false, change_id: None, refused: Vec::new() },
         answer,
@@ -152,6 +153,61 @@ fn conflicted_is_exit_2_listing_the_files() {
 }
 
 #[test]
+fn conflicted_names_both_refs_moved_by_save_first() {
+    let answer = JoinAnswer::Conflicted {
+        commit: oid(FROM), files: vec![PathBuf::from("src/a.rs")],
+        state: PathBuf::from("/r/.git/worktrees/fix-1/mortar-join.json"),
+    };
+    let mut result = outcome(answer);
+    result.save.written = true;
+    result.snapshot_written = true;
+    assert_eq!(join_report(&result), Report {
+        verb: "join".to_string(), exit: ExitCode::Conflict, outcome: "conflicted".to_string(),
+        lines: vec![
+            "work saved at join as 4444444444444444444444444444444444444444".to_string(),
+            "conflicted: commit 1111111111111111111111111111111111111111 did not apply; refs/heads/req/core/fix-1 and the snapshot ref moved as the work was saved first; no other ref moved and the folder stays at the request tip".to_string(),
+            "  src/a.rs".to_string(),
+            "mr resolve writes both sides into these files with markers; fix them, then run mr resolve again".to_string(),
+        ],
+        owner: None, next: "mr resolve".to_string(),
+        fields: vec![
+            ("request_ref".to_string(), OutValue::Text("refs/heads/req/core/fix-1".to_string())),
+            ("finished_move_from".to_string(), OutValue::Null), ("finished_move_to".to_string(), OutValue::Null),
+            ("saved_commit".to_string(), OutValue::Text("4444444444444444444444444444444444444444".to_string())),
+            ("saved_written".to_string(), OutValue::Bool(true)), ("change_id".to_string(), OutValue::Null),
+            ("refused".to_string(), OutValue::Texts(vec![])),
+            ("commit".to_string(), OutValue::Text("1111111111111111111111111111111111111111".to_string())),
+            ("files".to_string(), OutValue::Texts(vec!["src/a.rs".to_string()])),
+            ("state".to_string(), OutValue::Text("/r/.git/worktrees/fix-1/mortar-join.json".to_string())),
+        ],
+    });
+}
+
+#[test]
+fn joined_names_a_snapshot_only_move() {
+    let answer = JoinAnswer::Joined { zone_ref: ZONE.to_string(), request_tip: oid(TO) };
+    let mut result = outcome(answer);
+    result.snapshot_written = true;
+    assert_eq!(join_report(&result), Report {
+        verb: "join".to_string(), exit: ExitCode::Done, outcome: "joined".to_string(),
+        lines: vec![
+            "no unsaved work".to_string(),
+            "joined: the request tip 2222222222222222222222222222222222222222 is already in refs/heads/zone/core; the snapshot ref moved as the work was saved first; nothing else moved".to_string(),
+        ],
+        owner: None, next: "wait for the zone's tests".to_string(),
+        fields: vec![
+            ("request_ref".to_string(), OutValue::Text("refs/heads/req/core/fix-1".to_string())),
+            ("finished_move_from".to_string(), OutValue::Null), ("finished_move_to".to_string(), OutValue::Null),
+            ("saved_commit".to_string(), OutValue::Text("4444444444444444444444444444444444444444".to_string())),
+            ("saved_written".to_string(), OutValue::Bool(false)), ("change_id".to_string(), OutValue::Null),
+            ("refused".to_string(), OutValue::Texts(vec![])),
+            ("zone_ref".to_string(), OutValue::Text("refs/heads/zone/core".to_string())),
+            ("request_tip".to_string(), OutValue::Text("2222222222222222222222222222222222222222".to_string())),
+        ],
+    });
+}
+
+#[test]
 fn files_written_is_a_failure() {
     let answer =
         JoinAnswer::FilesWritten { commit: oid(FROM), files: Vec::new(), skipped: Vec::new(), gitlinks: Vec::new() };
@@ -163,7 +219,6 @@ fn files_written_is_a_failure() {
             outcome: "failed".to_string(),
             lines: vec![
                 "join answered files-written, which only resolve gives".to_string(),
-                "nothing half-done is left".to_string(),
             ],
             owner: None,
             next: "repeat the same command".to_string(),

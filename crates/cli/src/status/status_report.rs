@@ -2,7 +2,7 @@
 //! an attempt folder.
 //! status_report_tests covers a clean folder and one with every part as the whole Report, calling status_lines,
 //! status_fields, status_next and status_outcome inside, and renders both forms, which runs oplog's exported, pure
-//! JSON writer (a ZUT by S-171).
+//! JSON writer (so a unit test may use it).
 
 use super::{status_fields, status_lines, status_next, status_outcome, StatusState};
 use crate::report::{ExitCode, Report};

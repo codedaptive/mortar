@@ -40,7 +40,7 @@ fn state(stalled: bool, paused: bool, saved: bool, joined: bool) -> StatusState 
     }
 }
 
-/// Every row of the table as (stalled, paused, saved, joined, the phase the spec's order gives), written out.
+/// Every row of the table as (stalled, paused, saved, joined, the phase the precedence order gives), written out.
 const TABLE: [(bool, bool, bool, bool, StatusPhase); 16] = [
     (false, false, false, false, StatusPhase::Unsaved),
     (false, false, false, true, StatusPhase::Unsaved),

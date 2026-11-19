@@ -1,10 +1,10 @@
-//! run_snapshot: `mr snapshot`, the harness's end-of-turn and before-gate call (SPEC-cli 05): the folder it runs
+//! run_snapshot: `mr snapshot`, the harness's end-of-turn and before-gate call: the folder it runs
 //! in saved to its snapshot ref (refs/mortar/snap/<zone>/<request>, or refs/mortar/trysnap/<zone>/<request>/<k> in
-//! attempt folder k: S-69), after the configured formatter, as save runs it; exit 0 also when nothing changed.
-//! No sibling test (S-104): it takes a real lock and runs git, the formatter and the op log; snapshot_target_for,
+//! attempt folder k), after the configured formatter, as save runs it; exit 0 also when nothing changed.
+//! No sibling test: it takes a real lock and runs git, the formatter and the op log; snapshot_target_for,
 //! snapshot_settings_for, op_key, zone_folder_refusal, snapshot_report and snapshot_error_report are its decisions
 //! and have their tests.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136), with the mortar binary as a child
+//! Repo integration tests to write (cross-zone, not written here), with the mortar binary as a child
 //! process in folders made by the landing verbs in a throwaway repository:
 //! - snapshot in a sparse request folder writes the request's snap ref, exit 0, outcome snapshotted;
 //! - snapshot with nothing changed since the last one is exit 0, outcome unchanged, and moves no ref;
@@ -12,7 +12,7 @@
 //! - snapshot in an attempt folder moves its trysnap ref, not the request's snap ref;
 //! - any argument is exit 4; without a config, exit 1; run outside a Mortar folder, exit 1;
 //! - a join-<zone> lock held by a live pid is exit 3.
-//!   ACCEPT-5 (05-disk.md): snapshot's run in a request folder after a small edit, reached through this verb.
+//!   the disk acceptance case: snapshot's run in a request folder after a small edit, reached through this verb.
 
 use std::path::Path;
 
@@ -34,8 +34,8 @@ const VERB: &str = "snapshot";
 /// Any argument is snapshot's usage report, before any git. Then the config, then the Mortar folder holding `cwd`
 /// (read_folder_context; context_report when it cannot be read). A zone folder has no snapshot ref:
 /// zone_folder_refusal, exit 1.
-/// Under `join-<zone>` (S-84, from the verb table through lock_name_for) after recover (locked_act, S-16), keyed by
-/// --key or op_key("snapshot", the folder) as the lock's holder only (S-132: snapshot_formatted draws its own op id),
+/// Under `join-<zone>` (from the verb table through lock_name_for) after recover (locked_act), keyed by
+/// --key or op_key("snapshot", the folder) as the lock's holder only (snapshot_formatted draws its own op id),
 /// snapshot_formatted with the config's excludes, cap and formatter; reported by snapshot_report, or by
 /// snapshot_error_report when it did not happen.
 pub fn run_snapshot(context: &ShellContext, cwd: &Path) -> Report {

@@ -1,5 +1,4 @@
-//! Tests of plan_link: the target, the clash, what stands at `~/.local/bin/mr`, and the refusal (spec 07 item 3,
-//! S-177).
+//! Tests of plan_link: the target, the clash, what stands at `~/.local/bin/mr`, and the refusal (spec 07 item 3).
 
 use std::path::PathBuf;
 

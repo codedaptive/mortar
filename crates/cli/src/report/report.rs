@@ -1,5 +1,5 @@
 //! What one run of a verb says, before it is rendered plain or as JSON.
-//! A bare type (S-7); render_plain_tests and render_json_tests exercise it.
+//! A bare type; render_plain_tests and render_json_tests exercise it.
 
 use super::{ExitCode, OutValue};
 

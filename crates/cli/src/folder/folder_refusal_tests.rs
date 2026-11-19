@@ -52,7 +52,7 @@ fn io_is_a_failure_whose_repeat_is_safe() {
     let error = FolderError::Io { path: path("/w/a"), source: std::io::Error::other("disk gone") };
     assert_eq!(
         folder_refusal(&error),
-        Some((ExitCode::Failure, "repeat the same command; nothing half-done is left".to_string()))
+        Some((ExitCode::Failure, "repeat the same command".to_string()))
     );
 }
 

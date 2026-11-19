@@ -5,7 +5,7 @@ use land::GuardVerdict;
 use crate::report::{ExitCode, Report};
 
 /// Allow is exit Done, outcome "allowed", with no lines, owner or next: the binary prints nothing for it
-/// (prints_nothing, S-111), and the zero exit lets git go on. Refuse is exit Refused, outcome "refused", with the
+/// (prints_nothing), and the zero exit lets git go on. Refuse is exit Refused, outcome "refused", with the
 /// verdict's why as the line, its owner and its next; the non-zero exit makes git abort the transaction or the push.
 pub fn guard_hook_report(verdict: &GuardVerdict) -> Report {
     let (exit, outcome, lines, owner, next) = match verdict {

@@ -1,4 +1,4 @@
-//! marker_in_chunks: whether a byte string occurs in a stream read in chunks (S-147: the Mortar marker in a
+//! marker_in_chunks: whether a byte string occurs in a stream read in chunks (the Mortar marker in a
 //! candidate `mr`'s bytes). Pure: the caller does the reading and gives the chunks.
 
 /// True as soon as `marker` occurs in the chunks taken end to end, wherever the chunk boundaries fall; false when

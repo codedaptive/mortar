@@ -1,5 +1,5 @@
 //! StatusPhase: where a request folder stands; status_outcome names it and status_next gives its step.
-//! A bare type (S-7); status_phase_from_status_state_tests exercises it.
+//! A bare type; status_phase_from_status_state_tests exercises it.
 
 /// The one phase a request folder is in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,5 +1,5 @@
 //! Tests of plan_install: the order of steps and items, the refusal order (placement, link, skills), the command the
-//! skill text names, the "not on PATH" item and the next step's precedence (spec 07 items 3, 6 and 7).
+//! skill text names, the "not on PATH" item and the next step's precedence.
 
 use std::path::PathBuf;
 

@@ -1,7 +1,7 @@
 //! folders_on_refs: the Mortar folders an `mr restore` would move, found by walking the repository's worktrees.
-//! No unit test: it runs git and reads folder records (S-5, S-104); restore_refusal_tests and restore_report_tests
+//! No unit test: it runs git and reads folder records; restore_refusal_tests and restore_report_tests
 //! cover what is decided from what it finds, and run_restore_tests restore's usage refusals, before any lock.
-//! Nagatha's integration group is to cover, with the mortar binary as a child process in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
+//! The repo integration tests are to cover, with the mortar binary as a child process in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip;
 //! - a zone folder on zone/<z> is listed and not moved.
 

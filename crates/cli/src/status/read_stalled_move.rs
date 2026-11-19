@@ -1,23 +1,23 @@
-//! read_stalled_move: the folder move a kill or a refused move left undone, if any, read without finishing it (S-85,
-//! S-97, S-116, S-143), from the op log settled in memory as recover would leave it (recovered_records), so a join
+//! read_stalled_move: the folder move a kill or a refused move left undone, if any, read without finishing it,
+//! from the op log settled in memory as recover would leave it (recovered_records), so a join
 //! rebase killed before its Done record is seen; status writes nothing and takes no lock.
-//! No unit test: it reads the op log and runs git (S-5, S-104); recovered_records_tests, find_pending_move_tests and
-//! move_stalled_tests cover its decisions. Nagatha's integration group is to cover, with the mortar binary as a child
+//! No unit test: it reads the op log and runs git; recovered_records_tests, find_pending_move_tests and
+//! move_stalled_tests cover its decisions. The repo integration tests are to cover, with the mortar binary as a child
 //! process in a request folder made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a kill after join's rebase op and before the folder move: status reports the stall (the request ref, the new
-//!   tip and the folder's old tip) and gives next mr join; after the move status reports no stall (S-97);
+//!   tip and the folder's old tip) and gives next mr join; after the move status reports no stall;
 //! - a join rebase killed after its update-ref and before its Done record (testkit kill shim,
 //!   MORTAR_TEST_CRASH=after): status exits 0 with the stall and next mr join, stalled_from/stalled_to the op's
 //!   old/new; refs, index and op log unchanged by status; mr join then finishes the move;
 //! - an undo of a plain join rebase whose folder move was refused: status reports the undo's stall (the request ref
-//!   back at the tip before the rebase, the folder at the rebased tip) and gives next mr undo (S-143);
-//! - after mr undo of a resolve's final join step (S-136 (2), S-148): status reports no stall, shows the paused join
+//!   back at the tip before the rebase, the folder at the rebased tip) and gives next mr undo;
+//! - after mr undo of a resolve's final join step: status reports no stall, shows the paused join
 //!   and gives next mr resolve; the next save, join or resolve moves no folder files;
 //! - a kill after join's rebase op and after the folder move's set_index(folder_tree), before the move itself: status
-//!   reports the stall (S-87, S-88, S-116);
-//! - a finished move followed by a staged edit is not reported as a stall (next mr save) (S-116);
-//! - an index with unmerged entries (left by git run by hand in the folder, S-180) is not reported as a stall;
+//!   reports the stall;
+//! - a finished move followed by a staged edit is not reported as a stall (next mr save);
+//! - an index with unmerged entries (left by git run by hand in the folder) is not reported as a stall;
 //! - status moves no ref and writes no file: refs, the folder's index and the op log are unchanged after it.
 
 use gitio::{Git, IndexTreeError};
@@ -34,10 +34,10 @@ use crate::report::{failure_report, Report};
 /// The pending move of `request_ref` (find_pending_move over the op log settled in memory by recovered_records, and
 /// the ref's value), kept only when it is stalled: the folder's index tree is still where the move started, the old
 /// tip's tree or the op's folder_tree, and not the new tip's tree (move_stalled). find_pending_move keeps answering
-/// after a finished move, so the index decides (S-97, S-116). An open intent recover would refuse as Mixed stays open
+/// after a finished move, so the index decides. An open intent recover would refuse as Mixed stays open
 /// here. An index with unmerged entries has no tree and is not a stall; any other failure is failure_report for
-/// `verb`. index_tree reads a copy of the index, so the folder's index and its lock are untouched (S-97 amended);
-/// nothing here finishes the move or writes the log (S-85).
+/// `verb`. index_tree reads a copy of the index, so the folder's index and its lock are untouched;
+/// nothing here finishes the move or writes the log.
 pub fn read_stalled_move(
     git: &Git,
     folder: &FolderContext,

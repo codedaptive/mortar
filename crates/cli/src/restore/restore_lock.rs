@@ -1,5 +1,4 @@
-//! The one lock an `mr restore` holds, chosen from the refs it names before any lock or git run (S-113(1),
-//! S-115(2)).
+//! The one lock an `mr restore` holds, chosen from the refs it names before any lock or git run.
 
 use oplog::LockName;
 
@@ -12,8 +11,8 @@ enum Owner<'a> {
 
 /// Every ref one zone's takes `join-<zone>`; every ref a landing ref (exactly refs/heads/<integration> or
 /// refs/heads/<origin>, checked first) takes `land`. A zone's refs are refs/heads/req/<z>/<rest>,
-/// refs/heads/zone/<z>, refs/mortar/snap/<z>/<rest>, refs/heads/try/<z>/<rest> and refs/mortar/trysnap/<z>/<rest>
-/// (S-69), with <z> and <rest> non-empty. Err (a usage reason) for no refs, for the first ref that is neither, and
+/// refs/heads/zone/<z>, refs/mortar/snap/<z>/<rest>, refs/heads/try/<z>/<rest> and refs/mortar/trysnap/<z>/<rest>,
+/// with <z> and <rest> non-empty. Err (a usage reason) for no refs, for the first ref that is neither, and
 /// for a landing ref with a zone's ref or refs of two zones, naming the first ref of each side.
 pub fn restore_lock(refs: &[String], origin_branch: &str, integration_branch: &str) -> Result<LockName, String> {
     let landing = [format!("refs/heads/{integration_branch}"), format!("refs/heads/{origin_branch}")];

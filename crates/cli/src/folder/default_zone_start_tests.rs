@@ -1,4 +1,4 @@
-//! default_zone_start (S-149): a bare `mr folder zone` on a missing zone branch starts it at the origin branch tip;
+//! default_zone_start: a bare `mr folder zone` on a missing zone branch starts it at the origin branch tip;
 //! a given --start, or a zone branch that exists, gives no default.
 
 use super::default_zone_start;

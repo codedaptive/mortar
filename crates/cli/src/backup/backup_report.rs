@@ -1,4 +1,4 @@
-//! The report of an `mr backup` that land's backup answered (SPEC-cli 06).
+//! The report of an `mr backup` that land's backup answered.
 
 use land::Backup;
 

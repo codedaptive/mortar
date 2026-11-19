@@ -1,4 +1,4 @@
-//! install_outcome: the report `mr guard install` prints, with the PATH warning (S-133 (1)) only on an installed
+//! install_outcome: the report `mr guard install` prints, with the PATH warning only on an installed
 //! outcome. Pure.
 
 use super::with_path_warning;

@@ -1,4 +1,4 @@
-//! ACCEPT-1's set-up, shared by steps 1-4 (stage_new), and the helpers the steps run Mortar and git with: a
+//! Step 1's set-up, shared by steps 1-4 (stage_new), and the helpers the steps run Mortar and git with: a
 //! harness verb as the drive's actor, an agent verb in a request folder, a request folder made, an edit saved or
 //! joined, a git read (of the working repository, of the bare remote, of whether one commit holds another), the
 //! reply read from `--json`, a set-up line recorded, and whether a file holds conflict markers. Each helper returns

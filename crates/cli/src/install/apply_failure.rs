@@ -1,5 +1,5 @@
 //! apply_failure: The report when an install step failed and nothing went unrecorded: whatever was made or placed
-//! before it is in the record (spec 07 item 7).
+//! before it is in the record.
 //! Pure: builds the report from its arguments; apply_failure_tests pins its text.
 
 use crate::report::{ExitCode, Report};

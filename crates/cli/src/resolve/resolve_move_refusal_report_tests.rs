@@ -1,6 +1,6 @@
 //! resolve_move_refusal_report: edits on paths the zone changed are exit 1 owned by the folder, naming the paths and
-//! the snapshot that keeps them (S-87(4)); anything else is move_refusal_report's report under the verb resolve.
-//! ZUT (rule 11): join/move_refusal_report is pure and used directly.
+//! the snapshot that keeps them; anything else is move_refusal_report's report under the verb resolve.
+//! ZUT: join/move_refusal_report is pure and used directly.
 
 use std::path::PathBuf;
 
@@ -31,7 +31,7 @@ fn edits_on_zone_changed_paths_are_named_with_the_snapshot_that_keeps_them() {
         paths: vec![PathBuf::from("src/a.rs"), PathBuf::from("b.txt")],
     };
     assert_eq!(
-        resolve_move_refusal_report(&error, SNAP_REF, &oid(SNAP), before()),
+        resolve_move_refusal_report(&error, SNAP_REF, &oid(SNAP), before(), None),
         Report {
             verb: "resolve".to_string(),
             exit: ExitCode::Refused,
@@ -51,6 +51,34 @@ fn edits_on_zone_changed_paths_are_named_with_the_snapshot_that_keeps_them() {
 }
 
 #[test]
+fn a_move_refusal_puts_the_preceding_snapshot_move_first() {
+    let error = FolderError::MoveRefused {
+        path: PathBuf::from("/w/fix-1"),
+        paths: vec![PathBuf::from("src/a.rs")],
+    };
+    assert_eq!(
+        resolve_move_refusal_report(
+            &error, SNAP_REF, &oid(SNAP), before(), Some("the snapshot ref moved as the work was saved first"),
+        ),
+        Report {
+            verb: "resolve".to_string(),
+            exit: ExitCode::Refused,
+            outcome: "refused".to_string(),
+            lines: vec![
+                "the snapshot ref moved as the work was saved first".to_string(),
+                "rebased: refs/heads/req/core/fix-1 moved".to_string(),
+                "the folder could not move; edits on paths the zone changed stand in the way:".to_string(),
+                "  src/a.rs".to_string(),
+                "they are kept in refs/mortar/snap/core/fix-1 at 4444444444444444444444444444444444444444".to_string(),
+            ],
+            owner: Some("this request's folder".to_string()),
+            next: "put those files back to the folder's version, then mr join".to_string(),
+            fields: Vec::new(),
+        }
+    );
+}
+
+#[test]
 fn a_branch_elsewhere_is_joins_move_refusal_under_resolve() {
     let error = FolderError::BranchElsewhere {
         branch: "refs/heads/req/core/fix-1".to_string(),
@@ -59,7 +87,7 @@ fn a_branch_elsewhere_is_joins_move_refusal_under_resolve() {
         new: oid(NEW),
     };
     assert_eq!(
-        resolve_move_refusal_report(&error, SNAP_REF, &oid(SNAP), before()),
+        resolve_move_refusal_report(&error, SNAP_REF, &oid(SNAP), before(), None),
         Report {
             verb: "resolve".to_string(),
             exit: ExitCode::Refused,
@@ -82,7 +110,7 @@ fn a_branch_elsewhere_is_joins_move_refusal_under_resolve() {
 fn anything_else_is_joins_move_refusal_under_resolve_after_the_lines_before() {
     let error = FolderError::NotSaved { path: PathBuf::from("/w/fix-1") };
     assert_eq!(
-        resolve_move_refusal_report(&error, SNAP_REF, &oid(SNAP), before()),
+        resolve_move_refusal_report(&error, SNAP_REF, &oid(SNAP), before(), None),
         Report {
             verb: "resolve".to_string(),
             exit: ExitCode::Refused,

@@ -66,10 +66,16 @@ fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_loca
     let state_before = state_before.strip_suffix('\n').expect("state file's trailing newline").to_string();
     let report = f.report(&["--json", "resolve"], "resolve", 1, "refused"); let new = f.head();
     assert_ne!(new, r.old); assert_eq!(report.text("owner"), "this request's folder");
-    assert!(report.lines().contains("edits on paths the zone changed stand in the way"));
-    assert!(report.lines().contains("  sub/keep"));
     let snap = f.git.read_ref(SNAP).unwrap().unwrap();
-    assert!(report.lines().contains(&format!("they are kept in {SNAP} at {snap}")));
+    // The snapshot before resolve wrote the local edits, so the refused move names that move first; then the rebase
+    // done, the paths in the way and the snapshot that keeps them.
+    assert_eq!(report.strings("lines"), &[
+        "the snapshot ref moved as the work was saved first".to_string(),
+        format!("rebased: {REQUEST} moved from {} to {new}", r.old),
+        "the folder could not move; edits on paths the zone changed stand in the way:".to_string(),
+        "  sub/keep".to_string(),
+        format!("they are kept in {SNAP} at {snap}"),
+    ]);
     assert_eq!(report.text("next"), "put those files back to the folder's version, then mr join");
     assert_eq!(f.blob(&snap, "sub/keep"), b"local obstruction must survive\n");
     assert_eq!(f.blob(&snap, "src/file"), b"chosen resolution\n");
@@ -89,7 +95,7 @@ fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_loca
     assert_eq!(f.observe(), before_read, "reading the valued log must not write or move anything");
     let valued = oplog::read_valued_log(&f.common).unwrap();
     let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
-    // WO-join-9 is on main: pin both complete values in order on the intent and done records.
+    // Pin both complete values in order on the intent and done records.
     for record in valued.records.iter().filter(|v| v.record.kind == "join-rebase") {
         assert_eq!(record.values, vec![folder_value.clone(), ("join_state".to_string(), state_before.clone())]);
     }
@@ -101,7 +107,7 @@ fn rit_resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_loca
     assert_eq!(done.text("finished_move_from"), r.old.as_str());
     assert_eq!(done.text("finished_move_to"), new.as_str());
     assert!(!done.flag("saved_written"), "catch-up precedes save; old folder bytes are not new request work");
-    // After catch-up, join fast-forwards the zone to the already-rebased request (run_join / S-72).
+    // After catch-up, join fast-forwards the zone to the already-rebased request (run_join).
     assert_eq!(f.head(), new); assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(new.clone()));
     assert_eq!(fs::read(f.request.join("src/file")).unwrap(), b"chosen resolution\n");
     assert_eq!(fs::read(f.request.join("sub/keep")).unwrap(), b"zone changed this path\n");

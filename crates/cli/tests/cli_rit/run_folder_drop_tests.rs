@@ -1,9 +1,9 @@
 //! `mortar folder drop`: saved attempts dropped with the request branch unmoved and their snapshots kept; a
-//! branch-only attempt whose trysnap tree equals its tip's tree dropped (S-94); one with no trysnap ref refused
+//! branch-only attempt whose trysnap tree equals its tip's tree dropped; one with no trysnap ref refused
 //! naming its branch, with nothing changed.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-104, S-109):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - a try branch moved under the op (AttemptRefsLeft): the cli's why and next, never folders' FolderError Display
 //!   text;
 //! - an orphan attempt folder with no trysnap ref (OrphanWithoutSnapshot): exit 1 naming the folder, nothing changed;
@@ -148,7 +148,7 @@ fn member(output: &Output, key: &str) -> String {
     oplog::parse_json_string(&stdout, at).unwrap().0
 }
 
-/// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
+/// A harness verb's next step is never aimed at an agent: it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
     for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",
@@ -197,7 +197,7 @@ fn saved_attempts_are_dropped_with_the_request_unmoved_and_their_snapshots_kept(
 fn a_branch_only_attempt_whose_snapshot_tree_equals_its_tip_tree_is_dropped() {
     let fx = Fixture::new();
     fx.branch_only_attempt();
-    // A snapshot commit other than the tip, holding the tip's tree: saved by S-94's rule (trees equal), not by identity.
+    // A snapshot commit other than the tip, holding the tip's tree: saved by the trees-equal rule, not by identity.
     let tree = fx.git.commit_info(&fx.request_tip).unwrap().tree;
     let made = fx.git.run(&["commit-tree", tree.as_str(), "-p", fx.request_tip.as_str(), "-m", "snapshot"], &RunOpts::default())
         .unwrap();

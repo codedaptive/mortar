@@ -69,7 +69,7 @@ fn missing_zone_unrelated_request_and_corrupt_record_fail_under_overlap_before_a
             _ => unreachable!(),
         };
         let before = observe(&w); let r = app(&w, &["overlap", "core"], 5, "failed");
-        assert_eq!(r.strings("lines"), &[expected, "nothing half-done is left".into()]);
+        assert_eq!(r.strings("lines"), &[expected]);
         assert_eq!(r.text("next"), "repeat the same command"); assert_eq!(observe(&w), before);
     }
 }

@@ -1,4 +1,4 @@
-//! path_entries: the directories a PATH value names, in lookup order, as the shell reads them (S-133 (1), S-147).
+//! path_entries: the directories a PATH value names, in lookup order, as the shell reads them.
 //! Pure: it reads no file system, and the current directory is passed in.
 
 use std::ffi::OsStr;

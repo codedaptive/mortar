@@ -1,5 +1,5 @@
-//! agent_group: the program help's agent verbs, in the spec's words (SPEC-cli 08, S-175).
-//! A bare const (S-7); help_groups_tests covers it.
+//! agent_group: the program help's agent verbs, in the spec's words.
+//! A bare const; help_groups_tests covers it.
 
 use super::{HelpEntry, HelpGroup};
 

@@ -1,4 +1,4 @@
-//! `mortar guard-hook <name>` (SPEC-land 06): the hook's words read as a land::GuardHook, the guard's verdict as a
+//! `mortar guard-hook <name>`: the hook's words read as a land::GuardHook, the guard's verdict as a
 //! report, the guard's verdict with the open intent read only when the verdict can depend on it, and the runner the
 //! guard's git hooks call.
 

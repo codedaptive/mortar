@@ -1,4 +1,4 @@
-//! help_report: the report that answers a help request (SPEC-cli 08).
+//! help_report: the report that answers a help request.
 
 use super::{help_entry_json, program_help_lines, verb_help_lines, HelpRequest, HelpTopic, HELP_GROUPS};
 use crate::args::{usage_report, UsageError};

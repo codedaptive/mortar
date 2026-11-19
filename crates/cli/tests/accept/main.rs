@@ -1,8 +1,8 @@
 //! The acceptance drive (`make accept`): a black-box drive of the built binary, built under both its names (`mr`
-//! and `mortar`) and run as `mr`, through the mission's Done list, on throwaway repositories only, writing a
+//! and `mortar`) and run as `mr`, through its Done list, on throwaway repositories only, writing a
 //! plain-text report. The acceptance steps are ignored, so no unit, zone or repo integration run picks them up;
 //! `make accept` runs them. The unit tests of the drive's own pure pieces (no process, file, environment variable,
-//! clock or repository) are not ignored, so zone runs pick them up (rule 11).
+//! clock or repository) are not ignored, so zone runs pick them up as unit tests.
 
 mod agent;
 mod disk;

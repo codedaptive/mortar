@@ -1,5 +1,5 @@
 //! StatusState: everything `mr status` reports about one request folder, read before the report is made.
-//! A bare type (S-7); status_next_tests, status_outcome_tests, status_lines_tests and status_fields_tests build
+//! A bare type; status_next_tests, status_outcome_tests, status_lines_tests and status_fields_tests build
 //! it, and status_report_tests reports and renders it.
 
 use std::path::PathBuf;
@@ -11,11 +11,11 @@ use snapshot::RefusedFile;
 use crate::join::PendingMove;
 
 /// The folder's `zone` and `request` names; its changed, untracked and conflicted `paths`; whether the folder is
-/// `saved` (its tree equals its branch tip's, S-144) and the new files the size cap `refused`; whether the zone has commits the request has not taken in
+/// `saved` (its tree equals its branch tip's) and the new files the size cap `refused`; whether the zone has commits the request has not taken in
 /// (`zone_moved`) and whether the request is `joined` to the zone; the join `paused` on a conflict, if any; the
-/// folder move a kill or a refused move left `stalled` (S-85, S-97, S-143), if any; the other open requests it
-/// `overlaps` with, each with the shared paths (S-45); the needed paths outside the work order (`gaps`); and whether
-/// the folder has `no_work_yet`: its branch still at its base and its tree the tip's (S-145).
+/// folder move a kill or a refused move left `stalled`, if any; the other open requests it
+/// `overlaps` with, each with the shared paths; the needed paths outside the work order (`gaps`); and whether
+/// the folder has `no_work_yet`: its branch still at its base and its tree the tip's.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StatusState {
     pub zone: String,

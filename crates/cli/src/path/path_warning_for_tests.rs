@@ -1,5 +1,5 @@
 //! path_warning_for: no line when the first `mr` on PATH is this build once both paths are canonical (the same path,
-//! or another one carrying the Mortar marker, S-147); the other-mr line, naming that `mr` as PATH gave it, when it is
+//! or another one carrying the Mortar marker); the other-mr line, naming that `mr` as PATH gave it, when it is
 //! not or either path will not canonicalize; the no-mr line when there is none; nothing when this binary's path is
 //! unknown. `canonical` is a fake over a map; `has_marker` a fake over a list of canonical paths.
 

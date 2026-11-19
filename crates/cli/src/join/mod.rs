@@ -1,4 +1,4 @@
-//! `mr join` (S-72, S-86): the pending folder move detector (a rebase's or an undo's, S-143) and its finish,
+//! `mr join`: the pending folder move detector (a rebase's or an undo's) and its finish,
 //! the run's setup, the save's inputs, the reports and their parts, and the runner.
 
 mod answer_part;
@@ -13,6 +13,7 @@ mod join_report;
 mod join_save_subject;
 mod move_cause;
 mod move_refusal_report;
+mod moved_before;
 mod pending_move;
 mod read_pending_move;
 mod request_run;
@@ -20,6 +21,7 @@ mod request_run_for;
 mod run_join;
 mod save_part;
 mod snapshot_failure;
+mod snapshot_moved;
 
 #[cfg(test)]
 mod answer_part_tests;
@@ -38,11 +40,15 @@ mod join_save_subject_tests;
 #[cfg(test)]
 mod move_refusal_report_tests;
 #[cfg(test)]
+mod moved_before_tests;
+#[cfg(test)]
 mod request_run_for_tests;
 #[cfg(test)]
 mod save_part_tests;
 #[cfg(test)]
 mod snapshot_failure_tests;
+#[cfg(test)]
+mod snapshot_moved_tests;
 
 pub(crate) use answer_part::answer_part;
 pub(crate) use answer_part_value::AnswerPart;
@@ -56,6 +62,8 @@ pub(crate) use join_report::join_report;
 pub(crate) use join_save_subject::join_save_subject;
 pub(crate) use move_cause::MoveCause;
 pub(crate) use move_refusal_report::move_refusal_report;
+pub(crate) use moved_before::moved_before;
+pub(crate) use snapshot_moved::snapshot_moved;
 pub(crate) use pending_move::PendingMove;
 pub(crate) use read_pending_move::read_pending_move;
 pub(crate) use request_run::RequestRun;

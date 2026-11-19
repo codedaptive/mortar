@@ -1,21 +1,21 @@
 //! run_land: `mr land <commit>`, a reviewed squash landed on integration under the land lock, and the
-//! integration folder moved with integration (SPEC-cli 06: land land). --key names the lock holder only, never passed
-//! to the op log (S-132); repeat safety comes from land's answers (a repeat of a landed squash answers Landed) and
+//! integration folder moved with integration (land land). --key names the lock holder only, never passed
+//! to the op log; repeat safety comes from land's answers (a repeat of a landed squash answers Landed) and
 //! from the stopped-move finish: before land's call, finish_stopped_move moves an integration folder a stopped run
-//! left on the old commit onto integration's tip (S-137).
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and land; parse_land_args_tests,
+//! left on the old commit onto integration's tip.
+//! No sibling test: it takes a real lock and runs git, the op log and land; parse_land_args_tests,
 //! land_report_tests, note_finished_move_tests and landing's land_error_report_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): land landed by fast-forward and by
+//! Repo integration tests to write (cross-zone, not written here): land landed by fast-forward and by
 //! merge commit, with and without an integration folder (the folder moved from the origin tip to the landed
 //! commit); conflicted, exit 2 with the files and integration unmoved; busy, exit 3 naming the other change; a
 //! repeat after Landed answers landed and moves nothing more; a change ID word, exit 4; the stopped-move finish (a
 //! kill after land's op and before the folder move, then a plain repeat moves the folder and the report's first
 //! line says so); a staged edit in the integration folder left untouched before land's call; the land lock held by
-//! a live pid, exit 3; without a config, exit 1, next mr init; ACCEPT-1 checks 10 and 13, ACCEPT-2 check 8.
+//! a live pid, exit 3; without a config, exit 1, next mr init; the acceptance checks of land.
 //! A refused folder move is finished by a repeat when the folder was cleared as the refusal says (paths moved out or
 //! put back to the index copy, the index left as it is); a clear that resets the index to HEAD (the folder's HEAD is
 //! already the branch's new commit) leaves no stall for the repeat to see, and the folder's files are then their
-//! owner's to bring to HEAD, unreported (S-137 (3), (4)).
+//! owner's to bring to HEAD, unreported.
 
 use std::path::Path;
 

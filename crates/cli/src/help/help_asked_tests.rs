@@ -1,5 +1,5 @@
-//! help_asked: which command lines ask for help, for which topic, and whether as JSON (SPEC-cli 08, "The calls").
-//! ZUT (rule 11): scan_help_words, the help groups and find_help_entry are pure and used directly; the scan's
+//! help_asked: which command lines ask for help, for which topic, and whether as JSON.
+//! Unit test: scan_help_words, the help groups and find_help_entry are pure and used directly; the scan's
 //! own cases are in scan_help_words_tests.
 
 use super::{help_asked, HelpTopic};

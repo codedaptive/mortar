@@ -1,5 +1,4 @@
-//! already_undone_report: the report of an undo whose step was already undone: a repeat, never a redo (S-142
-//! item 3; S-148).
+//! already_undone_report: the report of an undo whose step was already undone: a repeat, never a redo.
 
 use super::UndoStep;
 use crate::report::{ExitCode, OutValue, Report};

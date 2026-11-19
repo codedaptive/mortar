@@ -1,4 +1,4 @@
-//! zone_values: the values a zone branch has held, newest first (S-140): the tip, then for each done record from the
+//! zone_values: the values a zone branch has held, newest first: the tip, then for each done record from the
 //! newest (the op log is oldest first) each move of the zone's ref, its new then its old; intent and failed records
 //! and other refs are skipped, and each value keeps its first place.
 
@@ -32,7 +32,7 @@ fn record(op_id: &str, phase: OpPhase, moves: Vec<RefMove>) -> OpRecord {
         op_id: op_id.to_string(),
         key: format!("key-{op_id}"),
         kind: "join".to_string(),
-        actor: "bilby".to_string(),
+        actor: "agent-a".to_string(),
         reason: "test".to_string(),
         at: 1_763_251_200,
         phase,

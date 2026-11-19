@@ -1,18 +1,18 @@
 //! finish_stopped_move: the integration folder move a stopped land, back-out or publish left undone, finished by the
-//! next of them under the land lock before its own land call (S-137), so a plain repeat after a kill is safe. A
+//! next of them under the land lock before its own land call, so a plain repeat after a kill is safe. A
 //! refused move is finished by a repeat when the folder was cleared as the refusal says (paths moved out or put back
 //! to the index copy, the index left as it is); a clear that resets the index to HEAD (the folder's HEAD is already
 //! the branch's new commit) leaves no stall for the repeat to see, and the folder's files are then their owner's to
-//! bring to HEAD, unreported (S-137 (3), (4)).
-//! No sibling test (S-104): it reads the op log and runs git and the folder move; last_integration_old_tests and
+//! bring to HEAD, unreported.
+//! No sibling test: it reads the op log and runs git and the folder move; last_integration_old_tests and
 //! integration_move_stopped_tests cover its decisions, note_finished_move_tests the report line.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136), with the mortar binary as a child
+//! Repo integration tests to write (cross-zone, not written here), with the mortar binary as a child
 //! process in a throwaway repository (GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_NOSYSTEM=1):
 //! - a kill after land's op and before the folder move, then a plain repeat of land, back-out (land answering
 //!   NothingToBackOut) or publish (land answering NothingToPublish): the folder moves from the op's old value to the
 //!   tip and the report's first line says so;
 //! - a staged edit in the integration folder (its index at another tree): no move, the folder untouched, the verb
-//!   goes on (S-116);
+//!   goes on;
 //! - no integration folder (no worktree on the integration branch): no move, the verb goes on;
 //! - integration never moved by an op (no Done record moving it): no move, the verb goes on;
 //! - an unmerged index in the integration folder: no move, the verb goes on;
@@ -37,7 +37,7 @@ use crate::report::{failure_report, Report};
 /// move is the answer; any other index is Ok(None) with the folder untouched. A read that fails is failure_report
 /// for `verb` in the cli's words. A refused move is move_integration_folder's report, whose first line says `verb`
 /// stopped before its land call and moved nothing, and whose next ends with `repeat`: the caller returns it, so the
-/// verb stops before its land call, integration is not moved by it and nothing changed (S-137 (3)).
+/// verb stops before its land call, integration is not moved by it and nothing changed.
 pub fn finish_stopped_move(
     git: &Git,
     common: &Path,

@@ -1,4 +1,4 @@
-//! is_saved: a folder is saved only when its tree equals its branch tip's tree (S-144); a tree that equals only the
+//! is_saved: a folder is saved only when its tree equals its branch tip's tree; a tree that equals only the
 //! snapshot's tree is not saved.
 
 use gitio::Oid;

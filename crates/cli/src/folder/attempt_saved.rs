@@ -1,4 +1,4 @@
-//! Whether an attempt that has a try branch but no folder is saved (S-94).
+//! Whether an attempt that has a try branch but no folder is saved.
 
 use gitio::Oid;
 

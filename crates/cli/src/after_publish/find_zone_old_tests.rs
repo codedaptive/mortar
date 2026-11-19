@@ -1,4 +1,4 @@
-//! find_zone_old: the commit a zone folder stands on (S-140): the first value, in the order given, whose tree is the
+//! find_zone_old: the commit a zone folder stands on: the first value, in the order given, whose tree is the
 //! folder's index tree; an index at the tip's tree reads no tree at all, and an index matching no value is NoMatch.
 
 use std::collections::HashMap;
@@ -90,10 +90,10 @@ fn no_values_and_an_index_off_the_tip_is_no_match() {
     assert_eq!(asked, Vec::<Oid>::new());
 }
 
-/// The S-140 loss case as data. The zone branch went A -> B (tip B, tree TIP_TREE; A's tree OTHER_TREE); the
+/// The staged-edit loss case as data. The zone branch went A -> B (tip B, tree TIP_TREE; A's tree OTHER_TREE); the
 /// folder's index holds tree INDEX_TREE: A's files plus an edit staged at a path B changes. INDEX_TREE matches
-/// neither value, so the folder is refused and the staged edit kept. S-139 would have moved the folder from
-/// INDEX_TREE itself, and git's two-tree move would have replaced the staged edit with B's copy.
+/// neither value, so the folder is refused and the staged edit kept. A move from INDEX_TREE itself would let git's
+/// two-tree move replace the staged edit with B's copy.
 #[test]
 fn a_staged_edit_matches_no_value_the_zone_held_so_the_folder_is_not_moved() {
     let (answer, asked) = find(INDEX_TREE, TIP_TREE, &[B, A], &[(B, TIP_TREE), (A, OTHER_TREE)]);

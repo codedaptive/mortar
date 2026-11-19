@@ -1,5 +1,6 @@
 //! The report of a snapshot or a save that failed inside a request verb.
-//! snapshot_failure_tests covers it with snapshot::SnapshotError's Display, exported and pure (a ZUT by S-171).
+//! snapshot_failure_tests covers it with snapshot::SnapshotError's Display, exported and pure
+//! (so a unit test may use it).
 
 use snapshot::SnapshotError;
 

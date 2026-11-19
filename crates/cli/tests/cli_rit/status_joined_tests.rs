@@ -1,12 +1,12 @@
 //! status joined: `mr status` reports joined only when the folder's saved work is the joined request tip's.
 //! Work snapshotted after a join (`mr snapshot`) but never saved to the request branch is unsaved and not joined,
-//! next mr save (S-144: a snapshot is not a save);
+//! next mr save (a snapshot is not a save);
 //! a join with nothing new since, and a formatted save (the formatter set by `mr init --replace`) then a join, stay
 //! joined, next "wait for the zone's tests".
-//! Status reads only (S-85): refs, index, record, op log and files are unchanged by it (observe::status_at).
-//! RIT (S-135, S-136): every step drives the mortar binary as a child in a throwaway repository, reaching the
-//! snapshot, join, folders and oplog crates below cli through it; Nagatha's from landing. More status RITs are in
-//! tests/operational_rit/status.rs.
+//! Status reads only: refs, index, record, op log and files are unchanged by it (observe::status_at).
+//! Repo integration test: every step drives the mortar binary as a child in a throwaway repository, reaching the
+//! snapshot, join, folders and oplog crates below cli through it; owned by integration from landing. More status
+//! RITs are in tests/operational_rit/status.rs.
 
 use crate::observe::status;
 use crate::support::{script, Fixture, SNAP};
@@ -31,7 +31,7 @@ fn snapshot_only_work_after_a_join_is_not_joined() {
     assert_eq!(f.blob(&commit, "src/file"), b"work after the join, snapshotted only\n");
     assert_eq!(f.head(), tip, "the request branch must not move: the new work was never saved to it");
     // status_at compares observe::before around the call: status reads only.
-    // A snapshot is not a save: the folder's tree is the snapshot's, not the tip's, so it reads unsaved (S-144).
+    // A snapshot is not a save: the folder's tree is the snapshot's, not the tip's, so it reads unsaved.
     let report = status(&f, "unsaved");
     assert!(!report.flag("saved")); assert!(!report.flag("joined"));
     assert_eq!(report.text("next"), "mr save \"<sentence>\"");

@@ -1,4 +1,4 @@
-//! Step 2, the guard (02-guard.md): run_guard, its set-up and check groups in spec order, and the pure readings of
+//! Step 2, the guard: run_guard, its set-up and check groups in check order, and the pure readings of
 //! what git said when the guard refused it.
 
 mod guard_commit;

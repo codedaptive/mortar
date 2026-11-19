@@ -1,4 +1,4 @@
-//! choose_harnesses: Which harnesses install wires: --target, -y, the picker, or none (spec 07 item 4).
+//! choose_harnesses: Which harnesses install wires: --target, -y, the picker, or none.
 
 use crate::args::{usage_report, UsageError};
 use crate::report::{ExitCode, Report};

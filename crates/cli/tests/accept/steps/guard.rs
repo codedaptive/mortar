@@ -1,4 +1,4 @@
-//! Step 2, the guard (02-guard.md): its body is crate::guard::run_guard, the set-up with a squash ready to land and
+//! Step 2, the guard: its body is crate::guard::run_guard, the set-up with a squash ready to land and
 //! the nine checks in order.
 
 use super::{Gate, StepSpec};

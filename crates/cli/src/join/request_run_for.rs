@@ -1,7 +1,7 @@
 //! A request verb's setup, before its lock: arguments, the folder's kind, its request and the run's inputs.
 //! Shell API: run_join and run_resolve call it.
 //! request_run_for_tests covers an attempt folder's refusal and an argument's usage, which return first, and a
-//! request folder's run, which calls folders' request_branch (exported and pure, a ZUT by S-171).
+//! request folder's run, which calls folders' request_branch (exported and pure, so a unit test may use it).
 //! It runs no git, since Git::new runs nothing.
 
 use folders::plan::request_branch;
@@ -16,11 +16,11 @@ use crate::opkey::op_key;
 use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
-/// Any argument is no_arguments_report's usage report for `verb`. Then an attempt folder is attempt_refusal (S-91).
+/// Any argument is no_arguments_report's usage report for `verb`. Then an attempt folder is attempt_refusal.
 /// A missing folder or config, a record naming no request, a request branch name that cannot be formed, or a verb
 /// entry naming no lock is failure_report. Else the run: request_ref "refs/heads/<request_branch>", the verb's lock
 /// for the folder's zone, the snapshot target of the request's own folder (attempt None), the config's snapshot
-/// settings and the op key of `verb` and the folder with no moves (S-84(4)), unless --key gives one.
+/// settings and the op key of `verb` and the folder with no moves, unless --key gives one.
 pub fn request_run_for<'a>(context: &'a ShellContext, verb: &str) -> Result<RequestRun<'a>, Report> {
     let args = &context.args;
     if let Some(usage) = no_arguments_report(verb, &args.rest, args.json) {

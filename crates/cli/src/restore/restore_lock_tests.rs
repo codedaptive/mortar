@@ -1,4 +1,4 @@
-//! restore_lock: which lock the refs named choose, and which sets of refs are a usage error (S-113(1), S-115(2)).
+//! restore_lock: which lock the refs named choose, and which sets of refs are a usage error.
 
 use oplog::LockName;
 

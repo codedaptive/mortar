@@ -1,4 +1,4 @@
-//! `mr need <path>` (spec 02): the path and branch checks before the lock, the reports of a need, of a path the
+//! `mr need <path>`: the path and branch checks before the lock, the reports of a need, of a path the
 //! repository does not hold and of a need folders refused, the next step added to a finished need, and the runner.
 
 mod missing_path_report;

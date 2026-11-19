@@ -51,7 +51,7 @@ impl Fixture {
         let mut c = Command::new(env!("CARGO_BIN_EXE_mortar"));
         c.current_dir(cwd).env_clear().envs(self.git.env.iter().cloned())
             .env("PATH", std::env::var_os("PATH").unwrap()).env("HOME", &self.root).env("TMPDIR", &self.root)
-            .env("CODETEAM_SESSION", "Nagatha").args(args).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
+            .env("CODETEAM_SESSION", "harness").args(args).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
         c
     }
     pub fn app(&self, args: &[&str]) -> Output { self.command(&self.request, args).output().unwrap() }

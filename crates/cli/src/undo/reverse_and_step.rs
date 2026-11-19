@@ -1,6 +1,6 @@
 //! reverse_and_step: run_undo's undo of one chosen step: the snapshot, the check against a later op, the oplog undo
-//! and the folder step, with the paused join put back for a resolve step (S-73, S-142, S-143, S-148, S-155).
-//! No unit test (S-104): it runs git, snapshot or the op log; its decisions have their tests.
+//! and the folder step, with the paused join put back for a resolve step.
+//! No unit test: it runs git, snapshot or the op log; its decisions have their tests.
 
 use oplog::{undo, ApplyOutcome, OpRecord, ValuedRecord};
 use snapshot::snapshot;

@@ -1,4 +1,4 @@
-//! `mr backup` and `mr restore-backup` (SPEC-cli 06): their words, their reports and land's refusals in the
+//! `mr backup` and `mr restore-backup`: their words, their reports and land's refusals in the
 //! cli's own words, and their runners.
 
 mod backup_error_report;

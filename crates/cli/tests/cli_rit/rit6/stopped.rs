@@ -1,5 +1,5 @@
 //! Joins finish_stopped_move through CLI land/back-out/publish with real Land ops, Folder moves and Git indexes.
-//! S-137(3)/(4): a blocked finish stops BEFORE the verb's own call; clearing preserves the index, not HEAD.
+//! A blocked finish stops BEFORE the verb's own call; clearing preserves the index, not HEAD.
 use super::fixture::Landing;
 use crate::{json::Report, support::{raw, write}};
 use gitio::{Oid, RunOpts};
@@ -109,7 +109,7 @@ fn no_integration_folder_or_no_done_integration_op_means_no_catch_up() {
 fn setting_the_index_to_head_removes_the_stall_and_does_not_invent_a_worktree_content_heuristic() {
     let s = Landing::new(true); s.land(); s.kit_back_out(); s.obstruct();
     s.run("publish", None, 1, "folder-not-moved");
-    // Deliberately NOT the prescribed clear: index at HEAD, owner's file still differs. S-137(4) leaves it unreported.
+    // Deliberately NOT the prescribed clear: index at HEAD, owner's file still differs, which is left unreported.
     s.folder_git().run(&["read-tree", "HEAD"], &RunOpts::default()).unwrap();
     let before = s.observe(); let r = s.run("publish", None, 0, "nothing-to-publish");
     assert!(!r.lines().contains("first finished")); assert_eq!(s.observe(), before);

@@ -7,7 +7,7 @@ use crate::stage::{git_out, harness_mr, is_ancestor};
 use crate::world::World;
 
 /// r3 joined zone b before the squash (flow_squash.rs); `mr after-publish a --move b`: exit 0 "after-published"
-/// (the spec's success), zone b's branch on the new origin holding r3's change, zone a at origin's commit, and the
+/// (success), zone b's branch on the new origin holding r3's change, zone a at origin's commit, and the
 /// commits zone b adds to origin ordinary, one parent each. Always true: check 15 can run whatever this found.
 pub fn flow_replay(world: &World, checks: &mut Checks, state: &mut FlowState) -> bool {
     let after = harness_mr(world, &["after-publish", "a", "--move", "b"]);

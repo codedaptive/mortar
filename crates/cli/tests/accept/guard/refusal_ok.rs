@@ -1,4 +1,4 @@
-//! Whether what a refused git command printed gives the guard's refusal as 02-guard.md asks: why, owner and next.
+//! Whether what a refused git command printed gives the guard's refusal as step 2 asks: why, owner and next.
 
 use super::refusal_parts;
 

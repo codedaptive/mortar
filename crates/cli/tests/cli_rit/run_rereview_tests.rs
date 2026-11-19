@@ -2,13 +2,13 @@
 //! names the file the second squash added and not the line both carry; squashes of two changes are refused as
 //! not-same-change (exit 1); one word, three words and a word that is not a full commit id are usage errors (exit 4)
 //! with rereview's usage line as next.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing. The squashes are made in setup through land::squash under the land lock.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - RereviewError::Git and RereviewError::Trailers texts (git or the trailers must fail);
 //! - RereviewError::NoParent: a root commit;
-//! - ACCEPT-1 checks 7, 9, 11 and 12 through these verbs on two zones.
+//! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones.
 
 use std::collections::BTreeMap;
 use std::fs;

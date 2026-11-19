@@ -4,7 +4,7 @@ use folders::{FolderKind, FolderRecord};
 use snapshot::SnapshotTarget;
 
 /// The record's zone and request with `actor`, and the attempt from the record's kind: Some(k) for an attempt
-/// folder k, so the save moves refs/mortar/trysnap/<zone>/<request>/<k> (S-69), and None for a request folder,
+/// folder k, so the save moves refs/mortar/trysnap/<zone>/<request>/<k>, and None for a request folder,
 /// whose save moves the request's own snapshot ref. None when the record names no request (a zone folder).
 pub fn snapshot_target_for(record: &FolderRecord, actor: &str) -> Option<SnapshotTarget> {
     let request = record.request.as_ref()?;

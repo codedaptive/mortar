@@ -1,5 +1,5 @@
 //! Why an `mr folder` was refused, as facts read from the error's fields. folders' own Display text is never
-//! used: it carries next steps that are not cli commands (S-112), and BelowFloor's would print what a sweep frees,
+//! used: it carries next steps that are not cli commands, and BelowFloor's would print what a sweep frees,
 //! which mr folder does not measure.
 
 use std::path::PathBuf;

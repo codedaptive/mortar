@@ -1,4 +1,4 @@
-//! The sparse paths of a request folder: the work order's paths, then the config's root files (ACCEPT-1 step 1).
+//! The sparse paths of a request folder: the work order's paths, then the config's root files.
 
 use crate::config::Config;
 

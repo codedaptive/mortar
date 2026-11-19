@@ -1,4 +1,4 @@
-//! plan_link: Install's decision about the short-name link `~/.local/bin/mr` (spec 07 item 3, S-177).
+//! plan_link: Install's decision about the short-name link `~/.local/bin/mr`.
 //! Pure: it decides from the facts install read. In order: the link's target (none when the binary is not placed
 //! and no `mortar` on PATH is this binary: the link is skipped and nothing else is asked); then the clash (a foreign
 //! first `mr` on PATH without --short-name: skipped, never a refusal); only then what stands at the link's path,

@@ -1,5 +1,5 @@
 //! done_record: the Done record of the op an undo reversed, found by the op id reversed_op reads back from the undo's
-//! reason (S-142 (3)), so its kind and values can be read (S-143, S-148).
+//! reason, so its kind and values can be read.
 
 use oplog::{OpPhase, ValuedRecord};
 

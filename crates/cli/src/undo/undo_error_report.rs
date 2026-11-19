@@ -1,5 +1,5 @@
 //! undo_error_report: the report of an undo the op log refused or failed, one arm per OplogError, in the cli's own
-//! words: no arm prints oplog's Display or an inner git or io error's (S-128 (4)).
+//! words: no arm prints oplog's Display or an inner git or io error's.
 
 use oplog::OplogError;
 
@@ -11,7 +11,7 @@ const KEPT: &str = "nothing was undone; the snapshot taken first is kept";
 
 /// Refused (exit 1): MovedSince, naming the op, the ref and the op and actor that moved it (or that it moved outside
 /// mortar), to the zone's coordinator; Protected, to its protector; Mixed, an open op with its refs half moved,
-/// whose next asks the zone's coordinator in words to settle the op (a repeat meets the same refs, S-112). Every
+/// whose next asks the zone's coordinator in words to settle the op (a repeat meets the same refs). Every
 /// other arm is failure_report, naming what failed.
 pub fn undo_error_report(error: &OplogError) -> Report {
     match error {

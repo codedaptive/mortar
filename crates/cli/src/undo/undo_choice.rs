@@ -1,5 +1,5 @@
-//! What choose_undo found in the op log for a folder (S-73, S-142, S-148).
-//! A bare type (S-7); choose_undo_tests and undo_refusal_tests exercise it.
+//! What choose_undo found in the op log for a folder.
+//! A bare type; choose_undo_tests and undo_refusal_tests exercise it.
 
 use super::UndoStep;
 

@@ -1,4 +1,4 @@
-//! with_path_warning: `mr guard install`'s installed report with the PATH warning (S-133 (1)) as its last line. Only
+//! with_path_warning: `mr guard install`'s installed report with the PATH warning as its last line. Only
 //! install_outcome calls it, on an installed outcome, so `mr guard status`, refusals and failures never carry the
 //! warning.
 

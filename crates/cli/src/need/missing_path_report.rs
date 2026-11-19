@@ -1,4 +1,4 @@
-//! missing_path_report: `mr need`'s refusal of a path the repository does not hold (spec 02, S-90(2)).
+//! missing_path_report: `mr need`'s refusal of a path the repository does not hold.
 
 use gitio::Oid;
 

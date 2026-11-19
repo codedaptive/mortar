@@ -1,5 +1,5 @@
 //! restore_why: each JoinRunError a restore of a paused join can give has its own why lines, built from its fields;
-//! the errors a restore never gives share one line; git failing gives git's own text. ZUT (S-171): the Git case runs
+//! the errors a restore never gives share one line; git failing gives git's own text. ZUT: the Git case runs
 //! gitio's GitError Display, which is exported, pure and below cli.
 
 use std::ffi::OsStr;

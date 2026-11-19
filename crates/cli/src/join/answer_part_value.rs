@@ -1,5 +1,5 @@
 //! The part of a report that a join answer gives.
-//! A bare type (S-7); answer_part makes it and answer_part_tests exercises it.
+//! A bare type; answer_part makes it and answer_part_tests exercises it.
 
 use crate::report::{ExitCode, OutValue};
 

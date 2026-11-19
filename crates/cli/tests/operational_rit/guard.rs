@@ -15,7 +15,7 @@ fn rit_guard_installed_hook_allows_unguarded_ref_without_stdout_or_stderr() {
 
 #[test]
 fn rit_guard_allow_is_silent_in_plain_and_json_without_actor_or_folder() {
-    // S-111 binary output boundary: even --json has ZERO bytes, not an empty JSON report.
+    // Binary output boundary: even --json has ZERO bytes, not an empty JSON report.
     let g = Guard::new(); let before = g.branches();
     let input = format!("{} {} refs/heads/free\n", g.f.base, g.new);
     for args in [vec!["guard-hook", "reference-transaction", "prepared"],

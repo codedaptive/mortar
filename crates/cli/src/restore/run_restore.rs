@@ -1,10 +1,10 @@
 //! run_restore: `mr restore <op id> <ref>...`, the harness verb that sets refs back to their values as of an op
-//! and moves the folders standing on them (SPEC-cli 05, S-113, S-115).
-//! It takes a real lock, runs git, the op log, snapshot and folders (S-5, S-104); restore_lock_tests,
+//! and moves the folders standing on them.
+//! It takes a real lock, runs git, the op log, snapshot and folders; restore_lock_tests,
 //! restore_key_tests, restore_refusal_tests, restore_error_report_tests, restore_report_tests and
 //! restore_move_refusal_report_tests cover its decisions, run_restore_tests its usage refusals before any lock or
 //! git, and the RIT crates/cli/tests/cli_rit/run_restore_tests.rs a ref name git refuses (BadMove, exit 1).
-//! Nagatha's integration group is to cover, with the mortar binary as a child process in a throwaway repository
+//! The repo integration tests are to cover, with the mortar binary as a child process in a throwaway repository
 //! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip;
 //! - a zone folder on zone/<z> is listed and not moved;
@@ -13,8 +13,8 @@
 //! - a held lock is exit 3.
 //!   The RIT crates/cli/tests/cli_rit/run_restore_repeat_tests.rs covers an unsaved request folder refusing exit 1
 //!   with nothing moved, a kill between oplog::restore and the folder move finished by a plain repeat (Repeated, then
-//!   the move), such a repeat with work added after the kill refusing exit 1 with nothing moved (S-122(3)), and a
-//!   repeat after a later restore leaving the folder and its ref (S-113(3)).
+//!   the move), such a repeat with work added after the kill refusing exit 1 with nothing moved, and a
+//!   repeat after a later restore leaving the folder and its ref.
 
 use std::path::Path;
 
@@ -75,10 +75,10 @@ pub fn run_restore(context: &ShellContext, cwd: &Path) -> Report {
 /// 1. the folders on the refs (folders_on_refs); 2. the moves, and whether a done record with the key gave them
 ///    (restore_moves); 3. which request and attempt folders need a move, which a repeat leaves alone because their ref
 ///    has moved on since its done record, and which are unsaved, checked on a repeat that moved the folder's snapshot
-///    ref against that ref's old value from the done record (S-122(3)) (folders_to_move);
+///    ref against that ref's old value from the done record (folders_to_move);
 /// 4. restore_refusal, with nothing moved; 5. oplog::restore with the protected refs (a Failed outcome moves no
 ///    folder); 6. the folders moved from the outcome record's moves (move_restored_folders); 7. restore_report, naming
-///    the folders left alone. Zone folders are listed only (S-115(1)).
+///    the folders left alone. Zone folders are listed only.
 fn act(run: &Restore) -> Result<Report, Report> {
     let (git, common, actor) = (&run.git, run.common, &run.context.actor);
     let oplog_refusal = |error: oplog::OplogError| restore_error_report(&error, &error.to_string());

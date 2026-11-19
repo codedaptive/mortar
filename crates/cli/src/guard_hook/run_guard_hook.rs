@@ -1,21 +1,21 @@
-//! run_guard_hook: `mortar guard-hook <name>`, the verb the guard's git hooks run (SPEC-land 06).
-//! No unit test (S-104): every decision that reads the repository runs land, oplog and gitio for real.
+//! run_guard_hook: `mortar guard-hook <name>`, the verb the guard's git hooks run.
+//! No unit test: every decision that reads the repository runs land, oplog and gitio for real.
 //! guard_hook_from_args_tests and guard_hook_report_tests cover the words it reads and the reports it gives;
 //! decide_with_intent_tests covers when the open intent is read.
-//! RITs in tests/cli_rit/run_guard_hook_tests.rs (S-135, S-136): hook input on stdin that is not UTF-8 is refused
+//! RITs in tests/cli_rit/run_guard_hook_tests.rs: hook input on stdin that is not UTF-8 is refused
 //! (exit 1), with nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let
 //! through (exit 0, nothing printed) and a prepared one fails on the op log (exit 5).
-//! The RITs (S-101) in tests/operational_rit/guard.rs cover, with the mortar binary installed as the hook
-//! (the fixture installs it with land::guard_install, the code under `mr guard install`, S-112) in a throwaway
+//! The RITs in tests/operational_rit/guard.rs cover, with the mortar binary installed as the hook
+//! (the fixture installs it with land::guard_install, the code under `mr guard install`) in a throwaway
 //! repository, git run with
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1:
-//! - an allowed move prints nothing on stdout or stderr, exit 0, also with --json (S-111);
+//! - an allowed move prints nothing on stdout or stderr, exit 0, also with --json;
 //! - update-ref, commit and push against integration and origin are refused, with nothing moved;
 //! - MORTAR_OP naming no open intent is refused;
 //! - apply_protected and publish's push pass;
 //! - unguarded refs move freely;
 //! - a push by the guarded remote's URL is refused like a push by its name, a push to another remote is allowed,
-//!   and with the remote's URLs unreadable a push under another name is refused (S-100);
+//!   and with the remote's URLs unreadable a push under another name is refused;
 //! - with the hooks present and guard.json missing, a move is refused;
 //! - a guard.json that is not a guard config is refused, naming the file.
 
@@ -38,7 +38,7 @@ const INSTALLER: &str = "the harness that installs the guard";
 /// pre-push needs guard.json's remote for its push URLs); then the hook's input from stdin; then, only when
 /// land::guard_decide reads this hook's input (decide_with_intent), the moves of the open intent MORTAR_OP names
 /// (None when it is unset or not unicode); and reports guard_decide's verdict (an allow's report is exit Done with
-/// nothing in it, and the binary prints none of it: S-111).
+/// nothing in it, and the binary prints none of it).
 /// A guard.json that is missing or is not a guard config, and input that cannot be read, are refused (exit 1): the
 /// guard cannot check the move, so it fails closed. Words it cannot read are usage (exit 4); git failing, or the op
 /// log failing when it is read, is failure_report (exit 5). Takes no lock and moves nothing.

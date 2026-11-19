@@ -26,7 +26,7 @@ fn failed(what: &str) -> Report {
         verb: "overlap".to_string(),
         exit: ExitCode::Failure,
         outcome: "failed".to_string(),
-        lines: vec![what.to_string(), "nothing half-done is left".to_string()],
+        lines: vec![what.to_string()],
         owner: None,
         next: "repeat the same command".to_string(),
         fields: Vec::new(),

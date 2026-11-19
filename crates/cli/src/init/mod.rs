@@ -1,4 +1,4 @@
-//! `mr init` (S-70): its arguments, what it decides against the config already there, and its report.
+//! `mr init`: its arguments, what it decides against the config already there, and its report.
 
 mod decide_init;
 mod init_decision;

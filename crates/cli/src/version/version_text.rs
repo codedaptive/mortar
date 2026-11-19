@@ -1,4 +1,4 @@
-//! version_text: The `--version` output: one line, no `next:` (spec 07, "--version").
+//! version_text: The `--version` output: one line, no `next:`.
 
 use oplog::write_json_string;
 

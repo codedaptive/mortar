@@ -1,4 +1,4 @@
-//! zone_folder_lines: what became of one named zone's folder, in the cli's words (S-139, S-140).
+//! zone_folder_lines: what became of one named zone's folder, in the cli's words.
 
 use std::path::PathBuf;
 

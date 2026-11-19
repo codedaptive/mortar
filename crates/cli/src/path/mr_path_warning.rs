@@ -1,4 +1,4 @@
-//! mr_path_warning: the line `mr guard install` adds when the first `mr` on PATH is not this Mortar (S-133 (1)): the
+//! mr_path_warning: the line `mr guard install` adds when the first `mr` on PATH is not this Mortar: the
 //! guard hooks run `mortar`, but a person typing `mr` may reach another program (Homebrew's myrepos). Pure.
 
 use std::path::Path;

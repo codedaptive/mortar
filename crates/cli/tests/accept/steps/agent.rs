@@ -1,4 +1,4 @@
-//! Step 4, the agent test (04-agent.md): its body is crate::agent::run_agent, the set-up, the agent run through the
+//! Step 4, the agent test: its body is crate::agent::run_agent, the set-up, the agent run through the
 //! logging wrappers with a conflict joined in just before its first join, the conflict line and checks 1-4. It runs only
 //! when ACCEPT_AGENT is set.
 

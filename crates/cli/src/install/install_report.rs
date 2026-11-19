@@ -1,4 +1,4 @@
-//! install_report: Install's report once its plan is applied (spec 07 item 8).
+//! install_report: Install's report once its plan is applied.
 //! Pure: it renders the plan as decided; it runs only after every step applied.
 
 use crate::report::{ExitCode, OutValue, Report};

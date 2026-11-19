@@ -1,5 +1,5 @@
 //! The world's PATH: cargo's own build output folder, which holds the `mr` and `mortar` files it built, first, then
-//! the drive's PATH. ACCEPT runs `mr` as cargo builds it, with no links (S-147). Pure: World::new passes it the
+//! the drive's PATH. The drive runs `mr` as cargo builds it, with no links. Pure: World::new passes it the
 //! built paths and the drive's PATH.
 
 use std::ffi::{OsStr, OsString};

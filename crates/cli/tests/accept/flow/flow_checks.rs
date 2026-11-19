@@ -1,4 +1,4 @@
-//! The titles of 01-flow.md's fifteen checks, in order. A const only: not_run_tests.rs reads it through not_run.
+//! The titles of step 1's fifteen checks, in order. A const only: not_run_tests.rs reads it through not_run.
 
 /// Check n's title is at index n - 1.
 pub const FLOW_CHECKS: [&str; 15] = [

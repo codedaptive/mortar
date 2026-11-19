@@ -7,7 +7,7 @@ use crate::stage::{git_out, harness_mr, remote_git, stage_edit};
 use crate::world::World;
 
 /// Check 12: land the second squash again; the second clone commits other.txt and pushes it to origin's `main`
-/// itself; `mr publish`: exit 1 "origin-moved" (the spec's OriginMoved), found = that commit, next saying land
+/// itself; `mr publish`: exit 1 "origin-moved" (OriginMoved), found = that commit, next saying land
 /// again; origin's `main` is that commit on the base and nothing more; integration and main are on it; the squash
 /// ref still holds the second squash. Check 13: `mr land` the squash again and `mr publish`: exit 0 "published",
 /// origin's `main` and the local `main` both at the landed commit. False, with the later checks written as not run,

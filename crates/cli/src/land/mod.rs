@@ -1,4 +1,4 @@
-//! `mr land` (SPEC-cli 06): its words, its report in the cli's own words, and its runner. The module shares
+//! `mr land`: its words, its report in the cli's own words, and its runner. The module shares
 //! its name with the land crate, so code here names the crate `::land`.
 
 mod land_report;

@@ -1,5 +1,5 @@
-//! status_lines: one fact per line in the spec's order; empty parts add no line, except the changed and untracked
-//! paths, which say there are none. A stalled move's line says whether a rebase or an undo left it (S-143).
+//! status_lines: one fact per line in a fixed order; empty parts add no line, except the changed and untracked
+//! paths, which say there are none. A stalled move's line says whether a rebase or an undo left it.
 
 use std::path::PathBuf;
 

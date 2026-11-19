@@ -1,9 +1,9 @@
 //! read_named_zones: each named zone with its zone folder and its open requests, read from the worktrees' folder
-//! records (S-45, S-108). Two callers: run_after_publish, for the zones on its line, before land's call; and
+//! records. Two callers: run_after_publish, for the zones on its line, before land's call; and
 //! run_overlap, for its one zone, which uses only the open requests (relabelling a failure report to its own verb).
-//! No sibling test (S-104): it runs git and reads the folders' records; status's open_requests_for_tests covers the
+//! No sibling test: it runs git and reads the folders' records; status's open_requests_for_tests covers the
 //! choice of open requests.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - the open requests of a moved zone, request folders made by the landing verbs, are listed to rebase at their
 //!   next join, each with its snapshot commit when it has one;
 //! - a zone with no zone folder is reported as having none, and its requests are still listed;

@@ -1,4 +1,4 @@
-//! The report of a verb whose config file cannot be read or decoded (S-70).
+//! The report of a verb whose config file cannot be read or decoded.
 
 use std::path::Path;
 

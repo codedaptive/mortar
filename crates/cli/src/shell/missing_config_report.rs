@@ -1,4 +1,4 @@
-//! The report of a verb run where `mr init` has not run yet (S-70).
+//! The report of a verb run where `mr init` has not run yet.
 
 use std::path::Path;
 

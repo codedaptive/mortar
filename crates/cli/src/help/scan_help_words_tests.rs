@@ -1,5 +1,5 @@
-//! scan_help_words: which words of a command line are globals, help flags or other words (SPEC-cli 08, "The calls").
-//! ZUT (rule 11): scan_help_words is pure.
+//! scan_help_words: which words of a command line are globals, help flags or other words.
+//! Unit test: scan_help_words is pure.
 
 use super::{scan_help_words, HelpWords};
 

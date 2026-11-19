@@ -1,4 +1,4 @@
-//! help_asked: whether a command line asks for help, and for which topic (SPEC-cli 08, "The calls").
+//! help_asked: whether a command line asks for help, and for which topic.
 
 use super::{find_help_entry, scan_help_words, HelpRequest, HelpTopic};
 

@@ -35,7 +35,7 @@ const READ_ONLY: VerbSpec = VerbSpec {
 #[test]
 fn a_read_only_verb_acts_as_nobody_with_and_without_actor() {
     assert_eq!(actor_for(&READ_ONLY, None, None), Ok(String::new()));
-    assert_eq!(actor_for(&READ_ONLY, None, Some("bob")), Ok(String::new()));
+    assert_eq!(actor_for(&READ_ONLY, None, Some("agent-a")), Ok(String::new()));
 }
 
 const AGENT: VerbSpec = VerbSpec {
@@ -53,23 +53,23 @@ fn init() -> &'static VerbSpec {
 fn record(request: Option<&str>) -> FolderRecord {
     FolderRecord {
         kind: if request.is_some() { FolderKind::Request } else { FolderKind::Zone },
-        zone: "orc".to_string(),
+        zone: "a".to_string(),
         request: request.map(str::to_string),
         base: Oid::parse(&"a".repeat(40)).expect("a valid oid"),
         work_order_paths: Vec::new(),
         needed_paths: Vec::new(),
-        parent: request.map(|_| "zone/orc".to_string()),
+        parent: request.map(|_| "zone/a".to_string()),
     }
 }
 
 #[test]
 fn an_agent_verb_acts_as_its_request() {
-    assert_eq!(actor_for(&AGENT, Some(&record(Some("WO-cli-1"))), None), Ok("orc/WO-cli-1".to_string()));
+    assert_eq!(actor_for(&AGENT, Some(&record(Some("r1"))), None), Ok("a/r1".to_string()));
 }
 
 #[test]
 fn an_agent_verb_refuses_actor_as_usage() {
-    let report = actor_for(&AGENT, Some(&record(Some("WO-cli-1"))), Some("bob")).expect_err("usage");
+    let report = actor_for(&AGENT, Some(&record(Some("r1"))), Some("agent-a")).expect_err("usage");
     assert_eq!(report.exit, ExitCode::Usage);
     assert_eq!(report.verb, "save");
     assert_eq!(report.lines[0], "agent verbs take the actor from the folder record");
@@ -80,7 +80,7 @@ fn an_agent_verb_refuses_actor_as_usage() {
 fn an_agent_verb_outside_a_request_folder_is_refused_naming_the_folder() {
     let zone = record(None);
     let cases: [(Option<&FolderRecord>, &str); 2] = [
-        (Some(&zone), "this is a zone folder (zone orc): agent verbs run in a request folder"),
+        (Some(&zone), "this is a zone folder (zone a): agent verbs run in a request folder"),
         (None, "this directory is not in a Mortar folder"),
     ];
     for (folder, why) in cases {
@@ -118,7 +118,7 @@ fn a_harness_verb_with_an_empty_actor_is_usage() {
 
 #[test]
 fn a_hook_verb_refuses_actor_as_usage() {
-    let report = actor_for(&HOOK, None, Some("bob")).expect_err("usage");
+    let report = actor_for(&HOOK, None, Some("agent-a")).expect_err("usage");
     assert_eq!(report.exit, ExitCode::Usage);
     assert_eq!(report.verb, "guard-hook");
     assert_eq!(report.lines[0], "hook verbs are run by git and take no --actor");
@@ -140,7 +140,7 @@ fn a_setup_verb_acts_as_nobody() {
 
 #[test]
 fn a_setup_verb_refuses_actor_as_usage() {
-    let report = actor_for(&SETUP, None, Some("bob")).expect_err("usage");
+    let report = actor_for(&SETUP, None, Some("agent-a")).expect_err("usage");
     assert_eq!(report.exit, ExitCode::Usage);
     assert_eq!(report.verb, "install");
     assert_eq!(report.lines[0], "install and uninstall take no --actor");

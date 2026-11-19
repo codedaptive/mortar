@@ -1,10 +1,10 @@
 //! run_bisect: `mr bisect <last pass> <failed> --timeout <seconds> -- <command>...`, the first failing landing
-//! on origin's first-parent line named under the land lock (SPEC-cli 06). land's bisect probes each commit in a
+//! on origin's first-parent line named under the land lock. land's bisect probes each commit in a
 //! throwaway detached worktree and leaves no bisect state; --key names the lock holder only, never passed to the
-//! op log (S-132).
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and land; parse_bisect_args_tests,
+//! op log.
+//! No sibling test: it takes a real lock and runs git, the op log and land; parse_bisect_args_tests,
 //! bisect_report_tests, bisect_error_report_tests, probe_line_tests and culprit_line_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): a culprit found at a fast-forward
+//! Repo integration tests to write (cross-zone, not written here): a culprit found at a fast-forward
 //! landing and at a merge landing, its change ID and zone named; a culprit landing without trailers; not found
 //! because the failed commit passes, and because the last passing commit fails; a timed-out probe counted as a
 //! fail and shown "timed out"; a last passing commit off the failed one's first-parent line refused naming both; a

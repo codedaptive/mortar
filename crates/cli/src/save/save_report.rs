@@ -1,5 +1,5 @@
-//! save_report: the report of a save that ran (S-71: exit 0, written or not), with the pending folder move it
-//! finished first, if any (S-143).
+//! save_report: the report of a save that ran (exit 0, written or not), with the pending folder move it
+//! finished first, if any, and what run_save's snapshots, save's own snapshot step included, moved.
 
 use snapshot::{FormatterResult, FormatterRun, SaveOutcome};
 
@@ -7,12 +7,20 @@ use crate::join::{finished_move_part, PendingMove};
 use crate::report::{ExitCode, OutValue, Report};
 
 /// Done, next `mr join`. Lines: first finished_move_part's for `finished` (the move's line, none without a
-/// move); then, written: "saved", naming the commit and its change ID; not written: "unchanged", naming HEAD. Then
-/// one line per file the size cap refused, then, when the formatter did not end Formatted, how it ended (the files
-/// were saved as they are). Fields: finished_move_part's (finished_move_from and finished_move_to, Null without a
-/// move), then commit, written, change_id (Null when None), refused (the paths) and cap (the first refused file's
-/// cap, Null when none was refused).
-pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>, finished: Option<&PendingMove>) -> Report {
+/// move); then `moved` when given: the caller's line for whether the snapshot ref moved (the pending move's
+/// snapshot, the formatter's or save's own snapshot step), on a saved and an unchanged report alike, ahead of the
+/// line that says whether a save commit was written; then, written: "saved", naming the commit and its change ID;
+/// not written: "unchanged", naming HEAD. Then one line per file the size cap refused, then, when the formatter did
+/// not end Formatted, how it ended (the files were saved as they are).
+/// Fields: finished_move_part's (finished_move_from and
+/// finished_move_to, Null without a move), then commit, written, change_id (Null when None), refused (the paths) and
+/// cap (the first refused file's cap, Null when none was refused).
+pub fn save_report(
+    outcome: &SaveOutcome,
+    formatted: Option<&FormatterRun>,
+    finished: Option<&PendingMove>,
+    moved: Option<&str>,
+) -> Report {
     let change_id = outcome.change_id.as_ref().map(ToString::to_string);
     let (word, first) = if outcome.written {
         (
@@ -26,10 +34,11 @@ pub fn save_report(outcome: &SaveOutcome, formatted: Option<&FormatterRun>, fini
     } else {
         (
             "unchanged",
-            format!("nothing changed since the last save; no commit written (HEAD is {})", outcome.commit),
+            format!("nothing changed since the last save; no save commit written (HEAD is {})", outcome.commit),
         )
     };
     let (mut lines, mut fields) = finished_move_part(finished);
+    lines.extend(moved.map(str::to_string));
     lines.push(first);
     lines.extend(outcome.refused.iter().map(|file| {
         format!(

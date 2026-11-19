@@ -1,8 +1,8 @@
 //! restore_check_report: check_restore_join_state refused before anything moved; each refusal says why, that nothing
 //! was changed, and its one next step; the disk failing and the errors the check never gives are failures to repeat.
-//! ZUT (rule 11): restore_check_report builds its why lines by calling undo::restore_why, which is pure on these
+//! ZUT: restore_check_report builds its why lines by calling undo::restore_why, which is pure on these
 //! errors, directly. Git failing, a_git_failure_is_a_failure_to_repeat, runs gitio's GitError Display, exported, pure
-//! and below cli (S-171).
+//! and below cli.
 
 use std::io;
 use std::path::PathBuf;

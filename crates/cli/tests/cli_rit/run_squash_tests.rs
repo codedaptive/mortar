@@ -3,14 +3,14 @@
 //! ID; a zone at main has nothing to squash; a zone that conflicts with main exits 2 naming the file; a configured
 //! zone with no zone branch is refused (exit 1) naming the branch; no zone word, two words, an unknown zone and no
 //! --actor are usage errors (exit 4) with squash's usage line as next and no squash ref written.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - each land error variant's text that needs git or the op log to fail: SquashError Git, Oplog, ChangeId,
 //!   Trailers, OpFailed and OpRepeated;
-//! - ACCEPT-1 checks 7, 9, 11 and 12 through these verbs on two zones.
+//! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones.
 
 use std::collections::BTreeMap;
 use std::fs;

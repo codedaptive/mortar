@@ -26,7 +26,7 @@ pub fn write_fixture_config(root: &Path, config: &Config) -> Result<(), String> 
     let output = Command::new(env!("CARGO_BIN_EXE_mortar")).current_dir(root).env_clear()
         .env("PATH", std::env::var_os("PATH").unwrap()).env("HOME", root).env("TMPDIR", root)
         .env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", "/dev/null")
-        .env("CODETEAM_SESSION", "Nagatha").stdin(Stdio::null()).args(&words).output()
+        .env("CODETEAM_SESSION", "harness").stdin(Stdio::null()).args(&words).output()
         .map_err(|error| format!("init fixture: {error}"))?;
     if !output.status.success() { return Err(format!("init fixture failed: {output:?}")); }
     let stdout = String::from_utf8_lossy(&output.stdout);

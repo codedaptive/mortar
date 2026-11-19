@@ -1,4 +1,4 @@
-//! Tests of install_report: outcome by steps, a line and a JSON object per item, the plan's next (spec 07 item 8).
+//! Tests of install_report: outcome by steps, a line and a JSON object per item, the plan's next.
 
 use std::path::PathBuf;
 

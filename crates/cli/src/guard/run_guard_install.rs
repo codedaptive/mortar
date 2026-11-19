@@ -1,6 +1,6 @@
 //! run_guard_install: `mr guard install`, guard.json and both guard hooks put in place for the config's branches,
-//! with a warning line when the first `mr` on PATH is not this Mortar (S-133 (1)).
-//! No sibling test (S-104): it takes a real lock, runs git, the op log and land, and reads PATH, this binary's path and
+//! with a warning line when the first `mr` on PATH is not this Mortar.
+//! No sibling test: it takes a real lock, runs git, the op log and land, and reads PATH, this binary's path and
 //! the file system; guard_in_place_tests, guard_installed_report_tests, guard_error_report_tests,
 //! hooks_path_report_tests (the core.hooksPath refusal), install_outcome_tests (the warning on installed outcomes only,
 //! last before next), with_path_warning_tests and path's path_warning_for_tests (the warning's decision),
@@ -10,16 +10,20 @@
 //! changes no byte; a foreign pre-push is refused exit 1 "foreign-hook" with nothing written; without --actor, exit 4;
 //! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused
 //! exit 1 "refused" with nothing written.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid, exit
-//! 3 (oplog's locks); GuardError::Git in the cli's own words; after `mr guard install`, git update-ref, commit and
-//! push against integration and origin are refused through the installed hook (which runs `mortar guard-hook`) and
-//! Mortar's own moves pass (ACCEPT-2 checks 1-9; land's guard_decide); tests/operational_rit/guard_fixture.rs to
-//! install through `mr guard install` instead of land::guard_install; through the binary, a foreign `mr` first on a
-//! scratch PATH makes `mr guard install` exit 0 "installed" with the PATH warning as the last line before next, and
-//! this build's bin dir first on PATH gives no warning; a copied Mortar binary, not this path, first on PATH gives no
-//! warning; a myrepos-like `mr` beside Mortar gives the warning as the last line before next, exit 0 "installed"
-//! (S-147); the PATH lookup (first_on_path) and the marker read (file_has_marker) on real files through `mr guard
-//! install`, by the warning line present or absent (S-169).
+//! The validation test crates/cli/tests/validation/guard_linked_worktree.rs covers the refusal after install through
+//! the binary: with an absolute core.hooksPath, `mr guard install` from one linked worktree writes the hooks there,
+//! and in a second linked worktree made afterwards git update-ref of integration is refused through the installed
+//! reference-transaction hook (which runs `mortar guard-hook`) with the guard's why, owner and next, while an
+//! unprotected ref moves.
+//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
+//! 3 (oplog's locks); GuardError::Git in the cli's own words; after `mr guard install`, git commit and push against
+//! integration and origin are refused through the installed hook and Mortar's own moves pass (land's guard_decide);
+//! tests/operational_rit/guard_fixture.rs to install through `mr guard install` instead of land::guard_install;
+//! through the binary, a foreign `mr` first on a scratch PATH makes `mr guard install` exit 0 "installed" with the
+//! PATH warning as the last line before next, and this build's bin dir first on PATH gives no warning; a copied
+//! Mortar binary, not this path, first on PATH gives no warning; a myrepos-like `mr` beside Mortar gives the warning
+//! as the last line before next, exit 0 "installed"; the PATH lookup (first_on_path) and the marker read
+//! (file_has_marker) on real files through `mr guard install`, by the warning line present or absent.
 
 use std::path::Path;
 
@@ -46,7 +50,7 @@ const VERB: &str = "guard";
 /// land's guard_install (refusing a foreign hook before writing anything), then guard_status read back for the report.
 /// The result goes through install_outcome: the installed report (either outcome) gets path_warning_for's line, over
 /// this binary's path, the first `mr` on PATH as the shell in `cwd` would find it (an unset PATH finds none), the
-/// file system's canonicalize and file_has_marker's read of the candidate for MORTAR_MARKER (S-147), as its last;
+/// file system's canonicalize and file_has_marker's read of the candidate for MORTAR_MARKER, as its last;
 /// refusals, failures and a busy lock do not.
 /// Records no op: it moves no ref.
 pub fn run_guard_install(context: &ShellContext, config: &Config, cwd: &Path) -> Report {

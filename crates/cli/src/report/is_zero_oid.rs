@@ -1,4 +1,4 @@
-//! The all-zero object id, which as a move's new value deletes the ref (S-9).
+//! The all-zero object id, which as a move's new value deletes the ref.
 //! oplog keeps its own check crate-private, so the cli's verbs (log, restore) share this one.
 
 use gitio::Oid;

@@ -1,14 +1,14 @@
 //! `mortar back-out`: after a fast-forward landing, integration goes back to main's tip, the integration worktree's
 //! files follow it and the squash ref stays; a repeat, and a repository where nothing landed, have nothing to back
 //! out; an extra word is a usage error (exit 4) with back-out's usage line as next and integration unmoved.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing. The squash and the landing are made in setup through land::squash and land::land under the land lock.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - each LandError variant's text that needs git or the op log to fail;
-//! - ACCEPT-1 checks 7, 9, 11 and 12 through these verbs on two zones;
-//! - back-out with --key: the key names the lock holder only (S-132).
+//! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones;
+//! - back-out with --key: the key names the lock holder only.
 
 use std::collections::BTreeMap;
 use std::fs;

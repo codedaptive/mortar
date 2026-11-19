@@ -1,4 +1,4 @@
-//! last_integration_old: where the integration branch stood before the last op that moved it (S-137), the folder's
+//! last_integration_old: where the integration branch stood before the last op that moved it, the folder's
 //! tip a stopped run would have left behind.
 
 use gitio::Oid;

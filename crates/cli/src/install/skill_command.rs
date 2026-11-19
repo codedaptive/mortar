@@ -1,4 +1,4 @@
-//! skill_command: The name the skill text uses for Mortar: "mr" or "mortar" (spec 07 item 6, S-177).
+//! skill_command: The name the skill text uses for Mortar: "mr" or "mortar".
 //! Pure: the caller gives where `~/.local/bin` and the first `mr` stand on PATH.
 
 /// "mr" exactly when, once install is done, the first `mr` on PATH is Mortar; else "mortar". `link_present`: Mortar's

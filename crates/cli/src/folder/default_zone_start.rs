@@ -1,4 +1,4 @@
-//! default_zone_start: the start a bare `mr folder zone` gives a missing zone branch (S-149).
+//! default_zone_start: the start a bare `mr folder zone` gives a missing zone branch.
 
 /// `refs/heads/<origin_branch>` when no --start was given and the zone branch does not exist; None otherwise (a given
 /// --start is used as it is, and an existing zone branch takes no start).

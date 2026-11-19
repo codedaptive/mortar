@@ -1,6 +1,6 @@
 //! usage_forms: a verb's usage one line per form of its "( a | b )" group, unchanged without one; --version's
-//! line; nothing for an unknown name (SPEC-cli 08, "A verb's help").
-//! ZUT (rule 11): args/find_verb, the verb table and split_usage_forms are pure and used directly.
+//! line; nothing for an unknown name.
+//! Unit test: args/find_verb, the verb table and split_usage_forms are pure and used directly.
 
 use super::usage_forms;
 

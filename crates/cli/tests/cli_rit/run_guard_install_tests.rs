@@ -3,14 +3,14 @@
 //! written; no --actor, no sub-verb and an unknown sub-verb are usage errors (exit 4) with guard's usage line as next;
 //! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused
 //! (exit 1) with nothing written.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - GuardError::Git: the cli's own words, never gitio's Display text;
 //! - after `mortar guard install`, git update-ref, commit and push against integration and origin are refused
-//!   through the installed hook and Mortar's own moves pass (ACCEPT-2 checks 1-9; land's guard_decide);
+//!   through the installed hook and Mortar's own moves pass (acceptance step 2's checks 1-9; land's guard_decide);
 //! - tests/operational_rit/guard_fixture.rs to install through `mortar guard install` instead of land::guard_install.
 
 use std::collections::BTreeMap;
@@ -71,20 +71,21 @@ fn install(root: &Path, cwd: &Path) -> Output {
     mortar(root, cwd, &["--actor", "harness", "--json", "guard", "install"])
 }
 
-fn is_executable(path: &Path) -> bool {
-    fs::metadata(path).unwrap().permissions().mode() & 0o111 != 0
+/// The permission bits of `path`: land's guard_install sets each hook's mode to 0o755.
+fn mode(path: &Path) -> u32 {
+    fs::metadata(path).unwrap().permissions().mode() & 0o777
 }
 
 fn shown(path: &Path) -> String {
     path.to_str().unwrap().to_string()
 }
 
-/// Both hooks in `hooks`, executable, each byte-for-byte the guard's script for its name.
+/// Both hooks in `hooks`, mode 0o755, each byte-for-byte the guard's script for its name.
 fn assert_hooks_written(hooks: &Path) {
     assert_eq!(fs::read_to_string(hooks.join("reference-transaction")).unwrap(), REFERENCE_TRANSACTION);
     assert_eq!(fs::read_to_string(hooks.join("pre-push")).unwrap(), PRE_PUSH);
-    assert!(is_executable(&hooks.join("reference-transaction")));
-    assert!(is_executable(&hooks.join("pre-push")));
+    assert_eq!(mode(&hooks.join("reference-transaction")), 0o755);
+    assert_eq!(mode(&hooks.join("pre-push")), 0o755);
 }
 
 fn snapshot_files(root: &Path) -> Vec<Vec<u8>> {
@@ -116,6 +117,8 @@ fn guard_install_repeat_is_already_installed_and_changes_no_byte() {
     let before = snapshot_files(&root);
     let report = check(install(&root, &root), "guard", 0, "already-installed");
     assert_eq!(snapshot_files(&root), before);
+    assert_eq!(mode(&root.join(".git/hooks/reference-transaction")), 0o755);
+    assert_eq!(mode(&root.join(".git/hooks/pre-push")), 0o755);
     assert_eq!(report.text("next"), INSTALLED_NEXT);
     assert!(report.lines().contains("already installed"), "{}", report.lines());
     assert_eq!(report.text("reference_transaction"), "mortar");

@@ -1,4 +1,4 @@
-//! `mr overlap <zone>` (SPEC-cli 05): its words, its reports and its runner.
+//! `mr overlap <zone>`: its words, its reports and its runner.
 
 mod overlap_error_report;
 mod overlap_report;

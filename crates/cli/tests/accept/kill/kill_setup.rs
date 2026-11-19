@@ -8,8 +8,8 @@ use crate::world::World;
 /// stage_new, then request folders r1 and r2 in zone a and r3 in zone b, a new file saved with `mr save` in each
 /// (so a join's own op is its first ref transaction: the save leaves nothing for join to save or snapshot), and
 /// `mr join` in r3; one set-up line each. r1 and r2 both start at zone a's base, so once r1 joins, zone a has moved
-/// under r2. The request folders are the consistency check's folders: a zone folder moves only after publish (S-115
-/// (1), S-140, S-150). An error naming the first step that failed; the steps after it are not run.
+/// under r2. The request folders are the consistency check's folders: a zone folder moves only after publish.
+/// An error naming the first step that failed; the steps after it are not run.
 pub fn kill_setup(world: &World, checks: &mut Checks) -> Result<KillState, String> {
     stage_new(world, checks).ok_or("the set-up (init, guard install, zone folders) failed")?;
     let mut state = KillState::default();

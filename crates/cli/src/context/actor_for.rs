@@ -7,10 +7,10 @@ use crate::args::{usage_report, UsageError, VerbKind, VerbSpec};
 use crate::report::{ExitCode, Report};
 
 /// Agent verbs act as "<zone>/<request>" from the folder record and refuse --actor (usage, exit 4). A zone
-/// folder is refused (exit 1) naming its kind and zone (S-81); no record is refused (exit 1) as not a Mortar
+/// folder is refused (exit 1) naming its kind and zone; no record is refused (exit 1) as not a Mortar
 /// folder; both say to run the verb in a request folder. Harness verbs act as --actor, which they require (usage,
 /// exit 4). Hook verbs, run by git, act as "git" and refuse --actor (usage, exit 4). Read-only verbs act as nobody
-/// (""): their --actor is a filter the verb reads, not who it acts as (S-114). Setup verbs (install, uninstall;
+/// (""): their --actor is a filter the verb reads, not who it acts as. Setup verbs (install, uninstall;
 /// help never gets here) act as nobody ("") and refuse --actor (usage, exit 4). A usage report's next step is
 /// `verb`'s own usage line.
 pub fn actor_for(verb: &VerbSpec, record: Option<&FolderRecord>, flag: Option<&str>) -> Result<String, Report> {

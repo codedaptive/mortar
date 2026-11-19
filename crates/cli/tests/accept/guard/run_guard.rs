@@ -1,4 +1,4 @@
-//! Step 2, the guard (02-guard.md). Real repositories and processes: the drive (steps/guard.rs) runs it as step 2's
+//! Step 2, the guard. Real repositories and processes: the drive (steps/guard.rs) runs it as step 2's
 //! body on every drive.
 
 use super::{guard_commit, guard_land, guard_pushes, guard_refused, guard_scratch, guard_squash, local_ref, other_commit};
@@ -6,7 +6,7 @@ use crate::report::Checks;
 use crate::stage::stage_new;
 use crate::world::World;
 
-/// The set-up: stage_new (ACCEPT-1's set-up through `mr guard install`), then a squash ready to land
+/// The set-up: stage_new (step 1's set-up through `mr guard install`), then a squash ready to land
 /// (guard_squash). Then the nine checks in order, each at least one line: 1-2 `git update-ref` of integration and
 /// main, 3-4 a commit on a checkout of each (guard_commit), 5-7 pushes (guard_pushes), 8 Mortar's own land and
 /// publish (guard_land), 9 an unguarded ref (guard_scratch). Checks 1-7 and 9 need no folder, so they run whatever

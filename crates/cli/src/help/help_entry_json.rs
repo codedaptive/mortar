@@ -1,4 +1,4 @@
-//! help_entry_json: one verb of the `--json` help object's "verbs" array (SPEC-cli 08, "The calls").
+//! help_entry_json: one verb of the `--json` help object's "verbs" array.
 
 use oplog::write_json_string;
 

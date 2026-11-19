@@ -1,5 +1,5 @@
-//! ZoneFolderOutcome: what became of one named zone's folder after land answered (S-139, S-140).
-//! A bare type (S-7); zone_folder_lines_tests and after_publish_report_tests exercise each variant.
+//! ZoneFolderOutcome: what became of one named zone's folder after land answered.
+//! A bare type; zone_folder_lines_tests and after_publish_report_tests exercise each variant.
 
 use std::path::PathBuf;
 

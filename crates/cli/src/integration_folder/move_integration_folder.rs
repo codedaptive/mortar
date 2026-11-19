@@ -1,8 +1,8 @@
 //! Moves the integration folder, the worktree on the integration branch, after a verb moved that branch, or when
 //! finish_stopped_move finishes a move a stopped run left undone.
-//! No sibling test (S-104): it runs git and the op log. The RITs crates/cli/tests/cli_rit/run_back_out_tests.rs
+//! No sibling test: it runs git and the op log. The RITs crates/cli/tests/cli_rit/run_back_out_tests.rs
 //! and crates/cli/tests/cli_rit/run_publish_tests.rs cover it through the binary; folder_move_refusal_report_tests
-//! covers the refusal's text. RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136):
+//! covers the refusal's text. Repo integration tests to write (cross-zone, not written here):
 //! - files with local changes in the way in the integration folder when land, back-out or publish (OriginMoved)
 //!   moves the integration branch: exit 1 "folder-not-moved" listing the paths, the folder unchanged; move them
 //!   out (or put them back to the index copy), then repeat the same command: the repeat's finish moves the folder
@@ -12,7 +12,7 @@
 //!   repeat: the move finishes and the verb goes on.
 //!
 //! Both finish only when the folder was cleared as the next says: a clear that resets the index to HEAD leaves no
-//! stall for the repeat to see, and the files are then their owner's, unreported (S-137 (4)).
+//! stall for the repeat to see, and the files are then their owner's, unreported.
 
 use std::path::PathBuf;
 

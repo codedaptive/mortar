@@ -1,4 +1,4 @@
-//! undo_reason: the reason an undo op records, "undo of <kind> op <op_id>" (S-142 (3)), which reversed_op reads back.
+//! undo_reason: the reason an undo op records, "undo of <kind> op <op_id>", which reversed_op reads back.
 
 use super::{reversed_op, undo_reason};
 

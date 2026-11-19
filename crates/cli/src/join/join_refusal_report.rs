@@ -2,13 +2,21 @@
 
 use ::join::{JoinError, JoinRunError};
 
-use crate::report::{failure_report, ExitCode, Report};
+use crate::report::{failure_report, with_moved_first, ExitCode, Report};
 
 /// A refusal the caller can act on is exit 1 "refused": the error's text, who owns the fix and the next step. A
 /// missing zone is the zone coordinator's; a missing or unrelated request, a conflicted path that is not UTF-8,
 /// and a request commit replay cannot take (a merge, a root, no author date) are this request's. Anything else
-/// (git, the op log, a state file) is failure_report.
-pub fn join_refusal_report(error: &JoinRunError) -> Report {
+/// (git, the op log, a state file) is failure_report. `moved` (moved_before's line), when given, is the first line of
+/// either report: it names the refs the save or snapshot before the join moved, ahead of the line saying join moved
+/// no ref.
+pub fn join_refusal_report(error: &JoinRunError, moved: Option<&str>) -> Report {
+    let report = refusal(error);
+    Report { lines: with_moved_first(moved, report.lines), ..report }
+}
+
+/// The report for `error` alone.
+fn refusal(error: &JoinRunError) -> Report {
     const REQUEST: &str = "this request";
     let (owner, next) = match error {
         JoinRunError::ZoneMissing(_) => ("the zone's coordinator", "have the zone made, then mr join"),

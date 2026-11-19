@@ -1,8 +1,8 @@
 //! run_restore: a full ref name git refuses (refs/heads/req/core/a..b) is oplog's BadMove, exit 1, before any ref is
 //! read: no ref is written and the op log gains no record.
-//! RIT (S-135, S-136): `mr --json --actor harness-1 restore` runs as a child of the mortar binary in a throwaway
+//! Repo integration test: `mr --json --actor harness-1 restore` runs as a child of the mortar binary in a throwaway
 //! repository (testkit's TestRepo) with one commit, one done op and the config `mr init` writes first; the setup git
-//! and the children run with GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1. Nagatha's from landing.
+//! and the children run with GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1. Owned by integration from landing.
 //! restore's usage cases are ZUTs in crates/cli/src/restore/run_restore_tests.rs.
 
 use std::path::Path;

@@ -1,10 +1,9 @@
-//! run_log: `mr log [--ref <r>] [--actor <a>] [--key <k>]`, the read-only verb that lists the op log's records
-//! (S-114).
-//! It runs git for the common dir and reads the op log file (S-5, S-104); log_filters_tests,
+//! run_log: `mr log [--ref <r>] [--actor <a>] [--key <k>]`, the read-only verb that lists the op log's records.
+//! It runs git for the common dir and reads the op log file; log_filters_tests,
 //! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, run_log_tests its usage refusals
 //! before any read, and the RIT crates/cli/tests/cli_rit/run_log_tests.rs, for one op in a real log, the plain
 //! listing with no "records" lines and the --json "records" line, for a line with no values or remote mark and for
-//! one carrying both. Nagatha's integration group is to cover, with the mortar binary as a child process in a
+//! one carrying both. The repo integration tests are to cover, with the mortar binary as a child process in a
 //! throwaway repository with ops in its log (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a real log read with each filter (--ref, --actor, --key) lists the matching ops, and with two filters their AND;
@@ -27,7 +26,7 @@ use crate::shell::ShellContext;
 /// Reads the filters first (log_filters: a bad line is log's usage, exit 4, before any read); then the repository's
 /// common dir from `cwd` (no repository: repository_report) and its op log (unreadable: failure_report), and
 /// reports the records every filter keeps (matching_records) through log_report, with --json each record's own log
-/// line, values and remote mark included (encoded_records). No lock, no op, writes nothing (S-114).
+/// line, values and remote mark included (encoded_records). No lock, no op, writes nothing.
 pub fn run_log(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let filters = match log_filters(&args.rest, args.key.as_deref(), args.actor.as_deref()) {

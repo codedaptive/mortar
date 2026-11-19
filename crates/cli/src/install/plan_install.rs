@@ -1,4 +1,4 @@
-//! plan_install: Install's whole plan: placement, the link, the skills, every refusal before any step (spec 07 item 7).
+//! plan_install: Install's whole plan: placement, the link, the skills, every refusal before any step.
 //! Pure: it decides from the facts install read. Placement is planned first and its refusal ends the plan there;
 //! then the link, whose refusal ends it; then the skills, whose text names the command the link decided.
 

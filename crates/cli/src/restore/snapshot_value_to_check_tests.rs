@@ -1,5 +1,5 @@
 //! snapshot_value_to_check: a repeat checks against the done record's old value of the snapshot ref when it moved
-//! that ref; a first attempt, or moves without that ref, check against the ref's present value (S-122(3)).
+//! that ref; a first attempt, or moves without that ref, check against the ref's present value.
 
 use gitio::Oid;
 use oplog::RefMove;

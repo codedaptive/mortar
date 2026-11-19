@@ -1,4 +1,4 @@
-//! status_fields: the --json members of `mr status`, in the spec's order.
+//! status_fields: the --json members of `mr status`, in a fixed order.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};

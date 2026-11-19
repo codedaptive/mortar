@@ -1,4 +1,4 @@
-//! The oplog lock a verb takes before it moves a ref (S-16).
+//! The oplog lock a verb takes before it moves a ref.
 //! Shell API: `mr join` and `mr resolve` (through request_run_for), `mr save` and `mr undo` (through
 //! save_run_for), `mr need` (run_need) and `mr snapshot` (run_snapshot) call it; the other verbs that move a
 //! ref name their lock themselves.

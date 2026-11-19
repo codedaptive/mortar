@@ -1,4 +1,4 @@
-//! The report of a folder move that failed after `mr restore` moved the refs (S-113(3)).
+//! The report of a folder move that failed after `mr restore` moved the refs.
 
 use std::path::{Path, PathBuf};
 

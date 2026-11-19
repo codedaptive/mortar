@@ -1,4 +1,4 @@
-//! Whole installed skill text for both command names (SPEC-cli 07).
+//! Whole installed skill text for both command names.
 
 use super::skill_text;
 

@@ -1,5 +1,5 @@
-//! help_group: one group of the program help, its heading and its rows (SPEC-cli 08, "The program help").
-//! A bare type (S-7); help_groups_tests and find_help_entry_tests exercise it.
+//! help_group: one group of the program help, its heading and its rows.
+//! A bare type; help_groups_tests and find_help_entry_tests exercise it.
 
 use super::HelpEntry;
 

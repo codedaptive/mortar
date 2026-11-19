@@ -1,6 +1,5 @@
 //! restore_report: what a done, repeated and failed restore say, with the folders moved, already in place, left
-//! alone because their ref has moved on since the record's op, and the zone folders left where they were (S-113,
-//! S-115(1)).
+//! alone because their ref has moved on since the record's op, and the zone folders left where they were.
 
 use std::path::PathBuf;
 

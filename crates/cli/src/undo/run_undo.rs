@@ -1,10 +1,10 @@
 //! run_undo: `mr undo [--key <key>] [--json]`, the agent verb that undoes its folder's own last step: a save, a
-//! join's rebase or a resolve's final rebase, whose paused join it puts back (S-73, S-142, S-143, S-148, S-155).
-//! No unit test (S-104): it takes the lock, snapshots, runs git and the op log; own_refs, choose_undo, undo_refusal,
+//! join's rebase or a resolve's final rebase, whose paused join it puts back.
+//! No unit test: it takes the lock, snapshots, runs git and the op log; own_refs, choose_undo, undo_refusal,
 //! later_op_refusal, undo_caller, undo_report, already_undone_report, nothing_to_undo_report, failed_undo_report,
 //! undo_error_report, restore_check_report, restore_failed_report and with_restored are its decisions and have their
 //! tests.
-//! Nagatha's integration group (RITs) is to cover, with the mortar binary as a child process in a request folder
+//! The repo integration tests are to cover, with the mortar binary as a child process in a request folder
 //! made by the landing verbs in a throwaway repository:
 //! - save then undo keeps the files and shows them unsaved (the index at the branch's restored tree);
 //! - undo after a join's rebase moves the folder back to the tip before the rebase; with an edit in the way the move
@@ -36,7 +36,7 @@ use super::{
     undo_refusal, with_restored, UndoChoice, UndoStep,
 };
 use crate::args::no_arguments_report;
-use crate::join::{finish_pending_move, RequestRun};
+use crate::join::{finish_pending_move, snapshot_failure, RequestRun};
 use crate::lock::locked_act;
 use crate::report::{failure_report, Report};
 use crate::save::save_run_for;
@@ -48,10 +48,10 @@ const VERB: &str = "undo";
 
 /// Any argument is no_arguments_report's usage report. The run is save_run_for's for undo (the folder's own branch,
 /// its snapshot target, the lock join-<zone> and the key, which names the lock's holder only; oplog gets
-/// "undo:<op id>", S-142 (3)). Under the lock, with recover run first (S-16): choose_undo over the op log (a read
-/// only); a refusal or nothing to undo changes nothing, a pending move left as it is (S-143). For a RestoreJoin step,
+/// "undo:<op id>"). Under the lock, with recover run first: choose_undo over the op log (a read
+/// only); a refusal or nothing to undo changes nothing, a pending move left as it is. For a RestoreJoin step,
 /// join's check_restore_join_state then runs (a read only), and its refusal is restore_check_report with nothing
-/// moved (S-148). Otherwise the pending move is finished first (S-143), then the step is undone (reverse_and_step);
+/// moved. Otherwise the pending move is finished first, then the step is undone (reverse_and_step);
 /// a refusal after the move is finished and the snapshot taken (a later op, a ref moved during the call) keeps the
 /// snapshot. Already undone, the folder step is made again (already_undone).
 pub fn run_undo(context: &ShellContext) -> Report {
@@ -79,7 +79,7 @@ pub fn run_undo(context: &ShellContext) -> Report {
                     ::join::check_restore_join_state(&run.git, &run.folder.toplevel, &records[index])
                         .map_err(|error| restore_check_report(&error))?;
                 }
-                finish_pending_move(&run, VERB)?;
+                finish_pending_move(&run, VERB, &|error| snapshot_failure(VERB, error))?;
                 reverse_and_step(context, &run, &records, index, step)
             }
             UndoChoice::AlreadyUndone { undo_op, reversed_op, step } => {
@@ -101,7 +101,7 @@ fn already_undone(
     reversed_op: &str,
     step: UndoStep,
 ) -> Result<Report, Report> {
-    finish_pending_move(run, VERB)?;
+    finish_pending_move(run, VERB, &|error| snapshot_failure(VERB, error))?;
     let restored = match step {
         UndoStep::SetIndex => set_index_to_branch(run).map(|()| None)?,
         UndoStep::MoveFolder => None,

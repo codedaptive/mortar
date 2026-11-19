@@ -1,15 +1,15 @@
-//! run_rereview: `mr rereview <reviewed commit> <new commit>`, the re-review diff of two squashes of one change
-//! (SPEC-cli 06): its words read, then land's rereview under the land lock after recover, as every landing verb
-//! runs (S-16), though rereview moves no ref and records no op. --key names the lock holder only,
-//! never passed to the op log (S-132).
-//! No sibling test (S-104): it takes a real lock and runs git and land; parse_rereview_args_tests,
+//! run_rereview: `mr rereview <reviewed commit> <new commit>`, the re-review diff of two squashes of one change:
+//! its words read, then land's rereview under the land lock after recover, as every landing verb
+//! runs, though rereview moves no ref and records no op. --key names the lock holder only,
+//! never passed to the op log.
+//! No sibling test: it takes a real lock and runs git and land; parse_rereview_args_tests,
 //! rereview_report_tests and rereview_error_report_tests cover its decisions. The RIT
 //! crates/cli/tests/cli_rit/run_rereview_tests.rs covers it through the binary: two squashes of one change are "rereviewed"
 //! with both ids and only what changed; squashes of two changes are refused exit 1 "not-same-change"; one word,
 //! three words and a word that is not a full commit id are exit 4 with rereview's usage line as next.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid, exit
+//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
 //! 3 (oplog's locks); without a config, exit 1, next mr init (the shell's load_config); RereviewError Git,
-//! Trailers and NoParent (a root commit) through the binary; ACCEPT-1 check 9.
+//! Trailers and NoParent (a root commit) through the binary; the acceptance check of rereview.
 
 use std::path::Path;
 

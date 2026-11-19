@@ -1,6 +1,6 @@
 //! zone_folder_paths: None for a zone the config does not name; a zone's paths, then the root files, a root file the
 //! zone already lists kept at its first place only.
-//! ZUT (rule 11): folder/request_folder_paths is pure and used directly.
+//! Unit test: folder/request_folder_paths is pure and used directly.
 
 use std::collections::BTreeMap;
 

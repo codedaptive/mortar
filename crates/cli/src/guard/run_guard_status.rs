@@ -1,12 +1,12 @@
 //! run_guard_status: `mr guard status`, whether guard.json and both guard hooks are in place for the config's
 //! branches, read without writing.
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and land; guard_state_report_tests and
+//! No sibling test: it takes a real lock and runs git, the op log and land; guard_state_report_tests and
 //! guard_error_report_tests cover its decisions. The RIT crates/cli/tests/cli_rit/run_guard_status_tests.rs covers it through
 //! the binary: an untouched repository is exit 0 "not-installed" with nothing written; after `mr guard install`
 //! exit 0 "installed" naming the three branches; a foreign reference-transaction exit 1 "foreign-hook" naming its
 //! path; a guard.json that is not a guard config exit 1 "refused" naming the file; a guard.json for other branches
 //! than the config exit 0 "not-installed" naming both.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-119): the land lock held by a live pid, exit
+//! Repo integration tests to write (cross-zone, not written here): the land lock held by a live pid, exit
 //! 3 (oplog's locks); GuardError::Git in the cli's own words.
 
 use std::path::Path;

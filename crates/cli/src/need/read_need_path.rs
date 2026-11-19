@@ -1,6 +1,6 @@
 //! read_need_path: the path `mr need` adds, cleaned and checked against the folder's commit before any lock.
-//! No unit test: it runs git (S-5, S-104); need_error_report_tests and missing_path_report_tests cover the refusals
-//! it gives. Nagatha's integration group is to cover, with the mortar binary as a child process in a request folder
+//! No unit test: it runs git; need_error_report_tests and missing_path_report_tests cover the refusals
+//! it gives. The repo integration tests are to cover, with the mortar binary as a child process in a request folder
 //! made by the landing verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a path not at the folder's commit is exit 1, and nothing changed (record, cone, refs and op log);
@@ -18,7 +18,7 @@ use crate::report::{failure_report, Report};
 
 /// `raw` cleaned as folders' sparse_paths cleans a cone path (its trailing '/' removed); a path it refuses is
 /// need_error_report of the plan's refusal. The path must be in the tree of the commit the folder's HEAD stands at,
-/// as gitio's path_kind answers (S-90(2)); a path it does not find is missing_path_report. A HEAD with no commit or
+/// as gitio's path_kind answers; a path it does not find is missing_path_report. A HEAD with no commit or
 /// a git failure is failure_report. Reads only.
 pub fn read_need_path(git: &Git, toplevel: &Path, raw: &str) -> Result<String, Report> {
     let fail = |what: String| failure_report("need", &what);

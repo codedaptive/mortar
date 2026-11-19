@@ -1,7 +1,7 @@
-//! save_error_report: each SnapshotError's exit, outcome, lines, owner and next (S-71), whether the lines are cli's
+//! save_error_report: each SnapshotError's exit, outcome, lines, owner and next, whether the lines are cli's
 //! own text, a reason carried as data, or gitio's or oplog's own text (an index not set, git, op log, trailers and
 //! change ID errors).
-//! ZUT (rule 11, S-171): report::failure_report is pure and used directly; the errors are built as data, and the
+//! ZUT: report::failure_report is pure and used directly; the errors are built as data, and the
 //! gitio and oplog lines come from their exported, pure Display impls.
 
 use std::path::PathBuf;
@@ -32,7 +32,7 @@ fn record(result: Option<OpResult>) -> OpRecord {
         op_id: "op-1".to_string(),
         key: "save-0011223344556677".to_string(),
         kind: "save".to_string(),
-        actor: "orc/r1".to_string(),
+        actor: "a/r1".to_string(),
         reason: "fix the parser".to_string(),
         at: 1_763_100_000,
         phase: OpPhase::Failed,
@@ -54,7 +54,7 @@ fn report(exit: ExitCode, outcome: &str, lines: &[&str], owner: Option<&str>, ne
 }
 
 fn failed(what: &str) -> Report {
-    report(ExitCode::Failure, "failed", &[what, "nothing half-done is left"], None, "repeat the same command")
+    report(ExitCode::Failure, "failed", &[what], None, "repeat the same command")
 }
 
 #[test]
@@ -74,13 +74,13 @@ fn a_bad_sentence_is_refused_with_its_reason() {
 
 #[test]
 fn an_unborn_head_is_refused_naming_the_folder() {
-    let error = SnapshotError::UnbornHead { folder: PathBuf::from("/w/orc-r1") };
+    let error = SnapshotError::UnbornHead { folder: PathBuf::from("/w/a-r1") };
     assert_eq!(
         save_error_report(&error),
         report(
             ExitCode::Refused,
             "refused",
-            &["HEAD of the folder /w/orc-r1 has no commit", "nothing was saved"],
+            &["HEAD of the folder /w/a-r1 has no commit", "no save commit was written"],
             Some("the folder's HEAD"),
             "check out the request's branch in this folder, then mr save again",
         )
@@ -89,13 +89,13 @@ fn an_unborn_head_is_refused_naming_the_folder() {
 
 #[test]
 fn a_detached_head_is_refused_naming_the_folder() {
-    let error = SnapshotError::DetachedHead { folder: PathBuf::from("/w/orc-r1") };
+    let error = SnapshotError::DetachedHead { folder: PathBuf::from("/w/a-r1") };
     assert_eq!(
         save_error_report(&error),
         report(
             ExitCode::Refused,
             "refused",
-            &["HEAD of the folder /w/orc-r1 names no branch", "nothing was saved"],
+            &["HEAD of the folder /w/a-r1 names no branch", "no save commit was written"],
             Some("the folder's HEAD"),
             "check out the request's branch in this folder, then mr save again",
         )
@@ -111,7 +111,7 @@ fn a_head_without_a_change_id_is_refused_naming_the_commit() {
             "refused",
             &[
                 "HEAD 0123456789abcdef0123456789abcdef01234567 is this request's but carries no Mortar-Change-Id",
-                "no commit was written; the snapshot ref may have moved",
+                "no save commit was written; the snapshot ref may have moved",
             ],
             Some("the commit 0123456789abcdef0123456789abcdef01234567"),
             "ask the zone's coordinator to mend HEAD's trailers",
@@ -126,8 +126,8 @@ fn a_path_that_is_not_utf8_is_refused_naming_the_file() {
         report(
             ExitCode::Refused,
             "refused",
-            &["the refused file \"data/big.bin\" has a name that is not UTF-8, so it cannot be passed to git; no \
-               commit was written"],
+            &["the refused file \"data/big.bin\" has a name that is not UTF-8, so it cannot be passed to git; this snapshot \
+               wrote no commit"],
             Some("the file data/big.bin"),
             "rename the file to a UTF-8 name, then mr save again",
         )
@@ -136,14 +136,33 @@ fn a_path_that_is_not_utf8_is_refused_naming_the_file() {
 
 #[test]
 fn a_moved_branch_is_busy_naming_the_ref() {
-    let stale = OpResult::Stale { refname: "refs/heads/orc/r1".to_string(), actual: Some(oid()) };
+    let stale = OpResult::Stale { refname: "refs/heads/a/r1".to_string(), actual: Some(oid()) };
     assert_eq!(
         save_error_report(&SnapshotError::BranchMoved(record(Some(stale)))),
         report(
             ExitCode::Busy,
             "busy",
-            &["the branch refs/heads/orc/r1 moved while save ran; this save did not move it, and the snapshot ref \
-               may have moved"],
+            &[
+                "the branch refs/heads/a/r1 moved while save ran",
+                "this save did not move the branch; the snapshot ref may have moved",
+            ],
+            None,
+            "repeat the same command later",
+        )
+    );
+}
+
+#[test]
+fn a_moved_branch_without_a_stale_result_is_busy() {
+    assert_eq!(
+        save_error_report(&SnapshotError::BranchMoved(record(None))),
+        report(
+            ExitCode::Busy,
+            "busy",
+            &[
+                "the branch moved while save ran",
+                "this save did not move the branch; the snapshot ref may have moved",
+            ],
             None,
             "repeat the same command later",
         )
@@ -157,7 +176,7 @@ fn a_moved_snapshot_ref_without_a_stale_result_is_busy() {
         report(
             ExitCode::Busy,
             "busy",
-            &["the snapshot ref moved while save ran; nothing moved"],
+            &["the snapshot ref moved while save ran; this snapshot moved nothing"],
             None,
             "repeat the same command later",
         )
@@ -210,10 +229,11 @@ fn an_index_not_set_is_a_failure_a_repeat_mends() {
             ExitCode::Failure,
             "failed",
             &[
-                "saved commit 0123456789abcdef0123456789abcdef01234567 but the folder's index was not set: git \
+                "the folder's index could not be set to commit 0123456789abcdef0123456789abcdef01234567's tree: git \
                  read-tree HEAD: exit code 128: fatal: index.lock exists",
-                "the files are untouched and the index is the old one, or the saved tree without its skip-worktree \
-                 bits if the sparse-checkout reapply failed; a repeat sets it",
+                "the branch stands at commit 0123456789abcdef0123456789abcdef01234567; the snapshot ref may have moved",
+                "the index step left the files untouched; the index is the old one, or the saved tree without its \
+                 skip-worktree bits if the sparse-checkout reapply failed; a repeat sets it",
             ],
             None,
             "repeat the same command",

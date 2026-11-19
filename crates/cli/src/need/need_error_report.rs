@@ -1,10 +1,7 @@
 //! need_error_report: the report of an `mr need` that folders refused or that failed.
-//! need_error_report_tests covers the Plan and NotAFolder arms. The Lock and fallback arms run lock_report,
-//! failure_report and FolderError's Display, so they are RITs (S-101): Nagatha's integration group is to cover, with
-//! the mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository
-//! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
-//! - the folders lock held by a live pid while need runs is exit 3 naming the holder, and the record is unchanged;
-//! - a git failure inside folders::need (its sparse-checkout add refused) is exit 5, next the same command again.
+//! need_error_report_tests covers the Plan and NotAFolder arms. The Lock and fallback arms are pure too: lock_report,
+//! failure_report and FolderError's Display map a FolderError value (plain data a test can build) to a Report with
+//! no I/O, so a ZUT can cover them as well.
 
 use folders::FolderError;
 

@@ -2,14 +2,14 @@
 //! install` it is installed with the three branches in its fields; a foreign reference-transaction exits 1 naming
 //! its path; a guard.json that is not a guard config exits 1 refused naming the file; a guard.json for other branches
 //! than the config is not-installed naming both.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-135):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - GuardError::Git: the cli's own words, never gitio's Display text;
 //! - after `mortar guard install`, git update-ref, commit and push against integration and origin are refused
-//!   through the installed hook and Mortar's own moves pass (ACCEPT-2 checks 1-9; land's guard_decide);
+//!   through the installed hook and Mortar's own moves pass (acceptance step 2's checks 1-9; land's guard_decide);
 //! - tests/operational_rit/guard_fixture.rs to install through `mortar guard install` instead of land::guard_install.
 
 use std::collections::BTreeMap;

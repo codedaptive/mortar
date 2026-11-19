@@ -1,5 +1,5 @@
 //! later_op_refusal: undo never reverses another actor's op. oplog::undo reverses the last done op on the refs it is
-//! given, so before calling it run_undo checks that this is still the op choose_undo chose (S-73, S-142).
+//! given, so before calling it run_undo checks that this is still the op choose_undo chose.
 
 use oplog::{find_undo_target, OpRecord, OplogError};
 

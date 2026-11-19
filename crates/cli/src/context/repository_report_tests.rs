@@ -49,7 +49,6 @@ fn git_failing_is_a_failure() {
         report.lines,
         vec![
             "git rev-parse --path-format=absolute --git-common-dir: no exit code: killed".to_string(),
-            "nothing half-done is left".to_string(),
         ]
     );
 }

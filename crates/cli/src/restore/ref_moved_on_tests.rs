@@ -1,5 +1,5 @@
 //! ref_moved_on: a repeat leaves a folder whose ref no longer holds the record's new value (or is missing); a first
-//! attempt never does (S-113(3)).
+//! attempt never does.
 
 use gitio::Oid;
 

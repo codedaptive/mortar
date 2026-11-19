@@ -1,4 +1,4 @@
-//! scan_help_words: the global flags and other words of a command line, read for help (SPEC-cli 08, "The calls").
+//! scan_help_words: the global flags and other words of a command line, read for help.
 
 use super::HelpWords;
 

@@ -1,5 +1,4 @@
-//! Whether an `mr restore` must refuse before moving a ref, for the folders standing on the refs it moves
-//! (S-113(2), S-32).
+//! Whether an `mr restore` must refuse before moving a ref, for the folders standing on the refs it moves.
 
 use std::path::PathBuf;
 
@@ -12,7 +11,7 @@ use crate::report::{is_zero_oid, ExitCode, Report};
 /// Refused (exit 1, nothing moved) when a request or attempt folder stands on a ref the restore would delete (a
 /// move with an all-zero new), or a folder in `unsaved` (the caller puts there each folder needing a move whose work
 /// is not saved, or holds a file the size cap refused). One line per folder and why, in `folders`' order, then
-/// "nothing was moved". Zone folders are neither checked nor moved (S-115(1)). The next step is in words (S-112):
+/// "nothing was moved". Zone folders are neither checked nor moved. The next step is in words:
 /// saving comes first when any folder is unsaved. None when nothing stands in the way.
 pub fn restore_refusal(folders: &[FolderOnRef], unsaved: &[PathBuf], moves: &[RefMove]) -> Option<Report> {
     let deletes = |refname: &str| moves.iter().any(|m| m.refname == refname && is_zero_oid(&m.new));

@@ -1,4 +1,4 @@
-//! land's bisect refusals and failures in the cli's own words (SPEC-cli 06).
+//! land's bisect refusals and failures in the cli's own words.
 
 use land::{BisectError, CulpritError};
 

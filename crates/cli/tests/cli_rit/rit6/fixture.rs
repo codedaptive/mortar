@@ -1,4 +1,4 @@
-//! Real-object setup shared by the WO-cli-rit-6 interface tests; never used against an existing repository.
+//! Real-object setup shared by the rit6 interface tests; never used against an existing repository.
 use crate::{json::{check, Report}, support::{raw, write, Fixture, ZONE}};
 use gitio::{Git, Oid};
 use land::{LandAnswer, LandRefs, Squash, SquashAnswer};

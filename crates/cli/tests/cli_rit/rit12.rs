@@ -1,4 +1,4 @@
-//! WO-cli-rit-12 / S-147: CLI run_guard_install/path_warning_for -> real Land guard_install and Gitio,
+//! CLI run_guard_install/path_warning_for -> real Land guard_install and Gitio,
 //! with actual Cargo binaries, PATH lookup and marker-file reads. Each Fixture owns/removes its whole repository
 //! and scratch executables. The expected full plain reports and hook bytes are independent protocol literals.
 use crate::support::{script, shim_path, Fixture};

@@ -1,7 +1,7 @@
 //! context_report: a worktree without a record is refused "not-a-folder" naming it; a bad record is refused naming
 //! the file; outside a repository is refused "not-a-folder" with git's line; an unreadable record, any other folder
 //! error and git failing are failures.
-//! ZUT (rule 11, S-171): the error values are built as data; the lines that carry gitio's or folders' own text come
+//! Unit test: the error values are built as data; the lines that carry gitio's or folders' own text come
 //! from their exported, pure Display impls, and report::failure_report is used directly.
 
 use std::path::PathBuf;
@@ -96,7 +96,6 @@ fn git_failing_is_a_failure_naming_the_run() {
         report.lines,
         vec![
             "git rev-parse --show-toplevel: no exit code: killed".to_string(),
-            "nothing half-done is left".to_string(),
         ]
     );
 }

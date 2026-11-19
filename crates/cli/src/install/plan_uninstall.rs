@@ -1,5 +1,5 @@
-//! plan_uninstall: What uninstall removes, from the record and what stands at each item now (spec 07, "mr uninstall",
-//! S-177: a folder something else now uses stays).
+//! plan_uninstall: What uninstall removes, from the record and what stands at each item now ("mr uninstall":
+//! a folder something else now uses stays).
 
 use std::path::{Path, PathBuf};
 

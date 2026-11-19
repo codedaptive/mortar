@@ -1,6 +1,6 @@
-//! The Mortar folder the current directory is in, as an agent verb sees it (S-18).
-//! A bare type (S-7); read_folder_context makes it and has no unit test, so Nagatha's integration cases listed
-//! there exercise it.
+//! The Mortar folder the current directory is in, as an agent verb sees it.
+//! A bare type; read_folder_context makes it and has no unit test, so the repo integration tests listed
+//! there are to exercise it.
 
 use std::path::PathBuf;
 

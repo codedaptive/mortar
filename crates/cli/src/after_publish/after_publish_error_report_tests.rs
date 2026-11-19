@@ -1,6 +1,6 @@
 //! after_publish_error_report: every AfterPublishError arm, and JoinError's arm by arm, in the cli's own words; each
 //! refusal's and failure's second line says the zones before it were already moved and no zone folder was brought to
-//! its tip, and no report says that nothing half-done is left.
+//! its tip.
 
 use gitio::{GitError, Oid};
 use join::JoinError;

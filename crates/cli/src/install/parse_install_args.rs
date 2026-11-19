@@ -1,4 +1,4 @@
-//! parse_install_args: `mr install`'s arguments (spec 07 items 1 to 5).
+//! parse_install_args: `mr install`'s arguments.
 
 use super::{find_harness, HarnessSpec, InstallOptions, SkillLocation, HARNESSES};
 

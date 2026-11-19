@@ -8,7 +8,7 @@ use crate::world::World;
 
 /// Check 5: `git push origin <other>:refs/heads/main`. Check 6: the same push by the exact text of
 /// `git remote get-url --push origin`, since the guard knows a push by URL only when the text matches a push URL
-/// (S-100). Check 7: `git push origin <other>:refs/heads/integration`, applicable because the guard guards
+/// Check 7: `git push origin <other>:refs/heads/integration`, applicable because the guard guards
 /// integration on push as well. Each must be refused with the bare remote's branch unmoved (guard_refused).
 pub fn guard_pushes(world: &World, checks: &mut Checks, other: &str) {
     let url = git_out(world, &world.work, &["remote", "get-url", "--push", "origin"]);

@@ -1,4 +1,4 @@
-//! The report of an `mr restore-backup` that land's restore_backup answered (SPEC-cli 06).
+//! The report of an `mr restore-backup` that land's restore_backup answered.
 
 use land::Restored;
 

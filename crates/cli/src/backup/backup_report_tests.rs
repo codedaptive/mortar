@@ -46,7 +46,7 @@ fn nothing_pushed_says_the_backup_already_holds_every_ref() {
 #[test]
 fn pushed_refs_are_counted_then_listed_one_per_line() {
     let answer = Backup {
-        pushed: strings(&["refs/heads/zone/land", "refs/heads/req/land/WO-7"]),
+        pushed: strings(&["refs/heads/zone/land", "refs/heads/req/land/r7"]),
         unchanged: strings(&["refs/heads/zone/cli", "refs/mortar/squash/cli", "refs/heads/zone/join"]),
     };
     assert_eq!(
@@ -55,10 +55,10 @@ fn pushed_refs_are_counted_then_listed_one_per_line() {
             &[
                 "updated 2 refs in this host's backup on the remote:",
                 "refs/heads/zone/land",
-                "refs/heads/req/land/WO-7",
+                "refs/heads/req/land/r7",
                 "3 refs were already backed up",
             ],
-            &["refs/heads/zone/land", "refs/heads/req/land/WO-7"],
+            &["refs/heads/zone/land", "refs/heads/req/land/r7"],
             &["refs/heads/zone/cli", "refs/mortar/squash/cli", "refs/heads/zone/join"],
         )
     );

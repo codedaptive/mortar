@@ -1,8 +1,8 @@
-//! `mortar folder request`: a sparse request folder holding only its --paths plus the root files (ACCEPT-1 step 1), a
+//! `mortar folder request`: a sparse request folder holding only its --paths plus the root files (acceptance step 1), a
 //! missing --paths, and a zone with no branch yet.
-//! RIT (S-135, S-136): drives the mortar binary against real git and the crates below cli; owned by Nagatha from
+//! Repo integration test: drives the mortar binary against real git and the crates below cli; owned by integration from
 //! landing.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-101, S-104, S-109):
+//! Repo integration tests to write (cross-zone, not written here):
 //! - a request branch already at another commit (BranchExists) or checked out elsewhere: the cli's why and next,
 //!   never folders' FolderError Display text;
 //! - a folders lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks);
@@ -110,7 +110,7 @@ fn member(output: &Output, key: &str) -> String {
     oplog::parse_json_string(&stdout, at).unwrap().0
 }
 
-/// A harness verb's next step is never aimed at an agent (SPEC-cli 05): it names no agent verb and asks no agent to
+/// A harness verb's next step is never aimed at an agent: it names no agent verb and asks no agent to
 /// run anything.
 fn assert_harness_next(next: &str) {
     for agent_verb in ["mortar save", "mortar join", "mortar need", "mortar resolve", "mortar status",

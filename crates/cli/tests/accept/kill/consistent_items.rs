@@ -1,4 +1,4 @@
-//! 03-kill.md's "Consistent" list, checked after every case. A const only: case_lines_tests.rs reads it through
+//! Step 3's "Consistent" list, checked after every case. A const only: case_lines_tests.rs reads it through
 //! CaseLines.
 
 pub const CONSISTENT_ITEMS: [&str; 5] = [

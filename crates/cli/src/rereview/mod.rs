@@ -1,4 +1,4 @@
-//! `mr rereview` (SPEC-cli 06): its words, the re-review diff's report and land's refusals in the cli's own
+//! `mr rereview`: its words, the re-review diff's report and land's refusals in the cli's own
 //! words, and its runner.
 
 mod parse_rereview_args;

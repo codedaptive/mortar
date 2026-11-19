@@ -1,22 +1,21 @@
 //! bring_zone_folder: one named zone's folder brought from the commit it stands on to its zone branch's tip, after
-//! land's after_publish answered Ok, whether the zone Moved, was Current or Conflicted (S-139, S-140). Composed from
+//! land's after_publish answered Ok, whether the zone Moved, was Current or Conflicted. Composed from
 //! gitio and the op log's records only: read_ref, index_tree, commit_info and folder_move (it moves the folder's
 //! files and index, never HEAD). No
 //! branch op is written, since the branch is already at the tip, and nothing is checked or saved before land's call.
 //! The folder stands on the first value, newest first, that zone/<zone> has held (zone_values) whose tree equals its
 //! index's tree (find_zone_old); it moves from that tree to the tip's, so git refuses an unstaged edit or untracked
 //! file in the way and nothing in the folder changes. An index matching no value holds staged changes, or stands
-//! nowhere the branch has been: it is refused, never moved from a guessed commit (S-140).
+//! nowhere the branch has been: it is refused, never moved from a guessed commit.
 //! An index equal to a tree the zone branch held is taken as the folder standing there. A folder set on purpose to
 //! an older zone value V (its index and files at V's tree, as by restoring every path from V) is therefore brought to
-//! the tip like a folder lagging behind; nothing is lost, since V's content is a commit the zone branch held
-//! (S-140).
-//! No sibling test (S-104): it runs git on a real folder; find_zone_old_tests (the S-140 loss case as data) and
+//! the tip like a folder lagging behind; nothing is lost, since V's content is a commit the zone branch held.
+//! No sibling test: it runs git on a real folder; find_zone_old_tests (the staged-edit loss case as data) and
 //! zone_values_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136):
-//! - the S-140 loss run (WO-cli-7c-s139-loss.md "Run"): a staged edit at a path the tip changes refuses that folder,
+//! Repo integration tests to write (cross-zone, not written here):
+//! - the staged-edit loss run: a staged edit at a path the tip changes refuses that folder,
 //!   "matches no commit", the edit kept in its index and files, exit 1;
-//! - ACCEPT-1 check 14: zone b's folder, made before r3 joined, ends with r3's change;
+//! - zone b's folder, made before r3 joined, ends with r3's change;
 //! - a folder several joins behind is brought to the tip from the commit it stands on;
 //! - a folder left on a pre-replay tip by a refused repeat is found through the op log and brought to the tip;
 //! - the folders of Current and Conflicted zones are brought to the tip;

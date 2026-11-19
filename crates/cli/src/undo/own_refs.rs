@@ -1,4 +1,4 @@
-//! own_refs: the refs a folder's undo may reach, its own branch and its own snapshot ref (S-142 item 2).
+//! own_refs: the refs a folder's undo may reach, its own branch and its own snapshot ref.
 
 use folders::plan::{attempt_branch, request_branch, snap_ref, TRYSNAP_REF_PREFIX};
 use folders::{FolderKind, FolderRecord};

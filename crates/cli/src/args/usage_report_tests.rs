@@ -1,5 +1,5 @@
 //! usage_report: exit 4, the reason then the verbs, and the verb's usage (or the verb list) as next.
-//! ZUT (rule 11): args/find_verb and the verb table are pure and used directly.
+//! Unit test: args/find_verb and the verb table are pure and used directly.
 
 use super::{usage_report, UsageError};
 use crate::report::{ExitCode, Report};

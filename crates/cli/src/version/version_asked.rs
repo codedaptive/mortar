@@ -1,4 +1,4 @@
-//! version_asked: Whether the command line asks for `--version` (spec 07, "--version").
+//! version_asked: Whether the command line asks for `--version`.
 
 /// Some(json) when `argv` holds `--version` once and nothing else but at most one `--json`, in any order; else None.
 pub fn version_asked(argv: &[String]) -> Option<bool> {

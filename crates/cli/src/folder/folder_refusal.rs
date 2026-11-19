@@ -1,23 +1,23 @@
 //! The exit code and next step of an `mr folder` that folders refused, by the error's variant alone. Its why
 //! lines are folder_error_why's; folders' own Display text is never printed, as it names steps that are not cli
-//! commands (S-112).
+//! commands.
 
 use folders::FolderError;
 
 use crate::report::ExitCode;
 
 /// None for Lock, Git, Oplog and DiskProbe: those are reported as every cli verb reports them (lock_report,
-/// failure_report). Io is Failure (exit 5): nothing half-done is left and the same command again is safe. Every other
+/// failure_report). Io is Failure (exit 5), its next a repeat of the same command. Every other
 /// variant is Refused (exit 1) with one next step for the harness: a command that runs now as written (every harness
-/// command it names carries `--actor <name>`, S-112), or the step in words when none does. No next is aimed at an
-/// agent (SPEC-cli 05); placeholders such as `<k>` and `<name>` are printed as written.
+/// command it names carries `--actor <name>`), or the step in words when none does. No next is aimed at an
+/// agent; placeholders such as `<k>` and `<name>` are printed as written.
 pub fn folder_refusal(error: &FolderError) -> Option<(ExitCode, String)> {
     let next = match error {
         FolderError::Lock(_) | FolderError::Git(_) | FolderError::Oplog(_) | FolderError::DiskProbe { .. } => {
             return None
         }
         FolderError::Io { .. } => {
-            return Some((ExitCode::Failure, "repeat the same command; nothing half-done is left".to_string()))
+            return Some((ExitCode::Failure, "repeat the same command".to_string()))
         }
         FolderError::Plan(_) => "repeat with names and paths the folder plan takes",
         FolderError::Record { .. } => {

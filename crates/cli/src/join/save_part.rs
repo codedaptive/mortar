@@ -6,7 +6,7 @@ use snapshot::SaveOutcome;
 use super::{finished_move_part, PendingMove};
 use crate::report::OutValue;
 
-/// Lines: finished_move_part's (the pending folder move, finished or found already done, S-86, S-143), then the
+/// Lines: finished_move_part's (the pending folder move, finished or found already done), then the
 /// saved commit and its change ID (or "no unsaved work"), then each file the size cap left out.
 /// Fields in order: finished_move_part's (finished_move_from, finished_move_to), saved_commit, saved_written,
 /// change_id (Null when nothing was written), refused (the paths).

@@ -11,7 +11,7 @@ fn config() -> Config {
         origin_branch: "main".to_string(),
         integration_branch: "integration".to_string(),
         remote: "origin".to_string(),
-        zones: BTreeMap::from([("orc".to_string(), ZoneConfig { paths: vec!["crates/cli".to_string()] })]),
+        zones: BTreeMap::from([("cli".to_string(), ZoneConfig { paths: vec!["crates/cli".to_string()] })]),
         root_files: vec!["Cargo.toml".to_string()],
         build_dirs: vec!["target".to_string()],
         cap_bytes: 100,
@@ -75,7 +75,7 @@ fn every_key_differing_is_named_in_config_order() {
 #[test]
 fn a_zone_path_differing_names_zones() {
     let mut wanted = config();
-    wanted.zones.insert("orc".to_string(), ZoneConfig { paths: vec!["crates/cli".to_string(), "x".to_string()] });
+    wanted.zones.insert("cli".to_string(), ZoneConfig { paths: vec!["crates/cli".to_string(), "x".to_string()] });
     wanted.floor_bytes = 7;
     assert_eq!(
         decide_init(Some(&config()), &wanted, true),

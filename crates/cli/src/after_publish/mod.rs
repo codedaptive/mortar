@@ -1,4 +1,4 @@
-//! `mr after-publish` (SPEC-cli 06; S-139, S-140): its words, land's zone moves and refusals in the cli's own
+//! `mr after-publish`: its words, land's zone moves and refusals in the cli's own
 //! words, each named zone's folder brought to its zone branch's tip, its report, and its runner.
 
 mod after_publish_args;

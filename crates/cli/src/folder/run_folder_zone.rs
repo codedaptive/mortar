@@ -1,14 +1,14 @@
 //! run_folder_zone: `mr folder zone <zone> <path> [--start <commit>]`, a zone's standing folder made or refilled.
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and folders; folder_setup_for_tests and
+//! No sibling test: it takes a real lock and runs git, the op log and folders; folder_setup_for_tests and
 //! folder_made_report_tests cover its decisions. The RIT crates/cli/tests/cli_rit/run_folder_zone_tests.rs covers it through
 //! the binary: a sparse folder holding the zone's paths and root files, recorded as a zone folder, and its repeat;
 //! --start making a new zone branch by an op of the actor; a --start that names no commit refused, nothing made.
-//! With no --start, a missing zone branch is started at the origin branch tip (S-149; default_zone_start_tests covers
+//! With no --start, a missing zone branch is started at the origin branch tip (default_zone_start_tests covers
 //! the decision).
-//! RITs left for Nagatha (cross-zone, listed only, not written): a folders lock held by a live pid, exit 3; free disk
+//! Repo integration tests to write (cross-zone, not written here): a folders lock held by a live pid, exit 3; free disk
 //! under the floor, exit 1 with the cli's facts; the zone branch checked out elsewhere or a different folder at the
 //! path, the cli's why and next.
-//! RITs left for Nagatha (listed only, not written): a bare folder zone on a missing zone branch made at the origin
+//! Repo integration tests to write (not written here): a bare folder zone on a missing zone branch made at the origin
 //! branch tip; the same with no origin branch either, refused with a next naming --start.
 
 use std::path::Path;

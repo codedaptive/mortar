@@ -1,4 +1,4 @@
-//! attempt_saved: a branch-only attempt is saved only when its trysnap tree equals its tip's tree (S-94).
+//! attempt_saved: a branch-only attempt is saved only when its trysnap tree equals its tip's tree.
 
 use gitio::Oid;
 

@@ -1,4 +1,4 @@
-//! CLI run_sweep -> real Folders ref choice/deletion and build sweep -> Oplog/Gitio, including S-141 policy.
+//! CLI run_sweep -> real Folders ref choice/deletion and build sweep -> Oplog/Gitio, including the sweep policy.
 use super::fixture::*;
 use crate::support::{raw, write};
 use oplog::{OpPhase, OpResult};

@@ -1,9 +1,9 @@
-//! Whether each attempt of a request is saved, the list folders' keep and drop_attempts take (S-32, S-94).
-//! No sibling test (S-104): it reads refs, worktrees, commits and folder trees with git; attempt_saved_tests cover the
+//! Whether each attempt of a request is saved, the list folders' keep and drop_attempts take.
+//! No sibling test: it reads refs, worktrees, commits and folder trees with git; attempt_saved_tests cover the
 //! branch-only rule. The RITs crates/cli/tests/cli_rit/run_folder_keep_tests.rs (saved attempts kept, an unsaved one
 //! refused) and run_folder_drop_tests.rs (a branch-only attempt saved by its trysnap tree, one with no trysnap ref refused)
 //! cover it through the binary.
-//! RITs left for Nagatha (cross-zone, listed only, not written): a file the snapshot cap refuses in an attempt folder
+//! Repo integration tests to write (cross-zone, not written here): a file the snapshot cap refuses in an attempt folder
 //! counts as unsaved (cli with snapshot's saved_state).
 
 use folders::attempts::attempts_of;

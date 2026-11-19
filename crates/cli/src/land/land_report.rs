@@ -1,4 +1,4 @@
-//! The report of an `mr land` that land's land answered (SPEC-cli 06).
+//! The report of an `mr land` that land's land answered.
 
 use std::path::Path;
 

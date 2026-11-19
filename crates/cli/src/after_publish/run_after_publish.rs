@@ -1,20 +1,20 @@
 //! run_after_publish: `mr after-publish <zone> [--move <zone>]...`, every named zone moved onto the origin a
 //! publish left by land's after_publish under the land lock, then each named zone's folder brought to its zone
-//! branch's tip (SPEC-cli 06; S-139, S-140). --key names the lock holder only, never passed to the op log (S-132).
+//! branch's tip. --key names the lock holder only, never passed to the op log.
 //! After land's Ok answer (Moved, Current or Conflicted), each named zone's folder is brought to its tip from gitio
 //! and the op log only (bring_zone_folder): no branch op, no saved check, nothing before land's call but reading the
 //! zones' folders and open requests. A refused or failed folder never stops the other zones; a repeat answers
 //! Current for each zone that Moved and brings the folders left behind.
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and land; parse_after_publish_args_tests,
+//! No sibling test: it takes a real lock and runs git, the op log and land; parse_after_publish_args_tests,
 //! find_zone_old_tests, zone_values_tests, zone_move_lines_tests, zone_folder_lines_tests,
 //! after_publish_report_tests and after_publish_error_report_tests cover its decisions.
-//! RITs left for Nagatha (cross-zone, listed only, not written: S-135, S-136): ACCEPT-1 check 14 (zone b's folder
-//! made before r3 joined ends with r3's change); a folder several joins behind brought to the tip from the commit it
+//! Repo integration tests to write (cross-zone, not written here): zone b's folder
+//! made before r3 joined ends with r3's change; a folder several joins behind brought to the tip from the commit it
 //! stands on; Current and Conflicted zones' folders brought to the tip; a folder left on a pre-replay tip by a refused
 //! repeat found through the op log; no folder; already at the tip; an unstaged edit in the way and an unmerged index
 //! each refuse that folder, the others still moved, exit 1, and clearing it as the next says then repeating
-//! finishes; the S-140 loss run (a staged edit at a path the tip changes: that folder refused, "matches no commit",
-//! the edit kept, exit 1); open requests listed to rebase; SquashOfNotInZone refused naming the zone and the source;
+//! finishes; the staged-edit loss run (a staged edit at a path the tip changes: that folder refused, "matches no
+//! commit", the edit kept, exit 1); open requests listed to rebase; SquashOfNotInZone refused naming the zone and the source;
 //! no branch op written for a folder move; the land lock held by a live pid, exit 3; without a config, exit 1.
 
 use std::path::Path;
@@ -94,7 +94,7 @@ pub fn run_after_publish(context: &ShellContext, cwd: &Path) -> Report {
     .unwrap_or_else(|report| report)
 }
 
-/// The zone a ZoneMove names, arm by arm (S-128 (4)): its folder is looked up by this name, never by order.
+/// The zone a ZoneMove names, arm by arm: its folder is looked up by this name, never by order.
 fn zone_of(zone_move: &ZoneMove) -> &str {
     match zone_move {
         ZoneMove::Moved { zone, .. } => zone,

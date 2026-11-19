@@ -1,5 +1,5 @@
-//! help_topic: what a help request asks for (SPEC-cli 08, "The calls").
-//! A bare type (S-7); help_asked_tests and help_report_tests exercise it.
+//! help_topic: what a help request asks for.
+//! A bare type; help_asked_tests and help_report_tests exercise it.
 
 use super::{HelpEntry, HelpGroup};
 

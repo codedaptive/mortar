@@ -32,21 +32,21 @@ fn rit_status_unsaved_tracked_edit_and_new_cap_refusal_name_actual_bytes() {
 
 #[test]
 fn rit_status_reports_zone_moves_by_ancestry_not_the_original_cut() {
-    // mortar status -> real request/zone Gitio ancestry (S-107).
+    // mortar status -> real request/zone Gitio ancestry.
     let f = Fixture::new(); f.save_topic(); f.advance_zone(false);
     let report = status(&f, "saved");
     assert!(report.flag("zone_moved")); assert!(!report.flag("joined"));
     assert_eq!(report.text("next"), "mr join");
     assert!(report.lines().contains("the zone has commits this request has not taken in"));
     f.report(&["--json", "join"], "join", 0, "rebased");
-    // The rebase moved the folder to the new tip, so its tree is the tip's: saved (S-144). The zone does not hold the
+    // The rebase moved the folder to the new tip, so its tree is the tip's: saved. The zone does not hold the
     // rebased tip yet, so it is not joined.
     assert!(!status(&f, "saved").flag("zone_moved"), "rebased request has taken the zone in despite its old cut record");
 }
 
 #[test]
 fn rit_status_reads_a_real_paused_join_commit_and_files_without_resolving_it() {
-    // Orc#1312: actual mortar join -> durable Join pause -> actual mortar status, not fabricated PausedJoin data.
+    // Actual mortar join -> durable Join pause -> actual mortar status, not fabricated PausedJoin data.
     let f = Fixture::new(); let bad = f.save_topic(); f.advance_zone(true);
     let paused = f.report(&["--json", "join"], "join", 2, "conflicted");
     assert_eq!(paused.text("commit"), bad.as_str());
@@ -84,7 +84,7 @@ fn rit_status_two_real_requests_report_their_shared_path_symmetrically() {
 
 #[test]
 fn rit_status_rebased_request_excludes_zone_only_changes_from_overlap() {
-    // S-108: an old record.base would count src/upstream as our work and falsely overlap with peer.
+    // An old record.base would count src/upstream as our work and falsely overlap with peer.
     let f = Fixture::new(); f.save_topic();
     let other = peer(&f, "peer", &["src".into(), "sub".into()]);
     write(&other, "src/upstream", b"peer change to the future zone path\n");
@@ -113,7 +113,7 @@ fn rit_status_corrupt_peer_record_fails_instead_of_claiming_no_overlap() {
 #[test]
 fn rit_status_rejects_arguments_and_zone_folders_and_reads_attempt_folders_before_mutation() {
     // Actual shell/actor/attempt decisions with real folder records, not status_report ZIT data; a fresh attempt
-    // (its try branch at its base, its tree the tip's) reads as saved with no work yet (S-145).
+    // (its try branch at its base, its tree the tip's) reads as saved with no work yet.
     let f = Fixture::new(); let old = before(&f, &f.request);
     check(f.app(&["--json", "status", "unexpected"]), "status", 4, "usage");
     assert_eq!(before(&f, &f.request), old);
@@ -129,7 +129,7 @@ fn rit_status_rejects_arguments_and_zone_folders_and_reads_attempt_folders_befor
 
 #[test]
 fn rit_status_unstaged_edit_after_completed_rebase_is_not_a_stalled_move() {
-    // S-97 index criterion: an ordinary later file edit leaves the index at the new tip.
+    // Index criterion: an ordinary later file edit leaves the index at the new tip.
     let f = Fixture::new(); f.save_topic(); f.advance_zone(false);
     f.report(&["--json", "join"], "join", 0, "rebased");
     f.write("src/file", b"new unstaged local work\n");

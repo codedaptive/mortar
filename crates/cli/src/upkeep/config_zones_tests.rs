@@ -1,4 +1,4 @@
-//! config_zones: every key of Config.zones in map order, never an empty list (S-121 (2)): an empty map gives None,
+//! config_zones: every key of Config.zones in map order, never an empty list: an empty map gives None,
 //! so no caller can pass folders an empty zone list, which would delete every zone's replay records.
 
 use std::collections::BTreeMap;

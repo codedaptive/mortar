@@ -15,7 +15,7 @@ pub fn app(w: &World, words: &[&str], exit: i32, outcome: &str) -> Report {
 #[derive(Debug, PartialEq, Eq)]
 pub struct Observation {
     store: Vec<Vec<u8>>,
-    #[allow(clippy::type_complexity)] // why: one field's shape, spelled out here; an alias would touch more RIT lines (S-130)
+    #[allow(clippy::type_complexity)] // why: one field's shape, spelled out here; an alias would touch more RIT lines
     folders: Vec<(PathBuf, Vec<u8>, Vec<u8>, Vec<(PathBuf, Vec<u8>)>)>,
 }
 /// Every registered non-bare worktree, its actual record, all staged entries and every file (untracked included).

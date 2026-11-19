@@ -1,4 +1,4 @@
-//! need_report: the report of a path added to a request folder by `mr need` (spec 02).
+//! need_report: the report of a path added to a request folder by `mr need`.
 
 use crate::report::{ExitCode, OutValue, Report};
 

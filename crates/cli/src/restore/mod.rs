@@ -1,4 +1,4 @@
-//! `mr restore` (SPEC-cli 05, S-113, S-115): its lock and key, the folders on the refs it names and the moves
+//! `mr restore`: its lock and key, the folders on the refs it names and the moves
 //! it makes, its refusals and reports, and its runner.
 
 mod folder_on_ref;

@@ -1,4 +1,4 @@
-//! A short stable key hashed from a list of byte fields (spec: Operation key).
+//! A short stable key hashed from a list of byte fields.
 //! op_key and restore_key call it.
 
 /// FNV-1a, 64 bits: written out here rather than std's DefaultHasher, whose algorithm may change between Rust

@@ -1,4 +1,4 @@
-//! What `mr disk` and `mr sweep` share: the zone list read from the config (never empty, S-121 (2)), the
+//! What `mr disk` and `mr sweep` share: the zone list read from the config (never empty), the
 //! refusal of a config with no zone, and a folders error in the cli's words under the verb it came from.
 
 mod config_zones;

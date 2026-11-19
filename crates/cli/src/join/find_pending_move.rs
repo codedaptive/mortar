@@ -1,8 +1,8 @@
 //! The detector of the folder move of a request's last mover, which a kill or a refused move may have left undone:
-//! a join rebase's (S-86) or an undo's that put a plain join rebase back (S-143). An undo of a resolve's final join
-//! step (S-142 (1)) is none: undo puts the paused join back and sets the index itself, keeping the folder's files
-//! (S-148). join, resolve, save and undo finish the move; status only reports it, and only while the folder's index
-//! is not at the new tip (read_stalled_move, S-85, S-97).
+//! a join rebase's or an undo's that put a plain join rebase back. An undo of a resolve's final join
+//! step is none: undo puts the paused join back and sets the index itself, keeping the folder's files.
+//! join, resolve, save and undo finish the move; status only reports it, and only while the folder's index
+//! is not at the new tip (read_stalled_move).
 //! Tested by find_pending_move_tests.rs, including an undo whose reversed op's Done record decides (a resolve step,
 //! one missing from the log or one that only failed).
 
@@ -21,7 +21,7 @@ use crate::undo_reason::{done_record, is_resolve_step, reversed_op};
 /// - a "join-rebase" (the op kind join's rebase and resolve's final join step write): the move from that old tip to
 ///   that new tip, cause Rebase, with folder_tree the tree in that record's first value pair named FOLDER_TREE. No
 ///   such pair, or a value that is not an Oid, is folder_tree None: then move_folder makes the plain move, which git
-///   refuses rather than overwrite anything, so nothing is lost (S-87(4));
+///   refuses rather than overwrite anything, so nothing is lost;
 /// - an "undo" whose reason reversed_op reads as an undo of a "join-rebase" op that was not a resolve step: the move
 ///   from the rebased tip back to the tip before the rebase, cause Undo, folder_tree None. The reversed op is a
 ///   resolve step when its done_record is_resolve_step; then the undo is None, since undo itself put the paused join
@@ -33,8 +33,8 @@ use crate::undo_reason::{done_record, is_resolve_step, reversed_op};
 /// elsewhere or absent is None.
 ///
 /// After the folder move has finished this still answers Some, because move_folder logs no op when the branch
-/// already stands at the new tip; finishing it again is a no-op (S-49; git's two-tree move keeps an index already
-/// at the new tip, S-87(2)). The next save that moves the branch writes a later op, which ends it.
+/// already stands at the new tip; finishing it again is a no-op (git's two-tree move keeps an index already
+/// at the new tip). The next save that moves the branch writes a later op, which ends it.
 pub fn find_pending_move(records: &[ValuedRecord], request_ref: &str, branch_at: Option<&Oid>) -> Option<PendingMove> {
     let (valued, last) = records.iter().rev().filter(|valued| valued.record.phase == OpPhase::Done).find_map(|valued| {
         valued

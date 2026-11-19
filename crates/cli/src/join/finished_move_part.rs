@@ -1,5 +1,5 @@
 //! The lines and --json fields of a report that say a pending folder move was finished or found already done: a
-//! join rebase's (S-86) or an undo's (S-143).
+//! join rebase's or an undo's.
 //! Shell API: save_part, resolve_report and save_report call it.
 
 use super::{MoveCause, PendingMove};

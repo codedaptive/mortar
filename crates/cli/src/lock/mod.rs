@@ -1,4 +1,4 @@
-//! The oplog lock a verb takes, what a refused lock reports, and running an act under it after recover (S-16).
+//! The oplog lock a verb takes, what a refused lock reports, and running an act under it after recover.
 
 mod lock_name_for;
 mod lock_report;

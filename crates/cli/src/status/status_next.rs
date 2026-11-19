@@ -4,9 +4,9 @@ use super::{StatusPhase, StatusState};
 use crate::join::MoveCause;
 
 /// The step for StatusPhase's phase of the state: a stalled folder move is finished by `mr undo` when an undo
-/// left it and by `mr join` when a rebase did (S-143); a paused join by `mr resolve`; unsaved work by
+/// left it and by `mr join` when a rebase did; a paused join by `mr resolve`; unsaved work by
 /// `mr save "<sentence>"`; a saved folder with no work yet (its branch still at its base) by making its change,
-/// then `mr save` (S-145); other saved work not yet joined by `mr join`; a joined request waits for the zone's
+/// then `mr save`; other saved work not yet joined by `mr join`; a joined request waits for the zone's
 /// tests.
 pub fn status_next(state: &StatusState) -> String {
     match StatusPhase::from(state) {

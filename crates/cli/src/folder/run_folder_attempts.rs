@@ -1,13 +1,13 @@
 //! run_folder_attempts: `mr folder attempts <n> <dir>`, run in a request folder: n attempt folders of the request
-//! made at <dir>/try-<k>, each on try/<zone>/<request>/<k> at the request's tip (S-69).
-//! A relative <dir> is taken from the request folder's toplevel, not from the subfolder it is run in (S-127).
-//! No sibling test (S-104): it takes a real lock and runs git, the op log and folders; request_folder_refusal_tests,
+//! made at <dir>/try-<k>, each on try/<zone>/<request>/<k> at the request's tip.
+//! A relative <dir> is taken from the request folder's toplevel, not from the subfolder it is run in.
+//! No sibling test: it takes a real lock and runs git, the op log and folders; request_folder_refusal_tests,
 //! attempts_dir_tests, folder_setup_for_tests and attempts_made_report_tests cover its decisions. The RIT
 //! crates/cli/tests/cli_rit/run_folder_attempts_tests.rs covers it through the binary: attempts at <dir>/try-<k> with
 //! Attempt(k) records and try branches at the request tip, made by ops of the actor; a relative <dir> run from a
 //! subfolder taken from the request folder; run in a zone folder it is refused exit 1, nothing made; n = 0 or a <dir>
 //! that normalizes inside the request folder is exit 4.
-//! RITs left for Nagatha (cross-zone, listed only, not written): a folders lock held by a live pid, exit 3; free disk
+//! Repo integration tests to write (cross-zone, not written here): a folders lock held by a live pid, exit 3; free disk
 //! under the floor at attempt j, exit 1 with the cli's facts, and a repeat making the rest; a request branch gone, the
 //! cli's why and next.
 

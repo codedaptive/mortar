@@ -1,5 +1,6 @@
-//! op_key: --key wins; else a fixed key for fixed inputs (FNV-1a over the NUL-ended fields, worked out by hand
-//! outside this code), the same on a repeat, and different when any one input changes.
+//! op_key: --key wins; else a fixed key for fixed inputs, the same on a repeat, and different when any one input
+//! changes.
+//! Pinned keys: 64-bit FNV-1a of the NUL-ended fields, computed by a separate implementation, not by op_key or hash_key.
 
 use std::path::Path;
 
@@ -13,7 +14,7 @@ fn oid(c: char) -> Oid {
 }
 
 fn zone_move(old: Option<char>, new: char) -> RefMove {
-    RefMove { refname: "refs/heads/zone/orc".to_string(), old: old.map(oid), new: oid(new) }
+    RefMove { refname: "refs/heads/zone/a".to_string(), old: old.map(oid), new: oid(new) }
 }
 
 fn key(verb: &str, folder: &str, moves: &[RefMove]) -> String {
@@ -22,12 +23,12 @@ fn key(verb: &str, folder: &str, moves: &[RefMove]) -> String {
 
 #[test]
 fn fixed_inputs_give_a_fixed_key() {
-    assert_eq!(key("join", "/r/orc/WO-1", &[zone_move(Some('a'), 'b')]), "join-b6e3b2e84e6b3330");
+    assert_eq!(key("join", "/r/a/r1", &[zone_move(Some('a'), 'b')]), "join-b837b2f1dcd1cb7d");
 }
 
 #[test]
 fn an_absent_old_value_hashes_as_none() {
-    assert_eq!(key("join", "/r/orc/WO-1", &[zone_move(None, 'b')]), "join-4334624423f4d96a");
+    assert_eq!(key("join", "/r/a/r1", &[zone_move(None, 'b')]), "join-ac64ac52cb189b8b");
 }
 
 #[test]
@@ -43,16 +44,16 @@ fn a_repeat_gives_the_same_key() {
 
 #[test]
 fn changing_any_one_input_changes_the_key() {
-    let base = key("join", "/r/orc/WO-1", &[zone_move(Some('a'), 'b')]);
-    let other_ref = RefMove { refname: "refs/heads/zone/orb".to_string(), old: Some(oid('a')), new: oid('b') };
+    let base = key("join", "/r/a/r1", &[zone_move(Some('a'), 'b')]);
+    let other_ref = RefMove { refname: "refs/heads/zone/b".to_string(), old: Some(oid('a')), new: oid('b') };
     let changed = [
-        key("land", "/r/orc/WO-1", &[zone_move(Some('a'), 'b')]),
-        key("join", "/r/orc/WO-2", &[zone_move(Some('a'), 'b')]),
-        key("join", "/r/orc/WO-1", &[other_ref]),
-        key("join", "/r/orc/WO-1", &[zone_move(Some('c'), 'b')]),
-        key("join", "/r/orc/WO-1", &[zone_move(None, 'b')]),
-        key("join", "/r/orc/WO-1", &[zone_move(Some('a'), 'c')]),
-        key("join", "/r/orc/WO-1", &[]),
+        key("land", "/r/a/r1", &[zone_move(Some('a'), 'b')]),
+        key("join", "/r/a/r2", &[zone_move(Some('a'), 'b')]),
+        key("join", "/r/a/r1", &[other_ref]),
+        key("join", "/r/a/r1", &[zone_move(Some('c'), 'b')]),
+        key("join", "/r/a/r1", &[zone_move(None, 'b')]),
+        key("join", "/r/a/r1", &[zone_move(Some('a'), 'c')]),
+        key("join", "/r/a/r1", &[]),
     ];
     for other in changed {
         assert_ne!(other, base);

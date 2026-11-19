@@ -17,7 +17,7 @@ fn base() -> Report {
         exit: ExitCode::Done,
         outcome: "undone".to_string(),
         lines: vec!["op op-7 was undone by op op-12".to_string()],
-        owner: Some("orc/WO-cli-4".to_string()),
+        owner: Some("a/r1".to_string()),
         next: "mr status".to_string(),
         fields: vec![("undone_op".to_string(), OutValue::Text("op-7".to_string()))],
     }
@@ -48,7 +48,7 @@ fn a_restored_join_adds_its_commit_and_files() {
                 "the paused join is put back: it stopped at commit dddddddddddddddddddddddddddddddddddddddd".to_string(),
                 "conflicted files: src/a.rs, docs/b.md".to_string(),
             ],
-            owner: Some("orc/WO-cli-4".to_string()),
+            owner: Some("a/r1".to_string()),
             next: "mr status".to_string(),
             fields: vec![
                 ("undone_op".to_string(), OutValue::Text("op-7".to_string())),
@@ -82,5 +82,5 @@ fn an_already_restored_join_says_so_and_omits_the_files_line_when_none() {
     assert_eq!(report.exit, ExitCode::Done);
     assert_eq!(report.outcome, "undone");
     assert_eq!(report.next, "mr status");
-    assert_eq!(report.owner, Some("orc/WO-cli-4".to_string()));
+    assert_eq!(report.owner, Some("a/r1".to_string()));
 }

@@ -1,6 +1,6 @@
 //! program_help_lines: the usage line, the four groups' headings in order, one row per term padded to the longest
-//! term (SPEC-cli 08, "The program help").
-//! ZUT (rule 11): the help groups are pure data.
+//! term.
+//! Unit test: the help groups are pure data.
 //! The longest term is bisect's, "bisect <last pass> <failed> --timeout <s> -- <command>..." (57 characters), so
 //! every term is padded to 57: "status" (6) with 51 spaces, "install, uninstall" (18) with 39.
 

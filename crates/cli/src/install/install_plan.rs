@@ -1,5 +1,5 @@
-//! What install will do, decided in full before anything is written (spec 07 item 7).
-//! A bare type (S-7); plan_install_tests and install_report_tests exercise it.
+//! What install will do, decided in full before anything is written.
+//! A bare type; plan_install_tests and install_report_tests exercise it.
 
 use super::{InstallItem, InstallStep};
 

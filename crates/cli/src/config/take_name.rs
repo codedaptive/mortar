@@ -3,7 +3,7 @@
 use super::ConfigJsonValue;
 
 /// The string in `slot`; refused, naming `key`, when the key is missing, the value is not a string, or the
-/// string is empty (a branch or remote has a name; Mortar holds no default, S-56).
+/// string is empty (a branch or remote has a name; Mortar holds no default).
 pub(crate) fn take_name(slot: Option<ConfigJsonValue>, key: &str) -> Result<String, String> {
     match slot {
         Some(ConfigJsonValue::String(s)) if s.is_empty() => Err(format!("{key} is empty; it must name something")),

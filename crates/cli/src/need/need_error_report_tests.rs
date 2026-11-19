@@ -1,5 +1,5 @@
 //! need_error_report's Plan and NotAFolder arms: each is exit 1 "refused", owned by this request, with its own line
-//! and next step. The Lock and fallback arms are RITs (need_error_report.rs names them).
+//! and next step. The Lock and fallback arms are pure and can also be covered by ZUTs (need_error_report.rs names them).
 
 use std::path::PathBuf;
 

@@ -1,5 +1,5 @@
-//! What stands at a recorded item's path when uninstall looks (spec 07, "mr uninstall").
-//! A bare type (S-7); plan_uninstall_tests exercises it.
+//! What stands at a recorded item's path when uninstall looks.
+//! A bare type; plan_uninstall_tests exercises it.
 
 use std::path::PathBuf;
 

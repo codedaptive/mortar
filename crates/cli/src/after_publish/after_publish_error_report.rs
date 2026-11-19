@@ -1,6 +1,6 @@
-//! land's after_publish refusals and failures in the cli's own words (SPEC-cli 06, S-128 (2)): land's, join's and
-//! gitio's Display texts are never printed; only an error's refnames, zones and oids are. No report says that
-//! nothing half-done is left: after_publish stops at a zone with the zones before it already moved.
+//! land's after_publish refusals and failures in the cli's own words: land's, join's and
+//! gitio's Display texts are never printed; only an error's refnames, zones and oids are. Every report carries
+//! SECOND: after_publish stops at a zone with the zones before it already moved.
 
 use join::JoinError;
 use land::AfterPublishError;
@@ -18,8 +18,8 @@ const ONE_PARENT_NEXT: &str =
     "rewrite the zone's commits as one-parent commits with author dates, then repeat the same command";
 
 /// Git and Join's Git and TipNotReplayed are failures (exit 5) naming what failed, then SECOND; Squash and Land are
-/// worded as the landing verbs word them, Land with `integration_branch`, with SECOND in place of their "nothing
-/// half-done is left"; every other arm is a refusal (exit 1) naming what stopped the zone, SECOND, its owner and a
+/// worded as the landing verbs word them, Land with `integration_branch`, with SECOND added after their lines;
+/// every other arm is a refusal (exit 1) naming what stopped the zone, SECOND, its owner and a
 /// next step.
 pub fn after_publish_error_report(error: &AfterPublishError, integration_branch: &str) -> Report {
     match error {
@@ -92,10 +92,9 @@ fn failed(what: &str) -> Report {
     after_publish_failure(vec![what.to_string(), SECOND.to_string()])
 }
 
-/// A landing verb's report for after-publish: its "nothing half-done is left" line dropped, since zones before the
-/// one that stopped may have moved, and SECOND added when it is not there.
+/// A landing verb's report for after-publish: SECOND added when it is not there, since zones before the one that
+/// stopped may have moved.
 fn with_second(mut report: Report) -> Report {
-    report.lines.retain(|line| line != "nothing half-done is left");
     if !report.lines.iter().any(|line| line == SECOND) {
         report.lines.push(SECOND.to_string());
     }

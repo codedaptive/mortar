@@ -1,5 +1,5 @@
-//! ZoneOld: where a zone folder stands among the values its zone branch has held (S-140).
-//! A bare type (S-7); find_zone_old_tests exercises each variant.
+//! ZoneOld: where a zone folder stands among the values its zone branch has held.
+//! A bare type; find_zone_old_tests exercises each variant.
 
 use gitio::Oid;
 

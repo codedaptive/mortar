@@ -1,4 +1,4 @@
-//! What step 5 measures in the moot copy and edits in the request folder. Data only: plan_checkout makes it,
+//! What step 5 measures in the repository copy and edits in the request folder. Data only: plan_checkout makes it,
 //! and plan_checkout_tests.rs covers how it is made.
 
 /// `bytes`, a full checkout's apparent bytes; `zone_dir`, the heaviest top-level folder, made the zone; `edit_file`,

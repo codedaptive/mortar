@@ -1,4 +1,4 @@
-//! The git calls check 3 fails on (04-agent.md).
+//! The git calls check 3 fails on.
 
 use super::{git_call_is_read, parse_log_line};
 

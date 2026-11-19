@@ -1,4 +1,4 @@
-//! The report of an `mr would-merge` that land's would_merge answered (SPEC-cli 06).
+//! The report of an `mr would-merge` that land's would_merge answered.
 
 use land::{Squash, WouldMerge};
 

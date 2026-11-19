@@ -1,10 +1,10 @@
 //! run_need: `mr need <path> [--key <key>] [--json]`, the agent verb that adds a path to its folder's cone.
-//! No unit test: it takes the lock, runs git, the op log and folders::need (S-5, S-104); need_report_tests,
+//! No unit test: it takes the lock, runs git, the op log and folders::need; need_report_tests,
 //! missing_path_report_tests, need_error_report_tests and need_with_next_tests cover what it reports. The RIT
-//! crates/cli/tests/cli_rit/run_need_tests.rs (S-135, S-136) covers, with the mortar binary in a throwaway repository:
+//! crates/cli/tests/cli_rit/run_need_tests.rs covers, with the mortar binary in a throwaway repository:
 //! a wrong argument count is usage without work; a missing zone branch refuses before writing
 //! (need_with_a_missing_zone_branch_refuses_before_writing); an unreadable record of another folder does not change a
-//! completed need (need_does_not_read_other_folders_for_its_next_step). Nagatha's integration group is to cover, with
+//! completed need (need_does_not_read_other_folders_for_its_next_step). The repo integration tests are to cover, with
 //! the mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository
 //! (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - need adds a path to the folder's cone and its record, exit 0;
@@ -29,12 +29,12 @@ use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 use crate::status::{read_branch_tips, read_progress};
 
-/// Exactly one argument, else usage_report. An attempt folder is refused by attempt_refusal (S-81(c), S-127): keep
+/// Exactly one argument, else usage_report. An attempt folder is refused by attempt_refusal: keep
 /// carries only the attempt's commits, not its needed paths. A missing folder or config is a failure here. Before any
 /// lock, so a refusal changes nothing: the path is checked (read_need_path), and so is what the next step reads that
 /// need's write cannot change: the record names a request, and the request and zone branches exist
 /// (read_branch_tips, missing_branch_report's refusal). Then, under `join-<zone>` from the verb table with recover
-/// first (locked_act, S-84(3)), folders::need adds it; folders::need takes the folders lock itself, so the cli does
+/// first (locked_act), folders::need adds it; folders::need takes the folders lock itself, so the cli does
 /// not hold it too. The key (--key, else the verb and the folder with no moves) names the lock's holder.
 /// Already-done comes from the record read before need; the gap from the record need returns. next is status_next of
 /// read_progress for the folder as need left it, which reads no paths and no other folder's record; once need has

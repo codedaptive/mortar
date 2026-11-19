@@ -1,4 +1,4 @@
-//! build.rs: embeds the commit the binary is built from as MORTAR_COMMIT, for `--version` (SPEC-cli 07): the first
+//! build.rs: embeds the commit the binary is built from as MORTAR_COMMIT, for `--version`: the first
 //! 12 hex digits of HEAD, read through gitio, or "unknown" when git cannot read it (no repository, no git, an unborn
 //! HEAD). So that the embedded commit follows HEAD, cargo reruns it when build.rs changes, when the git dir's HEAD
 //! file changes, and, when HEAD names a branch, when that branch moves: its ref file (or, while the branch is only

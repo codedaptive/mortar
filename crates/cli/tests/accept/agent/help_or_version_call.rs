@@ -1,5 +1,5 @@
 //! Whether a logged `mr`/`mortar` call asks for help or the version, which reads no repository and changes nothing
-//! (04-agent.md check 4, S-181). It mirrors mr's own reading in crates/cli/src/help/scan_help_words.rs and
+//! (step 4's check 4). It mirrors mr's own reading in crates/cli/src/help/scan_help_words.rs and
 //! crates/cli/src/version/version_asked.rs, which the accept target cannot call (the cli crate exports only
 //! main_entry), so a change there must be made here too.
 

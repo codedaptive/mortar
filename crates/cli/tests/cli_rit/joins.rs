@@ -72,7 +72,13 @@ fn rit_pending_folder_move_refuses_over_local_work_then_finishes_after_work_is_m
     let f = Fixture::new(); let (old, new, _) = f.pending_rebase();
     f.write("src/upstream", b"local obstruction must survive\n");
     let refused = f.report(&["--json", "join"], "join", 1, "refused");
-    assert!(refused.lines().contains("src/upstream")); assert_eq!(refused.text("owner"), "this request's folder");
+    // The pending move's snapshot wrote the obstruction before the move was refused, so the refusal names that move.
+    assert_eq!(refused.strings("lines"), &[
+        "the snapshot ref moved as the work was saved first",
+        "the folder could not move; these files stand in the way:", "  src/upstream",
+        "the request branch already stands at the new tip; the next mr join, mr resolve, mr save or mr undo finishes the move first",
+    ]);
+    assert_eq!(refused.text("owner"), "this request's folder");
     assert!(refused.text("next").contains("move those files out of the way"));
     assert_eq!(f.head(), new); assert_eq!(fs::read(f.request.join("src/upstream")).unwrap(), b"local obstruction must survive\n");
     let preserved = f.git.read_ref(SNAP).unwrap().unwrap();

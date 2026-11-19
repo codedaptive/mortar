@@ -1,5 +1,5 @@
 //! restore_error_report: the op log's restore refusals are exit 1 with a next step that runs now; anything else is a
-//! failure (exit 5). The error's text is passed in, so no oplog code runs here (S-101).
+//! failure (exit 5). The error's text is passed in, so no oplog code runs here.
 
 use std::path::PathBuf;
 

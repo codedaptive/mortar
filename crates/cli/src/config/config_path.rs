@@ -1,4 +1,4 @@
-//! Where the config lives (S-70).
+//! Where the config lives.
 
 use std::path::{Path, PathBuf};
 

@@ -1,4 +1,4 @@
-//! Step 1, the flow (01-flow.md). Real repositories and processes: the drive (steps/flow.rs) runs it as step 1's
+//! Step 1, the flow. Real repositories and processes: the drive (steps/flow.rs) runs it as step 1's
 //! body on every drive.
 
 use super::{
@@ -12,7 +12,7 @@ use crate::world::World;
 /// A group of checks: false when it failed so that the later checks cannot run, having written them as not run.
 type Group = fn(&World, &mut Checks, &mut FlowState) -> bool;
 
-/// The groups in spec order: checks 1-3, 4, 5-6, 7-8, 9, 10-11, 12-13, 14.
+/// The groups in check order: checks 1-3, 4, 5-6, 7-8, 9, 10-11, 12-13, 14.
 const GROUPS: [Group; 8] =
     [flow_requests, flow_rebase, flow_conflict, flow_squash, flow_rereview, flow_land, flow_publish, flow_replay];
 

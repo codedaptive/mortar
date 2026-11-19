@@ -1,6 +1,6 @@
-//! run_resolve: an attempt folder is the S-91 refusal with nothing run, and an argument is resolve's usage; both
-//! return before any lock or git run.
-//! ZUT (rule 11): request_run_for, attempt_refusal and usage_report are pure and used directly. The context is
+//! run_resolve: an attempt folder is the attempt-folder refusal with nothing run, and an argument is resolve's
+//! usage; both return before any lock or git run.
+//! ZUT: request_run_for, attempt_refusal and usage_report are pure and used directly. The context is
 //! built by hand; Git::new runs nothing.
 
 use std::collections::BTreeMap;

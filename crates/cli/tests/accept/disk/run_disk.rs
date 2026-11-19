@@ -1,4 +1,4 @@
-//! Step 5, disk (05-disk.md). Real repositories, processes and files: the drive (steps/disk.rs) runs it as step 5's
+//! Step 5, disk. Real repositories, processes and files: the drive (steps/disk.rs) runs it as step 5's
 //! body on every drive with ACCEPT_MOOT_COPY set and not empty whose throwaway world was made.
 
 use std::path::Path;

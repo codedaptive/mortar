@@ -1,6 +1,6 @@
 //! parse_args: globals anywhere before `--`, the verb as the verb table's entry, the rest in order, and each usage
 //! error.
-//! ZUT (rule 11): args/find_verb and the verb table are pure and used directly.
+//! Unit test: args/find_verb and the verb table are pure and used directly.
 
 use super::{parse_args, ParsedArgs, UsageError, VERBS};
 

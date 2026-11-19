@@ -1,12 +1,10 @@
 //! The report of an `mr folder` sub-verb that folders refused or failed. folders' own Display text is never printed
-//! for a folders variant: it names steps that are not cli commands (S-112); the why is folder_error_why's facts and the
+//! for a folders variant: it names steps that are not cli commands; the why is folder_error_why's facts and the
 //! exit and next are folder_refusal's.
-//! No sibling test (S-104): a FolderError's Lock, Git and Oplog variants hold errors that only a real lock file, git
-//! run or op log make, so the mapping is reached through the runners; folder_refusal_tests and folder_error_why_tests
+//! No sibling test: every arm is pure, a FolderError value (its Lock, Git and Oplog errors are plain data a test
+//! can build) mapped to a Report with no I/O, so a sibling ZUT can cover each arm; folder_refusal_tests and folder_error_why_tests
 //! cover the decisions it joins, and the RITs crates/cli/tests/cli_rit/run_folder_{zone,request,remove,keep,drop}_tests.rs its
 //! refusals (ZoneBranchMissing, NotRemovedUnsaved, AttemptsRemain, ZoneFolder, AttemptsUnsaved) through the binary.
-//! RITs left for Nagatha (cross-zone, listed only, not written): a held lock reported by lock_report; a git failure
-//! inside folders reported as failure_report, exit 5.
 
 use folders::FolderError;
 

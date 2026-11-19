@@ -1,4 +1,4 @@
-//! join_save_subject: the request's name, then ": work saved at join" (S-72).
+//! join_save_subject: the request's name, then ": work saved at join".
 
 use super::join_save_subject;
 

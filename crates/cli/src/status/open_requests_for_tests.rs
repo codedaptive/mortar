@@ -1,5 +1,5 @@
-//! open_requests_for: the zone's request folders whose branch exists, tipped at the snapshot when there is one
-//! (S-45), based at the fork point of that tip and never at the record's base (S-108), in the order given; every
+//! open_requests_for: the zone's request folders whose branch exists, tipped at the snapshot when there is one,
+//! based at the fork point of that tip and never at the record's base, in the order given; every
 //! other folder is skipped without asking for a fork point.
 
 use std::collections::BTreeMap;

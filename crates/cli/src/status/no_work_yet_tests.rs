@@ -1,5 +1,5 @@
 //! no_work_yet: a folder has no work yet when its branch tip is still its record's base and its tree equals the
-//! tip's tree (S-145); commits of its own, or files that differ from the tip, are work.
+//! tip's tree; commits of its own, or files that differ from the tip, are work.
 
 use gitio::Oid;
 
