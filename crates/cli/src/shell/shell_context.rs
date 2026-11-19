@@ -1,6 +1,6 @@
 //! What every verb runs with, once the shell has read it.
 //! A bare type. Shell API: run_in builds it; the verbs read it. shell/run_in_tests cover how run_in builds it up to
-//! the folder read, and the validation test cases listed in shell/run.rs are to exercise the rest.
+//! the folder read, and the integration test cases listed in shell/run.rs are to exercise the rest.
 
 use oplog::ProtectedRef;
 

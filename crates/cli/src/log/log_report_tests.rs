@@ -1,7 +1,8 @@
 //! log_report: "listed" with the restore step, or "empty" with the unfiltered log as next; exit 0 either way; one
-//! "records" field holding the encoded lines it is given, unchanged and in order. ZUT: oplog's record types and
+//! "records" field holding the encoded lines it is given, unchanged and in order. Unit tests: oplog's record types and
 //! gitio's Oid::parse are plain data; the encoded lines are literals. That run_log passes each listed op's own log
-//! line, byte for byte, is the validation test owed in run_log.rs's header.
+//! line, byte for byte, is the integration test json_log_holds_the_logs_own_line in
+//! crates/cli/tests/log_restore_runs/run_log_tests.rs.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, RefMove};

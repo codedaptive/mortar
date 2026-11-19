@@ -1,6 +1,6 @@
 //! request_run_for: a request folder gives its ref, its zone's join lock, the snapshot target and the derived op key;
 //! an attempt folder is the attempt-folder refusal for join and for resolve; an argument is the verb's usage.
-//! ZUT: join/attempt_refusal, args/usage_report and opkey's op_key are used directly; the request
+//! Unit tests: join/attempt_refusal, args/usage_report and opkey's op_key are used directly; the request
 //! folder case runs folders::plan::request_branch, exported and pure on data. Git::new runs nothing.
 
 use std::collections::BTreeMap;

@@ -1,5 +1,5 @@
 //! join_report: each join answer as its exact report, after the save's lines and fields.
-//! ZUT: join/save_part is pure and used directly.
+//! Unit tests: join/save_part is pure and used directly.
 
 use std::path::PathBuf;
 

@@ -1,11 +1,11 @@
 //! run_log: `mr log [--ref <r>] [--actor <a>] [--key <k>]`, the read-only verb that lists the op log's records.
 //! It runs git for the common dir and reads the op log file; log_filters_tests,
 //! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, run_log_tests its usage refusals
-//! before any read, and the validation test crates/cli/tests/validation/run_log_tests.rs, for one op in a real log, the plain
-//! listing with no "records" lines and the --json "records" line, for a line with no values or remote mark and for
-//! one carrying both. The validation tests are to cover, with the mortar binary as a child process in a
-//! throwaway repository with ops in its log (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
-//! GIT_CONFIG_NOSYSTEM=1):
+//! before any read, and the integration test crates/cli/tests/log_restore_runs/run_log_tests.rs, for one op in a
+//! real log, the plain listing with no "records" lines and the --json "records" line, for a line with no values or
+//! remote mark and for one carrying both. Integration tests to write (not written here), with the mortar binary as a
+//! child process in a throwaway repository with ops in its log (tests running real git set
+//! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a real log read with each filter (--ref, --actor, --key) lists the matching ops, and with two filters their AND;
 //! - with no filter it lists every op; a filter nothing matches is exit 0, outcome empty;
 //! - with several ops in the log, --json "records" are the log's own lines for those ops, byte for byte;

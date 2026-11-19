@@ -9,7 +9,7 @@
 //! "mortar", removes them. Apart from folders the
 //! failure path could not remove (named in its report), anything left unrecorded is only when writing the record
 //! itself fails; that failure lists each such path.
-//! No sibling test: it touches the disk; the install ZITs in install/integration/ cover it.
+//! No sibling test: it touches the disk; the install integration tests in install/integration/ cover it.
 
 use std::fs;
 use std::io;

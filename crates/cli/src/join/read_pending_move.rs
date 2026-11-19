@@ -3,7 +3,9 @@
 //! none), and from which recorded folder_tree.
 //! finish_pending_move (join, resolve, save, undo) calls it, after recover has settled open intents.
 //! No unit test: it reads the op log file and runs git; find_pending_move_tests covers the decision.
-//! The validation tests are to cover, in a throwaway repository with a request folder: a join-rebase op
+//! The integration tests crates/cli/tests/save_join_runs/{recovery,processes}.rs, resolve_runs/resolve_pending.rs and
+//! across_kits/undo_save_join_resolve/{rebases,resolve_undo}.rs cover, in a throwaway repository with a request
+//! folder: a join-rebase op
 //! done and the folder still at the old tip gives the move from the op's old tip to its new; after the folder
 //! move it still gives that move (move_folder logs no op then); after a later save of the request branch it gives
 //! None; a request branch moved elsewhere by hand gives None; a join-rebase op carrying folder_tree gives the move

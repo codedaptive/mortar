@@ -3,7 +3,8 @@
 //! run_overlap, for its one zone, which uses only the open requests (relabelling a failure report to its own verb).
 //! No sibling test: it runs git and reads the folders' records; status's open_requests_for_tests covers the
 //! choice of open requests.
-//! Validation tests to write (not written here):
+//! The integration tests crates/cli/tests/across_kits/after_publish/requests.rs (after-publish) and
+//! crates/cli/tests/across_kits/snapshot_overlap_disk_sweep/overlap.rs (overlap) cover, with the mortar binary:
 //! - the open requests of a moved zone, request folders made by the landing verbs, are listed to rebase at their
 //!   next join, each with its snapshot commit when it has one;
 //! - a zone with no zone folder is reported as having none, and its requests are still listed;

@@ -1,6 +1,6 @@
 //! lock_report: a held lock or a takeover is busy naming the holder; contention is busy; a bad zone is refused; a
 //! file system error and an unknown host are failures.
-//! ZUT: the lock errors are built as data; the failures run oplog's exported, pure Display and
+//! Unit tests: the lock errors are built as data; the failures run oplog's exported, pure Display and
 //! report::failure_report directly.
 
 use std::path::PathBuf;

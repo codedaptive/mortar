@@ -4,8 +4,8 @@
 //! later_op_refusal, undo_caller, undo_report, already_undone_report, nothing_to_undo_report, failed_undo_report,
 //! undo_error_report, restore_check_report, restore_failed_report and with_restored are its decisions and have their
 //! tests.
-//! The validation tests are to cover, with the mortar binary as a child process in a request folder
-//! made by the landing verbs in a throwaway repository:
+//! The integration tests crates/cli/tests/across_kits/undo_save_join_resolve/*.rs cover, with the mortar binary as a
+//! child process in a request folder made by the landing verbs in a throwaway repository:
 //! - save then undo keeps the files and shows them unsaved (the index at the branch's restored tree);
 //! - undo after a join's rebase moves the folder back to the tip before the rebase; with an edit in the way the move
 //!   is refused and left pending, status gives next mr undo, and the next undo, save or join finishes it;
@@ -19,7 +19,7 @@
 //! - undo of a resolve recorded without its paused join (no join_state value) is refused, exit 1, nothing changed;
 //! - `mr log --json` shows the join_state value on the resolve op's line;
 //! - a resolve undo whose own folder move is pending with a file in the way is the move refusal, exit 1, the
-//!   snapshot kept and no undo op (tests/validation/undo_save_join_resolve/refusals.rs covers it);
+//!   snapshot kept and no undo op (crates/cli/tests/across_kits/undo_save_join_resolve/refusals.rs covers it);
 //! - the snapshot taken first is restorable with mr restore;
 //! - a repeat after a kill answers already-done, finishing the folder step the kill left;
 //! - a held join-<zone> lock is exit 3 naming the holder;

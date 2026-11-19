@@ -2,9 +2,9 @@
 //! refs/mortar/squash/<zone> under the land lock. --key names the lock holder only,
 //! never passed to the op log: repeat safety comes from land's answers (Same).
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_squash_args_tests,
-//! squash_report_tests and landing's squash_error_report_tests cover its decisions. The validation test
-//! crates/cli/tests/validation/run_squash_tests.rs covers it through the binary.
-//! Validation tests to write (not written here): the land lock held by a live pid,
+//! squash_report_tests and landing's squash_error_report_tests cover its decisions. The integration test
+//! crates/cli/tests/land_runs/run_squash_tests.rs covers it through the binary.
+//! Integration tests to write (not written here): the land lock held by a live pid,
 //! exit 3; without a config, exit 1, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
 //! OpRepeated texts when git or the op log fails for real; the acceptance checks of squash.
 

@@ -1,8 +1,8 @@
 //! read_need_path: the path `mr need` adds, cleaned and checked against the folder's commit before any lock.
 //! No unit test: it runs git; need_error_report_tests and missing_path_report_tests cover the refusals
-//! it gives. The validation tests are to cover, with the mortar binary as a child process in a request folder
-//! made by the landing verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
-//! GIT_CONFIG_NOSYSTEM=1):
+//! it gives. The integration tests crates/cli/tests/status_need_runs/need.rs cover, with the mortar binary as a child
+//! process in a request folder made by the landing verbs in a throwaway repository (tests running real git set
+//! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a path not at the folder's commit is exit 1, and nothing changed (record, cone, refs and op log);
 //! - a bad path ("../x", an absolute path) is exit 1;
 //! - a folder whose HEAD has no commit: need fails with failure_report, exit 5, nothing changed.

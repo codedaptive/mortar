@@ -1,5 +1,5 @@
 //! log_lines: a head line per record, a line per move (absent old, deleted new), a line for a stale or not-moved
-//! result, and one line when nothing matches. ZUT: oplog's record types and gitio's Oid::parse are plain data.
+//! result, and one line when nothing matches. Unit tests: oplog's record types and gitio's Oid::parse are plain data.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, OpResult, RefMove};

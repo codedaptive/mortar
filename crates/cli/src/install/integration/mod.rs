@@ -1,4 +1,4 @@
-//! The install ZITs (zone integration tests, GROUP=integration): install_in and uninstall_in on a temporary HOME.
+//! The install integration tests (GROUP=integration): install_in and uninstall_in on a temporary HOME.
 
 mod harness;
 mod make_dirs;

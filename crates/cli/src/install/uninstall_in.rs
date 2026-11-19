@@ -4,7 +4,7 @@
 //! the record; then the folders holding it, deepest first. A recorded folder that is not empty or is no longer a
 //! folder is left and named. A record entry off the map is skipped and named, whatever stands there. Nothing else is
 //! removed.
-//! No sibling test: it touches the disk. The install ZITs in install/integration/uninstall.rs and
+//! No sibling test: it touches the disk. The install integration tests in install/integration/uninstall.rs and
 //! uninstall_partial.rs cover it.
 
 use std::fs;

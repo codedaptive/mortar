@@ -1,5 +1,5 @@
 //! read_record: Reads install's record from disk.
-//! No sibling test: it touches the disk. The install ZITs in install/integration/ cover it: uninstall.rs
+//! No sibling test: it touches the disk. The install integration tests in install/integration/ cover it: uninstall.rs
 //! (uninstall_without_record_changes_nothing for no record, the others for a record install wrote).
 
 use std::fs;

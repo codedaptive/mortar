@@ -3,11 +3,11 @@
 //! runs, though rereview moves no ref and records no op. --key names the lock holder only,
 //! never passed to the op log.
 //! No sibling test: it takes a real lock and runs git and land; parse_rereview_args_tests,
-//! rereview_report_tests and rereview_error_report_tests cover its decisions. The validation test
-//! crates/cli/tests/validation/run_rereview_tests.rs covers it through the binary: two squashes of one change are "rereviewed"
+//! rereview_report_tests and rereview_error_report_tests cover its decisions. The integration test
+//! crates/cli/tests/land_runs/run_rereview_tests.rs covers it through the binary: two squashes of one change are "rereviewed"
 //! with both ids and only what changed; squashes of two changes are refused exit 1 "not-same-change"; one word,
 //! three words and a word that is not a full commit id are exit 4 with rereview's usage line as next.
-//! Validation tests to write (not written here): the land lock held by a live pid, exit
+//! Integration tests to write (not written here): the land lock held by a live pid, exit
 //! 3 (oplog's locks); without a config, exit 1, next mr init (the shell's load_config); RereviewError Git,
 //! Trailers and NoParent (a root commit) through the binary; the acceptance check of rereview.
 

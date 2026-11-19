@@ -1,5 +1,5 @@
 //! save_step_failure: save's own lines for its Git, Trailers, ChangeId and Oplog errors, and every other error
-//! passed to save_error_report. ZUT: the errors are built as data.
+//! passed to save_error_report. Unit tests: the errors are built as data.
 
 use gitio::GitError;
 use oplog::{ChangeIdError, MortarTrailerError, OpPhase, OpRecord, OpResult, OplogError};

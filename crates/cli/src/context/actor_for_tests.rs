@@ -1,7 +1,7 @@
 //! actor_for: a hook verb with no --actor acts as "git" and refuses --actor; a read-only verb acts as nobody with or
 //! without --actor; a setup verb acts as nobody and refuses --actor; agent verbs act as "<zone>/<request>" and
 //! refuse --actor; harness verbs require --actor.
-//! ZUT: besides actor_for it uses the args verb types and the folder record, which are plain data, and
+//! Unit tests: besides actor_for it uses the args verb types and the folder record, which are plain data, and
 //! args/usage_report and the verb table, which are pure.
 
 use folders::{FolderKind, FolderRecord};

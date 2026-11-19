@@ -1,9 +1,9 @@
 //! Whether each attempt of a request is saved, the list folders' keep and drop_attempts take.
 //! No sibling test: it reads refs, worktrees, commits and folder trees with git; attempt_saved_tests cover the
-//! branch-only rule. The validation tests crates/cli/tests/validation/run_folder_keep_tests.rs (saved attempts kept, an unsaved one
+//! branch-only rule. The integration tests crates/cli/tests/folder_runs/run_folder_keep_tests.rs (saved attempts kept, an unsaved one
 //! refused) and run_folder_drop_tests.rs (a branch-only attempt saved by its trysnap tree, one with no trysnap ref refused)
 //! cover it through the binary.
-//! Validation tests to write (not written here): a file the snapshot cap refuses in an attempt folder
+//! Integration tests to write (not written here): a file the snapshot cap refuses in an attempt folder
 //! counts as unsaved (cli with snapshot's saved_state).
 
 use folders::attempts::attempts_of;

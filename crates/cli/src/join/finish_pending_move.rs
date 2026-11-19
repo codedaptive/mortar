@@ -5,8 +5,10 @@
 //! It passes the op's recorded folder_tree as move_folder's index_tree, None for a plain join's rebase and for an
 //! undo's move.
 //! No unit test: it reads the op log, snapshots and moves the folder with git; find_pending_move_tests covers
-//! the decision and move_refusal_report_tests its refusal. The validation tests are to
-//! cover, with the mortar binary as a child process in a throwaway repository and a request folder: a kill after
+//! the decision and move_refusal_report_tests its refusal. The integration tests
+//! crates/cli/tests/save_join_runs/{joins,recovery,processes}.rs, resolve_runs/{resolve_refusals,resolve_catch_up}.rs
+//! and across_kits/undo_save_join_resolve/{rebases,killed,resolve_undo}.rs cover, with the mortar binary as a child
+//! process in a throwaway repository and a request folder: a kill after
 //! join's rebase op and before the folder move (the branch ahead of the folder) is finished by the next join before
 //! it saves, with the finished move in its report and the folder's work in the request's snapshot ref; a local edit
 //! in the way of the pending move is exit 1 listing the paths, and once moved aside the next join finishes it; with

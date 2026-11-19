@@ -1,8 +1,8 @@
 //! read_overlaps: the other open requests of the zone that change a path this request changes since its fork point
 //! from the zone.
 //! No unit test: it runs git and reads folder records; open_requests_for_tests and overlaps_with_tests
-//! cover its decisions. The validation tests are to cover, with the mortar binary as a child process in
-//! request folders made by the landing verbs in a throwaway repository (tests running real git set
+//! cover its decisions. The integration tests crates/cli/tests/status_need_runs/status.rs cover, with the mortar binary
+//! as a child process in request folders made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - two requests of one zone changing one path: status in either gives the overlap line naming the other and that
 //!   path;

@@ -8,14 +8,15 @@
 //! it is); a clear that resets the index to HEAD (the folder's HEAD is already the branch's new commit) leaves no
 //! stall for the repeat to see, and the folder's files are then their owner's to bring to HEAD, unreported.
 //! No sibling test: it takes a real lock and runs git, the op log and land; back_out_report_tests,
-//! note_finished_move_tests and landing's land_error_report_tests cover its decisions. The validation test
-//! crates/cli/tests/validation/run_back_out_tests.rs covers it through the binary.
-//! Validation tests to write (not written here): the land lock held by a live pid,
-//! exit 3; without a config, exit 1, next mr init; the LandError texts that need git, the op log or the landing
-//! state to fail for real; a back-out after a failed integration test of a landed squash; the stopped-move finish
-//! (a kill after land's op and before the folder
-//! move, then a plain repeat moves the folder from the op's old value to the tip and the report's first line says
-//! so); a staged edit in the integration folder (no move, the verb goes on).
+//! note_finished_move_tests and landing's land_error_report_tests cover its decisions. The integration test
+//! crates/cli/tests/land_runs/run_back_out_tests.rs covers it through the binary;
+//! crates/cli/tests/land_runs/land_flow/landing.rs covers the land lock held by a live pid (exit 3),
+//! land_flow/killed.rs the stopped-move finish (a kill after land's op and before the folder move, then a plain
+//! repeat moves the folder and the report's first line says so) and land_flow/stopped.rs a staged edit in the
+//! integration folder through publish only, not back-out (no move, the verb goes on).
+//! Integration tests to write (not written here): without a config, exit 1, next mr init (land_flow/landing.rs
+//! covers it for land and would-merge only); the LandError texts that need git, the op log or the landing
+//! state to fail for real; a back-out after a failed integration test of a landed squash.
 
 use std::path::Path;
 

@@ -3,8 +3,9 @@
 //! No unit test: it takes the lock, runs git, the formatter and the op log; save_sentence, save_run_for,
 //! snapshot_target_for, save_report, save_step_failure, find_pending_move, snapshot_settings_for and op_key are its
 //! decisions and have their tests.
-//! The validation tests are to cover, with the mortar binary as a child process in a request folder made by
-//! the landing verbs in a throwaway repository:
+//! The integration tests crates/cli/tests/save_join_runs/{saves,processes,recovery,joins}.rs and
+//! across_kits/undo_save_join_resolve/{rebases,killed}.rs cover, with the mortar binary as a child process in a
+//! request folder made by the landing verbs in a throwaway repository:
 //! - a first save writes a commit with the sentence as subject and prints next mr join, exit 0, outcome saved;
 //! - a save in attempt folder k moves refs/mortar/trysnap/<zone>/<request>/<k>, not the request's snapshot ref;
 //! - a repeat with nothing changed is exit 0, outcome unchanged, and writes no commit and moves no branch;

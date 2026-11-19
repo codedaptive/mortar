@@ -1,11 +1,12 @@
 //! `mr resolve`: finishes a folder move a kill or a refused move left (a rebase's or an undo's),
 //! snapshots the folder, resolves the join paused in it and moves the folder after the rebase that completes it, all
 //! under the zone's join lock after recover; in an attempt folder it runs nothing.
-//! No unit test: it runs git and the op log, and takes a real lock; the tests in crates/cli/tests
+//! No unit test: it runs git and the op log, and takes a real lock; the unit tests in src
 //! (request_run_for_tests, resolve_report_tests, resolve_refusal_report_tests, resolve_move_refusal_report_tests and
 //! run_resolve_tests, which covers an attempt folder and an argument, both returning before any lock or git run) cover
-//! its decisions and reports, and finish_pending_move's header lists the cases of a move left pending. The validation
-//! tests are to cover, with the mortar binary as a child process in a throwaway repository and a request
+//! its decisions and reports, and finish_pending_move's header lists the cases of a move left pending. The integration
+//! tests crates/cli/tests/resolve_runs/{resolve_first_runs,resolve_finishes,resolve_unusual,resolve_refusals,
+//! resolve_catch_up}.rs cover, with the mortar binary as a child process in a throwaway repository and a request
 //! folder: no paused join is exit 0 nothing-to-resolve; the first run writes the files and lists skipped and gitlinks,
 //! exit 2; a next run with markers is exit 2 naming files and lines; a next run resolved and clean is Rebased, exit 0,
 //! the folder's files and HEAD at the new tip with the resolved content and edits outside the resolved paths kept;

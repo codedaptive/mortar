@@ -1,4 +1,4 @@
-//! guard_error_report: ForeignHook, BadConfig and Io in the cli's own words. The Git case is a validation
+//! guard_error_report: ForeignHook, BadConfig and Io in the cli's own words. The Git case is an integration
 //! test to write (see guard_error_report.rs).
 
 use std::path::PathBuf;

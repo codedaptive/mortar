@@ -7,11 +7,11 @@
 //! No sibling test: it takes a real lock and runs git, the op log and folders; parse_sweep_args_tests,
 //! config_zones_tests, no_zones_report_tests, folders_error_report_tests, sweep_report_tests and
 //! sweep_build_failure_report_tests cover its decisions.
-//! Validation tests to write (not written here): sweep with an extra ref deletes it in
-//! one folder-sweep-refs op with the actor; sweep keeps a configured zone's refs/mortar/replayed/ record and deletes a
-//! removed zone's; sweep --idle-days 0 clears build dirs, without it none; a refused extra ref (refs/heads/...)
-//! deletes nothing, exit 1; sweep with a config of no zones refused, exit 1, nothing deleted; the folders lock held
-//! by a live pid, exit 3; without a config, exit 1.
+//! The integration tests crates/cli/tests/across_kits/snapshot_overlap_disk_sweep/{sweep,guards}.rs cover: sweep with an
+//! extra ref deletes it in one folder-sweep-refs op with the actor; sweep keeps a configured zone's refs/mortar/replayed/
+//! record and deletes a removed zone's; sweep --idle-days 0 clears build dirs, without it none; a refused extra ref
+//! (refs/heads/...) deletes nothing, exit 1; sweep with a config of no zones refused, exit 1, nothing deleted; the
+//! folders lock held by a live pid, exit 3; without a config, exit 1.
 
 use std::path::Path;
 

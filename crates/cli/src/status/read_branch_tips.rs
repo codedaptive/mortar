@@ -1,9 +1,9 @@
 //! read_branch_tips: where a request's branch and its zone's branch stand, for `mr need` (status reads them with
 //! read_tips).
-//! No unit test: it runs git; missing_branch_report_tests covers the refusal it gives. The validation
-//! tests are to cover, with the mortar binary as a child process in a request folder made by the landing
-//! verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
-//! GIT_CONFIG_NOSYSTEM=1):
+//! No unit test: it runs git; missing_branch_report_tests covers the refusal it gives. The integration
+//! tests crates/cli/tests/status_need_runs/{status,need}.rs cover, with the mortar binary as a child process in a
+//! request folder made by the landing verbs in a throwaway repository (tests running real git set
+//! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - status in a clean, saved and joined folder reads both tips and gives next "wait for the zone's tests";
 //! - saved with work of its own and not joined, status gives next mr join;
 //! - with the zone moved on, status says the zone has commits this request has not taken in and gives next mr join;
