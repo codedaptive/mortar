@@ -1,4 +1,4 @@
-//! LandingState: the landing in flight, as `<common>/mortar/landing.json` holds it (S-59). A bare type (S-7);
+//! LandingState: the landing in flight, as `<common>/mortar/landing.json` holds it. A bare type;
 //! tests/landing_zit exercises it through land and back_out, tests/publish_zit through publish.
 
 use gitio::Oid;

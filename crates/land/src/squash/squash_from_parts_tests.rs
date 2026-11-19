@@ -1,7 +1,7 @@
 //! squash_from_parts: all parts present gives the exact Squash, zero requests an empty list; a missing change ID
 //! or squash-of is TrailerMissing naming it; a malformed change ID or squash-of is TrailerMalformed with its text;
 //! a Random change ID error passes through as ChangeId; request lines that miss the subject's count are
-//! RequestsMalformed. MortarTrailers, ChangeId, Oid and ChangeIdError are built as data (S-101); refusals are
+//! RequestsMalformed. MortarTrailers, ChangeId, Oid and ChangeIdError are built as data; refusals are
 //! checked by their fields, never their Display (it embeds gitio's Oid Display).
 
 use super::{squash_from_parts, Squash, SquashError};

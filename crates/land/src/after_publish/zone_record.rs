@@ -1,4 +1,4 @@
-//! ZoneRecord: one replay record of a zone, as read for after_publish. A declaration only (S-7);
+//! ZoneRecord: one replay record of a zone, as read for after_publish. A declaration only;
 //! replay_records_tests and published_records_tests exercise it.
 
 use gitio::Oid;

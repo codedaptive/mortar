@@ -1,4 +1,4 @@
-//! WO-land-rit-3 fixtures: public Land producers joined to real Gitio/Oplog and a disposable bare origin.
+//! Fixtures: public Land producers joined to real Gitio/Oplog and a disposable bare origin.
 //! Existing support owns/removes the whole repository, including this fixture's nested remote and shims.
 use crate::{owed_ops::{locked, raw, refs}, support::Fixture};
 use gitio::{Git, Oid};

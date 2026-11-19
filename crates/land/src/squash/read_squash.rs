@@ -1,4 +1,4 @@
-//! read_squash: a squash commit read back as a Squash. No sibling unit test: it runs git (S-5).
+//! read_squash: a squash commit read back as a Squash. No sibling unit test: it runs git.
 //! tests/squash_zit/read_squash_cases.rs covers it in a throwaway repository; squash_from_parts_tests covers the
 //! decisions it makes from what it reads.
 

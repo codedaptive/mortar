@@ -1,5 +1,5 @@
 //! push_intent_close: how a push intent is closed, from whether the push landed and what the remote's origin branch
-//! holds (S-103). push_intent_close_tests covers every branch.
+//! holds. push_intent_close_tests covers every branch.
 
 use gitio::Oid;
 use oplog::IntentClose;

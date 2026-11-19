@@ -1,5 +1,5 @@
-//! list_backed_up_refs: the local refs backup mirrors and restore_backup compares against (SPEC-land 08).
-//! No unit test: it runs git (S-5); the backup integration tests (backup_zit) cover it.
+//! list_backed_up_refs: the local refs backup mirrors and restore_backup compares against.
+//! No unit test: it runs git; the backup integration tests (backup_zit) cover it.
 
 use crate::backup::{BackupError, BACKUP_PREFIXES};
 use gitio::{Git, Oid};

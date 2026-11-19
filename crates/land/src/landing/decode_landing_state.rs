@@ -1,8 +1,8 @@
 //! decode_landing_state: reads the text of landing.json back into a LandingState.
-//! No sibling unit test (S-104): every test of it runs oplog's parse_json_string (S-101). Covered by tests/landing_zit
+//! No sibling unit test: every test of it runs oplog's parse_json_string. Covered by tests/landing_zit
 //! (landing.rs, a_second_landing_is_busy_and_the_first_ones_repeat_is_landed_with_the_log_unchanged: the second landing
 //! answers Busy with the change ID read back from the state, and the repeat answers Landed at the commit it names); its
-//! unit cases are Nagatha's RITs (owed).
+//! unit cases are repo integration tests (RITs): tests/land_rit/state_codec.rs covers them.
 //! Why a strict reader of one layout, not a general JSON parser: only encode_landing_state writes this file, so text
 //! in any other layout is not a state land wrote, and land, back_out and publish must not act on it. Strings are read
 //! by oplog's parse_json_string, which takes every JSON escape.

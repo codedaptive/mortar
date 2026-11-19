@@ -1,6 +1,7 @@
-//! Zone integration tests of land and back_out (SPEC-land 03-land.md §Tests): landing (cases 1 to 4), backing_out
-//! (case 5) and kills (cases 6 and 7, with their worker), each case in its own throwaway repository; and
-//! state_display, LandError's State text, which needs no repository.
+//! Zone integration tests of land and back_out: landing (a fast-forward, a merge, a conflict, a second landing while
+//! one is in flight), backing_out (back_out after a merge landing) and kills (a merge landing killed before or after
+//! its update-ref, with their worker), each case in its own throwaway repository; and state_display, LandError's
+//! State text, which needs no repository.
 
 #[path = "landing_zit/backing_out.rs"]
 mod backing_out;

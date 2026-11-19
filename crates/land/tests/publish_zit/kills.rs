@@ -1,8 +1,8 @@
-//! Case 3: a publish killed by SIGKILL between its two steps (the testkit crash shim, held by the kill gate rather
+//! A publish killed by SIGKILL between its two steps (the testkit crash shim, held by the kill gate rather
 //! than timing), then oplog::recover, then publish again finishing once. The push runs no `git update-ref`, so the
 //! shim's first hit is step 2's, before it moves the local origin: by then the push intent is closed done, both its
 //! records marked with the remote `origin`. recover appends nothing for it, and the repeat writes no second
-//! publish-push record; step 2 and the clean-up finish done (S-103).
+//! publish-push record; step 2 and the clean-up finish done.
 
 use crate::fixture::{git_env, refs, state_text, Fixture, ACTOR, ID_A};
 use gitio::Git;

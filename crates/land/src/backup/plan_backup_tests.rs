@@ -1,5 +1,5 @@
 //! plan_backup: with no local refs and no remote refs the plan is empty. Every other decision runs local_ref or
-//! backup_ref from another land file (S-102), so tests/backup_zit proves it through backup: no backup is set under
+//! backup_ref from another land file, so tests/backup_zit proves it through backup: no backup is set under
 //! lease Absent (a_backup_restores_every_ref_into_a_fresh_store, refs_outside_the_four_prefixes_are_never_backed_up);
 //! a backup at another id is set under a lease at that id (plan_a_moved_ref_is_pushed_again_over_its_old_backup); one
 //! at the same id is unchanged (a_second_backup_pushes_nothing); one whose local ref is gone is deleted

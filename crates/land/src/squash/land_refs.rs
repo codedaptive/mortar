@@ -1,4 +1,4 @@
-//! LandRefs: the branches land reads. A declaration only (S-7); tests/squash_zit.rs exercises it.
+//! LandRefs: the branches land reads. A declaration only; tests/squash_zit.rs exercises it.
 
 /// Branch names, not full refs: each tip is read from `refs/heads/<branch>`.
 #[derive(Clone, Debug, PartialEq, Eq)]

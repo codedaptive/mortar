@@ -1,6 +1,7 @@
 //! Display for BackupError: each variant says why and names what it carries; the refusals backup and restore
 //! make themselves also say what moved. backup_error_display_tests cover BadHost, Refused,
-//! OpFailed and OpRepeated; the Host, Git and Oplog texts are Nagatha's RITs (owed, S-101).
+//! OpFailed and OpRepeated; the Host, Git and Oplog texts are repo integration tests (RITs):
+//! tests/land_rit/owed_displays.rs covers them.
 
 use crate::backup::BackupError;
 use gitio::PushRefusal;

@@ -1,5 +1,5 @@
-//! decide_bisect_range: bisect's two refusals before any probe, and the commits it searches when neither applies
-//! (S-78). Pure: the first-parent reads come through `line`, so decide_bisect_range_tests drive it with a fake.
+//! decide_bisect_range: bisect's two refusals before any probe, and the commits it searches when neither applies.
+//! Pure: the first-parent reads come through `line`, so decide_bisect_range_tests drive it with a fake.
 
 use gitio::Oid;
 

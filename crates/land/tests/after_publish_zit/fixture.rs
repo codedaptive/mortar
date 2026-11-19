@@ -51,7 +51,7 @@ pub struct Fixture {
     pub remote: Git,
 }
 
-/// Git's config isolated (#1416) and a fixed identity and dates, so commit_tree needs no user config.
+/// Git's config isolated and a fixed identity and dates, so commit_tree needs no user config.
 fn git_env() -> Vec<(OsString, OsString)> {
     [
         ("GIT_CONFIG_NOSYSTEM", "1"),
@@ -165,7 +165,7 @@ pub struct ChainReplayed {
 
 /// Zone `b` (B_FILES on the base) squashed, landed and published, then after_publish(b, others=[land]) with zone
 /// `land` at `a2` on `a1`: checked to put b on its origin and to replay A1 and A2 one for one onto it, each recorded
-/// at its replay record (S-121 W).
+/// at its replay record.
 pub fn replayed_chain(fx: &Fixture, a1: &Oid, a2: &Oid) -> ChainReplayed {
     let b_tip = fx.join_onto("b", &fx.base, &B_FILES, "b work");
     let b_origin = land_and_publish(fx, &made(fx, "b"));

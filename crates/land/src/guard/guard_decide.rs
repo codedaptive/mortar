@@ -1,4 +1,4 @@
-//! guard_decide: whether a git hook may let a move of origin or integration through (SPEC-land 06, S-60).
+//! guard_decide: whether a git hook may let a move of origin or integration through.
 
 use gitio::Oid;
 use oplog::RefMove;
@@ -11,14 +11,14 @@ const NEXT: &str = "bring your work in with `mr join`, or ask for a landing";
 
 /// Decides one hook run from its stdin `input`. `op_moves` is the moves of the open intent MORTAR_OP names, None
 /// when MORTAR_OP is unset or names no open intent: the env var alone never allows anything, since anyone can set
-/// it (S-60). A reference-transaction line on `refs/heads/<origin_branch>` or `refs/heads/<integration_branch>`
-/// whose old and new are the same non-zero oid moves nothing and is allowed, as a checkout of the branch writes it
-/// (S-153); a line that changes them is allowed only when the intent lists that ref with the same old and new. A
+/// it. A reference-transaction line on `refs/heads/<origin_branch>` or `refs/heads/<integration_branch>`
+/// whose old and new are the same non-zero oid moves nothing and is allowed, as a checkout of the branch writes it;
+/// a line that changes them is allowed only when the intent lists that ref with the same old and new. A
 /// symbolic value (`ref:<target>`, as git 2.45+ writes it) as old or new is refused on those two refs whatever the
 /// intent lists, since an intent's moves hold oids only, and allowed on any other ref. Every other readable line is
 /// allowed, and a line the guard cannot read is refused. The first line refused decides.
 ///
-/// A pre-push is read only when it is to the guarded remote `refs.remote` (S-100): its first argument is that name,
+/// A pre-push is read only when it is to the guarded remote `refs.remote`: its first argument is that name,
 /// or its URL is exactly one of the push URLs the caller read for it (text compared as is: no folding of case,
 /// trailing slash, `.git` or ssh against https, since the guard stops accidental moves and is no defence against
 /// someone working round it). A push by that name is decided without the URLs. A push under another name when the

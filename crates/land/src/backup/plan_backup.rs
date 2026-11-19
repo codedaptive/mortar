@@ -1,6 +1,6 @@
-//! plan_backup: the push/delete/skip plan a backup run makes from the local and remote ref lists (SPEC-land 08).
+//! plan_backup: the push/delete/skip plan a backup run makes from the local and remote ref lists.
 //! plan_backup_tests cover the empty plan; the rest runs local_ref and backup_ref from other land files, so
-//! tests/backup_zit covers it (S-102): a_backup_restores_every_ref_into_a_fresh_store,
+//! tests/backup_zit covers it: a_backup_restores_every_ref_into_a_fresh_store,
 //! refs_outside_the_four_prefixes_are_never_backed_up, plan_a_moved_ref_is_pushed_again_over_its_old_backup,
 //! a_second_backup_pushes_nothing, a_ref_deleted_locally_is_deleted_from_the_backup,
 //! plan_remote_refs_outside_this_hosts_mapped_backups_are_never_pushed_or_deleted,

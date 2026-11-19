@@ -1,4 +1,4 @@
-//! What a re-review shows. A bare type (S-7); plan_rereview_tests exercises it.
+//! What a re-review shows. A bare type; plan_rereview_tests exercises it.
 
 use gitio::Oid;
 

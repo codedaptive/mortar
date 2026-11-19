@@ -1,4 +1,4 @@
-//! Zone integration tests of after_publish (SPEC-land 05-after-publish.md §Tests, S-121): another zone replayed onto
+//! Zone integration tests of after_publish: another zone replayed onto
 //! the new origin with the record of its replayed commit written, the publishing zone with and without later joins,
 //! a conflicting zone left in place and listed, a repeat that moves nothing (zone_moves); the publishing zone landed
 //! as a merge (merge_landing); the publishing zone whose squash source an earlier after_publish replayed, with and

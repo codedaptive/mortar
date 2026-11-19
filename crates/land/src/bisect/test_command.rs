@@ -1,10 +1,10 @@
-//! The command bisect runs at each probe. A bare type (S-7); tests/bisect_zit.rs exercises it
+//! The command bisect runs at each probe. A bare type; tests/bisect_zit.rs exercises it
 //! (bisect_names_the_merge_landing_that_broke_the_script runs check.sh through it).
 
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-/// The caller's test command: Mortar picks no tests (07-bisect.md), it runs this one in each probe's folder.
+/// The caller's test command: Mortar picks no tests, it runs this one in each probe's folder.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TestCommand {
     /// The program to run.

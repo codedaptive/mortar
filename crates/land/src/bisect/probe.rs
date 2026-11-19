@@ -1,5 +1,5 @@
-//! One probe of the bisect. A bare type (S-7); tests/bisect_zit exercises it, and its Display cases are Nagatha's
-//! RITs (owed).
+//! One probe of the bisect. A bare type; tests/bisect_zit exercises it, and its Display cases are repo integration
+//! tests (RITs): tests/land_rit/owed_displays.rs covers them.
 
 use std::path::PathBuf;
 
@@ -7,7 +7,7 @@ use gitio::Oid;
 
 use super::ProbeOutcome;
 
-/// The caller's command run once at one commit, in a throwaway worktree (07-bisect.md).
+/// The caller's command run once at one commit, in a throwaway worktree.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Probe {
     /// The commit probed.

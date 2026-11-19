@@ -1,14 +1,13 @@
-//! Cases 1, 2 and 4 to 10: publish moves the remote and then the local origin, its push intent and done record
-//! marked with the remote `origin`; a remote moved by someone else answers OriginMoved with integration back on the
-//! fetched origin and nothing lost, and the same squash lands again; with no landing state there is nothing to
-//! publish and the remote is untouched; a push the remote's hook refuses with its main still at expected is
-//! PushRefused with the landing still in flight; a push refused after the remote's main moved answers OriginMoved,
-//! its push intent closed failed naming what the remote holds. Cases 7 and 8 are the S-103 repeat: a push intent
-//! left open (opened by the fixture after a real land) is closed done when the remote is already at the squash, and
-//! closed failed and pushed again under a second intent when it is still at the base. Case 9: with the remote past
-//! the squash (someone else pushed on top of it), the open intent is closed done and nothing is pushed again.
-//! Case 10: a remote already past the squash with no push intent in the log is published with no push and no
-//! publish-push record, and nothing is backed out (S-110).
+//! Publish moves the remote and then the local origin, its push intent and done record marked with the remote `origin`;
+//! a remote moved by someone else answers OriginMoved with integration back on the fetched origin and nothing lost, and
+//! the same squash lands again; with no landing state there is nothing to publish and the remote is untouched; a push
+//! the remote's hook refuses with its main still at expected is PushRefused with the landing still in flight; a push
+//! refused after the remote's main moved answers OriginMoved, its push intent closed failed naming what the remote
+//! holds. On the repeat, a push intent left open (opened by the fixture after a real land) is closed done when the
+//! remote is already at the squash, and closed failed and pushed again under a second intent when it is still at the
+//! base. With the remote past the squash (someone else pushed on top of it), the open intent is closed done and nothing
+//! is pushed again. A remote already past the squash with no push intent in the log is published with no push and no
+//! publish-push record, and nothing is backed out.
 
 use crate::fixture::{refs, state_text, Fixture, ACTOR, ID_A, OPEN_PUSH_OP_ID, PAST_SQUASH_FILES, SQUASH_REF};
 use gitio::PushRefusal;

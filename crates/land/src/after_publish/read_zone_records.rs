@@ -1,5 +1,5 @@
 //! read_zone_records: a zone's replay records, each with whether it is at or behind a held commit.
-//! No unit test: it only reads git (S-5); replay_records_tests and published_records_tests cover what is decided
+//! No unit test: it only reads git; replay_records_tests and published_records_tests cover what is decided
 //! from its answer. Covered by tests/after_publish_zit: (records_deleted.rs)
 //! a_replaying_publish_deletes_the_records_at_or_behind_its_source_and_writes_its_own_in_one_op (a record behind
 //! the held commit) and a_current_publish_deletes_only_the_stale_record_of_its_source_in_a_records_only_op (no held

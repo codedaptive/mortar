@@ -1,4 +1,4 @@
-//! backup_prefix: the remote namespace one host's backup lives under (SPEC-land 08). backup_prefix_tests cover it.
+//! backup_prefix: the remote namespace one host's backup lives under. backup_prefix_tests cover it.
 
 use crate::backup::BackupError;
 

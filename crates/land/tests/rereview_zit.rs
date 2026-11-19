@@ -1,4 +1,4 @@
-//! Zone integration tests for land::rereview (SPEC-land 02) on throwaway repositories: an edit after review shows
+//! Zone integration tests for land::rereview on throwaway repositories: an edit after review shows
 //! only the edit, a remake on a moved origin shows no change of its own, identical squashes say nothing changed,
 //! and two different changes are refused. Setup uses plain git with a fixed author, committer and date, so every
 //! run builds the same commits; rereview's own git runs ignore the machine's global and system git config.

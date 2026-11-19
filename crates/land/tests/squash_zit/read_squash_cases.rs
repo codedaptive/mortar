@@ -17,15 +17,15 @@ fn commit_with_message(fx: &Fixture, message: &str) -> String {
 #[test]
 fn read_squash_reads_back_the_squash_that_squash_made() {
     let fx = Fixture::new();
-    let z1 = fx.commit_on(&fx.base, &[("z", "zone\n")], "add z", Some("WO-b"));
-    let z2 = fx.commit_on(&z1, &[("y", "y\n")], "add y", Some("WO-a"));
-    let z3 = fx.commit_on(&z2, &[("x", "x\n")], "add x", Some("WO-b"));
+    let z1 = fx.commit_on(&fx.base, &[("z", "zone\n")], "add z", Some("r2"));
+    let z2 = fx.commit_on(&z1, &[("y", "y\n")], "add y", Some("r1"));
+    let z3 = fx.commit_on(&z2, &[("x", "x\n")], "add x", Some("r2"));
     fx.set_branch("zone/land", &z3);
     let squash = made(squash(&fx.land_git(), &refs(), ZONE, ACTOR).unwrap());
 
     let read = read_squash(&fx.land_git(), &squash.commit).unwrap();
 
-    assert_eq!(read.requests, vec!["WO-b".to_string(), "WO-a".to_string()]);
+    assert_eq!(read.requests, vec!["r2".to_string(), "r1".to_string()]);
     assert_eq!(read.source, oid(&z3));
     assert_eq!(read, squash);
 }
@@ -89,7 +89,7 @@ fn request_lines_that_do_not_match_the_count_are_refused() {
     let fx = Fixture::new();
     let commit = commit_with_message(
         &fx,
-        &format!("land: 2 requests\n\n- WO-a: x\n\nMortar-Change-Id: {CHANGE_ID}\nMortar-Squash-Of: {}\n", fx.base),
+        &format!("land: 2 requests\n\n- r1: x\n\nMortar-Change-Id: {CHANGE_ID}\nMortar-Squash-Of: {}\n", fx.base),
     );
 
     let error = read_squash(&fx.land_git(), &oid(&commit)).unwrap_err();

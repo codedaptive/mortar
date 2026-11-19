@@ -1,4 +1,4 @@
-//! S-103/S-110 RITs: actual public Land publish killed around its real push -> Oplog recovery -> public repeat.
+//! Publish-repeat RITs: actual public Land publish killed around its real push -> Oplog recovery -> public repeat.
 //! Parent fixtures own all repos; independently read remote refs, exact marked records and actual push trace decide.
 use crate::{owed_ops::{locked, raw, refs}, push_fixture::{with_lock, Prepared, ACTOR, MAIN, SQUASH},
     push_kill::{interrupt, recover_leaves_open}, support::CHANGE_ID};

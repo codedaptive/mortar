@@ -3,7 +3,7 @@
 
 use crate::squash::SquashRequest;
 
-/// Subject `<zone>: <n> requests` (the spec's text for every n), then a blank line and one line per request,
+/// Subject `<zone>: <n> requests` ("requests" for every n, 1 included), then a blank line and one line per request,
 /// `- <request>: <subject>; <subject>`, each ended by a newline. No requests: the subject line alone.
 /// Why the "- ": this text goes to git's with_trailers, and a last paragraph of `<request>: <subject>` lines has
 /// git's trailer form, so git would take it as the message's trailer block and add the Mortar trailers into it.

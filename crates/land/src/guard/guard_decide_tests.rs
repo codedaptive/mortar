@@ -1,6 +1,6 @@
 //! guard_decide: every case as data. Guarded refs are refs/heads/main (origin) and refs/heads/integration on remote
 //! origin, whose push URLs are ORIGIN_SSH (the cases of push_url_cases also give ORIGIN_HTTPS); expected verdicts
-//! are literals from guard_decide's contract (SPEC-land 06, S-60, S-100).
+//! are literals from guard_decide's contract.
 
 use gitio::Oid;
 use oplog::RefMove;
@@ -151,7 +151,7 @@ fn transaction_cases() -> Vec<Case> {
             Some(vec![mv("refs/heads/zone/other", Some(A), B)]), GuardVerdict::Allow),
         case("HEAD to a symref, unrelated intent", tx("prepared"), &format!("{Z} ref:refs/heads/x HEAD"),
             Some(vec![mv("refs/heads/zone/other", Some(A), B)]), GuardVerdict::Allow),
-        // S-153: a line on a guarded ref whose old and new are the same non-zero oid moves nothing (a checkout of the
+        // A line on a guarded ref whose old and new are the same non-zero oid moves nothing (a checkout of the
         // branch writes it) and passes; the same all-zero oid on both sides with no intent is still refused.
         case("integration unchanged no intent", tx("prepared"), &format!("{A} {A} refs/heads/integration"), None,
             GuardVerdict::Allow),
@@ -197,7 +197,7 @@ fn push_cases() -> Vec<Case> {
     ]
 }
 
-/// S-100: the push is to origin when arg 1 is its name or the URL is exactly one of its push URLs; when its push
+/// The push is to origin when arg 1 is its name or the URL is exactly one of its push URLs; when its push
 /// URLs could not be read and arg 1 is another name, the whole push is refused unread.
 fn push_url_cases() -> Vec<Case> {
     let main_line = format!("refs/heads/main {B} refs/heads/main {A}\n");

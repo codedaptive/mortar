@@ -1,7 +1,7 @@
-//! An older squash published after a newer one replaced the squash ref (#3). Zone `land` is squashed at A1 (S1,
+//! An older squash published after a newer one replaced the squash ref. Zone `land` is squashed at A1 (S1,
 //! kept), then A2 joins on A1 and S2 is made at A2, replacing `refs/mortar/squash/land`. Zone `b` publishes and
 //! after_publish(b, others=[land]) replays A1 and A2 onto b's origin, recording both, not only the squash ref's
-//! source (fixture replayed_chain, S-121 W). Then S1 lands, as a merge, and publishes: after_publish(land) takes
+//! source (fixture replayed_chain). Then S1 lands, as a merge, and publishes: after_publish(land) takes
 //! A1' through A1's record, replays only A2' onto origin, deletes A1's record (the published source) and carries
 //! A2's record to A2's new image, the zone tip. Origin is never rewritten.
 

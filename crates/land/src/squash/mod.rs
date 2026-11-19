@@ -13,7 +13,7 @@ mod read_squash;
 mod read_tip;
 mod request_commits;
 mod same_squash;
-// The module is named after the function it holds (small-files rule 2), which shares the folder's name.
+// The module is named after the function it holds, which shares the folder's name.
 #[allow(clippy::module_inception)]
 mod squash;
 mod squash_answer;

@@ -1,9 +1,9 @@
-//! backup and restore_backup on throwaway repositories (SPEC-land 08): a work repository, a bare
+//! backup and restore_backup on throwaway repositories: a work repository, a bare
 //! remote made inside it at `remote.git`, and a fresh store on the same remote. Every repository is a testkit
 //! TestRepo (or lives inside one) and is removed when it drops. Commits are written with fixed identities and
 //! dates, so the same message gives the same commit id in any repository: the test sets up every expected id.
-//! Each store's op log is recovered before its first backup or restore, as the caller's contract asks (S-16).
-//! The plan_ cases prove the decisions of plan_backup and restore_plan that run another land file (S-102): leases,
+//! Each store's op log is recovered before its first backup or restore, as the caller's contract asks.
+//! The plan_ cases prove the decisions of plan_backup and restore_plan that run another land file: leases,
 //! refs outside this host's mapped backups, another host's backup, and the order of Backup.pushed and of restore's
 //! entries, each against refs set by hand on the bare remote.
 

@@ -1,4 +1,4 @@
-//! backup_op: the op a backup push runs inside, so MORTAR_OP rides on the push (SPEC-land 09, S-60).
+//! backup_op: the op a backup push runs inside, so MORTAR_OP rides on the push.
 //! backup_op_tests cover it.
 
 use oplog::Op;

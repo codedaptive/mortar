@@ -1,4 +1,4 @@
-//! LandingTarget: the commit a landing moves integration to, or the files that stop it. A bare type (S-7); land's own
+//! LandingTarget: the commit a landing moves integration to, or the files that stop it. A bare type; land's own
 //! landing_zit tests a_squash_on_origin_fast_forwards_integration_to_the_squash,
 //! a_squash_behind_a_moved_origin_lands_as_a_merge_commit and a_conflicting_squash_moves_nothing_and_writes_no_state
 //! exercise each variant through land.

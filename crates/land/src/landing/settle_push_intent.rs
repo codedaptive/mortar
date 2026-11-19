@@ -1,11 +1,10 @@
 //! settle_push_intent: on a repeat, publish closes a push intent an earlier run left open, from what the remote holds
-//! now (S-103 (2)): recover leaves such an intent open, and only publish reads the remote.
-//! No unit test (S-5): it reads and appends the op log. Its decision is push_intent_close (push_intent_close_tests).
-//! Covered by the publish_zit tests publishing::an_open_push_intent_after_the_push_is_closed_done_on_the_repeat
-//! (case 7), publishing::an_open_push_intent_before_the_push_is_closed_failed_and_pushed_again (case 8),
-//! publishing::an_open_push_intent_with_the_remote_past_new_is_closed_done (case 9) and
-//! kills.rs killed_between_the_steps_recovers_and_the_repeat_publishes_once (case 3: nothing left open, nothing
-//! written).
+//! now: recover leaves such an intent open, and only publish reads the remote.
+//! No unit test: it reads and appends the op log. Its decision is push_intent_close (push_intent_close_tests).
+//! Covered by the publish_zit tests publishing::an_open_push_intent_after_the_push_is_closed_done_on_the_repeat,
+//! publishing::an_open_push_intent_before_the_push_is_closed_failed_and_pushed_again,
+//! publishing::an_open_push_intent_with_the_remote_past_new_is_closed_done and
+//! kills.rs killed_between_the_steps_recovers_and_the_repeat_publishes_once (nothing left open, nothing written).
 
 use crate::landing::{publish_push_op, push_intent_close, LandingState, PublishError};
 use crate::squash::LandRefs;

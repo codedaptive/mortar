@@ -1,4 +1,4 @@
-//! PublishStep: what publish does next, as decide_publish chooses it. A bare type (S-7); decide_publish_tests exercises
+//! PublishStep: what publish does next, as decide_publish chooses it. A bare type; decide_publish_tests exercises
 //! each variant.
 
 use gitio::Oid;

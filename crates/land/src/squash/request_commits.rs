@@ -1,5 +1,5 @@
 //! request_commits: the subject and Mortar-Request of each commit a squash takes in, as squash_requests reads them.
-//! No unit test: it runs git (S-5); commit_subject_tests and squash_requests_tests cover what is made of its answer.
+//! No unit test: it runs git; commit_subject_tests and squash_requests_tests cover what is made of its answer.
 //! tests/squash_zit.rs covers it, in a throwaway repository: the squash message names the request's commit subject.
 
 use crate::squash::{commit_subject, SquashError};

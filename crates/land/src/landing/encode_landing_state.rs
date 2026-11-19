@@ -1,7 +1,8 @@
 //! encode_landing_state: a LandingState as the text of landing.json.
-//! No sibling unit test (S-104): every test of it runs oplog's write_json_string and gitio's Oid Display (S-101).
+//! No sibling unit test: every test of it runs oplog's write_json_string and gitio's Oid Display.
 //! Covered by tests/landing_zit (landing.rs, a_squash_on_origin_fast_forwards_integration_to_the_squash: landing.json
-//! holds exactly the hand-written state text); its unit cases are Nagatha's RITs (owed).
+//! holds exactly the hand-written state text); its unit cases are repo integration tests (RITs):
+//! tests/land_rit/state_codec.rs covers them.
 
 use crate::landing::LandingState;
 use oplog::write_json_string;

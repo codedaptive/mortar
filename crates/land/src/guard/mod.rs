@@ -1,5 +1,4 @@
-//! guard: installs and reads Mortar's git hooks and decides that only Mortar moves integration and origin
-//! (SPEC-land 06).
+//! guard: installs and reads Mortar's git hooks and decides that only Mortar moves integration and origin.
 
 mod check_hooks_path;
 mod classify_hook;

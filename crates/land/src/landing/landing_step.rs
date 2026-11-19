@@ -1,4 +1,4 @@
-//! LandingStep: what land does next, as decide_landing chooses it. A bare type (S-7); decide_landing_tests exercises
+//! LandingStep: what land does next, as decide_landing chooses it. A bare type; decide_landing_tests exercises
 //! each variant.
 
 use gitio::Oid;

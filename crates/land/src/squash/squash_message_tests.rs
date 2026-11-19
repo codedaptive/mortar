@@ -14,8 +14,8 @@ fn no_requests_give_the_subject_line_alone() {
 #[test]
 fn one_request_gives_the_subject_a_blank_line_and_its_line() {
     assert_eq!(
-        squash_message("land", &[request("WO-land-1", &["Add squash ref", "Add squash op"])]),
-        "land: 1 requests\n\n- WO-land-1: Add squash ref; Add squash op\n"
+        squash_message("land", &[request("r1", &["Add squash ref", "Add squash op"])]),
+        "land: 1 requests\n\n- r1: Add squash ref; Add squash op\n"
     );
 }
 

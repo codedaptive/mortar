@@ -1,5 +1,5 @@
 //! Why check_hooks_path refused or could not decide.
-//! A bare type (S-7); hooks_path_error_display_tests checks the Relative text, hooks_path_error_source_tests each
+//! A bare type; hooks_path_error_display_tests checks the Relative text, hooks_path_error_source_tests each
 //! variant's source. tests/land_rit/check_hooks_path.rs checks the Git text and source through gitio's Display.
 
 use std::path::PathBuf;

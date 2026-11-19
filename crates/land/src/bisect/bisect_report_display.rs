@@ -19,7 +19,7 @@ impl fmt::Display for BisectReport {
     }
 }
 
-/// The culprit line: its commit, then its change ID and zone, naming whichever trailer it does not carry (S-78).
+/// The culprit line: its commit, then its change ID and zone, naming whichever trailer it does not carry.
 fn write_culprit(f: &mut fmt::Formatter<'_>, culprit: &Culprit) -> fmt::Result {
     let commit = &culprit.commit;
     match (&culprit.change_id, &culprit.zone) {

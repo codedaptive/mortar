@@ -1,5 +1,5 @@
 //! Every way installing, reading or checking the guard can fail.
-//! A bare type (S-7); guard_error_display_tests exercises the Io, ForeignHook and BadConfig texts,
+//! A bare type; guard_error_display_tests exercises the Io, ForeignHook and BadConfig texts,
 //! guard_error_source_tests each variant's source; the Git text is checked in tests/land_rit/owed_displays.rs.
 
 use std::path::PathBuf;

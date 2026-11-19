@@ -1,6 +1,6 @@
-//! land: lands a zone's squash on integration (SPEC-land 03-land.md, S-58, S-59). It takes no lock: the caller
-//! holds `land` and has run recover (S-16). The reviewed squash commit is never rewritten.
-//! No unit test (S-5): it runs git, reads and writes the landing state and writes the op log; decide_landing_tests,
+//! land: lands a zone's squash on integration. It takes no lock: the caller holds `land` and has run recover. The
+//! reviewed squash commit is never rewritten.
+//! No unit test: it runs git, reads and writes the landing state and writes the op log; decide_landing_tests,
 //! is_fast_forward_tests and landing_applied_tests cover its decisions.
 //! Covered by the landing_zit tests a_squash_on_origin_fast_forwards_integration_to_the_squash,
 //! a_squash_behind_a_moved_origin_lands_as_a_merge_commit, a_conflicting_squash_moves_nothing_and_writes_no_state,

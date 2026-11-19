@@ -1,4 +1,4 @@
-//! What the bisect search answers. A bare type (S-7); search_first_failing_tests exercises it.
+//! What the bisect search answers. A bare type; search_first_failing_tests exercises it.
 
 use gitio::Oid;
 

@@ -1,6 +1,6 @@
 //! Display for LandError's own refusals that carry only op-log records (OpFailed, OpRepeated), each as literal text
 //! naming the op and saying nothing moved. The arms that print an Oid (NoZone, NoLandingState, IntegrationElsewhere)
-//! are Nagatha's RITs (owed, S-101); the State arm, which runs
+//! are repo integration tests (RITs): tests/land_rit/owed_displays.rs covers them; the State arm, which runs
 //! LandingStateError's Display, is tested in tests/landing_zit (state_display); the Squash, Git, Oplog and Trailers
 //! arms embed another error's text and have no case here.
 

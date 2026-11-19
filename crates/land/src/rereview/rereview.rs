@@ -1,6 +1,6 @@
 //! The re-review diff: what changed in a squash since it was reviewed. Read only: it moves no ref and takes no
 //! lock. same_change and plan_rereview make every decision.
-//! No unit test: it runs git (S-5). Its zone integration tests are in crates/land/tests/rereview_zit.rs.
+//! No unit test: it runs git. Its zone integration tests are in crates/land/tests/rereview_zit.rs.
 
 use gitio::{Git, Oid};
 use oplog::read_mortar_trailers;

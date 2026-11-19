@@ -1,4 +1,4 @@
-//! Squash: one zone squash commit. A declaration only (S-7); tests/squash_zit.rs exercises it.
+//! Squash: one zone squash commit. A declaration only; tests/squash_zit.rs exercises it.
 //! Not named squash.rs: that file holds the function of the same name.
 
 use gitio::Oid;

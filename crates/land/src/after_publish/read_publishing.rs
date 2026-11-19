@@ -1,5 +1,6 @@
-//! read_publishing: what the publishing zone holds for the squash just published (rules R and O, S-121).
-//! No unit test: it only reads git (S-5); choose_held_tests and decide_zone_case_tests cover what is decided from
+//! read_publishing: what the publishing zone holds for the squash just published (a held record first, then the
+//! older-squash check).
+//! No unit test: it only reads git; choose_held_tests and decide_zone_case_tests cover what is decided from
 //! its answer. Covered by tests/after_publish_zit: (older_squash.rs)
 //! an_older_squash_published_after_the_newer_one_leaves_the_zone_current_and_writes_no_op (Superseded) and
 //! a_squash_whose_source_is_not_behind_the_published_one_is_refused (the source not behind the earlier squash's:
@@ -14,10 +15,11 @@ use gitio::{Git, Oid};
 
 /// `base` is the merge base of `origin` and the zone `tip`. The zone's squash S on origin's line since `base`
 /// (read_squash_of; none: Missing) names the source A; read_held answers what the zone holds for A. When it holds
-/// A in neither form, rule O: the newest earlier squash of this zone on the first-parent line from `base` back to
-/// what S's first parent reaches names P; when A and P both exist and A is P or an ancestor of it, A is at or
-/// behind a source already published, and the answer is Superseded with A. Otherwise read_held's answer stands.
-/// A is read only when no held record answers (read_held), and rule O runs only then. A failed git run is Git.
+/// A in neither form, the older-squash check: the newest earlier squash of this zone on the first-parent line from
+/// `base` back to what S's first parent reaches names P; when A and P both exist and A is P or an ancestor of it, A
+/// is at or behind a source already published, so S carries nothing new, and the answer is Superseded with A.
+/// Otherwise read_held's answer stands. A is read only when no held record answers (read_held), and the older-squash
+/// check runs only then. A failed git run is Git.
 pub(crate) fn read_publishing(
     git: &Git,
     zone: &str,
@@ -35,8 +37,8 @@ pub(crate) fn read_publishing(
     Ok(SquashOfRead::Superseded { commit: source })
 }
 
-/// Rule O's test: the earlier squash's source P read on the line from `base` back to what S's first parent reaches
-/// (read_squash_of with `base` as its origin and that parent as its zone tip), then whether `source`
+/// The older-squash check: the earlier squash's source P read on the line from `base` back to what S's first parent
+/// reaches (read_squash_of with `base` as its origin and that parent as its zone tip), then whether `source`
 /// and P both exist and `source` is P or an ancestor of it. No parent, no earlier squash, or a missing object: false.
 fn behind_earlier(git: &Git, zone: &str, squash: &Oid, source: &Oid, base: &Oid) -> Result<bool, AfterPublishError> {
     let Some(parent) = git.commit_info(squash).map_err(AfterPublishError::Git)?.parents.into_iter().next() else {

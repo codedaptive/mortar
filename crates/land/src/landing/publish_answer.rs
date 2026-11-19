@@ -1,4 +1,4 @@
-//! PublishAnswer: what publish did. A bare type (S-7); the publish_zit tests
+//! PublishAnswer: what publish did. A bare type; the publish_zit tests
 //! publish_moves_the_remote_then_the_local_origin_and_cleans_up (Published),
 //! a_remote_moved_by_someone_else_is_fetched_backed_out_onto_and_lands_again (OriginMoved) and
 //! with_no_landing_state_there_is_nothing_to_publish_and_the_remote_is_untouched (NothingToPublish) exercise each

@@ -1,7 +1,8 @@
 //! Every way bisect can fail before or while it searches.
-//! A bare type (S-7); bisect_error_source_tests exercise each variant, and
-//! bisect_error_display_tests the OriginMissing text; the other arms' texts are Nagatha's RITs
-//! (owed, S-101).
+//! A bare type; bisect_error_source_tests exercise each variant, and bisect_error_display_tests the OriginMissing
+//! text. The other arms' texts are repo integration tests (RITs): tests/land_rit/owed_displays.rs covers
+//! NotOnOrigin, OffTheLine and ProbeCouldNotRun; Culprit prints CulpritError's text, covered there (NotALanding)
+//! and in tests/land_rit/displays.rs (Trailers); Git's is not yet written.
 
 use gitio::{GitError, Oid};
 
@@ -14,10 +15,10 @@ pub enum BisectError {
     OriginMissing { refname: String },
     /// The failed commit is not on the origin branch, so it names no landing.
     NotOnOrigin { failed: Oid, origin_branch: String },
-    /// `last_pass` is not on `failed`'s first-parent line, so the range names no landings (S-78).
+    /// `last_pass` is not on `failed`'s first-parent line, so the range names no landings.
     OffTheLine { last_pass: Oid, failed: Oid },
     /// The caller's command could not be run at `commit` (spawn, wait or stderr read failed): the suite's verdict
-    /// there is unknown, so bisect stops (S-78). `error` is the failure's text.
+    /// there is unknown, so bisect stops. `error` is the failure's text.
     ProbeCouldNotRun { commit: Oid, error: String },
     /// A git step failed.
     Git(GitError),

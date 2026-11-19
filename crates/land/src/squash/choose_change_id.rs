@@ -1,4 +1,4 @@
-//! choose_change_id: whether a squash keeps the change ID of the squash already at its ref (S-57).
+//! choose_change_id: whether a squash keeps the change ID of the squash already at its ref.
 
 use crate::squash::PriorSquash;
 use oplog::ChangeId;

@@ -1,5 +1,5 @@
 //! Owed op/message seams through PUBLIC squash/land/back_out/publish, real Git objects and Oplog records.
-//! Normal completed push only: S-103 interrupted remote-push outcomes are explicitly outside this request.
+//! Normal completed push only: interrupted remote-push outcomes are tested in remote_intents.rs.
 use crate::support::{Fixture, CHANGE_ID};
 use gitio::{Oid, RunOpts};
 use land::{BackOutAnswer, LandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer};
@@ -32,7 +32,7 @@ fn landed(f: &Fixture, squash: &Squash) -> Oid {
 }
 
 // Expected templates below are the literal protocol contract at the call sites, never the private builder.
-// Op IDs are nonempty runtime identities; per-attempt keys correlate with them. S-103's publish-push key
+// Op IDs are nonempty runtime identities; per-attempt keys correlate with them. The publish-push key
 // is instead stable and remote-qualified, with no op ID, so a repeat can find the marked intent.
 // Timestamp is checked against independent clock reads surrounding the call, not against a speed limit.
 fn assert_op(f: &Fixture, kind: &str, key_prefix: &str, reason: &str, move_: RefMove, before: u64, after: u64) {

@@ -1,4 +1,4 @@
-//! Why bisect can name no culprit (07-bisect.md). A bare type (S-7); search_first_failing_tests exercises it.
+//! Why bisect can name no culprit. A bare type; search_first_failing_tests exercises it.
 
 /// The reason no first failing commit can be named between the last passing commit and the failed one.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

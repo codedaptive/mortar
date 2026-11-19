@@ -1,6 +1,6 @@
-//! AfterPublishError: why after_publish stopped. A declaration only (S-7); after_publish_error_display_tests
+//! AfterPublishError: why after_publish stopped. A declaration only; after_publish_error_display_tests
 //! exercises the NoSquashOf text, after_publish_error_source_tests its source; the Unrelated and SquashOfNotInZone
-//! texts print Oids and are Nagatha's RITs (owed, S-101).
+//! texts print Oids and are repo integration tests (RITs): tests/land_rit/after_publish_displays.rs covers them.
 
 use crate::landing::LandError;
 use crate::squash::SquashError;

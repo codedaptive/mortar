@@ -1,7 +1,6 @@
-//! squash: a zone's changes squashed onto origin as one commit at `refs/mortar/squash/<zone>` (SPEC-land
-//! 01-squash.md, S-57). It takes no lock: the caller holds `land` and has run recover (S-16). It never moves the zone
-//! branch and never rewrites a zone commit.
-//! No unit test: it runs git and writes the op log (S-5); squash_requests_tests, squash_message_tests,
+//! squash: a zone's changes squashed onto origin as one commit at `refs/mortar/squash/<zone>`. It takes no lock:
+//! the caller holds `land` and has run recover. It never moves the zone branch and never rewrites a zone commit.
+//! No unit test: it runs git and writes the op log; squash_requests_tests, squash_message_tests,
 //! choose_change_id_tests, same_squash_tests and squash_applied_tests cover its decisions. In a
 //! throwaway repository, tests/squash_zit/squash_cases.rs
 //! covers a_squash_keeps_origins_newer_change_and_adds_only_the_zones, a_conflict_lists_the_files_and_moves_nothing

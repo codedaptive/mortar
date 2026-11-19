@@ -1,4 +1,4 @@
-//! backup_answer: what a backup run tells its caller, from its plan and the push's outcomes (SPEC-land 08).
+//! backup_answer: what a backup run tells its caller, from its plan and the push's outcomes.
 //! backup_answer_tests cover it.
 
 use crate::backup::{Backup, BackupError, PushPlan};

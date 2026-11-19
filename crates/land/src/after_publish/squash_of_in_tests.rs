@@ -1,6 +1,6 @@
 //! squash_of_in: the squash-of of this zone's squash; None for another zone's, for no Mortar-Zone and for no
 //! Mortar-Squash-Of. Keys match in any ASCII case (lowercase, mixed); when Mortar-Zone or Mortar-Squash-Of
-//! repeats, the last pair counts (S-10). Keys are written as literal trailer text, as a squash commit carries them.
+//! repeats, the last pair counts. Keys are written as literal trailer text, as a squash commit carries them.
 
 use super::squash_of_in;
 
@@ -34,7 +34,7 @@ fn a_squash_of_with_no_zone_trailer_is_none() {
 
 #[test]
 fn this_zones_commit_with_no_squash_of_is_none() {
-    let trailers = pairs(&[("Mortar-Zone", "land"), ("Mortar-Request", "WO-land-5")]);
+    let trailers = pairs(&[("Mortar-Zone", "land"), ("Mortar-Request", "r1")]);
     assert_eq!(squash_of_in(&trailers, "land"), None);
 }
 

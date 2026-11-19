@@ -1,6 +1,5 @@
 //! push_intent_close: Done whenever the push landed, whatever the remote holds; Failed naming the ref and what the
-//! remote holds otherwise (at the landing's start, elsewhere, or absent). Oids and IntentClose are built as data
-//! (S-101).
+//! remote holds otherwise (at the landing's start, elsewhere, or absent). Oids and IntentClose are built as data.
 
 use super::push_intent_close;
 use gitio::Oid;

@@ -1,4 +1,4 @@
-//! rereview: the re-review diff (SPEC-land 02): what changed in a squash since it was reviewed.
+//! rereview: the re-review diff: what changed in a squash since it was reviewed.
 
 mod plan_rereview;
 mod rereview;

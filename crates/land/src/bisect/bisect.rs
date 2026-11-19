@@ -1,5 +1,5 @@
-//! bisect: name the first failing landing between a passing commit and a failed one on origin (07-bisect.md).
-//! No unit test: it runs git and probes (S-5). Its refusals before any probe are decided by decide_bisect_range
+//! bisect: name the first failing landing between a passing commit and a failed one on origin.
+//! No unit test: it runs git and probes. Its refusals before any probe are decided by decide_bisect_range
 //! (decide_bisect_range_tests) and the first-parent check by on_first_parent_line (on_first_parent_line_tests).
 //! tests/bisect_zit.rs covers the run: a merge landing named through its squash's trailers
 //! (bisect_names_the_merge_landing_that_broke_the_script), a timed-out probe as a fail
@@ -25,7 +25,7 @@ use super::{
 /// every probe in the order run.
 ///
 /// Refused before any probe: OriginMissing when the origin branch is absent, NotOnOrigin when `failed` is not on
-/// its first-parent line, OffTheLine when `last_pass` is not on `failed`'s (S-78). Each probe runs the command in
+/// its first-parent line, OffTheLine when `last_pass` is not on `failed`'s. Each probe runs the command in
 /// its own throwaway detached worktree with `timeout` as its limit: exit 0 passes, any other end fails, and a
 /// command that could not be run stops the search with ProbeCouldNotRun. No git bisect state is written and no ref
 /// moves.

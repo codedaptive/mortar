@@ -1,5 +1,5 @@
 //! Thirteen owed Land -> Oplog JSON/Gitio ID codec cases, through PUBLIC land/back_out/publish and real files.
-//! S-109/#1589 narrows the two writer fixtures to reachable quote/backslash zones (unicode also retained).
+//! The two writer fixtures are narrowed to reachable quote/backslash zones (unicode also retained).
 //! Newline/control-character zones cannot reach today's public writer and are NOT owed; no codec API is exposed.
 //! Decoder refusals still use hand-written malformed files. No private production source is copied or included.
 use crate::{owed_ops::{locked, raw, refs}, support::Fixture};
@@ -69,7 +69,7 @@ impl State {
         assert_eq!(self.f.git.read_ref(INTEGRATION).unwrap(), Some(self.origin.clone())); assert!(!self.path.exists());
         if let Some(zone_ref) = zone_ref {
             // A second real read observes decoded zone/squash via the cleanup ref. Local origin already new:
-            // publish does not contact a remote or exercise the excluded S-103 interrupted-push behavior.
+            // publish does not contact a remote or exercise the excluded interrupted-push behavior.
             self.seed(text); raw(&self.f, &["update-ref", "refs/heads/main", self.integration.as_str()]);
             raw(&self.f, &["update-ref", INTEGRATION, self.integration.as_str()]);
             raw(&self.f, &["update-ref", zone_ref, self.squash.commit.as_str()]);

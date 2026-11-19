@@ -1,4 +1,4 @@
-//! LandAnswer: what land did. A bare type (S-7); land's own landing_zit tests
+//! LandAnswer: what land did. A bare type; land's own landing_zit tests
 //! a_squash_on_origin_fast_forwards_integration_to_the_squash, a_squash_behind_a_moved_origin_lands_as_a_merge_commit,
 //! a_conflicting_squash_moves_nothing_and_writes_no_state,
 //! a_second_landing_is_busy_and_the_first_ones_repeat_is_landed_with_the_log_unchanged,

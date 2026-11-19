@@ -1,4 +1,4 @@
-//! GuardHook: which git hook ran. A bare type (S-7); guard_decide_tests exercises it.
+//! GuardHook: which git hook ran. A bare type; guard_decide_tests exercises it.
 
 /// The hook git ran, its arguments, and for pre-push what the caller read of the guarded remote.
 #[derive(Clone, Debug, PartialEq, Eq)]

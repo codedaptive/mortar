@@ -1,4 +1,4 @@
-//! Cases 1, 3 and 5: a squash keeps origin's newer change and adds only the zone's; a conflict lists the files and
+//! A squash keeps origin's newer change and adds only the zone's; a conflict lists the files and
 //! moves nothing; a zone at origin has nothing to squash.
 
 use crate::fixture::{made, oid, refs, split_trailers, Fixture, ACTOR, SQUASH_REF, ZONE};
@@ -10,7 +10,7 @@ fn a_squash_keeps_origins_newer_change_and_adds_only_the_zones() {
     let fx = Fixture::new();
     let o = fx.commit_on(&fx.base, &[("o", "origin\n")], "add o", None);
     fx.set_branch("main", &o);
-    let z = fx.commit_on(&fx.base, &[("z", "zone\n")], "add z", Some("WO-a"));
+    let z = fx.commit_on(&fx.base, &[("z", "zone\n")], "add z", Some("r1"));
     fx.set_branch("zone/land", &z);
 
     let squash = made(squash(&fx.land_git(), &refs(), ZONE, ACTOR).unwrap());
@@ -23,9 +23,9 @@ fn a_squash_keeps_origins_newer_change_and_adds_only_the_zones() {
     assert_eq!(fx.ref_of("refs/heads/zone/land"), Some(z.clone()));
     assert_eq!(fx.ref_of("refs/heads/main"), Some(o));
     assert_eq!(squash.source, oid(&z));
-    assert_eq!(squash.requests, vec!["WO-a".to_string()]);
+    assert_eq!(squash.requests, vec!["r1".to_string()]);
     let (text, trailers) = split_trailers(&fx.message(&commit));
-    assert_eq!(text, "land: 1 requests\n\n- WO-a: add z\n");
+    assert_eq!(text, "land: 1 requests\n\n- r1: add z\n");
     let expected = [
         format!("Mortar-Change-Id: {}", squash.change_id.as_str()),
         "Mortar-Zone: land".to_string(),
@@ -39,7 +39,7 @@ fn a_conflict_lists_the_files_and_moves_nothing() {
     let fx = Fixture::new();
     let o = fx.commit_on(&fx.base, &[("f", "origin\n")], "origin f", None);
     fx.set_branch("main", &o);
-    let z = fx.commit_on(&fx.base, &[("f", "zone\n")], "zone f", Some("WO-a"));
+    let z = fx.commit_on(&fx.base, &[("f", "zone\n")], "zone f", Some("r1"));
     fx.set_branch("zone/land", &z);
 
     let answer = squash(&fx.land_git(), &refs(), ZONE, ACTOR).unwrap();

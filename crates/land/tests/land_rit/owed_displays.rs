@@ -75,7 +75,7 @@ case!(rit_integration_elsewhere_names_both_commits_and_says_nothing_moved, LandE
 case!(rit_land_is_prefixed_with_publish, PublishError::Land(LandError::NoZone { commit: a() }),
     "publish: squash commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa carries no Mortar-Zone trailer, so its landing cannot name the zone; nothing was moved");
 case!(rit_not_a_landing_names_the_commit_its_parents_and_what_a_landing_has, CulpritError::NotALanding { commit: a(), parents: 3 },
-    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa is not a landing: it has 3 parents, and a landing has one (a fast-forward) or two (a merge, S-58)");
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa is not a landing: it has 3 parents, and a landing has one (a fast-forward) or two (a merge)");
 case!(rit_not_same_change_names_both_commits_and_ids, RereviewError::NotSameChange { reviewed: a(), reviewed_id: Some(id()), new: b(), new_id: None },
     "not the same change: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa carries Mortar-Change-Id kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk, bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb carries none");
 case!(rit_not_same_change_without_reviewed_id_prints_none, RereviewError::NotSameChange { reviewed: a(), reviewed_id: None, new: b(), new_id: Some(id()) },

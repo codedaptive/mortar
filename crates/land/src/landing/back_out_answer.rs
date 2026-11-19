@@ -1,4 +1,4 @@
-//! BackOutAnswer: what back_out did. A bare type (S-7); land's own landing_zit test
+//! BackOutAnswer: what back_out did. A bare type; land's own landing_zit test
 //! back_out_restores_integration_then_has_nothing_to_back_out exercises both variants.
 
 use oplog::ChangeId;

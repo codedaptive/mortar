@@ -1,4 +1,4 @@
-//! bisect: name the landing that broke the suite (SPEC-land). Holds the top-level bisect, which checks both ends are
+//! bisect: name the landing that broke the suite. Holds the top-level bisect, which checks both ends are
 //! on origin's first-parent line, then runs the binary search for the first failing landing with each probe
 //! running the caller's command in a throwaway detached worktree; the reading of a landing's culprit (its
 //! commit, and the change ID and zone from its squash's trailers); and the pieces a bisect run is described by:

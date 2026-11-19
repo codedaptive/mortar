@@ -1,6 +1,6 @@
-//! replay_records (rule W): a write per mapped commit (old from an existing record, None when absent), a write whose
-//! old equals its new left out, a carry of a record whose value is a mapped source, a write winning over a carry of
-//! the same ref, records outside the range left alone, and the order (writes in mapped order, then carries).
+//! replay_records: a write per mapped commit (old from an existing record, None when absent), a write whose old
+//! equals its new left out, a carry of a record whose value is a mapped source, a write winning over a carry of the
+//! same ref, records outside the range left alone, and the order (writes in mapped order, then carries).
 
 use super::{replay_records, ZoneRecord};
 use gitio::Oid;

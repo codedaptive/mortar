@@ -1,4 +1,4 @@
-//! SquashOfRead: what move_zone read of the published squash's Mortar-Squash-Of. A declaration only (S-7);
+//! SquashOfRead: what move_zone read of the published squash's Mortar-Squash-Of. A declaration only;
 //! decide_zone_case_tests exercises each variant.
 
 use gitio::Oid;
@@ -9,8 +9,7 @@ use gitio::Oid;
 /// itself when it is the zone tip or an ancestor of it; None when the zone holds neither. Superseded: the zone holds
 /// the named commit (`commit`) in neither form, but it exists and is at or behind the existing source an
 /// earlier-published squash of this zone named, found on the first-parent line from the merge base back to what the
-/// publishing squash's first parent reaches, so the
-/// publish brings the zone nothing it lacks (rule O, S-121).
+/// publishing squash's first parent reaches, so the publish brings the zone nothing it lacks.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum SquashOfRead {
     NotPublishing,

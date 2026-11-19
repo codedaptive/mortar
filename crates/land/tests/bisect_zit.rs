@@ -1,4 +1,4 @@
-//! bisect on throwaway repositories: five landings after a passing L0, the third breaks check.sh (07-bisect.md).
+//! bisect on throwaway repositories: five landings after a passing L0, the third breaks check.sh.
 //! Each case checks bisect's answer and that no probe worktree, git bisect ref or BISECT_* file is left behind.
 
 #[path = "bisect_zit/history.rs"]

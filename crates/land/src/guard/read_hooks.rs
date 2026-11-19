@@ -1,4 +1,4 @@
-//! read_hooks: each guard hook's path and state in one hooks folder. It reads files, so it has no unit test (S-5).
+//! read_hooks: each guard hook's path and state in one hooks folder. It reads files, so it has no unit test.
 //! tests/land_rit/guard_installation.rs asserts missing, Mortar's and foreign hooks through guard_status and
 //! guard_install.
 
