@@ -1,6 +1,7 @@
 //! The body of run: one parsed command line taken to its report, with the version and folder reads given.
-//! Unit tests: shell/run_in_tests, with both reads faked. The validation tests (to write) that cover the whole line
-//! through the mortar binary are listed in shell/run.rs.
+//! Unit tests: shell/run_in_tests, with both reads faked. The integration tests that cover the whole line
+//! through the mortar binary: crates/cli/tests/log_restore_runs/run_git_floor_tests.rs, and the cases listed in
+//! shell/run.rs that are still to write.
 
 use std::path::Path;
 

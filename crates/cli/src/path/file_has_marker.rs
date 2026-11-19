@@ -1,7 +1,9 @@
 //! file_has_marker: whether a file's bytes carry a marker (is the first `mr` on PATH a copy of Mortar). It
 //! reads the file and never runs it. No sibling test: its job is reading files. marker_in_chunks_tests
 //! cover the search, the 64 KiB straddle included. Its real-file cases (marker present or absent, straddling a read,
-//! a directory, a missing path, a symlink) are listed for the validation tests through `mr guard install`.
+//! a directory, a missing path, a symlink) are covered through `mr guard install` by the integration tests
+//! crates/cli/tests/guard_runs/guard_path.rs, except a directory and a missing path: first_on_path's PATH lookup rejects
+//! them before this reader runs; and except the reader's own symlink-following: the symlink test canonicalizes first.
 
 use std::fs::{self, File};
 use std::io::Read;

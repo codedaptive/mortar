@@ -1,5 +1,5 @@
 //! What install reads from the process it runs in, gathered once by run_install so the rest takes it as data.
-//! A bare type; the install ZITs exercise it with a temporary HOME and fake PATH.
+//! A bare type; the install integration tests exercise it with a temporary HOME and fake PATH.
 
 use std::ffi::OsString;
 use std::path::PathBuf;

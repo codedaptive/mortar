@@ -1,6 +1,6 @@
 //! apply_install: Applies install's steps in order, stopping at the first error. It runs only once
 //! install_in has found every refusal, so each step it applies was already allowed.
-//! No sibling test: it touches the disk; the install ZITs in install/integration/ cover it (a fresh install, folders
+//! No sibling test: it touches the disk; the install integration tests in install/integration/ cover it (a fresh install, folders
 //! that existed or not, install then uninstall leaving HOME as it was).
 
 use std::path::Path;

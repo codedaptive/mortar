@@ -1,7 +1,7 @@
 //! fresh_temp: Creates a sibling temp under a random name through an exclusive `make`, moving on from any name already
 //! taken, so nothing already at a name is followed or replaced.
 //! Pure over its two closures: it touches nothing itself; `make` does any disk work. fresh_temp_tests pins its tries
-//! with fakes; the ZITs in install/integration/temp_files.rs run it against real files.
+//! with fakes; the integration tests in install/integration/temp_files.rs run it against real files.
 
 use std::io;
 use std::path::{Path, PathBuf};

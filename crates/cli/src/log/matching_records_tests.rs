@@ -1,4 +1,4 @@
-//! matching_records: every filter must keep a record (AND), log order kept, no filter keeps all. ZUT: oplog's
+//! matching_records: every filter must keep a record (AND), log order kept, no filter keeps all. Unit tests: oplog's
 //! MarkedRecord, OpRecord, RefMove and HistoryFilter and gitio's Oid::parse are used as plain data; oplog's
 //! history_matches is simple enough to use directly.
 

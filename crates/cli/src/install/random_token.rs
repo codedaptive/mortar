@@ -1,7 +1,7 @@
 //! random_token: A token for a temp file's name that is unlikely to repeat, so a link is unlikely to be planted at
 //! the name ahead of time. Not a secret: the temp file's exclusive creation is what guarantees no link is followed.
 //! No sibling test: it reads process randomness. Install passes it to apply_step (through apply_install) and
-//! write_record (through install_in); the install ZITs that run install_in reach it that way, while temp_files.rs
+//! write_record (through install_in); the install integration tests that run install_in reach it that way, while temp_files.rs
 //! passes fixed tokens instead, to collide with a planted name on purpose.
 
 use std::collections::hash_map::RandomState;

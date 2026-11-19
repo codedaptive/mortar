@@ -1,4 +1,4 @@
-//! ZUTs for attempts_dir: relative dirs taken from the toplevel, lexical normalization, and the inside refusal.
+//! Unit tests for attempts_dir: relative dirs taken from the toplevel, lexical normalization, and the inside refusal.
 
 use std::path::{Path, PathBuf};
 

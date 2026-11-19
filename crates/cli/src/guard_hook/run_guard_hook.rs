@@ -2,10 +2,10 @@
 //! No unit test: every decision that reads the repository runs land, oplog and gitio for real.
 //! guard_hook_from_args_tests and guard_hook_report_tests cover the words it reads and the reports it gives;
 //! decide_with_intent_tests covers when the open intent is read.
-//! Validation tests in tests/validation/run_guard_hook_tests.rs: hook input on stdin that is not UTF-8 is refused
+//! Integration tests in crates/cli/tests/guard_runs/run_guard_hook_tests.rs: hook input on stdin that is not UTF-8 is refused
 //! (exit 1), with nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let
 //! through (exit 0, nothing printed) and a prepared one fails on the op log (exit 5).
-//! The validation tests in tests/validation/guard.rs cover, with the mortar binary installed as the hook
+//! The integration tests in crates/cli/tests/guard_runs/guard.rs cover, with the mortar binary installed as the hook
 //! (the fixture installs it with land::guard_install, the code under `mr guard install`) in a throwaway
 //! repository, git run with
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1:

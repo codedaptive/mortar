@@ -1,5 +1,4 @@
-//! program_help_lines: the program help's text, the usage line then the four groups (SPEC-cli 08,
-//! "The program help").
+//! program_help_lines: the program help's text: the usage line, then the four groups.
 
 use super::HELP_GROUPS;
 

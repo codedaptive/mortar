@@ -1,6 +1,6 @@
 //! version_text: plain "mortar <version> <commit>" on one line; json one object {verb, ok, version, commit} on one
 //! line; neither has a `next:` line.
-//! ZUT: version_text is pure, and oplog's write_json_string, which it uses, is pure too.
+//! Unit tests: version_text is pure, and oplog's write_json_string, which it uses, is pure too.
 
 use super::version_text;
 

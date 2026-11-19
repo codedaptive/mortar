@@ -1,5 +1,5 @@
 //! The PATH half of InstallFacts, read by read_path_facts.
-//! A bare type; the install ZITs exercise it.
+//! A bare type; the install integration tests exercise it.
 
 use std::path::PathBuf;
 

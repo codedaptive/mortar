@@ -5,13 +5,14 @@
 //! left on the old commit onto integration's tip.
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_land_args_tests,
 //! land_report_tests, note_finished_move_tests and landing's land_error_report_tests cover its decisions.
-//! Validation tests to write (not written here): land landed by fast-forward and by
-//! merge commit, with and without an integration folder (the folder moved from the origin tip to the landed
-//! commit); conflicted, exit 2 with the files and integration unmoved; busy, exit 3 naming the other change; a
-//! repeat after Landed answers landed and moves nothing more; a change ID word, exit 4; the stopped-move finish (a
+//! The integration tests in crates/cli/tests/land_runs/land_flow/ cover it through the binary: landing.rs land by
+//! fast-forward and by merge commit, with and without an integration folder (the folder moved from the origin tip to
+//! the landed commit), conflicted (exit 2 with the files and integration unmoved), busy (exit 3 naming the other
+//! change), a repeat after Landed answering landed and moving nothing more, a change ID word (exit 4), the land lock
+//! held by a live pid (exit 3) and without a config (exit 1, next mr init); killed.rs the stopped-move finish (a
 //! kill after land's op and before the folder move, then a plain repeat moves the folder and the report's first
-//! line says so); a staged edit in the integration folder left untouched before land's call; the land lock held by
-//! a live pid, exit 3; without a config, exit 1, next mr init; the acceptance checks of land.
+//! line says so); stopped.rs a staged edit in the integration folder left untouched before land's call.
+//! Integration tests to write (not written here): the acceptance checks of land.
 //! A refused folder move is finished by a repeat when the folder was cleared as the refusal says (paths moved out or
 //! put back to the index copy, the index left as it is); a clear that resets the index to HEAD (the folder's HEAD is
 //! already the branch's new commit) leaves no stall for the repeat to see, and the folder's files are then their

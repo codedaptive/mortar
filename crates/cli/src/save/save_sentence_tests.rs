@@ -1,6 +1,6 @@
 //! save_sentence: one non-blank, one-line argument is the sentence; no word, two words, a blank or a multi-line one
 //! is refused with why.
-//! ZUT: the one-argument cases run snapshot::sentence_refusal, exported and pure on the text; the
+//! Unit tests: the one-argument cases run snapshot::sentence_refusal, exported and pure on the text; the
 //! report module is pure and used directly.
 
 use super::save_sentence;

@@ -1,5 +1,5 @@
 //! The Mortar folder the current directory is in, as an agent verb sees it.
-//! A bare type; read_folder_context makes it and has no unit test, so the validation tests listed
+//! A bare type; read_folder_context makes it and has no unit test, so the integration tests listed
 //! there are to exercise it.
 
 use std::path::PathBuf;

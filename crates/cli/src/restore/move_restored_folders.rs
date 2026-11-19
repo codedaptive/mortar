@@ -1,10 +1,10 @@
 //! move_restored_folders: step 6 of `mr restore`: each folder that needs it is moved with its restored ref.
 //! No unit test: it moves real folders through folders::move_folder; restore_move_refusal_report_tests
-//! cover what a refused move reports. The validation tests are to cover, with the mortar binary as a child
+//! cover what a refused move reports. The integration tests are to cover, with the mortar binary as a child
 //! process in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
 //! GIT_CONFIG_NOSYSTEM=1):
 //! - a request folder on req/<z>/<r> is moved to the restored tip.
-//!   The validation test crates/cli/tests/validation/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder
+//!   The integration test crates/cli/tests/log_restore_runs/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder
 //!   move finished by a plain repeat (Repeated, then the move), and a repeat after a later restore leaving the folder
 //!   and its ref.
 

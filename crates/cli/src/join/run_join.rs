@@ -1,20 +1,21 @@
 //! `mr join`: finishes a folder move a kill or a refused move left (a rebase's or an undo's), saves the
 //! folder's work, joins the request to its zone and moves the folder after a rebase, all under the zone's join lock
 //! after recover; in an attempt folder it runs nothing.
-//! No unit test: it runs git, the formatter and the op log, and takes a real lock; the tests in crates/cli/tests
+//! No unit test: it runs git, the formatter and the op log, and takes a real lock; the unit tests in src/join
 //! (request_run_for_tests, save_part_tests, join_report_tests, join_refusal_report_tests and move_refusal_report_tests)
 //! and in src (snapshot_settings_for_tests, join_save_subject_tests) cover its decisions and reports, and
-//! finish_pending_move's header lists the cases of a move left pending. The validation tests are to cover, with
-//! the mortar binary as a child process in a throwaway repository and a request folder: a request ahead of an unmoved
+//! finish_pending_move's header lists the cases of a move left pending. The integration tests
+//! crates/cli/tests/save_join_runs/{joins,recovery,processes}.rs and resolve_runs/resolve_refusals.rs cover, with the
+//! mortar binary as a child process in a throwaway repository and a request folder: a request ahead of an unmoved
 //! zone fast-forwards it, exit 0 "joined", next "wait for the zone's tests", and a repeat answers joined with nothing
 //! moved; unsaved edits are saved first as "<request>: work saved at join" on the request branch and joined; a zone
-//! moved under the request rebases it, exit 0 "rebased", the folder's files and HEAD at the new tip, next "mr
-//! join"; a conflicting zone change is exit 2 listing the files, the join itself moving no ref (the save and snapshot
-//! before it may have moved the request branch and the snapshot ref, and the line names them), next "mr resolve"; a
-//! local edit in the way of the folder move is exit 1 listing the paths, and once moved aside the next join finishes
-//! the move; a missing zone branch is exit 1 owned by the zone's coordinator; any argument is exit 4 with join's
-//! usage; an attempt folder is exit 1 naming its number with nothing run; a held join lock is exit 3; a configured
-//! formatter runs over the changed files before the save.
+//! moved under the request rebases it, exit 0 "rebased", the folder's files and HEAD at the new tip, next "mr join";
+//! a conflicting zone change is exit 2 listing the files, the join itself moving no ref (the save and snapshot before
+//! it may have moved the request branch and the snapshot ref, and the line names them), next "mr resolve"; a local
+//! edit in the way of the folder move is exit 1 listing the paths, and once moved aside the next join finishes the
+//! move; a missing zone branch is exit 1 owned by the zone's coordinator; any argument is exit 4 with join's usage;
+//! an attempt folder is exit 1 naming its number with nothing run; a held join lock is exit 3; a configured formatter
+//! runs over the changed files before the save.
 
 use folders::move_folder;
 use oplog::KillPidProbe;

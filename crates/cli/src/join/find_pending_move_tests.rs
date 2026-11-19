@@ -3,7 +3,7 @@
 //! op, last mover with the branch at its new tip, is one too, from the rebased tip back (cause Undo, no tree).
 //! An undo whose reversed op's Done record carries join_state (a resolve step) is none; one whose reversed op
 //! carries folder_tree only, has no Done record in the log, or only failed, is the move back.
-//! ZUT: undo_reason's reversed_op, done_record and is_resolve_step are pure and used directly.
+//! Unit tests: undo_reason's reversed_op, done_record and is_resolve_step are pure and used directly.
 
 use gitio::Oid;
 use oplog::{OpPhase, OpRecord, RefMove, ValuedRecord};

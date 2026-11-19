@@ -1,5 +1,5 @@
 //! encoded_records: no lines without --json; with it, each record's op log line (record, values, remote mark) in the
-//! order given. ZUT: oplog's record types and gitio's Oid::parse are plain data; the expected lines are literals
+//! order given. Unit tests: oplog's record types and gitio's Oid::parse are plain data; the expected lines are literals
 //! written by hand in oplog's key order (the record's keys, then "values", then "remote" last).
 
 use gitio::Oid;

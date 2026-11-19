@@ -1,4 +1,4 @@
-//! is_zero_oid: all zeros in either hash length is the zero id; one other digit is not. ZUT: gitio's Oid::parse is a
+//! is_zero_oid: all zeros in either hash length is the zero id; one other digit is not. Unit tests: gitio's Oid::parse is a
 //! constructor, used as data.
 
 use gitio::Oid;

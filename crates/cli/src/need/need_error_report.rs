@@ -1,7 +1,7 @@
 //! need_error_report: the report of an `mr need` that folders refused or that failed.
 //! need_error_report_tests covers the Plan and NotAFolder arms. The Lock and fallback arms are pure too: lock_report,
 //! failure_report and FolderError's Display map a FolderError value (plain data a test can build) to a Report with
-//! no I/O, so a ZUT can cover them as well.
+//! no I/O, so a unit test can cover them as well.
 
 use folders::FolderError;
 

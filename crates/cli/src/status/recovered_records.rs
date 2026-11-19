@@ -2,7 +2,7 @@
 //! open intent left undone without settling it (status writes nothing and takes no lock).
 //! The open intents come from oplog's exported walk, open_marked_intents: an Intent record with no later Done
 //! or Failed record of its op_id, remote-marked ones included; this filters those out, as recover leaves them for
-//! their caller. recovered_records_tests is a ZUT: the walk it runs is oplog's, exported, pure and downward.
+//! their caller. recovered_records_tests is a unit test: the walk it runs is oplog's, exported, pure and downward.
 
 use oplog::{open_marked_intents, MarkedRecord, ValuedRecord};
 

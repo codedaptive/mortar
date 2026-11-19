@@ -1,5 +1,5 @@
 //! log_filters: --ref read once from the words, then the --actor and --key flags, in that order; anything else is a
-//! reason for log's usage. ZUT: oplog's HistoryFilter is used as plain data.
+//! reason for log's usage. Unit tests: oplog's HistoryFilter is used as plain data.
 
 use oplog::HistoryFilter;
 

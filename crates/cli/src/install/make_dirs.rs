@@ -1,5 +1,5 @@
 //! make_dirs: Makes a folder and the missing ones above it, saying which it made (spec 07 item 7: made folders are recorded).
-//! No sibling test: it touches the disk. The install ZITs in install/integration/ cover it: uninstall.rs
+//! No sibling test: it touches the disk. The install integration tests in install/integration/ cover it: uninstall.rs
 //! (uninstall_restores_home_after_install, uninstall_keeps_preexisting_directory) and placement.rs.
 
 use std::fs;

@@ -2,7 +2,7 @@
 //! over the step's path, so the path holds the old thing or the new one, never half of either. The temp is created
 //! exclusively under a name from `token` (fresh_temp), so a link planted at a temp name is never followed or
 //! replaced. The step's folder already exists (apply_install makes it first).
-//! No sibling test: it touches the disk; the install ZITs in install/integration/ cover it (the placed binary's
+//! No sibling test: it touches the disk; the install integration tests in install/integration/ cover it (the placed binary's
 //! bytes, mode and single link, the `mr` symlink, the skill files). temp_files.rs plants a link at the first token's
 //! temp name and checks that this file's own creation of each step's temp (binary, link, skill) leaves the planted
 //! link and its target as they were.

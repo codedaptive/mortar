@@ -1,7 +1,7 @@
 //! save_error_report: each SnapshotError's exit, outcome, lines, owner and next, whether the lines are cli's
 //! own text, a reason carried as data, or gitio's or oplog's own text (an index not set, git, op log, trailers and
 //! change ID errors).
-//! ZUT: report::failure_report is pure and used directly; the errors are built as data, and the
+//! Unit tests: report::failure_report is pure and used directly; the errors are built as data, and the
 //! gitio and oplog lines come from their exported, pure Display impls.
 
 use std::path::PathBuf;

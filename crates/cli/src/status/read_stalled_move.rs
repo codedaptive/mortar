@@ -2,8 +2,10 @@
 //! from the op log settled in memory as recover would leave it (recovered_records), so a join
 //! rebase killed before its Done record is seen; status writes nothing and takes no lock.
 //! No unit test: it reads the op log and runs git; recovered_records_tests, find_pending_move_tests and
-//! move_stalled_tests cover its decisions. The validation tests are to cover, with the mortar binary as a child
-//! process in a request folder made by the landing verbs in a throwaway repository (tests running real git set
+//! move_stalled_tests cover its decisions. The integration tests
+//! crates/cli/tests/status_need_runs/{precheck_status,handoff,status}.rs and
+//! across_kits/undo_save_join_resolve/{rebases,resolve_undo}.rs cover, with the mortar binary as a child process in a
+//! request folder made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a kill after join's rebase op and before the folder move: status reports the stall (the request ref, the new
 //!   tip and the folder's old tip) and gives next mr join; after the move status reports no stall;
@@ -15,7 +17,7 @@
 //! - after mr undo of a resolve's final join step: status reports no stall, shows the paused join
 //!   and gives next mr resolve; the next save, join or resolve moves no folder files;
 //! - a kill after join's rebase op and after the folder move's set_index(folder_tree), before the move itself: status
-//!   reports the stall;
+//!   reports the stall (integration test to write, not written here: no test in the files above kills there);
 //! - a finished move followed by a staged edit is not reported as a stall (next mr save);
 //! - an index with unmerged entries (left by git run by hand in the folder) is not reported as a stall;
 //! - status moves no ref and writes no file: refs, the folder's index and the op log are unchanged after it.

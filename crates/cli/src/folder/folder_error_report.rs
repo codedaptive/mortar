@@ -2,8 +2,8 @@
 //! for a folders variant: it names steps that are not cli commands; the why is folder_error_why's facts and the
 //! exit and next are folder_refusal's.
 //! No sibling test: every arm is pure, a FolderError value (its Lock, Git and Oplog errors are plain data a test
-//! can build) mapped to a Report with no I/O, so a sibling ZUT can cover each arm; folder_refusal_tests and folder_error_why_tests
-//! cover the decisions it joins, and the validation tests crates/cli/tests/validation/run_folder_{zone,request,remove,keep,drop}_tests.rs its
+//! can build) mapped to a Report with no I/O, so a sibling unit test can cover each arm; folder_refusal_tests and folder_error_why_tests
+//! cover the decisions it joins, and the integration tests crates/cli/tests/folder_runs/run_folder_{zone,request,remove,keep,drop}_tests.rs its
 //! refusals (ZoneBranchMissing, NotRemovedUnsaved, AttemptsRemain, ZoneFolder, AttemptsUnsaved) through the binary.
 
 use folders::FolderError;

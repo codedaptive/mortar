@@ -4,13 +4,13 @@
 //! op log.
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_bisect_args_tests,
 //! bisect_report_tests, bisect_error_report_tests, probe_line_tests and culprit_line_tests cover its decisions.
-//! Validation tests to write (not written here): a culprit found at a fast-forward
-//! landing and at a merge landing, its change ID and zone named; a culprit landing without trailers; not found
-//! because the failed commit passes, and because the last passing commit fails; a timed-out probe counted as a
-//! fail and shown "timed out"; a last passing commit off the failed one's first-parent line refused naming both; a
-//! failed commit off origin refused; a command that cannot start stops the search naming the commit; `--actor`
-//! after `--` reaches the command as one of its words; no worktree or bisect state left after a run; the land lock
-//! held by a live pid, exit 3; without a config, exit 1, next mr init.
+//! The integration tests in crates/cli/tests/across_kits/bisect_backup/ cover it through the binary: bisect.rs a
+//! culprit found at a fast-forward landing and at a merge landing, its change ID and zone named; a culprit landing
+//! without trailers; not found because the failed commit passes, and because the last passing commit fails; a
+//! timed-out probe counted as a fail and shown "timed out"; a last passing commit off the failed one's first-parent
+//! line refused naming both; a failed commit off origin refused; a command that cannot start stops the search naming
+//! the commit; `--actor` after `--` reaches the command as one of its words; no worktree or bisect state left after
+//! a run; guards.rs the land lock held by a live pid, exit 3, and without a config, exit 1, next mr init.
 
 use std::path::Path;
 

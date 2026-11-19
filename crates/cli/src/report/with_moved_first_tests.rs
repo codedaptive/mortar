@@ -1,4 +1,4 @@
-//! with_moved_first: the moved line, when given, comes first and the other lines keep their order. ZUT: pure.
+//! with_moved_first: the moved line, when given, comes first and the other lines keep their order. Unit tests: pure.
 
 use super::with_moved_first;
 

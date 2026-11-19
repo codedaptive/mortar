@@ -1,6 +1,6 @@
 //! read_install_facts: Reads everything install decides from: this binary, what stands at its paths, PATH, the
 //! harness folders and the skill files. Reads files, never runs them, and writes nothing.
-//! No sibling test: it touches the disk; the install ZITs in install/integration/ cover it (a fresh HOME, a repeat
+//! No sibling test: it touches the disk; the install integration tests in install/integration/ cover it (a fresh HOME, a repeat
 //! install, a foreign `mortar`, `mr` or skill file, harness folders present or not, `--location local`).
 
 use std::fs;

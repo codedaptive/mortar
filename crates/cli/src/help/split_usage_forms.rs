@@ -1,5 +1,4 @@
-//! split_usage_forms: a usage line as one line per form of its first top-level "( a | b )" group (SPEC-cli 08,
-//! "A verb's help": one line per form).
+//! split_usage_forms: a usage line as one line per form of its first top-level "( a | b )" group.
 
 /// One line per top-level alternative of `usage`'s first "(" group that is outside every bracket: the text before
 /// the "(", the alternative trimmed, and the text after its ")", joined by single spaces (an empty part adds no

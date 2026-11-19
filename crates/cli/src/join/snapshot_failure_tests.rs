@@ -1,5 +1,5 @@
 //! snapshot_failure: a snapshot error is a failure for the verb passed, naming the error in its Display form.
-//! ZUT: the error is built as data; its line comes from snapshot's exported, pure Display, and
+//! Unit tests: the error is built as data; its line comes from snapshot's exported, pure Display, and
 //! report::failure_report is used directly.
 
 use snapshot::SnapshotError;

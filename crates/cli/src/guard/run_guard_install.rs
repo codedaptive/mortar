@@ -4,26 +4,26 @@
 //! the file system; guard_in_place_tests, guard_installed_report_tests, guard_error_report_tests,
 //! hooks_path_report_tests (the core.hooksPath refusal), install_outcome_tests (the warning on installed outcomes only,
 //! last before next), with_path_warning_tests and path's path_warning_for_tests (the warning's decision),
-//! same_build_tests, marker_in_chunks_tests, path_entries_tests and mr_path_warning_tests cover its decisions. The validation test
-//! crates/cli/tests/validation/run_guard_install_tests.rs covers it through the binary: a fresh repository gets guard.json
+//! same_build_tests, marker_in_chunks_tests, path_entries_tests and mr_path_warning_tests cover its decisions. The integration test
+//! crates/cli/tests/guard_runs/run_guard_install_tests.rs covers it through the binary: a fresh repository gets guard.json
 //! and both hooks, executable, each the guard's script (exit 0 "installed"); a repeat is "already-installed" and
 //! changes no byte; a foreign pre-push is refused exit 1 "foreign-hook" with nothing written; without --actor, exit 4;
 //! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused
 //! exit 1 "refused" with nothing written.
-//! The validation test crates/cli/tests/validation/guard_linked_worktree.rs covers the refusal after install through
+//! The integration test crates/cli/tests/guard_runs/guard_linked_worktree.rs covers the refusal after install through
 //! the binary: with an absolute core.hooksPath, `mr guard install` from one linked worktree writes the hooks there,
 //! and in a second linked worktree made afterwards git update-ref of integration is refused through the installed
 //! reference-transaction hook (which runs `mortar guard-hook`) with the guard's why, owner and next, while an
 //! unprotected ref moves.
-//! Validation tests to write (not written here): the land lock held by a live pid, exit
+//! The integration tests crates/cli/tests/guard_runs/guard_install_path_lookup.rs and guard_path.rs cover, through
+//! the binary, the PATH warning (a foreign `mr` first on a scratch PATH makes `mr guard install` exit 0 "installed"
+//! with the warning as the last line before next, this build's bin dir first gives none, a copied Mortar binary
+//! first gives none, a myrepos-like `mr` beside Mortar gives it) and the PATH lookup (first_on_path) and marker read
+//! (file_has_marker) on real files, by the warning line present or absent.
+//! Integration tests to write (not written here): the land lock held by a live pid, exit
 //! 3 (oplog's locks); GuardError::Git in the cli's own words; after `mr guard install`, git commit and push against
 //! integration and origin are refused through the installed hook and Mortar's own moves pass (land's guard_decide);
-//! tests/validation/guard_fixture.rs to install through `mr guard install` instead of land::guard_install;
-//! through the binary, a foreign `mr` first on a scratch PATH makes `mr guard install` exit 0 "installed" with the
-//! PATH warning as the last line before next, and this build's bin dir first on PATH gives no warning; a copied
-//! Mortar binary, not this path, first on PATH gives no warning; a myrepos-like `mr` beside Mortar gives the warning
-//! as the last line before next, exit 0 "installed"; the PATH lookup (first_on_path) and the marker read
-//! (file_has_marker) on real files through `mr guard install`, by the warning line present or absent.
+//! crates/cli/tests/guard_runs/guard_fixture.rs to install through `mr guard install` instead of land::guard_install.
 
 use std::path::Path;
 

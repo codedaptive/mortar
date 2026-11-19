@@ -6,8 +6,8 @@
 //! bring to HEAD, unreported.
 //! No sibling test: it reads the op log and runs git and the folder move; last_integration_old_tests and
 //! integration_move_stopped_tests cover its decisions, note_finished_move_tests the report line.
-//! Validation tests to write (not written here), with the mortar binary as a child
-//! process in a throwaway repository (GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_NOSYSTEM=1):
+//! The integration tests crates/cli/tests/land_runs/land_flow/killed.rs and stopped.rs cover it through the mortar
+//! binary in a throwaway repository (GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_NOSYSTEM=1):
 //! - a kill after land's op and before the folder move, then a plain repeat of land, back-out (land answering
 //!   NothingToBackOut) or publish (land answering NothingToPublish): the folder moves from the op's old value to the
 //!   tip and the report's first line says so;

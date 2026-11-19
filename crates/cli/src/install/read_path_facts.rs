@@ -1,6 +1,6 @@
 //! read_path_facts: Reads the PATH half of install's facts: the first `mr` and `mortar` on PATH, and where
 //! `~/.local/bin` is on it. Reads files, never runs them.
-//! No sibling test: it touches the disk; the install ZITs in install/integration/ cover it (placement, harness and
+//! No sibling test: it touches the disk; the install integration tests in install/integration/ cover it (placement, harness and
 //! refusal: a fake `mr` earlier on PATH, a `mortar` under a fake prefix on PATH, `~/.local/bin` on PATH or not).
 
 use std::fs;

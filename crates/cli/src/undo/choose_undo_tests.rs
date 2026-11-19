@@ -2,7 +2,7 @@
 //! any of the folder's own refs or the zone branch, and what undo does with it. A join-rebase
 //! recording the paused join (a resolve step) restores it, and an undo of one is already undone with that
 //! step; an undo of a join-rebase missing from the log is already undone with the folder step.
-//! ZUT: undo_reason's is_resolve_step and done_record are pure and used directly.
+//! Unit tests: undo_reason's is_resolve_step and done_record are pure and used directly.
 
 use ::join::JOIN_STATE;
 use gitio::Oid;

@@ -1,6 +1,6 @@
 //! The report of an `mr guard` that land's guard_install or guard_status stopped, in the cli's own words: land's
 //! and gitio's Display texts are never printed.
-//! The Git case is a validation test to write (not written here): it needs git itself to fail to name
+//! The Git case is an integration test to write (not written here): it needs git itself to fail to name
 //! the hooks folder or common dir, and checks the cli's words are printed, not gitio's.
 
 use land::GuardError;

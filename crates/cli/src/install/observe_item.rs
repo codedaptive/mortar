@@ -1,5 +1,5 @@
 //! observe_item: What stands at a recorded item's path now, read without following a link.
-//! No sibling test: it touches the disk. The install ZITs in install/integration/ cover it: uninstall.rs
+//! No sibling test: it touches the disk. The install integration tests in install/integration/ cover it: uninstall.rs
 //! (uninstall_keeps_and_names_edited_skill_but_removes_binary_and_link sees a changed file, a file and a link).
 
 use std::fs;

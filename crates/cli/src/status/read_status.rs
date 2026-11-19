@@ -5,15 +5,15 @@
 //! No unit test: it runs git and reads the folder's files; status_next_tests, status_outcome_tests,
 //! status_lines_tests, status_fields_tests, is_joined_tests and move_stalled_tests cover the decisions made from
 //! what it reads, and status_report_tests the report, in both rendered forms.
-//! The validation tests are to cover, with the mortar binary as a child process in a request folder made by
-//! the landing verbs in a throwaway repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and
-//! GIT_CONFIG_NOSYSTEM=1):
+//! The integration tests crates/cli/tests/status_need_runs/{status,need,status_joined_tests}.rs cover, with the
+//! mortar binary as a child process in a request folder made by the landing verbs in a throwaway repository (tests
+//! running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - an unsaved edit gives next mr save;
 //! - a real paused join gives its paused commit and files, next mr resolve;
 //! - an over-cap new file is listed with the cap;
 //! - a needed path outside the work order is listed as a gap;
 //! - work snapshotted after a join but never saved to the request branch is neither saved nor joined, next mr
-//!   save (the validation test crates/cli/tests/validation/status_joined_tests.rs);
+//!   save (the integration test crates/cli/tests/status_need_runs/status_joined_tests.rs);
 //! - status writes no file and moves no ref: refs, the folder's index and the op log are unchanged after it.
 
 use folders::gaps;

@@ -1,6 +1,6 @@
 //! status_report: a clean, saved, joined folder and a folder with every part, as the whole Report and rendered with
 //! render_plain and render_json.
-//! ZUT: status_report calls status_lines, status_fields, status_next and status_outcome, which are
+//! Unit tests: status_report calls status_lines, status_fields, status_next and status_outcome, which are
 //! pure, directly; render_json runs oplog::write_json_string, exported and pure on the text.
 
 use std::path::PathBuf;
