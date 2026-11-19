@@ -2,7 +2,7 @@
 
 Thank you for your interest in Mortar. This document says how to report a problem, how the code is laid out, and how to build and test a change.
 
-The short version: open an issue to report a problem or propose an idea. Mortar's license is not yet chosen (see [`LICENSE`](LICENSE)), so open an issue before you write a large change: a contribution can be merged once the license is in place.
+The short version: open an issue to report a problem or propose an idea, and open one before you write a large change. Mortar is licensed under the MIT License (see [`LICENSE`](LICENSE)).
 
 ---
 
@@ -61,6 +61,7 @@ make test-one DIR=crates/join GROUP=integration
 make test-one DIR=crates/cli/src/status     # one module's unit tests
 make test-one DIR=crates/cli/tests/cli_rit  # one integration test target
 make accept                                 # the acceptance drive
+make script-test                            # checks scripts/test_one.sh's handling of DIR
 ```
 
 `CARGO_TEST_ARGS=<name>` narrows a unit-group `test-one` run to the tests whose name matches. For `GROUP=integration` on a whole crate it narrows the `tests/` targets, but not the library's `integration::` modules: there libtest keeps the tests that match either the name or `integration::`.
@@ -112,7 +113,7 @@ Keep a change focused: one behaviour per pull request, with its tests. Say what 
 
 Mortar moves the branches that hold a team's proven code. A problem disclosed in a public issue is disclosed to everyone before it can be fixed.
 
-> **Security contact:** report privately via GitHub's [Report a vulnerability](https://github.com/codedaptive/mortar/security/advisories/new) form, or email <security@codedaptive.com> (address to be confirmed). See [`SECURITY.md`](SECURITY.md) for the full policy.
+> **Security contact:** report privately via GitHub's [Report a vulnerability](https://github.com/codedaptive/mortar/security/advisories/new) form, or email <security@codedaptive.com>. See [`SECURITY.md`](SECURITY.md) for the full policy.
 
 ---
 

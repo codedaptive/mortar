@@ -52,7 +52,7 @@ Ask the program: `mr help <verb>` or `mr <verb> --help`. The usage lines live in
 | [`../SECURITY.md`](../SECURITY.md) | What Mortar does to stay safe, what it does not defend against, how to report a vulnerability |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Issues, the layout of the code, build and test, the rules for tests and documents |
 | [`../CHANGELOG.md`](../CHANGELOG.md) | What each version does |
-| [`../LICENSE`](../LICENSE) | The license. Not yet chosen |
+| [`../LICENSE`](../LICENSE) | The license: MIT |
 
 ## The code
 

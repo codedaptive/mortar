@@ -72,7 +72,7 @@ The first public version. Mortar writes version-control history for teams of cod
 ### Known limits
 
 - Unix only. Mortar is built from source; there are no packaged releases.
-- The license is not yet chosen.
+- Licensed under the MIT License; see [`LICENSE`](LICENSE).
 - The guard stops accidental moves of the protected branches. It is not a defence against someone who can write to the repository's git folder. See [`SECURITY.md`](SECURITY.md).
 - `mr disk` and `mr sweep --idle-days` measure and clear the folder named `target` only, whatever `--build-dir` names.
 - A relative `core.hooksPath` is read from the top of each worktree, so the guard does not cover a worktree whose path leads to a folder without the hooks.

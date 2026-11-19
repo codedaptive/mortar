@@ -253,7 +253,7 @@ Version 0.1.0, the first public version. See [`CHANGELOG.md`](CHANGELOG.md).
 
 ## License
 
-The license is not yet chosen; this is the one open item before release. See [`LICENSE`](LICENSE).
+MIT. See [`LICENSE`](LICENSE).
 
 ## Working on Mortar
 

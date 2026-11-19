@@ -48,7 +48,7 @@ cargo build --release --locked -p cli
 
 **Do not open a public issue for a security problem.**
 
-Use GitHub's [Report a vulnerability](https://github.com/codedaptive/mortar/security/advisories/new) form under this repository's Security tab, or email <security@codedaptive.com> (address to be confirmed).
+Use GitHub's [Report a vulnerability](https://github.com/codedaptive/mortar/security/advisories/new) form under this repository's Security tab, or email <security@codedaptive.com>.
 
 A useful report names the verb or crate affected, the version or commit, and enough detail to reproduce what you observed.
 

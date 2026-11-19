@@ -15,7 +15,7 @@ humans and AI agents to the maintained sources.
 - What the guard protects and what it does not: SECURITY.md
 - Build, test and layout of the code: CONTRIBUTING.md
 - What each version does: CHANGELOG.md
-- License (not yet chosen): LICENSE
+- License (MIT): LICENSE
 
 ## The program is a source
 
