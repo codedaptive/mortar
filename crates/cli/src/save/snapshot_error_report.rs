@@ -4,11 +4,9 @@
 use oplog::OpResult;
 use snapshot::SnapshotError;
 
-use crate::report::{failure_report, ExitCode, Report};
+use crate::report::{failure_report, head_refusal, ExitCode, Report};
 
 const VERB: &str = "snapshot";
-/// The step after a HEAD snapshot cannot start from.
-const NEXT_HEAD: &str = "check out the request's branch in the folder, then repeat the same command";
 
 /// Refused (exit 1): an unborn HEAD and a refused path that is not UTF-8 (both reached through snapshot_formatted),
 /// and a detached HEAD (save's arm: only save_head refuses one; refused all the same). Busy (exit 3): the snapshot
@@ -98,5 +96,5 @@ fn refused(lines: Vec<String>, owner: String, next: &str) -> Report {
 }
 
 fn head_refused(why: String) -> Report {
-    refused(vec![why, "nothing was snapshotted".to_string()], "the folder's HEAD".to_string(), NEXT_HEAD)
+    head_refusal(VERB, vec![why, "nothing was snapshotted".to_string()])
 }
