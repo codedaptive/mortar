@@ -25,8 +25,8 @@ use crate::report::{failure_report, Report};
 /// branch tip is still the record's base and the folder is saved; the paused join; the stalled folder move of the
 /// branch (read_stalled_move). It leaves `paths` default and `overlaps` and `gaps` empty: status_next reads only
 /// the fields above, so it runs no path, overlap or gap read; read_status fills them, reading overlaps against the
-/// returned zone tip. A record naming no request is refused and a save error is save_error_report, both
-/// relabelled for `verb` by read_branch_reads; every other failure is failure_report. Moves no ref, takes no lock
+/// returned zone tip. A record naming no request is refused and a save error is saved_state_report's, both
+/// for `verb` from read_branch_reads; every other failure is failure_report. Moves no ref, takes no lock
 /// and writes no file in the folder.
 pub fn read_progress(
     folder: &FolderContext,

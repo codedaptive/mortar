@@ -1,8 +1,8 @@
 //! run_disk: `mr disk`, what each Mortar folder, the object store and the refs cost on disk, what each folder holds
-//! (its unsaved counts and whether its request has joined) and what a plain mr sweep frees. Takes no lock and writes
-//! nothing in the repository: the joined read builds the tree of each request and attempt folder, and those objects
-//! go to an object quarantine (with_object_quarantine); its temp index and the quarantine dir sit in the OS temp dir
-//! and are removed.
+//! (its unsaved counts and whether its request has joined, or why that is unknown) and what a plain mr sweep frees.
+//! Takes no lock and writes nothing in the repository: the joined read builds the tree of each request and attempt
+//! folder, and those objects go to an object quarantine (with_object_quarantine); its temp index and the quarantine dir
+//! sit in the OS temp dir and are removed.
 //! No sibling test: it runs git and reads the file system through folders' disk; config_zones_tests,
 //! no_zones_report_tests, folders_error_report_tests, with_object_quarantine_tests and disk_report_tests cover its
 //! decisions. The integration tests crates/cli/tests/across_kits/snapshot_overlap_disk_sweep/{disk,guards}.rs cover:
@@ -11,9 +11,11 @@
 //! not joined, and leaves the repository and its object store as they were
 //! (disk_holds_dirty_request_counts_without_writing); a clean saved and joined request shows 0, 0 and joined
 //! (disk_holds_clean_saved_and_joined_request); a zone folder shows its counts and no joined answer
-//! (disk_holds_zone_counts_without_a_joined_answer); disk with a config of no zones refused, exit 1, nothing read; any
-//! argument, exit 4; without a config, exit 1. The acceptance run's disk step checks disk's per-folder bytes and its
-//! store-once figure, reached through this verb.
+//! (disk_holds_zone_counts_without_a_joined_answer); a request folder whose branch is gone shows joined unknown with
+//! the missing branch as its reason beside a healthy folder's answer, exit 0, writing nothing
+//! (disk_answers_every_folder_when_one_joined_read_fails); disk with a config of no zones refused, exit 1, nothing
+//! read; any argument, exit 4; without a config, exit 1. The acceptance run's disk step checks disk's per-folder bytes
+//! and its store-once figure, reached through this verb.
 
 use std::path::Path;
 
@@ -38,9 +40,9 @@ const NO_BUILD_SWEEP: u64 = u64::MAX;
 /// no_zones_report, exit 1), then folders' disk over every zone with no extra ref and the context's protected refs,
 /// reported by disk_report or, when folders refuses or fails, folders_error_report. With the report, each folder's
 /// holds in order (read_folder_holds, with the config's snapshot settings and the context's actor), read inside one
-/// object quarantine over the repository's objects (the common dir's, an absolute path); the first folder whose
-/// holds cannot be read fails disk with its report, and a common dir or quarantine that cannot be had is
-/// failure_report.
+/// object quarantine over the repository's objects (the common dir's, an absolute path). A joined read that fails
+/// makes that folder's joined answer unknown and disk goes on; only a folder whose unsaved counts cannot be read
+/// fails disk, the first with its report. A common dir or quarantine that cannot be had is failure_report.
 pub fn run_disk(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     if let Some(usage) = no_arguments_report(VERB, &args.rest, args.json) {

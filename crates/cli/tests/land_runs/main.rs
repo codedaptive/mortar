@@ -9,6 +9,7 @@ mod support;
 mod run_squash_tests;
 mod run_rereview_tests;
 mod run_rereview_savings_tests;
+mod run_rereview_same_patch_tests;
 mod run_back_out_tests;
 mod run_publish_tests;
 mod land_flow;
