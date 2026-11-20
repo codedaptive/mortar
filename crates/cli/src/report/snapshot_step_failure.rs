@@ -19,8 +19,9 @@ use super::{failure_report, snapshot_error_detail, with_moved_first, Report};
 ///
 /// Each "left" line follows the order of crates/snapshot/src/save_with_snapshot.rs. Its snapshot step (snapshot,
 /// which is snapshot_formatted with no formatter; a caller with a formatter runs snapshot_formatted before it) is the
-/// first that writes: it moves the snapshot ref before commit_info, the trailers read, the change ID, the commit and
-/// apply. So any of these errors may follow that move. Trailers, ChangeIdMissing and ChangeId come before the save
+/// first that writes (join's snapshot_formatted is that step; its save_from_snapshot takes none after it): it moves
+/// the snapshot ref before commit_info, the trailers read, the change ID, the commit and apply.
+/// So any of these errors may follow that move. Trailers, ChangeIdMissing and ChangeId come before the save
 /// commit is written. A Git error never follows the branch's move: apply's own git errors come back as Oplog, and
 /// set_index's after it as IndexNotSet. BranchMoved is the branch's apply refusing, so the branch did not move.
 /// Save sends IndexNotSet to save_error_report; join gets it here.
@@ -39,8 +40,10 @@ use super::{failure_report, snapshot_error_detail, with_moved_first, Report};
 /// save's unchanged path, so the repeat writes no second commit.
 ///
 /// Per verb:
-/// - save (save/run_save.rs) and join (join/run_join.rs, save_work) run snapshot_formatted (save only when a formatter
-///   is set), then snapshot::save_with_snapshot, so every line can hold as written. Save sends ChangeIdMissing and
+/// - save (save/run_save.rs) runs snapshot_formatted (only when a formatter is set), then snapshot::save_with_snapshot,
+///   so every line can hold as written; join (join/run_join.rs, save_work) runs snapshot_formatted, then
+///   snapshot::save_from_snapshot, which writes no snapshot of its own, so the lines hold with the formatter's
+///   snapshot as the one that may have moved the ref. Save sends ChangeIdMissing and
 ///   BranchMoved to save_error_report instead (save/save_step_failure.rs says why); join gets them here.
 /// - The pending move's snapshot (join/finish_pending_move.rs), which save, join and resolve run first, and resolve's
 ///   own snapshot (resolve/run_resolve.rs) are snapshot::snapshot only: snapshot_formatted with no formatter, which

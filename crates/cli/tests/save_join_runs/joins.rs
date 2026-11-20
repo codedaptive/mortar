@@ -1,4 +1,5 @@
 use crate::support::*;
+use crate::support::FormatterConfig;
 use std::fs;
 
 #[test]
@@ -89,4 +90,74 @@ fn pending_folder_move_refuses_over_local_work_then_finishes_after_work_is_moved
     assert_eq!(fs::read(f.request.join("src/upstream")).unwrap(), b"upstream work\n");
     assert_eq!(fs::read(f.root.join("held-obstruction")).unwrap(), b"local obstruction must survive\n");
     assert_eq!(f.head(), new); assert!(!f.lock_path().exists());
+}
+
+#[test]
+fn join_saves_on_branch_moved_by_formatter_then_fast_forwards_zone() {
+    let f = Fixture::new();
+    let program = f.common.join("move-branch.sh");
+    let moved = f.common.join("formatter-commit");
+    script(&program, b"#!/bin/sh\nset -eu\nhead=$(git rev-parse HEAD)\ntree=$(git rev-parse HEAD^{tree})\nbranch=$(git symbolic-ref HEAD)\nnext=$(printf 'formatter move\\n' | git commit-tree \"$tree\" -p \"$head\")\ngit update-ref \"$branch\" \"$next\" \"$head\"\nprintf '%s\\n' \"$next\" >\"$1\"\n");
+    let mut config = f.init_args.clone();
+    config.formatter = Some(FormatterConfig { command: vec![program.to_str().unwrap().into(), moved.to_str().unwrap().into()], timeout_seconds: 60 });
+    f.configure(&config);
+    f.write("src/file", b"unsaved join work\n");
+
+    let output = f.app(&["--json", "join"]);
+    assert_eq!(output.status.code(), Some(0), "{}", String::from_utf8_lossy(&output.stdout));
+    let report = crate::json::check(output, "join", 0, "joined");
+    let head = f.head();
+    let formatter_commit = oid(&fs::read(&moved).unwrap());
+    assert!(report.flag("saved_written"));
+    assert_eq!(report.text("saved_commit"), head.as_str());
+    assert!(report.is_null("finished_move_from"));
+    assert!(report.is_null("finished_move_to"));
+    assert_eq!(report.text("next"), "wait for the zone's tests");
+    assert_eq!(f.git.commit_info(&formatter_commit).unwrap().parents, vec![f.base.clone()]);
+    assert_eq!(f.git.commit_info(&head).unwrap().parents, vec![formatter_commit]);
+    assert_eq!(f.blob(&head, "src/file"), b"unsaved join work\n");
+    assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(head));
+    assert!(!f.lock_path().exists());
+}
+
+#[test]
+fn unborn_head_join_reports_failure_without_moving_any_refs() {
+    let f = Fixture::new();
+    let request = f.git.read_ref(REQUEST).unwrap();
+    let zone = f.git.read_ref(ZONE).unwrap();
+    let snapshot = f.git.read_ref(SNAP).unwrap();
+    raw(&f.local(), &["checkout", "--orphan", "unborn-test"]);
+    f.write("src/file", b"unsaved unborn work\n");
+
+    let report = f.report(&["--json", "join"], "join", 5, "failed");
+    assert_eq!(report.strings("lines"), &[
+        format!("HEAD of the folder {} has no commit", f.request.display()),
+    ]);
+    assert_eq!(f.git.read_ref("refs/heads/unborn-test").unwrap(), None);
+    assert_eq!(f.git.read_ref(REQUEST).unwrap(), request);
+    assert_eq!(f.git.read_ref(ZONE).unwrap(), zone);
+    assert_eq!(f.git.read_ref(SNAP).unwrap(), snapshot);
+    assert_eq!(fs::read(f.request.join("src/file")).unwrap(), b"unsaved unborn work\n");
+    assert!(!f.lock_path().exists());
+}
+
+#[test]
+fn detached_head_join_preserves_edit_in_snapshot_without_moving_branches() {
+    let f = Fixture::new();
+    let request = f.head();
+    let zone = f.git.read_ref(ZONE).unwrap();
+    assert_eq!(f.git.read_ref(SNAP).unwrap(), None);
+    f.write("src/file", b"unsaved detached work\n");
+    raw(&f.local(), &["checkout", "--detach"]);
+
+    let report = f.report(&["--json", "join"], "join", 5, "failed");
+    assert_eq!(report.strings("lines"), &[
+        "the snapshot ref moved as the work was saved first",
+        &format!("HEAD of the folder {} names no branch", f.request.display()),
+    ]);
+    assert_eq!(f.git.read_ref(REQUEST).unwrap(), Some(request));
+    assert_eq!(f.git.read_ref(ZONE).unwrap(), zone);
+    let snapshot = f.git.read_ref(SNAP).unwrap().unwrap();
+    assert_eq!(f.blob(&snapshot, "src/file"), b"unsaved detached work\n");
+    assert_eq!(fs::read(f.request.join("src/file")).unwrap(), b"unsaved detached work\n");
 }
