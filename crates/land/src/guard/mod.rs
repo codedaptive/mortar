@@ -5,6 +5,7 @@ mod classify_hook;
 mod decide_config_write;
 mod decide_hook_writes;
 mod decide_hooks_path;
+mod draw_temp_path;
 mod guard_config_path;
 mod guard_config_text;
 mod guard_decide;
@@ -36,6 +37,8 @@ mod decide_config_write_tests;
 mod decide_hook_writes_tests;
 #[cfg(test)]
 mod decide_hooks_path_tests;
+#[cfg(test)]
+mod draw_temp_path_tests;
 #[cfg(test)]
 mod guard_config_path_tests;
 #[cfg(test)]
