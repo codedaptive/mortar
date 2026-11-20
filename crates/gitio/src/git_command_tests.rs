@@ -171,3 +171,85 @@ fn opts_env_wins_over_git_env() {
     let command = git_command(&git, &[], &opts);
     assert_eq!(env_of(&command, "GIT_AUTHOR_NAME"), set("this-run"));
 }
+
+fn read_opts() -> RunOpts {
+    RunOpts {
+        read_only: true,
+        ..RunOpts::default()
+    }
+}
+
+fn pairs(items: &[(&str, &str)]) -> Vec<(OsString, OsString)> {
+    items.iter().map(|(k, v)| (OsString::from(k), OsString::from(v))).collect()
+}
+
+#[test]
+fn a_read_run_keeps_the_argv_plain() {
+    let command = git_command(&Git::new("/tmp/repo"), &os(&["diff", "HEAD"]), &read_opts());
+    let args: Vec<&OsStr> = command.get_args().collect();
+    assert_eq!(args, vec!["-C", "/tmp/repo", "diff", "HEAD"]);
+}
+
+#[test]
+fn a_read_run_ends_its_config_parameters_with_no_refresh() {
+    let command = git_command(&Git::new("/tmp/repo"), &[], &read_opts());
+    let value = env_of(&command, "GIT_CONFIG_PARAMETERS").flatten().expect("set on a read run");
+    assert!(
+        value.to_string_lossy().ends_with("'diff.autoRefreshIndex'='false'"),
+        "{value:?}"
+    );
+}
+
+#[test]
+fn git_env_config_parameters_are_kept_before_no_refresh() {
+    let git = Git {
+        env: pairs(&[("GIT_CONFIG_PARAMETERS", "'core.x'='y'")]),
+        ..Git::new("/tmp/repo")
+    };
+    let command = git_command(&git, &[], &read_opts());
+    assert_eq!(
+        env_of(&command, "GIT_CONFIG_PARAMETERS"),
+        set("'core.x'='y' 'diff.autoRefreshIndex'='false'")
+    );
+}
+
+#[test]
+fn opts_env_config_parameters_beat_git_envs_as_the_base() {
+    let git = Git {
+        env: pairs(&[("GIT_CONFIG_PARAMETERS", "'core.x'='y'")]),
+        ..Git::new("/tmp/repo")
+    };
+    let opts = RunOpts {
+        env: pairs(&[("GIT_CONFIG_PARAMETERS", "'core.z'='w'")]),
+        ..read_opts()
+    };
+    let command = git_command(&git, &[], &opts);
+    assert_eq!(
+        env_of(&command, "GIT_CONFIG_PARAMETERS"),
+        set("'core.z'='w' 'diff.autoRefreshIndex'='false'")
+    );
+}
+
+#[test]
+fn opts_env_config_count_stays_and_no_refresh_is_still_set() {
+    let opts = RunOpts {
+        env: pairs(&[
+            ("GIT_CONFIG_COUNT", "1"),
+            ("GIT_CONFIG_KEY_0", "diff.autoRefreshIndex"),
+            ("GIT_CONFIG_VALUE_0", "true"),
+            ("GIT_CONFIG_PARAMETERS", ""),
+        ]),
+        ..read_opts()
+    };
+    let command = git_command(&Git::new("/tmp/repo"), &[], &opts);
+    assert_eq!(env_of(&command, "GIT_CONFIG_COUNT"), set("1"));
+    assert_eq!(env_of(&command, "GIT_CONFIG_KEY_0"), set("diff.autoRefreshIndex"));
+    assert_eq!(env_of(&command, "GIT_CONFIG_VALUE_0"), set("true"));
+    assert_eq!(env_of(&command, "GIT_CONFIG_PARAMETERS"), set("'diff.autoRefreshIndex'='false'"));
+}
+
+#[test]
+fn a_write_run_leaves_config_parameters_alone() {
+    let command = git_command(&Git::new("/tmp/repo"), &os(&["diff", "HEAD"]), &RunOpts::default());
+    assert_eq!(env_of(&command, "GIT_CONFIG_PARAMETERS"), None);
+}

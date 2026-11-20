@@ -96,6 +96,7 @@ mod merge_tree_outcome;
 mod merge_tree_request;
 mod next_temp_index;
 mod no_nul;
+mod no_refresh_parameters;
 mod oid;
 mod oid_as_str;
 mod oid_display;
@@ -306,6 +307,8 @@ mod merge_tree_request_tests;
 mod next_temp_index_tests;
 #[cfg(test)]
 mod no_nul_tests;
+#[cfg(test)]
+mod no_refresh_parameters_tests;
 #[cfg(test)]
 mod oid_as_str_tests;
 #[cfg(test)]
