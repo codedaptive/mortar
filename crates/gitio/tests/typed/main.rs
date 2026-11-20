@@ -13,5 +13,6 @@ mod set_index;
 mod tree_with_paths;
 mod disk_usage;
 mod output_chars;
+mod patch_id;
 mod trailers;
 mod worktrees;

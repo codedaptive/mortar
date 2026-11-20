@@ -49,6 +49,7 @@ mod git_merge_base;
 mod git_merge_tree;
 mod git_new;
 mod git_output_chars;
+mod git_patch_id;
 mod git_path_kind;
 mod git_push;
 mod git_range_diff;
@@ -104,6 +105,11 @@ mod oid_line;
 mod oid_parse;
 mod output;
 mod output_chars_request;
+mod patch_id;
+mod patch_id_as_str;
+mod patch_id_diff_request;
+mod patch_id_hash_request;
+mod patch_id_parse;
 mod path_from_bytes;
 mod path_kind;
 mod path_line;
@@ -126,6 +132,7 @@ mod read_merge_tree;
 mod read_message;
 mod read_nul_paths;
 mod read_oid_lines;
+mod read_patch_id;
 mod read_path_entries;
 mod read_path_kind;
 mod read_push;
@@ -206,6 +213,7 @@ pub use index_tree_error::IndexTreeError;
 pub use merge_tree_outcome::MergeTreeOutcome;
 pub use oid::Oid;
 pub use output::Output;
+pub use patch_id::PatchId;
 pub use path_kind::PathKind;
 pub use person::Person;
 pub use push_lease::PushLease;
@@ -324,6 +332,16 @@ mod output_chars_request_tests;
 #[cfg(test)]
 mod output_tests;
 #[cfg(test)]
+mod patch_id_as_str_tests;
+#[cfg(test)]
+mod patch_id_diff_request_tests;
+#[cfg(test)]
+mod patch_id_hash_request_tests;
+#[cfg(test)]
+mod patch_id_parse_tests;
+#[cfg(test)]
+mod patch_id_tests;
+#[cfg(test)]
 mod path_from_bytes_tests;
 #[cfg(test)]
 mod path_kind_tests;
@@ -357,6 +375,8 @@ mod read_message_tests;
 mod read_nul_paths_tests;
 #[cfg(test)]
 mod read_oid_lines_tests;
+#[cfg(test)]
+mod read_patch_id_tests;
 #[cfg(test)]
 mod read_path_entries_tests;
 #[cfg(test)]
