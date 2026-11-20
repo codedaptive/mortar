@@ -1,10 +1,9 @@
 //! The config's JSON text back to the config.
 
-use oplog::JsonError;
+use oplog::{parse_json, JsonError};
 
 use super::{
-    decode_formatter, decode_zones, parse_config_json, take_members, take_name, take_number, take_strings,
-    Config, ConfigError,
+    decode_formatter, decode_zones, take_members, take_name, take_number, take_strings, Config, ConfigError,
 };
 
 /// The keys of the config, in the order encode_config writes them.
@@ -28,7 +27,7 @@ pub fn decode_config(text: &str) -> Result<Config, ConfigError> {
 }
 
 fn config(text: &str) -> Result<Config, String> {
-    let value = parse_config_json(text).map_err(|e| match e {
+    let value = parse_json(text).map_err(|e| match e {
         JsonError::EndOfInput => "the text ends before the config is complete".to_string(),
         JsonError::Invalid(reason) => reason,
     })?;

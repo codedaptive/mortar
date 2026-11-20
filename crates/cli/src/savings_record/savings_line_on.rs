@@ -1,10 +1,20 @@
 //! The user's switch for the "[mr] tokens saved" line.
 
-use super::top_level_bool;
+use oplog::{parse_json, JsonValue};
 
-/// False only when `config` (the text of the user's config.json) has a top-level "savings_line" member set to
-/// false. No file (None), no such member, true, a value that is not a boolean, or text that is not one JSON
-/// object: true, so a broken file never hides the line or fails the verb.
+/// False only when `config` (the text of the user's config.json) reads with oplog::parse_json as one object whose
+/// last top-level "savings_line" member holding a boolean is false; members of nested values do not count, and
+/// keys match after their escapes are decoded. No file (None), no such member, true, only non-boolean values, a top
+/// level that is not an object, or text that does not parse: true, so a broken file never hides the line or fails
+/// the verb. parse_json refuses negative numbers, fractions, exponents, integers over u64 and lone surrogates, so a
+/// file holding one of those reads as unparsable and the line stays on.
 pub fn savings_line_on(config: Option<&str>) -> bool {
-    config.is_none_or(|text| top_level_bool(text, "savings_line") != Ok(Some(false)))
+    let Some(Ok(JsonValue::Object(members))) = config.map(parse_json) else {
+        return true;
+    };
+    let last = members.iter().rev().find_map(|(key, value)| match value {
+        JsonValue::Bool(b) if key == "savings_line" => Some(*b),
+        _ => None,
+    });
+    last != Some(false)
 }

@@ -1,12 +1,14 @@
 //! The config's `formatter` member.
 
-use super::{take_members, take_number, take_strings, ConfigJsonValue, FormatterConfig};
+use oplog::JsonValue;
+
+use super::{take_members, take_number, take_strings, FormatterConfig};
 
 /// null is None; otherwise exactly `{"command": [strings, at least one], "timeout_seconds": number}`.
-pub(crate) fn decode_formatter(slot: Option<ConfigJsonValue>) -> Result<Option<FormatterConfig>, String> {
+pub(crate) fn decode_formatter(slot: Option<JsonValue>) -> Result<Option<FormatterConfig>, String> {
     let value = match slot {
-        Some(ConfigJsonValue::Null) => return Ok(None),
-        Some(value @ ConfigJsonValue::Object(_)) => value,
+        Some(JsonValue::Null) => return Ok(None),
+        Some(value @ JsonValue::Object(_)) => value,
         Some(_) => return Err("formatter is neither null nor an object".to_string()),
         None => return Err("missing key \"formatter\"".to_string()),
     };

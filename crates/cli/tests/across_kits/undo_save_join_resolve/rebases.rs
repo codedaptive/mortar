@@ -29,60 +29,77 @@ fn undo_rebase_moves_the_actual_folder_back_and_the_repeat_is_not_a_redo() {
 }
 
 #[test]
-fn refused_reverse_move_has_undo_status_next_then_clear_and_undo_save_join_or_resolve_finishes() {
-    for finisher in ["undo", "save", "join", "resolve"] {
-        let w = World::new(); let (old, new, zone) = rebase(&w); let target = done(&w, "join-rebase").pop().unwrap();
-        w.s.f.write("src/upstream", b"owner obstruction must survive\n"); let folder = w.folder_state(&w.s.f.request);
-        let r = ours(&w, &["undo"], 1, "refused"); assert_eq!(r.text("owner"), "this request's folder");
-        assert!(r.strings("lines").contains(&"  src/upstream".into()));
-        let undo = assert_one_undo(&w, &target, &new, &old); assert_eq!(w.s.f.head(), old);
-        assert_eq!(w.tip("core"), zone); assert_eq!(w.folder_state(&w.s.f.request), folder);
-        let kept = ref_at(&w, SNAP).unwrap(); assert_eq!(w.s.f.blob(&kept, "src/upstream"), b"owner obstruction must survive\n");
-        let before = observe(&w); let status = ours(&w, &["status"], 0, "stalled");
-        assert_eq!(status.text("next"), "mr undo"); assert_eq!(status.text("stalled_from"), new.as_str());
-        assert_eq!(status.text("stalled_to"), old.as_str());
-        assert!(status.strings("lines").contains(&format!("an undo's folder move is stalled: the undo put {REQUEST} back at {old}, the folder at {new}")));
-        assert_eq!(observe(&w), before);
-        let saves = done(&w, "save").len();
-        let still = ours(&w, &["save", "Do not save a stale folder"], 1, "refused");
-        assert!(still.strings("lines").contains(&"  src/upstream".into()));
-        assert_eq!(w.s.f.head(), old); assert_eq!(done(&w, "save").len(), saves); assert_eq!(w.folder_state(&w.s.f.request), folder);
-        assert_eq!(done(&w, "undo").len(), 1);
-        let held = w.s.f.root.join("owner-obstruction"); fs::rename(w.s.f.request.join("src/upstream"), &held).unwrap();
-        let words = if finisher == "save" { vec!["save", "No stale upstream"] } else { vec![finisher] };
-        let outcome = match finisher { "undo" => "already-done", "save" => "unchanged", "join" => "rebased", "resolve" => "nothing-to-resolve", _ => unreachable!() };
-        let report = ours(&w, &words, 0, outcome);
-        if finisher == "undo" { assert_eq!(report.text("undo_op"), undo.op_id); }
-        else if finisher != "resolve" {
-            assert_eq!(report.text("finished_move_from"), new.as_str()); assert_eq!(report.text("finished_move_to"), old.as_str());
-        }
-        // The finished move's snapshot wrote (the obstruction is gone from the folder, still in the snapshot ref): save,
-        // join and resolve's nothing-to-resolve name it; undo names no moves.
-        let named = "the snapshot ref moved as the work was saved first".to_string();
-        let stands = format!("the folder stands where the undo put the branch back: {new} -> {old}");
-        let expected = match finisher {
-            "undo" => vec![format!("op {} was already undone by op {}", target.op_id, undo.op_id), "the folder stands at the tip before the rebase".to_string()],
-            "save" => vec![stands, named, format!("nothing changed since the last save; no save commit written (HEAD is {old})")],
-            "join" => vec![
-                stands, "no unsaved work".to_string(),
-                format!("rebased: {REQUEST} moved from {old} to {}, replayed onto the zone; the folder moved with it; {named}", w.s.f.head()),
-                "the unit tests must run again".to_string(),
-            ],
-            "resolve" => vec![named, "no join is paused in this folder; nothing to resolve".to_string()],
-            _ => unreachable!(),
-        };
-        assert_eq!(report.strings("lines"), expected.as_slice());
-        // With no paused state, resolve reports nothing-to-resolve after finishing; that report has no move fields.
-        assert_eq!(done(&w, "undo").len(), 1); assert_eq!(done(&w, "save").len(), saves);
-        assert_eq!(fs::read(&held).unwrap(), b"owner obstruction must survive\n");
-        assert_eq!(w.s.f.blob(&kept, "src/upstream"), b"owner obstruction must survive\n");
-        assert_eq!(fs::read(w.s.f.request.join("src/file")).unwrap(), b"topic work\n"); assert_eq!(ref_at(&w, ZONE), Some(zone.clone()));
-        if finisher == "join" {
-            assert_eq!(w.s.f.git.commit_info(&w.s.f.head()).unwrap().parents, vec![zone]);
-            assert_eq!(fs::read(w.s.f.request.join("src/upstream")).unwrap(), b"upstream work\n"); assert!(!report.flag("saved_written"));
-        } else { assert_eq!(w.s.f.head(), old); assert!(!w.s.f.request.join("src/upstream").exists()); }
-        index_at(&w, &w.s.f.request, &w.s.f.head()); assert!(!w.s.f.lock_path().exists());
+fn refused_reverse_move_has_undo_status_next_then_clear_and_undo_finishes() {
+    refused_reverse_move_then_clear_and("undo");
+}
+
+#[test]
+fn refused_reverse_move_has_undo_status_next_then_clear_and_save_finishes() {
+    refused_reverse_move_then_clear_and("save");
+}
+
+#[test]
+fn refused_reverse_move_has_undo_status_next_then_clear_and_join_finishes() {
+    refused_reverse_move_then_clear_and("join");
+}
+
+#[test]
+fn refused_reverse_move_has_undo_status_next_then_clear_and_resolve_finishes() {
+    refused_reverse_move_then_clear_and("resolve");
+}
+
+fn refused_reverse_move_then_clear_and(finisher: &str) {
+    let w = World::new(); let (old, new, zone) = rebase(&w); let target = done(&w, "join-rebase").pop().unwrap();
+    w.s.f.write("src/upstream", b"owner obstruction must survive\n"); let folder = w.folder_state(&w.s.f.request);
+    let r = ours(&w, &["undo"], 1, "refused"); assert_eq!(r.text("owner"), "this request's folder");
+    assert!(r.strings("lines").contains(&"  src/upstream".into()));
+    let undo = assert_one_undo(&w, &target, &new, &old); assert_eq!(w.s.f.head(), old);
+    assert_eq!(w.tip("core"), zone); assert_eq!(w.folder_state(&w.s.f.request), folder);
+    let kept = ref_at(&w, SNAP).unwrap(); assert_eq!(w.s.f.blob(&kept, "src/upstream"), b"owner obstruction must survive\n");
+    let before = observe(&w); let status = ours(&w, &["status"], 0, "stalled");
+    assert_eq!(status.text("next"), "mr undo"); assert_eq!(status.text("stalled_from"), new.as_str());
+    assert_eq!(status.text("stalled_to"), old.as_str());
+    assert!(status.strings("lines").contains(&format!("an undo's folder move is stalled: the undo put {REQUEST} back at {old}, the folder at {new}")));
+    assert_eq!(observe(&w), before);
+    let saves = done(&w, "save").len();
+    let still = ours(&w, &["save", "Do not save a stale folder"], 1, "refused");
+    assert!(still.strings("lines").contains(&"  src/upstream".into()));
+    assert_eq!(w.s.f.head(), old); assert_eq!(done(&w, "save").len(), saves); assert_eq!(w.folder_state(&w.s.f.request), folder);
+    assert_eq!(done(&w, "undo").len(), 1);
+    let held = w.s.f.root.join("owner-obstruction"); fs::rename(w.s.f.request.join("src/upstream"), &held).unwrap();
+    let words = if finisher == "save" { vec!["save", "No stale upstream"] } else { vec![finisher] };
+    let outcome = match finisher { "undo" => "already-done", "save" => "unchanged", "join" => "rebased", "resolve" => "nothing-to-resolve", _ => unreachable!() };
+    let report = ours(&w, &words, 0, outcome);
+    if finisher == "undo" { assert_eq!(report.text("undo_op"), undo.op_id); }
+    else if finisher != "resolve" {
+        assert_eq!(report.text("finished_move_from"), new.as_str()); assert_eq!(report.text("finished_move_to"), old.as_str());
     }
+    // The finished move's snapshot wrote (the obstruction is gone from the folder, still in the snapshot ref): save,
+    // join and resolve's nothing-to-resolve name it; undo names no moves.
+    let named = "the snapshot ref moved as the work was saved first".to_string();
+    let stands = format!("the folder stands where the undo put the branch back: {new} -> {old}");
+    let expected = match finisher {
+        "undo" => vec![format!("op {} was already undone by op {}", target.op_id, undo.op_id), "the folder stands at the tip before the rebase".to_string()],
+        "save" => vec![stands, named, format!("nothing changed since the last save; no save commit written (HEAD is {old})")],
+        "join" => vec![
+            stands, "no unsaved work".to_string(),
+            format!("rebased: {REQUEST} moved from {old} to {}, replayed onto the zone; the folder moved with it; {named}", w.s.f.head()),
+            "the unit tests must run again".to_string(),
+        ],
+        "resolve" => vec![named, "no join is paused in this folder; nothing to resolve".to_string()],
+        _ => unreachable!(),
+    };
+    assert_eq!(report.strings("lines"), expected.as_slice());
+    // With no paused state, resolve reports nothing-to-resolve after finishing; that report has no move fields.
+    assert_eq!(done(&w, "undo").len(), 1); assert_eq!(done(&w, "save").len(), saves);
+    assert_eq!(fs::read(&held).unwrap(), b"owner obstruction must survive\n");
+    assert_eq!(w.s.f.blob(&kept, "src/upstream"), b"owner obstruction must survive\n");
+    assert_eq!(fs::read(w.s.f.request.join("src/file")).unwrap(), b"topic work\n"); assert_eq!(ref_at(&w, ZONE), Some(zone.clone()));
+    if finisher == "join" {
+        assert_eq!(w.s.f.git.commit_info(&w.s.f.head()).unwrap().parents, vec![zone]);
+        assert_eq!(fs::read(w.s.f.request.join("src/upstream")).unwrap(), b"upstream work\n"); assert!(!report.flag("saved_written"));
+    } else { assert_eq!(w.s.f.head(), old); assert!(!w.s.f.request.join("src/upstream").exists()); }
+    index_at(&w, &w.s.f.request, &w.s.f.head()); assert!(!w.s.f.lock_path().exists());
 }
 
 #[test]

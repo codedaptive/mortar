@@ -3,31 +3,34 @@ use super::fixture::Landing;
 use crate::support::raw;
 
 #[test]
-fn yes_and_no_by_full_commit_and_change_id_leave_refs_log_folder_and_commit_inventory_unchanged() {
-    for conflict in [false, true] {
-        let s = Landing::new(true);
-        if conflict {
-            let next = s.f.commit(&s.f.base, &[("src/file", b"origin work\n")], "origin work\n");
-            raw(&s.f.git, &["update-ref", "refs/heads/main", next.as_str()]);
-            raw(&s.f.git, &["update-ref", "refs/heads/integration", next.as_str()]);
-            s.sync(&s.f.base, &next);
-        }
-        for word in [s.squash.commit.as_str(), s.squash.change_id.as_str()] {
-            let before = s.observe(); let commits = commits(&s);
-            let r = s.run("would-merge", Some(word), if conflict { 2 } else { 0 }, if conflict { "conflict" } else { "merges" });
-            assert_eq!(r.text("change_id"), s.squash.change_id.as_str());
-            assert_eq!(r.text("commit"), s.squash.commit.as_str());
-            if conflict { assert_eq!(r.strings("files"), &["src/file"]); }
-            else { assert_eq!(r.text("next"), format!("mr land {} --actor <name>", s.squash.commit)); }
-            assert!(r.lines().contains("no ref moved and no commit was written"));
-            assert_eq!(s.observe(), before); assert_eq!(self::commits(&s), commits);
-        }
+fn yes_by_full_commit_and_change_id_names_the_land_command_and_leaves_refs_log_folder_and_commit_inventory_unchanged() { would_merge_by_commit_and_change_id_moves_nothing(false); }
+
+#[test]
+fn no_by_full_commit_and_change_id_lists_the_conflicting_file_and_leaves_refs_log_folder_and_commit_inventory_unchanged() { would_merge_by_commit_and_change_id_moves_nothing(true); }
+
+fn would_merge_by_commit_and_change_id_moves_nothing(conflict: bool) {
+    let s = Landing::new(true);
+    if conflict {
+        let next = s.f.commit(&s.f.base, &[("src/file", b"origin work\n")], "origin work\n");
+        raw(&s.f.git, &["update-ref", "refs/heads/main", next.as_str()]);
+        raw(&s.f.git, &["update-ref", "refs/heads/integration", next.as_str()]);
+        s.sync(&s.f.base, &next);
+    }
+    for word in [s.squash.commit.as_str(), s.squash.change_id.as_str()] {
+        let before = s.observe(); let commits = commits(&s);
+        let r = s.run("would-merge", Some(word), if conflict { 2 } else { 0 }, if conflict { "conflict" } else { "merges" });
+        assert_eq!(r.text("change_id"), s.squash.change_id.as_str());
+        assert_eq!(r.text("commit"), s.squash.commit.as_str());
+        if conflict { assert_eq!(r.strings("files"), &["src/file"]); }
+        else { assert_eq!(r.text("next"), format!("mr land {} --actor <name>", s.squash.commit)); }
+        assert!(r.lines().contains("no ref moved and no commit was written"));
+        assert_eq!(s.observe(), before); assert_eq!(self::commits(&s), commits);
     }
 }
 
 #[test]
 fn missing_and_duplicate_change_ids_are_refused_without_movement_and_name_the_ambiguity() {
-    let s = Landing::new(true);
+    let s = Landing::without_remote(true);
     let before = s.observe();
     let r = s.run("would-merge", Some("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"), 1, "refused");
     assert!(r.lines().contains("no squash at refs/mortar/squash/* carries change ID"));
@@ -43,7 +46,7 @@ fn missing_and_duplicate_change_ids_are_refused_without_movement_and_name_the_am
 
 #[test]
 fn a_commit_without_mortar_trailers_is_refused_but_a_bad_ref_beside_a_good_ref_is_skipped() {
-    let s = Landing::new(true);
+    let s = Landing::without_remote(true);
     raw(&s.f.git, &["update-ref", "refs/mortar/squash/aaa-bad", s.f.base.as_str()]);
     let before = s.observe();
     let r = s.run("would-merge", Some(s.f.base.as_str()), 1, "refused");

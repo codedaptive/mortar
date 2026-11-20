@@ -1,6 +1,8 @@
 //! take_members: one slot per expected key; non-objects, unknown keys and repeats refused by place.
 
-use super::{take_members, ConfigJsonValue as V};
+use oplog::JsonValue as V;
+
+use super::take_members;
 
 fn object(members: &[(&str, V)]) -> V {
     V::Object(members.iter().map(|(k, v)| (k.to_string(), v.clone())).collect())
@@ -15,6 +17,7 @@ fn values_land_in_their_key_slots_and_absent_keys_are_none() {
 #[test]
 fn a_non_object_is_refused() {
     assert_eq!(take_members(V::Array(Vec::new()), ["a"], "zones.x"), Err("zones.x is not an object".to_string()));
+    assert_eq!(take_members(V::Bool(true), ["a"], "the config"), Err("the config is not an object".to_string()));
 }
 
 #[test]

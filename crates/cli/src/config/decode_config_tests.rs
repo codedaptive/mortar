@@ -8,7 +8,7 @@ fn strings(items: &[&str]) -> Vec<String> {
     items.iter().map(|s| s.to_string()).collect()
 }
 
-fn reason(text: &str) -> String {
+pub(super) fn reason(text: &str) -> String {
     match decode_config(text) {
         Err(ConfigError { reason }) => reason,
         Ok(config) => panic!("{text:?} gave {config:?}"),
@@ -16,7 +16,7 @@ fn reason(text: &str) -> String {
 }
 
 /// The valid config text with `key`'s value text swapped for `value`.
-fn with(key: &str, value: &str) -> String {
+pub(super) fn with(key: &str, value: &str) -> String {
     let mut members = vec![
         ("origin_branch", r#""main""#),
         ("integration_branch", r#""integration""#),
@@ -108,7 +108,7 @@ fn top_level_shape_refusals() {
     assert_eq!(reason(r#"{"origin_branch":"m"}"#), "missing key \"integration_branch\"");
     assert_eq!(reason(&with("formatter", "null}")), "unexpected '}' at byte 195 after the value");
     assert_eq!(reason(r#"{"origin_branch":"main","zones":{"a":{"paths":["x""#), "the text ends before the config is complete");
-    assert_eq!(reason(&with("cap_bytes", "true")), "unexpected 't' at byte 159 where a value (object, array, string, null or non-negative integer) belongs");
+    assert_eq!(reason(&with("cap_bytes", "true")), "cap_bytes is not a number");
 }
 
 #[test]

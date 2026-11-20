@@ -18,9 +18,18 @@ pub(super) fn baseline(f: &Fixture) -> usize {
 }
 const PREFIX: &str = "[mr] tokens saved ≈ ";
 
+// The full saved-then-edited state, for tests whose assertions read it: the exact savings line, the JSON
+// `saved` flag, the exact log contents.
 fn edited() -> Fixture {
     let f = Fixture::new();
     f.save_topic();
+    f.write("src/file", b"unsaved work\n");
+    f
+}
+
+// Unsaved work with no binary save first, for tests whose assertions do not depend on an earlier save.
+fn unsaved() -> Fixture {
+    let f = Fixture::new();
     f.write("src/file", b"unsaved work\n");
     f
 }
@@ -94,7 +103,7 @@ fn savings_home_switch_off_preserves_json_metadata() {
 
 #[test]
 fn savings_xdg_config_overrides_home_and_invalid_config_defaults_on() {
-    let f = edited();
+    let f = unsaved();
     write(&f.root, ".config/mortar/config.json", br#"{"savings_line": true}"#);
     write(&f.root, "config/mortar/config.json", br#"{"savings_line": false}"#);
     let xdg = f.root.join("config");
@@ -130,7 +139,7 @@ fn savings_home_log_appends_plain_and_json_answers() {
 
 #[test]
 fn savings_xdg_state_takes_precedence_over_home() {
-    let f = edited();
+    let f = unsaved();
     let state = f.root.join("state");
     let output = f.command(&f.request, &["status"]).env("XDG_STATE_HOME", &state).output().unwrap();
     let text = plain(&output);
@@ -142,7 +151,7 @@ fn savings_xdg_state_takes_precedence_over_home() {
 
 #[test]
 fn savings_unwritable_state_does_not_change_answer() {
-    let f = edited();
+    let f = unsaved();
     let state = f.root.join("readonly");
     fs::create_dir(&state).unwrap();
     fs::set_permissions(&state, fs::Permissions::from_mode(0o500)).unwrap();
@@ -154,7 +163,7 @@ fn savings_unwritable_state_does_not_change_answer() {
 
 #[test]
 fn savings_usage_refusal_and_act_have_no_metadata_or_log() {
-    let f = edited();
+    let f = unsaved();
     let log = f.root.join(".local/state/mortar/savings.jsonl");
     let usage = f.app(&["status", "extra"]);
     assert_eq!(usage.status.code(), Some(4));
@@ -187,13 +196,13 @@ fn assert_unsuccessful_status_has_no_savings(f: &Fixture, cwd: &Path, exit: i32,
 
 #[test]
 fn savings_bad_status_refusal_has_no_savings() {
-    let f = edited();
+    let f = Fixture::new();
     assert_unsuccessful_status_has_no_savings(&f, &f.zone, 1, "refused");
 }
 
 #[test]
 fn savings_bad_status_failure_has_no_savings() {
-    let f = edited();
+    let f = Fixture::new();
     let other = peer(&f, "peer", &["src".into()]);
     fs::write(record_path(&f, &other), b"{not a folder record\n").unwrap();
     assert_unsuccessful_status_has_no_savings(&f, &f.request, 5, "failed");

@@ -71,23 +71,30 @@ fn refused_pre_replay_folder_is_found_in_done_op_history_on_a_current_repeat() {
 }
 
 #[test]
-fn held_value_r1_whole_tree_revert_moves_to_tip_but_the_partial_revert_is_refused() {
-    for whole in [true, false] {
-        let w = World::new(); let held = w.core(&[("src/file", b"held value\n")]);
-        w.core(&[("src/file", b"latest value\n"), ("src/later", b"later join\n")]);
-        let (_, origin) = w.publish(); w.after(0, "after-published");
-        assert!(w.s.f.records().iter().any(|r| r.phase == oplog::OpPhase::Done && r.moves.iter().any(|m| m.refname == "refs/heads/zone/core" && m.new == held)));
-        if whole { raw(&w.git(&w.s.f.zone), &["read-tree", "-m", "-u", origin.as_str(), held.as_str()]); }
-        else { raw(&w.git(&w.s.f.zone), &["restore", "--source", held.as_str(), "--staged", "--worktree", "--", "src/file"]); }
-        let before = w.store(); let folder = w.folder_state(&w.s.f.zone);
-        if whole {
-            assert_eq!(fs::read(w.s.f.zone.join("src/file")).unwrap(), b"held value\n");
-            let r = w.after(0, "after-published"); assert_eq!(r.strings("folders_moved"), &[w.s.f.zone.display().to_string()]);
-            w.folder_at(&w.s.f.zone, &origin, &[("src/file", b"latest value\n"), ("src/later", b"later join\n")]);
-        } else {
-            let r = w.after(1, "folder-not-moved"); assert!(r.strings("lines").contains(&format!("the zone folder {} was not brought to {origin}: its index matches no commit zone core has held", w.s.f.zone.display())));
-            assert_eq!(w.folder_state(&w.s.f.zone), folder);
-        }
-        assert_eq!(w.s.f.blob(&held, "src/file"), b"held value\n"); assert_eq!(w.store(), before); w.assert_origin(&origin);
+fn held_value_r1_whole_tree_revert_moves_to_tip() {
+    held_value_r1_revert(true);
+}
+
+#[test]
+fn held_value_r1_partial_revert_is_refused() {
+    held_value_r1_revert(false);
+}
+
+fn held_value_r1_revert(whole: bool) {
+    let w = World::new(); let held = w.core(&[("src/file", b"held value\n")]);
+    w.core(&[("src/file", b"latest value\n"), ("src/later", b"later join\n")]);
+    let (_, origin) = w.publish(); w.after(0, "after-published");
+    assert!(w.s.f.records().iter().any(|r| r.phase == oplog::OpPhase::Done && r.moves.iter().any(|m| m.refname == "refs/heads/zone/core" && m.new == held)));
+    if whole { raw(&w.git(&w.s.f.zone), &["read-tree", "-m", "-u", origin.as_str(), held.as_str()]); }
+    else { raw(&w.git(&w.s.f.zone), &["restore", "--source", held.as_str(), "--staged", "--worktree", "--", "src/file"]); }
+    let before = w.store(); let folder = w.folder_state(&w.s.f.zone);
+    if whole {
+        assert_eq!(fs::read(w.s.f.zone.join("src/file")).unwrap(), b"held value\n");
+        let r = w.after(0, "after-published"); assert_eq!(r.strings("folders_moved"), &[w.s.f.zone.display().to_string()]);
+        w.folder_at(&w.s.f.zone, &origin, &[("src/file", b"latest value\n"), ("src/later", b"later join\n")]);
+    } else {
+        let r = w.after(1, "folder-not-moved"); assert!(r.strings("lines").contains(&format!("the zone folder {} was not brought to {origin}: its index matches no commit zone core has held", w.s.f.zone.display())));
+        assert_eq!(w.folder_state(&w.s.f.zone), folder);
     }
+    assert_eq!(w.s.f.blob(&held, "src/file"), b"held value\n"); assert_eq!(w.store(), before); w.assert_origin(&origin);
 }

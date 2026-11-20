@@ -2,7 +2,9 @@
 
 use std::collections::BTreeMap;
 
-use super::{decode_zones, ConfigJsonValue as V, ZoneConfig};
+use oplog::JsonValue as V;
+
+use super::{decode_zones, ZoneConfig};
 
 fn zone(paths: &[&str]) -> V {
     V::Object(vec![("paths".to_string(), V::Array(paths.iter().map(|p| V::String(p.to_string())).collect()))])
@@ -28,4 +30,5 @@ fn a_zone_given_twice_is_refused() {
 fn missing_and_non_object_zones_are_refused() {
     assert_eq!(decode_zones(None), Err("missing key \"zones\"".to_string()));
     assert_eq!(decode_zones(Some(V::Null)), Err("zones is not an object".to_string()));
+    assert_eq!(decode_zones(Some(V::Bool(true))), Err("zones is not an object".to_string()));
 }

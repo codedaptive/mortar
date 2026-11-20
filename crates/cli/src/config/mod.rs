@@ -3,14 +3,12 @@
 
 mod config;
 mod config_error;
-mod config_json_value;
 mod config_path;
 mod decode_config;
 mod decode_formatter;
 mod decode_zones;
 mod encode_config;
 mod formatter_config;
-mod parse_config_json;
 mod protected_refs;
 mod read_config;
 mod snapshot_settings;
@@ -25,6 +23,10 @@ mod zone_config;
 #[cfg(test)]
 mod config_path_tests;
 #[cfg(test)]
+mod decode_config_numbers_tests;
+#[cfg(test)]
+mod decode_config_syntax_tests;
+#[cfg(test)]
 mod decode_config_tests;
 #[cfg(test)]
 mod decode_formatter_tests;
@@ -32,8 +34,6 @@ mod decode_formatter_tests;
 mod decode_zones_tests;
 #[cfg(test)]
 mod encode_config_tests;
-#[cfg(test)]
-mod parse_config_json_tests;
 #[cfg(test)]
 mod protected_refs_tests;
 #[cfg(test)]
@@ -60,10 +60,8 @@ pub(crate) use snapshot_settings_for::snapshot_settings_for;
 pub(crate) use write_config::write_config;
 pub(crate) use zone_config::ZoneConfig;
 
-pub(crate) use config_json_value::ConfigJsonValue;
 pub(crate) use decode_formatter::decode_formatter;
 pub(crate) use decode_zones::decode_zones;
-pub(crate) use parse_config_json::parse_config_json;
 pub(crate) use take_members::take_members;
 pub(crate) use take_name::take_name;
 pub(crate) use take_number::take_number;

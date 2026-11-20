@@ -78,27 +78,27 @@ fn install(f: &Fixture, child_path: Option<&OsStr>, expected: Warning<'_>) {
 
 #[test]
 fn a_file_holding_the_marker_has_it() {
-    let f = Fixture::new(); let a = bin(&f, "a");
+    let f = Fixture::plain(); let a = bin(&f, "a");
     candidate(&a.join("mr"), &[b"head ".as_slice(), MARKER, b" tail"].concat(), true);
     install(&f, Some(a.as_os_str()), Warning::Recognized);
 }
 
 #[test]
 fn a_file_without_the_marker_does_not_have_it() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let first = foreign(&a, true);
+    let f = Fixture::plain(); let a = bin(&f, "a"); let first = foreign(&a, true);
     install(&f, Some(a.as_os_str()), Warning::Foreign(&first));
 }
 
 #[test]
 fn the_marker_straddling_the_64_kib_boundary_is_found() {
-    let f = Fixture::new(); let a = bin(&f, "a");
+    let f = Fixture::plain(); let a = bin(&f, "a");
     candidate(&a.join("mr"), &[vec![b'x'; 65533], MARKER.to_vec(), vec![b'y'; 100]].concat(), true);
     install(&f, Some(a.as_os_str()), Warning::Recognized);
 }
 
 #[test]
 fn a_file_shorter_than_one_read_with_the_marker_near_the_start_has_it() {
-    let f = Fixture::new(); let a = bin(&f, "a");
+    let f = Fixture::plain(); let a = bin(&f, "a");
     candidate(&a.join("mr"), &[b"ab".as_slice(), MARKER].concat(), true);
     install(&f, Some(a.as_os_str()), Warning::Recognized);
 }
@@ -106,7 +106,7 @@ fn a_file_shorter_than_one_read_with_the_marker_near_the_start_has_it() {
 #[test]
 fn a_symlink_to_a_file_holding_the_marker_has_it() {
     // Partial inventory case 7: the binary canonicalizes the candidate before the marker reader receives its path.
-    let f = Fixture::new(); let a = bin(&f, "a"); let target = f.root.join("marked-target");
+    let f = Fixture::plain(); let a = bin(&f, "a"); let target = f.root.join("marked-target");
     candidate(&target, &[b"head ".as_slice(), MARKER, b" tail"].concat(), true);
     symlink(&target, a.join("mr")).unwrap();
     install(&f, Some(a.as_os_str()), Warning::Recognized);
@@ -114,52 +114,52 @@ fn a_symlink_to_a_file_holding_the_marker_has_it() {
 
 #[test]
 fn the_first_of_two_dirs_holding_an_executable_wins() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let b = bin(&f, "b");
+    let f = Fixture::plain(); let a = bin(&f, "a"); let b = bin(&f, "b");
     let first = foreign(&a, true); foreign(&b, true);
     install(&f, Some(&path(&[&a, &b])), Warning::Foreign(&first));
 }
 
 #[test]
 fn a_non_executable_file_is_skipped() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let b = bin(&f, "b");
+    let f = Fixture::plain(); let a = bin(&f, "a"); let b = bin(&f, "b");
     foreign(&a, false); let first = foreign(&b, true);
     install(&f, Some(&path(&[&a, &b])), Warning::Foreign(&first));
 }
 
 #[test]
 fn only_non_executables_give_none() {
-    let f = Fixture::new(); let a = bin(&f, "a"); foreign(&a, false);
+    let f = Fixture::plain(); let a = bin(&f, "a"); foreign(&a, false);
     install(&f, Some(a.as_os_str()), Warning::Missing);
 }
 
 #[test]
 fn empty_entries_without_the_name_in_cwd_fall_through_to_the_next_entry() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let first = foreign(&a, true);
+    let f = Fixture::plain(); let a = bin(&f, "a"); let first = foreign(&a, true);
     install(&f, Some(&path(&[Path::new(""), Path::new(""), &a, Path::new("")])), Warning::Foreign(&first));
 }
 
 #[test]
 fn a_leading_empty_entry_finds_the_cwd_executable_before_a_later_dir() {
-    let f = Fixture::new(); let safe = bin(&f, "safe"); foreign(&safe, true);
+    let f = Fixture::plain(); let safe = bin(&f, "safe"); foreign(&safe, true);
     let first = foreign(&f.request, true);
     install(&f, Some(&path(&[Path::new(""), &safe])), Warning::Foreign(&first));
 }
 
 #[test]
 fn a_trailing_empty_entry_finds_the_cwd_executable_when_no_dir_has_one() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let first = foreign(&f.request, true);
+    let f = Fixture::plain(); let a = bin(&f, "a"); let first = foreign(&f.request, true);
     install(&f, Some(&path(&[&a, Path::new("")])), Warning::Foreign(&first));
 }
 
 #[test]
 fn a_relative_entry_is_looked_up_under_cwd() {
-    let f = Fixture::new(); let sub = f.request.join("sub"); tools(&sub); let first = foreign(&sub, true);
+    let f = Fixture::plain(); let sub = f.request.join("sub"); tools(&sub); let first = foreign(&sub, true);
     install(&f, Some(OsStr::new("sub")), Warning::Foreign(&first));
 }
 
 #[test]
 fn an_empty_path_with_no_executable_in_cwd_gives_none() {
-    let f = Fixture::new();
+    let f = Fixture::plain();
     // An empty PATH must still reach real Git and hostname for the actual guard install to complete.
     tools(&f.request);
     install(&f, Some(OsStr::new("")), Warning::Missing);
@@ -167,7 +167,7 @@ fn an_empty_path_with_no_executable_in_cwd_gives_none() {
 
 #[test]
 fn a_symlink_to_an_executable_counts_and_is_named_by_its_path_entry() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let target = f.root.join("foreign-target");
+    let f = Fixture::plain(); let a = bin(&f, "a"); let target = f.root.join("foreign-target");
     script(&target, FOREIGN); let first = a.join("mr"); symlink(&target, &first).unwrap();
     assert_ne!(first, first.canonicalize().unwrap());
     install(&f, Some(a.as_os_str()), Warning::Foreign(&first));
@@ -175,7 +175,7 @@ fn a_symlink_to_an_executable_counts_and_is_named_by_its_path_entry() {
 
 #[test]
 fn a_symlink_to_a_non_executable_is_skipped() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let b = bin(&f, "b");
+    let f = Fixture::plain(); let a = bin(&f, "a"); let b = bin(&f, "b");
     let target = f.root.join("not-executable"); candidate(&target, FOREIGN, false);
     symlink(&target, a.join("mr")).unwrap(); let first = foreign(&b, true);
     install(&f, Some(&path(&[&a, &b])), Warning::Foreign(&first));
@@ -183,34 +183,34 @@ fn a_symlink_to_a_non_executable_is_skipped() {
 
 #[test]
 fn a_dangling_symlink_is_skipped() {
-    let f = Fixture::new(); let a = bin(&f, "a");
+    let f = Fixture::plain(); let a = bin(&f, "a");
     symlink(f.root.join("missing-target"), a.join("mr")).unwrap();
     install(&f, Some(a.as_os_str()), Warning::Missing);
 }
 
 #[test]
 fn a_directory_with_the_name_is_skipped() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let b = bin(&f, "b");
+    let f = Fixture::plain(); let a = bin(&f, "a"); let b = bin(&f, "b");
     fs::create_dir(a.join("mr")).unwrap(); let first = foreign(&b, true);
     install(&f, Some(&path(&[&a, &b])), Warning::Foreign(&first));
 }
 
 #[test]
 fn an_executable_with_another_name_does_not_match() {
-    let f = Fixture::new(); let a = bin(&f, "a");
+    let f = Fixture::plain(); let a = bin(&f, "a");
     script(&a.join("mortar"), FOREIGN); script(&a.join("mrx"), FOREIGN);
     install(&f, Some(a.as_os_str()), Warning::Missing);
 }
 
 #[test]
 fn a_dir_that_does_not_exist_is_skipped() {
-    let f = Fixture::new(); let a = bin(&f, "a"); let first = foreign(&a, true);
+    let f = Fixture::plain(); let a = bin(&f, "a"); let first = foreign(&a, true);
     install(&f, Some(&path(&[&f.root.join("missing-dir"), &a])), Warning::Foreign(&first));
 }
 
 #[test]
 fn an_unset_path_gives_none_even_with_an_executable_in_cwd() {
-    let f = Fixture::new(); foreign(&f.request, true);
+    let f = Fixture::plain(); foreign(&f.request, true);
     // Unlike PATH="", an unset PATH must not search cwd for mr. Git/hostname use the platform's default lookup.
     install(&f, None, Warning::Missing);
 }

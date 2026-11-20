@@ -13,7 +13,16 @@ pub struct Landing {
     pub bare: PathBuf,
 }
 impl Landing {
+    /// The full landing: `without_remote`'s repository plus a bare `origin` holding `main`, for verbs that reach the remote.
     pub fn new(with_folder: bool) -> Self {
+        let s = Self::without_remote(with_folder);
+        raw(&s.f.git, &["init", "-q", "--bare", "--initial-branch=main", s.bare.to_str().unwrap()]);
+        raw(&s.f.git, &["remote", "add", "origin", s.bare.to_str().unwrap()]);
+        raw(&s.f.git, &["push", "-q", "origin", "refs/heads/main:refs/heads/main"]);
+        s
+    }
+    /// The squash, integration branch and optional folder with no remote; `bare` names a path that does not exist.
+    pub fn without_remote(with_folder: bool) -> Self {
         let f = Fixture::new();
         raw(&f.git, &["checkout", "-q", "--detach"]);
         raw(&f.git, &["branch", "integration", f.base.as_str()]);
@@ -27,9 +36,6 @@ impl Landing {
         let folder = f.root.join("integration");
         if with_folder { raw(&f.git, &["worktree", "add", "-q", folder.to_str().unwrap(), "integration"]); }
         let bare = f.root.join("origin.git");
-        raw(&f.git, &["init", "-q", "--bare", "--initial-branch=main", bare.to_str().unwrap()]);
-        raw(&f.git, &["remote", "add", "origin", bare.to_str().unwrap()]);
-        raw(&f.git, &["push", "-q", "origin", "refs/heads/main:refs/heads/main"]);
         Self { f, refs, squash, folder, bare }
     }
     pub fn command(&self, verb: &str, word: Option<&str>) -> Command {
@@ -71,10 +77,11 @@ impl Landing {
         })
     }
     /// An independent state oracle: all refs, op-log bytes, landing state, remote refs, index entries and file bytes.
+    /// The remote and folder elements are read only when the bare repository and the folder exist.
     pub fn observe(&self) -> Vec<Vec<u8>> {
         let mut state = vec![raw(&self.f.git, &["for-each-ref", "--format=%(refname) %(objectname)"]),
-            self.f.log().unwrap_or_default(), fs::read(self.f.common.join("mortar/landing.json")).unwrap_or_default(),
-            raw(&Git { repo: self.bare.clone(), ..self.f.git.clone() }, &["for-each-ref", "--format=%(refname) %(objectname)"])];
+            self.f.log().unwrap_or_default(), fs::read(self.f.common.join("mortar/landing.json")).unwrap_or_default()];
+        if self.bare.exists() { state.push(raw(&Git { repo: self.bare.clone(), ..self.f.git.clone() }, &["for-each-ref", "--format=%(refname) %(objectname)"])); }
         if self.folder.exists() { state.extend([self.index(), self.bytes()]); }
         state
     }

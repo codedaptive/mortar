@@ -1,6 +1,7 @@
 use crate::json::{check, Report};
 mod fixture_config;
 mod fixture_formatter;
+mod fixture_plain;
 mod fixture_zone;
 mod write_fixture_config;
 pub use fixture_config::FixtureConfig as Config;
@@ -22,30 +23,14 @@ pub struct Fixture {
 }
 impl Fixture {
     pub fn new() -> Self {
-        let owned = OwnDir::new(); let root = owned.0.clone(); let main = root.join("main");
-        let mut git = Git::new(&root);
-        git.env = vec![
-            ("GIT_CONFIG_NOSYSTEM".into(), "1".into()), ("GIT_CONFIG_GLOBAL".into(), "/dev/null".into()),
-            ("GIT_AUTHOR_NAME".into(), "CLI Validation Author".into()), ("GIT_AUTHOR_EMAIL".into(), "author@example.invalid".into()),
-            ("GIT_AUTHOR_DATE".into(), "1700000000 +0000".into()),
-            ("GIT_COMMITTER_NAME".into(), "CLI Validation Committer".into()), ("GIT_COMMITTER_EMAIL".into(), "committer@example.invalid".into()),
-            ("GIT_COMMITTER_DATE".into(), "1700000100 +0000".into()),
-        ];
-        git.run(&["init", "-q", "--initial-branch=main", main.to_str().unwrap()], &RunOpts::default()).unwrap();
-        git.repo = main;
-        write(&git.repo, "root.txt", b"root\n"); write(&git.repo, "src/file", b"base\n"); write(&git.repo, "sub/keep", b"keep\n");
-        raw(&git, &["add", "-A"]); raw(&git, &["commit", "-qm", "base"]);
-        let base = git.rev_parse("HEAD").unwrap().unwrap(); let common = git.common_dir().unwrap();
-        let request = root.join("request"); let zone = root.join("zone"); let paths = vec!["src".into(), "sub".into()];
+        let (owned, git, base) = main_repo(); let root = owned.0.clone(); let common = git.common_dir().unwrap();
+        let request = root.join("request"); let zone = root.join("zone"); let paths = zone_paths();
         oplog::recover(&git, &common).unwrap();
         folders::make_zone_folder(&setup(&git, &zone), "core", &paths, Some(&base)).unwrap();
         oplog::recover(&git, &common).unwrap();
         folders::make_request_folder(&setup(&git, &request), "core", "task", &paths).unwrap();
-        let config = Config { origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into(),
-            zones: BTreeMap::from([("core".into(), ZoneConfig { paths })]), root_files: vec!["root.txt".into()],
-            build_dirs: vec!["d/".into()], cap_bytes: snapshot::DEFAULT_SIZE_CAP, floor_bytes: 0, formatter: None };
-        write_fixture_config(&git.repo, &config).unwrap();
-        Self { root, git, common, request, zone, base, init_args: config, _owned: owned }
+        let init_args = configure_main(&git);
+        Self { root, git, common, request, zone, base, init_args, _owned: owned }
     }
     pub fn command(&self, cwd: &Path, args: &[&str]) -> Command {
         let mut c = Command::new(env!("CARGO_BIN_EXE_mortar"));
@@ -105,6 +90,33 @@ impl Fixture {
         (raw(&self.git, &["for-each-ref", "--format=%(refname) %(objectname)"]),
          raw(&self.local(), &["ls-files", "--stage", "-z"]), self.log(), fs::read(self.request.join("src/file")).unwrap())
     }
+}
+/// The isolated git environment and the main repository with its base commit, shared by every constructor.
+fn main_repo() -> (OwnDir, Git, Oid) {
+    let owned = OwnDir::new(); let main = owned.0.join("main");
+    let mut git = Git::new(&owned.0);
+    git.env = vec![
+        ("GIT_CONFIG_NOSYSTEM".into(), "1".into()), ("GIT_CONFIG_GLOBAL".into(), "/dev/null".into()),
+        ("GIT_AUTHOR_NAME".into(), "CLI Validation Author".into()), ("GIT_AUTHOR_EMAIL".into(), "author@example.invalid".into()),
+        ("GIT_AUTHOR_DATE".into(), "1700000000 +0000".into()),
+        ("GIT_COMMITTER_NAME".into(), "CLI Validation Committer".into()), ("GIT_COMMITTER_EMAIL".into(), "committer@example.invalid".into()),
+        ("GIT_COMMITTER_DATE".into(), "1700000100 +0000".into()),
+    ];
+    git.run(&["init", "-q", "--initial-branch=main", main.to_str().unwrap()], &RunOpts::default()).unwrap();
+    git.repo = main;
+    write(&git.repo, "root.txt", b"root\n"); write(&git.repo, "src/file", b"base\n"); write(&git.repo, "sub/keep", b"keep\n");
+    raw(&git, &["add", "-A"]); raw(&git, &["commit", "-qm", "base"]);
+    let base = git.rev_parse("HEAD").unwrap().unwrap();
+    (owned, git, base)
+}
+fn zone_paths() -> Vec<String> { vec!["src".into(), "sub".into()] }
+/// Write the fixture's config (zone "core" over src and sub) into the main repository and return it.
+fn configure_main(git: &Git) -> Config {
+    let config = Config { origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into(),
+        zones: BTreeMap::from([("core".into(), ZoneConfig { paths: zone_paths() })]), root_files: vec!["root.txt".into()],
+        build_dirs: vec!["d/".into()], cap_bytes: snapshot::DEFAULT_SIZE_CAP, floor_bytes: 0, formatter: None };
+    write_fixture_config(&git.repo, &config).unwrap();
+    config
 }
 pub fn setup<'a>(git: &'a Git, path: &Path) -> FolderSetup<'a> {
     FolderSetup { git, path: path.into(), floor_bytes: 0, sweep: SweepEstimate { bytes: 0, reason: None }, disk: &DfFreeDisk, pids: &KillPidProbe, actor: "validation-fixture".into() }

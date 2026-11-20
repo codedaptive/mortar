@@ -52,13 +52,13 @@ fn install(f: &Fixture, program: &Path, first: &Path, warns: bool) {
 
 #[test]
 fn foreign_mr_first_warns_last_before_next_but_installs_the_real_guard_without_running_the_candidate() {
-    let f = Fixture::new(); let first = bin(&f, "foreign-bin"); foreign_mr(&first);
+    let f = Fixture::plain(); let first = bin(&f, "foreign-bin"); foreign_mr(&first);
     install(&f, &mortar(), &first, true);
 }
 
 #[test]
 fn this_builds_own_bin_first_installs_without_a_path_warning() {
-    let f = Fixture::new();
+    let f = Fixture::plain();
     let built_mr = Path::new(env!("CARGO_BIN_EXE_mr")).canonicalize().unwrap();
     let first = built_mr.parent().unwrap();
     assert_eq!(first.join("mortar").canonicalize().unwrap(), mortar());
@@ -67,14 +67,14 @@ fn this_builds_own_bin_first_installs_without_a_path_warning() {
 
 #[test]
 fn a_copied_mortar_at_another_path_is_recognized_by_its_actual_marker_without_warning() {
-    let f = Fixture::new(); let first = bin(&f, "copied-bin");
+    let f = Fixture::plain(); let first = bin(&f, "copied-bin");
     let copied = copied_mortar(&first, "mr"); assert_ne!(copied, mortar());
     install(&f, &mortar(), &first, false);
 }
 
 #[test]
 fn a_myrepos_like_mr_beside_the_running_mortar_warns_last_before_next() {
-    let f = Fixture::new(); let first = bin(&f, "neighbor-bin");
+    let f = Fixture::plain(); let first = bin(&f, "neighbor-bin");
     let relocated = copied_mortar(&first, "mortar"); foreign_mr(&first);
     assert_eq!(relocated.parent(), Some(first.as_path()));
     install(&f, &relocated, &first, true);

@@ -25,13 +25,13 @@ fn configured_formatter_runs_once_before_save_or_join_and_its_bytes_enter_the_sa
 #[test]
 fn fifo_formatter_timeout_is_reported_and_save_still_commits_work_then_reaps_formatter() {
     let f = Fixture::new(); let fifo = f.common.join("formatter-blocked"); make_fifos(std::slice::from_ref(&fifo));
-    let fired = f.common.join("timeout-guard-fired"); let _guard = FifoGuard::new(vec![fifo.clone()], fired.clone());
+    let fired = f.common.join("timeout-guard-fired"); let mut guard = FifoGuard::new(vec![fifo.clone()], fired.clone());
     let pid_file = f.common.join("formatter.pid"); let _cleanup = StopPid(pid_file.clone()); let program = f.common.join("timeout.sh");
     script(&program, b"#!/bin/sh\nset -eu\nprintf '%s' \"$$\" >\"$1\"\nprintf 'blocked formatter\\n' >&2\nexec /bin/cat \"$2\"\n");
     let mut config = f.init_args.clone(); config.formatter = Some(FormatterConfig {
         command: vec![program.to_str().unwrap().into(), pid_file.to_str().unwrap().into(), fifo.to_str().unwrap().into()], timeout_seconds: 2 }); f.configure(&config);
     f.write("src/file", b"work saved after timeout\n");
-    let report = f.report(&["--json", "save", "Save despite formatter timeout"], "save", 0, "saved");
+    let report = f.report(&["--json", "save", "Save despite formatter timeout"], "save", 0, "saved"); guard.disarm();
     assert!(report.lines().contains("timeout of 2 s and was stopped")); assert!(!fired.exists(), "guard released a stuck process instead of product timeout");
     let pid = fs::read_to_string(pid_file).unwrap().parse().unwrap();
     assert!(!KillPidProbe.pid_alive(pid), "formatter must be dead AND reaped");
@@ -43,7 +43,7 @@ fn killed_cli_after_actual_rebase_transaction_recovers_then_moves_folder_before_
     let f = Fixture::new(); let old = f.save_topic(); let zone = f.advance_zone(false);
     let dir = f.common.join("git-shim"); fs::create_dir(&dir).unwrap();
     let event = f.common.join("rebase-event"); let release = f.common.join("rebase-release"); make_fifos(&[event.clone(), release.clone()]);
-    let fired = f.common.join("rebase-guard-fired"); let _guard = FifoGuard::new(vec![event.clone(), release.clone()], fired.clone());
+    let fired = f.common.join("rebase-guard-fired"); let mut guard = FifoGuard::new(vec![event.clone(), release.clone()], fired.clone());
     let once = f.common.join("rebase-gated-once");
     script(&dir.join("git"), br#"#!/bin/sh
 set -eu
@@ -71,7 +71,7 @@ exec "$MORTAR_VALIDATION_REAL_GIT" "$@"
     assert!(!f.request.join("src/upstream").exists(), "the app has not moved the folder yet");
     child.0.kill().unwrap(); assert_eq!(child.0.wait().unwrap().signal(), Some(9));
     assert!(!KillPidProbe.pid_alive(pid), "kernel wait/reap BEFORE releasing the git shim");
-    release_fifo(&release, b"release\n");
+    release_fifo(&release, b"release\n"); guard.disarm(); assert!(!fired.exists(), "watchdog fired in the blocked rebase window");
     let records = f.records();
     let intent = records.iter().find(|r| r.kind == "join-rebase" && r.phase == oplog::OpPhase::Intent).unwrap();
     assert_eq!(oplog::open_intent(&f.common, &intent.op_id).unwrap(), Some(intent.moves.clone()));
@@ -80,7 +80,7 @@ exec "$MORTAR_VALIDATION_REAL_GIT" "$@"
     assert!(!report.flag("saved_written"), "folder catch-up must happen BEFORE saving, not save the old folder as new work");
     assert_eq!(f.head(), new); assert_eq!(fs::read(f.request.join("src/upstream")).unwrap(), b"upstream work\n");
     assert_eq!(f.records().iter().filter(|r| r.kind == "join-rebase" && r.phase == oplog::OpPhase::Done).count(), 1);
-    assert_eq!(oplog::open_intent(&f.common, &intent.op_id).unwrap(), None); assert!(!f.lock_path().exists()); assert!(!fired.exists());
+    assert_eq!(oplog::open_intent(&f.common, &intent.op_id).unwrap(), None); assert!(!f.lock_path().exists());
     let before = f.observe(); f.report(&["--json", "join"], "join", 0, "joined"); assert_eq!(f.observe(), before);
 }
 
@@ -99,11 +99,15 @@ impl FifoGuard {
         } });
         Self { cancel: Some(send), thread: Some(job), fifos }
     }
+    /// Ends the watch over the blocked window; the join lets a timer that already fired finish its marker first.
+    fn disarm(&mut self) {
+        if let Some(send) = self.cancel.take() { let _ = send.send(()); }
+        if let Some(job) = self.thread.take() { let _ = job.join(); }
+    }
 }
 impl Drop for FifoGuard { fn drop(&mut self) {
     for path in &self.fifos { release_fifo(path, b"STOP\n"); }
-    if let Some(send) = self.cancel.take() { let _ = send.send(()); }
-    if let Some(job) = self.thread.take() { let _ = job.join(); }
+    self.disarm();
 } }
 struct Process(Child);
 impl Drop for Process { fn drop(&mut self) { if self.0.try_wait().ok().flatten().is_none() { let _ = self.0.kill(); } let _ = self.0.wait(); } }
