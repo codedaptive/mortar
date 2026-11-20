@@ -2,13 +2,15 @@
 
 use std::collections::BTreeMap;
 
-use super::{take_members, take_strings, ConfigJsonValue, ZoneConfig};
+use oplog::JsonValue;
+
+use super::{take_members, take_strings, ZoneConfig};
 
 /// `zones` must be an object whose every member is `{"paths": [strings]}` with exactly that key. A zone
 /// name given twice is refused: the map would keep only one of them silently.
-pub(crate) fn decode_zones(slot: Option<ConfigJsonValue>) -> Result<BTreeMap<String, ZoneConfig>, String> {
+pub(crate) fn decode_zones(slot: Option<JsonValue>) -> Result<BTreeMap<String, ZoneConfig>, String> {
     let members = match slot {
-        Some(ConfigJsonValue::Object(members)) => members,
+        Some(JsonValue::Object(members)) => members,
         Some(_) => return Err("zones is not an object".to_string()),
         None => return Err("missing key \"zones\"".to_string()),
     };

@@ -1,6 +1,8 @@
 //! decode_formatter: null is None, else exactly a non-empty command and a timeout.
 
-use super::{decode_formatter, ConfigJsonValue as V, FormatterConfig};
+use oplog::JsonValue as V;
+
+use super::{decode_formatter, FormatterConfig};
 
 fn formatter(command: &[&str], timeout: V) -> V {
     V::Object(vec![
@@ -26,6 +28,7 @@ fn an_object_is_the_formatter() {
 fn refusals_name_the_key() {
     assert_eq!(decode_formatter(None), Err("missing key \"formatter\"".to_string()));
     assert_eq!(decode_formatter(Some(V::Number(1))), Err("formatter is neither null nor an object".to_string()));
+    assert_eq!(decode_formatter(Some(V::Bool(false))), Err("formatter is neither null nor an object".to_string()));
     assert_eq!(
         decode_formatter(Some(formatter(&[], V::Number(1)))),
         Err("formatter.command is empty; it must name the formatter's program".to_string())
