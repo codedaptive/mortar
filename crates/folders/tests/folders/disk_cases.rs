@@ -1,4 +1,4 @@
-//! disk/sweep_build -> real worktree discovery, file/symlink sizes and controlled filesystem mtimes.
+//! disk/folder_unsaved/sweep_build -> real worktree discovery, file/symlink sizes and controlled filesystem mtimes.
 use super::maintenance_support::*;
 use crate::support::{run, setup, write};
 use folders::{disk, make_request_folder, make_zone_folder, sweep_build};
@@ -110,4 +110,41 @@ fn stamp_tree(root: &Path, seconds: u64) {
         if kind.is_dir() { stamp_tree(&item.path(), seconds); }
         stamp(&item.path(), seconds);
     }
+}
+
+#[test]
+fn unsaved_clean_folder_counts_zero() {
+    let m = Removal::new();
+    assert_eq!(folders::folder_unsaved(&m.f.git, &m.folder).unwrap(), folders::UnsavedCounts { tracked: 0, untracked: 0 });
+}
+
+#[test]
+fn unsaved_status_leaves_index_bytes_unchanged() {
+    let m = Removal::new();
+    let index = String::from_utf8(run(&m.local, &["rev-parse", "--git-path", "index"])).unwrap();
+    let index = m.folder.join(index.trim_end());
+    let tracked = m.folder.join("kit/zone/file");
+    stamp(&tracked, 2_000_000_000);
+    let before = fs::read(&index).unwrap();
+    let counts = folders::folder_unsaved(&m.f.git, &m.folder).unwrap();
+    let after = fs::read(&index).unwrap();
+    assert_eq!(counts, folders::UnsavedCounts { tracked: 0, untracked: 0 });
+    assert_eq!(before, after, "a status run that refreshed the index would change its bytes");
+}
+
+#[test]
+fn unsaved_counts_changed_and_untracked_files_without_writing() {
+    let m = Removal::new();
+    write(&m.folder, "kit/zone/file", b"edited content\n");
+    write(&m.folder, "new-file", b"one\n"); write(&m.folder, "nested/new-file", b"two\n");
+    let before_log = log(&m.f); let before_refs = refs(&m.f.git);
+    assert_eq!(folders::folder_unsaved(&m.f.git, &m.folder).unwrap(), folders::UnsavedCounts { tracked: 1, untracked: 2 });
+    assert_eq!(log(&m.f), before_log); assert_eq!(refs(&m.f.git), before_refs);
+    assert_eq!(fs::read(m.folder.join("kit/zone/file")).unwrap(), b"edited content\n");
+}
+
+#[test]
+fn unsaved_missing_folder_returns_git_error() {
+    let m = Removal::new();
+    assert!(matches!(folders::folder_unsaved(&m.f.git, &m.f.repo.path.join("never-made")), Err(folders::FolderError::Git(_))));
 }
