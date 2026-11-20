@@ -1,7 +1,7 @@
 //! decode_marked_log on literal log bytes: a line's mark read back or absent, a mark twice or not a string
 //! refused, every proper prefix of a line torn, a mixed log read whole, torn and blank lines skipped and
 //! numbered, and each malformed line refused with its number and what is wrong (missing or repeated keys, bad
-//! object ids, phases, numbers, UTF-8 and trailing text). Read through unmarked_log and plain_log, the same
+//! object ids, phases, numbers, fields of the wrong kind, UTF-8 and trailing text). Read through unmarked_log and plain_log, the same
 //! bytes give the plain op log. decode_marked_line, the JSON reader and both log mappings are pure.
 
 use gitio::Oid;
@@ -307,8 +307,37 @@ fn complete_json_that_is_not_a_record_is_malformed() {
 
 #[test]
 fn bad_json_is_malformed_not_torn() {
-    for line in ["{\"op_id\" \"x\"}", "{\"a\":true}", "x", "{\"a\":\"\\q\"}"] {
+    for line in ["{\"op_id\" \"x\"}", "{\"a\":tru}", "x", "{\"a\":\"\\q\"}"] {
         assert!(matches!(one_line(line), Err(OplogError::Malformed { line: Some(1), .. })), "{line}");
+    }
+}
+
+#[test]
+fn a_boolean_where_a_record_field_belongs_is_malformed_by_the_decoder() {
+    let cases = [
+        (
+            r#"{"op_id":"1","key":"k1","kind":true,"actor":"a","reason":"r","at":10,"phase":"intent","moves":[]}"#,
+            "kind is not a string",
+        ),
+        (
+            r#"{"op_id":"1","key":"k1","kind":"land","actor":"a","reason":"r","at":true,"phase":"intent","moves":[]}"#,
+            "at is not a non-negative integer",
+        ),
+        (
+            r#"{"op_id":"1","key":"k1","kind":"land","actor":"a","reason":"r","at":10,"phase":"intent","moves":false}"#,
+            "moves is not an array",
+        ),
+        (
+            r#"{"op_id":"1","key":"k1","kind":"land","actor":"a","reason":"r","at":10,"phase":"intent","moves":[],"remote":true}"#,
+            "remote is not a string",
+        ),
+        (
+            r#"{"op_id":"1","key":"k1","kind":"land","actor":"a","reason":"r","at":10,"phase":"intent","moves":[],"values":[{"name":"t","value":true}]}"#,
+            "value 1: value is not a string",
+        ),
+    ];
+    for (line, reason) in cases {
+        assert_eq!(malformed_reason(one_line(line)), (Some(1), reason.to_string()), "{line}");
     }
 }
 

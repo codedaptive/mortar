@@ -2,8 +2,8 @@
 
 use super::{parse_json_string, JsonError, JsonValue};
 
-/// One JSON value with optional whitespace around it: objects, arrays, strings, null and non-negative
-/// integers that fit u64. Booleans, negative numbers, fractions, exponents and leading zeros are
+/// One JSON value with optional whitespace around it: objects, arrays, strings, null, booleans and
+/// non-negative integers that fit u64. Negative numbers, fractions, exponents and leading zeros are
 /// refused. An object keeps its keys in text order, duplicates included. Text that ends before the
 /// value is complete is EndOfInput, the mark of a torn write; anything else wrong, trailing text
 /// included, is Invalid.
@@ -22,9 +22,11 @@ fn value(text: &str, pos: usize) -> Result<(JsonValue, usize), JsonError> {
         Some(b'{') => object(text, pos + 1),
         Some(b'[') => array(text, pos + 1),
         Some(b'"') => parse_json_string(text, pos + 1).map(|(s, end)| (JsonValue::String(s), end)),
-        Some(b'n') => null(text, pos),
+        Some(b'n') => literal(text, pos, "null", JsonValue::Null),
+        Some(b't') => literal(text, pos, "true", JsonValue::Bool(true)),
+        Some(b'f') => literal(text, pos, "false", JsonValue::Bool(false)),
         Some(b'0'..=b'9') => number(text, pos),
-        Some(_) => Err(invalid(text, pos, "where a value (object, array, string, null or non-negative integer) belongs")),
+        Some(_) => Err(invalid(text, pos, "where a value (object, array, string, null, boolean or non-negative integer) belongs")),
     }
 }
 
@@ -67,16 +69,16 @@ fn array(text: &str, pos: usize) -> Result<(JsonValue, usize), JsonError> {
     }
 }
 
-/// `null`; a text that stops partway through the word is EndOfInput.
-fn null(text: &str, pos: usize) -> Result<(JsonValue, usize), JsonError> {
+/// `word` (null, true or false) as `value`; a text that stops partway through the word is EndOfInput.
+fn literal(text: &str, pos: usize, word: &str, value: JsonValue) -> Result<(JsonValue, usize), JsonError> {
     let rest = &text[pos..];
-    if rest.starts_with("null") {
-        return Ok((JsonValue::Null, pos + 4));
+    if rest.starts_with(word) {
+        return Ok((value, pos + word.len()));
     }
-    if "null".starts_with(rest) {
+    if word.starts_with(rest) {
         return Err(JsonError::EndOfInput);
     }
-    Err(JsonError::Invalid(format!("{rest:?} at byte {pos} is not null")))
+    Err(JsonError::Invalid(format!("{rest:?} at byte {pos} is not {word}")))
 }
 
 fn number(text: &str, pos: usize) -> Result<(JsonValue, usize), JsonError> {

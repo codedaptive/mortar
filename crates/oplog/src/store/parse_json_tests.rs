@@ -1,4 +1,4 @@
-//! parse_json: the values a record holds, the forms it refuses, and EndOfInput for text cut short.
+//! parse_json: the values a record holds, booleans included, the forms it refuses, and EndOfInput for text cut short.
 
 use super::{parse_json, JsonError, JsonValue};
 
@@ -70,8 +70,6 @@ fn numbers_outside_the_subset_are_invalid() {
 #[test]
 fn other_json_and_junk_are_invalid() {
     for text in [
-        "true",
-        "false",
         "nux",
         "nulL",
         "{} x",
@@ -111,7 +109,55 @@ fn text_cut_short_is_end_of_input() {
         "nu",
         "nul",
         "{\"a\":nu",
+        "t",
+        "tr",
+        "tru",
+        "f",
+        "fals",
+        "[tru",
+        "{\"a\":fal",
     ] {
         assert_eq!(parse_json(text), Err(JsonError::EndOfInput), "{text:?}");
+    }
+}
+
+#[test]
+fn booleans_at_top_level() {
+    assert_eq!(parse_json("true"), Ok(JsonValue::Bool(true)));
+    assert_eq!(parse_json("false"), Ok(JsonValue::Bool(false)));
+    assert_eq!(parse_json(" \t\ntrue \r\n"), Ok(JsonValue::Bool(true)));
+    assert_eq!(parse_json("\n false\t"), Ok(JsonValue::Bool(false)));
+}
+
+#[test]
+fn booleans_inside_arrays_and_objects() {
+    assert_eq!(
+        parse_json("[true,false,null]"),
+        Ok(JsonValue::Array(vec![JsonValue::Bool(true), JsonValue::Bool(false), JsonValue::Null]))
+    );
+    assert_eq!(
+        parse_json(r#"{"a":true,"b":false}"#),
+        Ok(JsonValue::Object(vec![
+            ("a".to_string(), JsonValue::Bool(true)),
+            ("b".to_string(), JsonValue::Bool(false)),
+        ]))
+    );
+}
+
+#[test]
+fn near_miss_booleans_are_invalid() {
+    for text in [
+        "trux",
+        "True",
+        "tRUE",
+        "FALSE",
+        "falsey",
+        "truex",
+        "[truex]",
+        "{\"a\":tru}",
+        "t rue",
+        "{true:1}",
+    ] {
+        assert!(invalid(text), "{text:?}");
     }
 }
