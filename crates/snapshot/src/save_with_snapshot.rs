@@ -1,10 +1,12 @@
 //! save_with_snapshot: commit a folder's files on its branch, with the request's change ID, set its index to them,
 //! and say whether the snapshot step moved the snapshot ref. save is this without that fact. The index step runs
 //! with no GIT_INDEX_FILE from the caller's env (real_index_git), so it sets the folder's own index.
-//! No unit test: it runs git and appends to the op log, and holds no decision of its own; save_message,
-//! save_head, save_unchanged, save_change_id, save_trailers, save_op, save_from_apply, saved_with_snapshot_from and
-//! real_index_git are its decisions and have their tests. The commit's parents are always [HEAD], so there is no
-//! parent decision.
+//! It reads the sentence and HEAD (save_message, save_head), takes the snapshot, and hands the rest to
+//! save_snapshot_onto with HEAD as the commit the snapshot was built on.
+//! No unit test: it runs git and holds no decision of its own; save_message and save_head are its decisions, and
+//! save_snapshot_onto's (save_unchanged, save_change_id, save_trailers, save_op, save_from_apply,
+//! saved_with_snapshot_from and real_index_git) are its decisions through it; all have their tests.
+//! The commit's parents are always [HEAD], so there is no parent decision.
 //! The integration tests in tests/snapshot, in a throwaway repository, run these cases through save, which calls
 //! save_with_snapshot:
 //! - a save leaves `git status` clean, in
@@ -28,21 +30,15 @@
 //!   an unchanged one in save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement.
 //!
 //! Not yet covered by an integration test: IndexNotSet from an unchanged save, OpRepeated or ChangeId through save,
-//! and snapshot_written.
+//! and snapshot_written from save_with_snapshot (save_from_snapshot's false is covered in
+//! tests/snapshot/save_from_snapshot_cases.rs).
 
-use crate::real_index_git::real_index_git;
-use crate::save_change_id::save_change_id;
-use crate::save_from_apply::save_from_apply;
 use crate::save_head::save_head;
 use crate::save_message::save_message;
-use crate::save_op::save_op;
-use crate::save_trailers::save_trailers;
-use crate::save_unchanged::save_unchanged;
-use crate::saved_with_snapshot_from::saved_with_snapshot_from;
+use crate::save_snapshot_onto::save_snapshot_onto;
 use crate::snapshot::snapshot;
 use crate::{SavedWithSnapshot, SnapshotError, SnapshotTarget};
 use gitio::Git;
-use oplog::{apply, new_change_id, new_op_id, read_mortar_trailers, unix_now};
 use std::path::Path;
 
 /// Saves `folder`'s files as a commit on its branch: `sentence` is the subject, the parent is HEAD, and the
@@ -78,29 +74,5 @@ pub fn save_with_snapshot(
     let subject = save_message(sentence)?;
     let (branch, head) = save_head(folder, git.head(folder).map_err(SnapshotError::Git)?)?;
     let snap = snapshot(&git, folder, target, extra_excludes, size_cap)?;
-    let info = git.commit_info(&head).map_err(SnapshotError::Git)?;
-    if let Some(index_tree) = save_unchanged(&snap.tree, &info.tree) {
-        real_index_git(&git)
-            .set_index(folder, &index_tree)
-            .map_err(|error| SnapshotError::IndexNotSet { commit: head.clone(), error })?;
-        return Ok(saved_with_snapshot_from(snap, head, false, None));
-    }
-    let trailers = read_mortar_trailers(&git, &info.message).map_err(SnapshotError::Trailers)?;
-    let change_id = match save_change_id(&head, &trailers, target)? {
-        Some(id) => id,
-        None => new_change_id().map_err(SnapshotError::ChangeId)?,
-    };
-    let message = git
-        .with_trailers(&subject, &save_trailers(&change_id, target))
-        .map_err(SnapshotError::Git)?;
-    let commit = git
-        .commit_tree(&snap.tree, std::slice::from_ref(&head), &message, None, None)
-        .map_err(SnapshotError::Git)?;
-    let common = git.common_dir().map_err(SnapshotError::Git)?;
-    let op = save_op(&branch, &head, &commit, &target.actor, new_op_id(), unix_now());
-    save_from_apply(apply(&git, &common, &op).map_err(SnapshotError::Oplog)?)?;
-    real_index_git(&git)
-        .set_index(folder, &snap.tree)
-        .map_err(|error| SnapshotError::IndexNotSet { commit: commit.clone(), error })?;
-    Ok(saved_with_snapshot_from(snap, commit, true, Some(change_id)))
+    save_snapshot_onto(&git, target, &subject, (branch, head.clone()), head, snap)
 }

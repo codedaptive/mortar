@@ -20,6 +20,9 @@
 //! tests/snapshot/save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement);
 //! BranchMoved in
 //! tests/snapshot/save_race.rs::branch_moved_during_save_is_named_without_overwriting_foreign_head_index_work_or_caller_lock.
+//! Through save_from_snapshot, BranchMoved is in tests/snapshot/save_from_snapshot_cases.rs:
+//! moved_branch_refuses_changed_snapshot_and_preserves_foreign_commit_and_files and
+//! moved_branch_refuses_unchanged_snapshot_without_resetting_index.
 //! ChangeId comes only from new_change_id's I/O in save and no integration test reaches it there (its Display is in
 //! snapshot_error_display_inner_tests.rs::change_id_variant_keeps_oplogs_quoted_bad_text_and_reason_after_snapshot_prefix);
 //! PathNotUtf8 and OpRepeated have no integration test.
