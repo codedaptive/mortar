@@ -1,14 +1,14 @@
 //! disk_report: per folder, a line with its files and build bytes then a line with what it holds; the object store
 //! counted once, the ref counts by namespace and what a plain mr sweep frees, in the cli's words (never folders'
-//! reason text); the holds field last; the next is a sweep of idle build dirs when any build bytes exist, else
-//! nothing to do.
+//! reason text); the holds field last; a folder whose joined answer is unknown is reported among the answered ones,
+//! exit 0; the next is a sweep of idle build dirs when any build bytes exist, else nothing to do.
 
 use std::path::PathBuf;
 
 use folders::{DiskReport, FolderDisk, FolderKind, FolderRecord, SweepEstimate, UnsavedCounts};
 use gitio::Oid;
 
-use super::{disk_report, FolderHolds};
+use super::{disk_report, FolderHolds, JoinedAnswer};
 use crate::report::{ExitCode, OutValue, Report};
 
 const BASE: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -46,8 +46,8 @@ fn disk(request_build_bytes: u64) -> DiskReport {
 
 /// The holds of disk()'s two folders: the zone folder with 3 tracked and 4 untracked, the request joined.
 const HOLDS: [FolderHolds; 2] = [
-    FolderHolds { unsaved: UnsavedCounts { tracked: 3, untracked: 4 }, joined: None },
-    FolderHolds { unsaved: UnsavedCounts { tracked: 0, untracked: 0 }, joined: Some(true) },
+    FolderHolds { unsaved: UnsavedCounts { tracked: 3, untracked: 4 }, joined: JoinedAnswer::ZoneFolder },
+    FolderHolds { unsaved: UnsavedCounts { tracked: 0, untracked: 0 }, joined: JoinedAnswer::Joined },
 ];
 
 #[test]
@@ -78,8 +78,8 @@ fn a_zone_and_a_request_folder_are_measured_with_the_store_counted_once() {
                 (
                     "holds".to_string(),
                     OutValue::Raw(vec![
-                        r#"{"path":"/w/core","tracked":3,"untracked":4,"joined":null}"#.to_string(),
-                        r#"{"path":"/w/fix-1","tracked":0,"untracked":0,"joined":true}"#.to_string(),
+                        r#"{"path":"/w/core","tracked":3,"untracked":4,"joined":null,"no_joined_answer":"a zone folder"}"#.to_string(),
+                        r#"{"path":"/w/fix-1","tracked":0,"untracked":0,"joined":true,"no_joined_answer":null}"#.to_string(),
                     ]),
                 ),
             ],
@@ -121,7 +121,10 @@ fn the_store_line_appears_once_whatever_the_number_of_folders() {
 
 #[test]
 fn an_unjoined_request_says_not_joined_under_its_bytes_line() {
-    let held = [HOLDS[0], FolderHolds { unsaved: UnsavedCounts { tracked: 1, untracked: 2 }, joined: Some(false) }];
+    let held = [
+        HOLDS[0].clone(),
+        FolderHolds { unsaved: UnsavedCounts { tracked: 1, untracked: 2 }, joined: JoinedAnswer::NotJoined },
+    ];
     let report = disk_report(&disk(0), &held);
     assert_eq!(report.lines[3], "/w/fix-1: unsaved 1 tracked, 2 untracked; not joined to zone core");
     assert_eq!(
@@ -129,8 +132,8 @@ fn an_unjoined_request_says_not_joined_under_its_bytes_line() {
         Some(&(
             "holds".to_string(),
             OutValue::Raw(vec![
-                r#"{"path":"/w/core","tracked":3,"untracked":4,"joined":null}"#.to_string(),
-                r#"{"path":"/w/fix-1","tracked":1,"untracked":2,"joined":false}"#.to_string(),
+                r#"{"path":"/w/core","tracked":3,"untracked":4,"joined":null,"no_joined_answer":"a zone folder"}"#.to_string(),
+                r#"{"path":"/w/fix-1","tracked":1,"untracked":2,"joined":false,"no_joined_answer":null}"#.to_string(),
             ])
         ))
     );
@@ -138,9 +141,50 @@ fn an_unjoined_request_says_not_joined_under_its_bytes_line() {
 
 #[test]
 fn no_line_says_safe() {
-    for joined in [Some(true), Some(false)] {
-        let held = [HOLDS[0], FolderHolds { unsaved: UnsavedCounts::default(), joined }];
+    for joined in [JoinedAnswer::Joined, JoinedAnswer::NotJoined, JoinedAnswer::Unknown("x".to_string())] {
+        let held = [HOLDS[0].clone(), FolderHolds { unsaved: UnsavedCounts::default(), joined }];
         let report = disk_report(&disk(2000), &held);
         assert!(report.lines.iter().all(|line| !line.to_lowercase().contains("safe")), "{:?}", report.lines);
     }
+}
+
+#[test]
+fn an_unknown_joined_answer_is_reported_among_the_answered_folders() {
+    let mut report = disk(0);
+    report.folders.push(folder("/w/fix-2", FolderKind::Request, Some("fix-2"), 40, 0));
+    let held = [
+        HOLDS[0].clone(),
+        HOLDS[1].clone(),
+        FolderHolds {
+            unsaved: UnsavedCounts { tracked: 3, untracked: 0 },
+            joined: JoinedAnswer::Unknown("the branch refs/heads/req/core/fix-2 does not exist".to_string()),
+        },
+    ];
+    let disk = disk_report(&report, &held);
+    assert_eq!(disk.exit, ExitCode::Done);
+    assert_eq!(disk.outcome, "measured");
+    assert_eq!(
+        disk.lines[..6],
+        [
+            "/w/core: the zone folder of zone core; files 1000 bytes, build 0 bytes",
+            "/w/core: unsaved 3 tracked, 4 untracked; a zone folder has no joined answer",
+            "/w/fix-1: the request folder of request fix-1 in zone core; files 300 bytes, build 0 bytes",
+            "/w/fix-1: unsaved 0 tracked, 0 untracked; joined to zone core",
+            "/w/fix-2: the request folder of request fix-2 in zone core; files 40 bytes, build 0 bytes",
+            "/w/fix-2: unsaved 3 tracked, 0 untracked; joined unknown: the branch refs/heads/req/core/fix-2 does not exist",
+        ]
+    );
+    assert_eq!(
+        disk.fields.last(),
+        Some(&(
+            "holds".to_string(),
+            OutValue::Raw(vec![
+                r#"{"path":"/w/core","tracked":3,"untracked":4,"joined":null,"no_joined_answer":"a zone folder"}"#
+                    .to_string(),
+                r#"{"path":"/w/fix-1","tracked":0,"untracked":0,"joined":true,"no_joined_answer":null}"#.to_string(),
+                r#"{"path":"/w/fix-2","tracked":3,"untracked":0,"joined":null,"no_joined_answer":"the branch refs/heads/req/core/fix-2 does not exist"}"#
+                    .to_string(),
+            ])
+        ))
+    );
 }

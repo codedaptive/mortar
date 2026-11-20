@@ -9,11 +9,12 @@ use crate::folder::folder_kind_text;
 use crate::report::{ExitCode, OutValue, Report};
 
 /// Exit 0, outcome "measured". Two lines per folder: its bytes (its path, kind, zone and request, files and build
-/// bytes), then what it holds (holds_line: its unsaved counts and whether its request has joined); then "object
-/// store: <n> bytes, counted once", one line of ref counts by namespace, and the sweep figure as what a mr sweep
-/// with no --idle-days frees. `holds` is one per folder, in the report's order. The next is a sweep of idle build
-/// dirs when any folder has build bytes, else "nothing to do". Fields: folders (paths), store_bytes, refs
-/// ("<namespace> <count>"), sweep_bytes, holds (holds_json, one per folder, in order).
+/// bytes), then what it holds (holds_line: its unsaved counts and its joined answer: joined, not joined, none for a
+/// zone folder, or unknown with why); then "object store: <n> bytes, counted once", one line of ref counts by
+/// namespace, and the sweep figure as what a mr sweep with no --idle-days frees. `holds` is one per folder, in the
+/// report's order; a folder whose joined answer is unknown is reported like the rest, and the exit stays 0. The next
+/// is a sweep of idle build dirs when any folder has build bytes, else "nothing to do". Fields: folders (paths),
+/// store_bytes, refs ("<namespace> <count>"), sweep_bytes, holds (holds_json, one per folder, in order).
 pub fn disk_report(report: &DiskReport, holds: &[FolderHolds]) -> Report {
     let mut lines: Vec<String> = report
         .folders

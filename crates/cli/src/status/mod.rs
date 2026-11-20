@@ -21,6 +21,7 @@ mod read_stalled_move;
 mod read_status;
 mod read_tips;
 mod recovered_records;
+mod saved_state_report;
 mod run_status;
 mod status_fields;
 mod status_lines;
@@ -57,6 +58,8 @@ mod progress_branch_tests;
 #[cfg(test)]
 mod recovered_records_tests;
 #[cfg(test)]
+mod saved_state_report_tests;
+#[cfg(test)]
 mod status_fields_tests;
 #[cfg(test)]
 mod status_lines_tests;
@@ -91,6 +94,7 @@ pub(crate) use read_stalled_move::read_stalled_move;
 pub(crate) use read_status::read_status;
 pub(crate) use read_tips::read_tips;
 pub(crate) use recovered_records::recovered_records;
+pub(crate) use saved_state_report::saved_state_report;
 pub(crate) use run_status::run_status;
 pub(crate) use status_fields::status_fields;
 pub(crate) use status_lines::status_lines;

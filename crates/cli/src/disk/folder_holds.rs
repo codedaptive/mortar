@@ -3,10 +3,12 @@
 
 use folders::UnsavedCounts;
 
-/// The folder's `unsaved` counts (folders::folder_unsaved) and whether its request has joined its zone (`joined`,
-/// status's rule); `joined` is None for a zone folder, which has no request and so no joined answer.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+use super::JoinedAnswer;
+
+/// The folder's `unsaved` counts (folders::folder_unsaved) and its `joined` answer: joined or not (status's rule),
+/// none for a zone folder, or unknown with why when the joined read failed.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FolderHolds {
     pub unsaved: UnsavedCounts,
-    pub joined: Option<bool>,
+    pub joined: JoinedAnswer,
 }
