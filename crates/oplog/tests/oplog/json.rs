@@ -17,7 +17,8 @@ fn public_parse_json_keeps_key_order_and_duplicates() {
 }
 
 #[test]
-fn public_parse_json_refuses_through_the_public_error_type() {
-    assert!(matches!(parse_json("true"), Err(JsonError::Invalid(_))), "true: {:?}", parse_json("true"));
+fn public_parse_json_reads_booleans_and_reports_a_torn_text() {
+    assert_eq!(parse_json("true"), Ok(JsonValue::Bool(true)));
+    assert_eq!(parse_json("false"), Ok(JsonValue::Bool(false)));
     assert!(matches!(parse_json(r#"{"a":"#), Err(JsonError::EndOfInput)), "torn: {:?}", parse_json(r#"{"a":"#));
 }
