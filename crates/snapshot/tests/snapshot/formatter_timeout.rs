@@ -15,14 +15,15 @@ fn fifo_blocked_formatter_is_timed_out_with_limit_and_stderr_killed_reaped_and_s
     let made = Command::new("mkfifo").arg(&fifo).output().unwrap();
     assert!(made.status.success(), "{}", String::from_utf8_lossy(&made.stderr));
     let guard_fired = f.common.join("fifo-hang-guard-fired");
-    let _hang_guard = fifo_hang_guard(vec![fifo.clone()], guard_fired.clone(), Duration::from_secs(30));
+    // Allow startup under load to reach the hang; the FIFO, not the clock, holds it.
+    let limit = Duration::from_secs(20);
+    let _hang_guard = fifo_hang_guard(vec![fifo.clone()], guard_fired.clone(), limit + Duration::from_secs(30));
     let pid_file = f.common.join("timeout-formatter.pid");
     let _cleanup = StopFormatterOnDrop { pid_file: pid_file.clone() };
     let program = f.common.join("block-on-fifo.sh");
     // exec retains the recorded PID. No child/grandchild is left holding stderr: cat itself blocks
     // opening a FIFO with no writer until the product kills it, rather than a fixture sleeping on a clock.
     write_git_shim(&program, b"#!/bin/sh\nset -eu\nprintf '%s\\n' \"$$\" >\"$1\"\nprintf 'formatter stalled on FIFO\\n' >&2\nexec /bin/cat \"$2\"\n").unwrap();
-    let limit = Duration::from_secs(2);
     let formatter = Formatter { program, args: vec![pid_file.clone().into_os_string(), fifo.into_os_string(), "--".into()], timeout: limit };
     let index_before = fs::read(f.common.join("index")).unwrap();
     let saved = snapshot_formatted(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP, Some(&formatter)).unwrap();
