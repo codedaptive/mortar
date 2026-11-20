@@ -1,7 +1,7 @@
 //! Every way making a folder, making attempt folders with make_attempts, keeping one with keep, dropping them with
 //! drop_attempts, remaking orphan attempt folders with remake_orphans, widening one with need, moving one with
-//! move_folder, removing one with remove, or measuring or sweeping with disk, sweep_build or sweep_refs can be
-//! refused.
+//! move_folder, removing one with remove, or measuring, counting unsaved work or sweeping with disk, folder_unsaved,
+//! sweep_build or sweep_refs can be refused.
 //! A bare type; folder_error_display_tests exercises each variant's text, folder_error_source_tests its source.
 
 use std::path::PathBuf;
@@ -13,8 +13,8 @@ use crate::plan::{BelowFloor, PlanError};
 use crate::record::{FolderRecord, RecordError};
 
 /// A refusal from make_zone_folder, make_request_folder, make_attempts, keep, drop_attempts, remake_orphans, need,
-/// move_folder, remove, disk, sweep_build or sweep_refs. Debug only: io::Error, OplogError and LockError are neither
-/// Clone nor Eq.
+/// move_folder, remove, disk, folder_unsaved, sweep_build or sweep_refs. Debug only: io::Error, OplogError and
+/// LockError are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum FolderError {
     /// A zone or request name, a sparse path, or an attempt count of 0, the plan refused.
