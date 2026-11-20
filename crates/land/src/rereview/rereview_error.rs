@@ -9,7 +9,7 @@ use oplog::{ChangeId, MortarTrailerError};
 /// A re-review that git could not answer, or that Mortar refuses.
 #[derive(Debug)]
 pub enum RereviewError {
-    /// git could not read a commit or produce the range-diff.
+    /// git could not read a commit, produce the range-diff or a patch ID.
     Git(GitError),
     /// A commit's Mortar trailers could not be read.
     Trailers(MortarTrailerError),

@@ -2,6 +2,7 @@
 //! only the edit, a remake on a moved origin shows no change of its own, identical squashes say nothing changed,
 //! and two different changes are refused. Setup uses plain git with a fixed author, committer and date, so every
 //! run builds the same commits; rereview's own git runs ignore the machine's global and system git config.
+//! The typed answer also reports whether moved, edited, and identical squashes carry the same patch.
 
 use std::path::Path;
 use std::process::Command;
@@ -142,4 +143,51 @@ fn two_different_changes_are_refused() {
     let refused = rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&new));
 
     assert!(matches!(refused, Err(RereviewError::NotSameChange { .. })), "{refused:?}");
+}
+
+#[test]
+fn answer_same_patch_on_moved_origin() {
+    let repo = TestRepo::new().unwrap();
+    let b = base(&repo);
+    let reviewed = oid(&commit_on(&repo.path, &b, &[("f", REVIEWED_F)], "add f", CHANGE_X));
+    let moved = commit_on(&repo.path, &b, &[("unrelated", "other\n")], "origin moved", CHANGE_Y);
+    let new = oid(&commit_on(&repo.path, &moved, &[("f", REVIEWED_F)], "add f", CHANGE_X));
+    let git = git_of(&repo.path);
+
+    let answer = land::answer_rereview(&git, &reviewed, &new).unwrap();
+    assert_eq!(answer.text, rereview(&git, &reviewed, &new).unwrap());
+    assert!(answer.same_patch, "{answer:?}");
+}
+
+#[test]
+fn answer_same_patch_for_changed_squash() {
+    let repo = TestRepo::new().unwrap();
+    let b = base(&repo);
+    let reviewed = oid(&commit_on(&repo.path, &b, &[("f", REVIEWED_F)], "add f", CHANGE_X));
+    let new = oid(&commit_on(&repo.path, &b, &[("f", EDITED_F)], "add f", CHANGE_X));
+    let git = git_of(&repo.path);
+
+    let answer = land::answer_rereview(&git, &reviewed, &new).unwrap();
+    assert_eq!(answer.text, rereview(&git, &reviewed, &new).unwrap());
+    assert!(!answer.same_patch, "{answer:?}");
+}
+
+#[test]
+fn answer_same_patch_for_identical_commits() {
+    let repo = TestRepo::new().unwrap();
+    let b = base(&repo);
+    let reviewed = commit_on(&repo.path, &b, &[("f", REVIEWED_F)], "add f", CHANGE_X);
+    let tree = git(&repo.path, &["rev-parse", &format!("{reviewed}^{{tree}}")]);
+    let trailer = format!("Mortar-Change-Id: {CHANGE_X}");
+    let reworded = git(&repo.path, &["commit-tree", &tree, "-p", &b, "-m", "add f, reworded", "-m", &trailer]);
+    assert_ne!(reviewed, reworded);
+    let reviewed = oid(&reviewed);
+    let reworded = oid(&reworded);
+    let git = git_of(&repo.path);
+
+    for new in [&reviewed, &reworded] {
+        let answer = land::answer_rereview(&git, &reviewed, new).unwrap();
+        assert_eq!(answer.text, rereview(&git, &reviewed, new).unwrap());
+        assert!(answer.same_patch, "{answer:?}");
+    }
 }
