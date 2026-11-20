@@ -2,7 +2,7 @@
 //! A bare type; snapshot_settings_for_tests exercise it.
 
 /// `formatter` goes to snapshot_formatted (None runs none); `excludes` is the `extra_excludes` and `cap_bytes`
-/// the `size_cap` that both snapshot_formatted and snapshot::save_with_snapshot take.
+/// the `size_cap` that snapshot_formatted takes, and snapshot::save_with_snapshot too in save.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SnapshotSettings {
     pub formatter: Option<snapshot::Formatter>,

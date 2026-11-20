@@ -19,7 +19,7 @@
 
 use folders::move_folder;
 use oplog::KillPidProbe;
-use snapshot::{save_with_snapshot, snapshot_formatted, SaveOutcome, SnapshotError};
+use snapshot::{save_from_snapshot, snapshot_formatted, SaveOutcome, SnapshotError};
 
 use super::{
     finish_pending_move, join_refusal_report, join_report, join_save_subject, move_refusal_report, moved_before,
@@ -44,10 +44,10 @@ pub fn run_join(context: &ShellContext) -> Report {
 }
 
 /// Finish a pending folder move, save, join, and move the folder after a rebase (saved: the save just ran). The
-/// snapshot ref moved if the finished move's snapshot, the formatter's snapshot before the save or save's own
-/// snapshot step moved it; a refused join and a refused folder move after the rebase name what the save and those
-/// snapshots moved (moved_before's line). A failed snapshot of the pending move is reported with no moved line, as
-/// nothing ran before it.
+/// snapshot ref moved if the finished move's snapshot or the formatter's snapshot before the save moved it; the save
+/// saves from the formatter's snapshot and takes none of its own. A refused join and a refused folder move after the
+/// rebase name what the save and those snapshots moved (moved_before's line). A failed snapshot of the pending move
+/// is reported with no moved line, as nothing ran before it.
 fn act(run: &RequestRun) -> Result<Report, Report> {
     let (finished_move, finish_written) =
         finish_pending_move(run, VERB, &|error| snapshot_step_failure(VERB, &error, None))?;
@@ -71,10 +71,12 @@ fn act(run: &RequestRun) -> Result<Report, Report> {
     }))
 }
 
-/// Runs the formatter with a snapshot, then saves, returning the save and whether the snapshot ref moved by its end
-/// (`finish_written`: the finished move's snapshot moved it; or the formatter's snapshot, or save's own snapshot
-/// step). A failure of either step names what the steps before it moved. Always run: save writes no commit when the
-/// folder's tree equals HEAD's.
+/// Runs the formatter with a snapshot, reads the HEAD that snapshot was built on, then saves from it
+/// (save_from_snapshot, which takes no second snapshot), returning the save and whether the snapshot ref moved by its
+/// end (`finish_written`: the finished move's snapshot moved it; or the formatter's snapshot). HEAD is read after the
+/// formatter because the formatter may move the branch, and nothing runs between the snapshot and the read under the
+/// lock. A failure of any step names what the steps before it moved; HEAD with no commit is UnbornHead. Always run:
+/// save writes no commit when the folder's tree equals HEAD's.
 fn save_work(run: &RequestRun, finish_written: bool) -> Result<(SaveOutcome, bool), Report> {
     let (folder, excludes, cap) = (&run.folder.toplevel, &run.settings.excludes, run.settings.cap_bytes);
     let failure = |error: SnapshotError, earlier: bool| {
@@ -83,8 +85,12 @@ fn save_work(run: &RequestRun, finish_written: bool) -> Result<(SaveOutcome, boo
     let taken = snapshot_formatted(&run.git, folder, &run.target, excludes, cap, run.settings.formatter.as_ref())
         .map_err(|error| failure(error, finish_written))?;
     let earlier = finish_written || taken.written;
+    let (_, head) = run.git.head(folder).map_err(|error| failure(SnapshotError::Git(error), earlier))?;
+    let Some(built_on) = head else {
+        return Err(failure(SnapshotError::UnbornHead { folder: folder.clone() }, earlier));
+    };
     let subject = join_save_subject(&run.target.request);
-    let saved = save_with_snapshot(&run.git, folder, &run.target, &subject, excludes, cap)
+    let saved = save_from_snapshot(&run.git, folder, &run.target, &subject, &built_on, taken)
         .map_err(|error| failure(error, earlier))?;
     let moved = snapshot_moved(earlier, &saved);
     Ok((saved.outcome, moved))
