@@ -59,7 +59,7 @@ make test GROUP=integration                 # the integration tests of every cra
 make test-one DIR=crates/join               # one crate's unit tests
 make test-one DIR=crates/join GROUP=integration
 make test-one DIR=crates/cli/src/status     # one module's unit tests
-make test-one DIR=crates/cli/tests/cli_rit  # one integration test target
+make test-one DIR=crates/cli/tests/across_kits  # one integration test target
 make accept                                 # the acceptance drive
 make script-test                            # checks scripts/test_one.sh's handling of DIR
 ```
@@ -71,8 +71,8 @@ There are three groups of test, chosen with `GROUP`:
 | Group | What runs | What belongs in it |
 |---|---|---|
 | `unit` (the default) | Each crate's library tests | A test of one file's decisions, as data. No git, no files, no processes, no clock |
-| `integration` | The library's `integration` modules, and every target under `tests/` except `validation` | A test that runs real git in a throwaway repository |
-| `validation` | A crate's `tests/validation` target, built in release mode | A run of the built program, as a child process or as a drive of the whole program against a measure |
+| `integration` | The library's `integration` modules, and every target under `tests/` except `validation` | A test that runs real git, or the built program, in a throwaway repository |
+| `validation` | A crate's `tests/validation` target, built in release mode (no crate has one yet) | A drive of the whole program measured against a threshold |
 
 `make accept` builds the program under both its names and drives it, as a black box, through whole flows on throwaway repositories: the set-up and agent verbs, a full landing, the guard, and kills in the middle of ref moves. It prints a plain-text report and leaves it at `target/accept/report.txt`. Two further steps run only when the environment variable each one names is set; the report says which were not run.
 
