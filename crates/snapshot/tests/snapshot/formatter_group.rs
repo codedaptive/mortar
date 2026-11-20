@@ -9,7 +9,8 @@ use testkit::write_git_shim;
 #[test]
 fn wrapper_and_its_fifo_blocked_child_are_terminated_on_timeout_and_snapshot_is_written() {
     // Joins snapshot_formatted -> sh wrapper/real background sh -> group kill -> EOF/process state -> gitio/oplog.
-    exercise_group("timeout", Duration::from_secs(2));
+    // Allow startup under load to reach the hang; the FIFO, not the clock, holds it.
+    exercise_group("timeout", Duration::from_secs(20));
 }
 
 #[test]
@@ -24,8 +25,9 @@ fn background_write_released_after_leader_exit_cannot_enter_snapshot_tree() {
     // Joins normal-exit group cleanup -> post-formatter real read-tree gate -> attempted late write -> saved tree/log.
     let f = Fixture::new(&[]);
     write(&f.repo.path, "root.txt", b"safe before background writer\n");
-    let group = group_fixture(&f, "write", Duration::from_secs(60));
-    let _guard = fifo_hang_guard(group.fifos(), group.fired.clone(), Duration::from_secs(30));
+    let limit = Duration::from_secs(60);
+    let group = group_fixture(&f, "write", limit);
+    let _guard = fifo_hang_guard(group.fifos(), group.fired.clone(), limit + Duration::from_secs(30));
     let shim = f.common.join("post-formatter-tree.sh");
     let once = f.common.join("post-formatter-tree-once");
     write_git_shim(&shim, b"#!/bin/sh\nset -eu\nif [ \"$3\" = read-tree ] && [ -f \"$MORTAR_GROUP_EXITING\" ] && mkdir \"$MORTAR_GROUP_ONCE\" 2>/dev/null; then\n  exec 5<>\"$MORTAR_GROUP_RESUME\"\n  printf 'TREE\\n' >\"$MORTAR_GROUP_BOUNDARY\"\n  IFS= read -r resume <&5\n  exec 5>&-\nfi\nexec git \"$@\"\n").unwrap();
@@ -83,7 +85,7 @@ fn exercise_group(mode: &str, limit: Duration) {
     let f = Fixture::new(&[]);
     write(&f.repo.path, "root.txt", b"save after group cleanup\n");
     let group = group_fixture(&f, mode, limit);
-    let _guard = fifo_hang_guard(group.fifos(), group.fired.clone(), Duration::from_secs(30));
+    let _guard = fifo_hang_guard(group.fifos(), group.fired.clone(), limit + Duration::from_secs(30));
     let index_before = fs::read(f.common.join("index")).unwrap();
     let (saved, pid, pgid, tail) = thread::scope(|scope| {
         let job = scope.spawn(|| snapshot_formatted(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP, Some(&group.formatter)));
@@ -109,7 +111,7 @@ fn exercise_group(mode: &str, limit: Duration) {
 pub(super) fn exercise_public_runner(mode: &str, limit: Duration) {
     let f = Fixture::new(&[]);
     let group = group_fixture(&f, mode, limit);
-    let _guard = fifo_hang_guard(group.fifos(), group.fired.clone(), Duration::from_secs(30));
+    let _guard = fifo_hang_guard(group.fifos(), group.fired.clone(), limit + Duration::from_secs(30));
     let (answer, pid, pgid, tail) = thread::scope(|scope| {
         let job = scope.spawn(|| snapshot::run_in_group(&group.formatter.program, &group.formatter.args, &f.repo.path, limit));
         let (mut channel, pid, pgid) = child_channel(&group.death);

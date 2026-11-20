@@ -4,7 +4,7 @@
 //! The integration tests in tests/snapshot cover it through snapshot_formatted, in a throwaway repository:
 //! - a missing program is SpawnFailed with the OS's error text ("No such file or directory"), snapshot written:
 //!   tests/snapshot/formatter.rs::missing_formatter_is_spawn_failed_and_does_not_prevent_snapshot_or_log;
-//! - a formatter blocked on a FIFO (`exec cat`) at a short limit is listed TimedOut with that limit and its stderr,
+//! - a formatter blocked on a FIFO (`exec cat`) at a 20 s limit is listed TimedOut with that limit and its stderr,
 //!   its pid is gone and reaped, and the snapshot is written:
 //!   tests/snapshot/formatter_timeout.rs::fifo_blocked_formatter_is_timed_out_with_limit_and_stderr_killed_reaped_and_snapshot_logged;
 //! - a formatter that exits before its limit is listed Formatted and is reaped:

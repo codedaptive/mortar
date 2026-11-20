@@ -57,7 +57,8 @@ fn public_runner_reports_signal_exit_and_missing_program_or_cwd_as_distinct_outc
 
 #[test]
 fn public_runner_timeout_kills_and_reaps_the_leader_and_its_fifo_blocked_child() {
-    super::formatter_group::exercise_public_runner("timeout", Duration::from_secs(2));
+    // Allow startup under load to reach the hang; the FIFO, not the clock, holds it.
+    super::formatter_group::exercise_public_runner("timeout", Duration::from_secs(20));
 }
 
 #[test]
