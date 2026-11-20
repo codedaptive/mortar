@@ -2,6 +2,7 @@
 //! Past the 150-line limit because it is the crate's only bridge: one line per file of a flat crate, and nothing else.
 
 mod absent_paths;
+mod baseline_query;
 mod changed_files_request;
 mod check_exit;
 mod check_ref_format_request;
@@ -10,6 +11,8 @@ mod classify_update_refs;
 mod commit_info;
 mod commit_info_request;
 mod commit_tree_request;
+mod count_chars;
+mod count_stream;
 mod disk_usage_only_request;
 mod entry_kind;
 mod fetch_ref_outcome;
@@ -45,6 +48,7 @@ mod git_maintenance;
 mod git_merge_base;
 mod git_merge_tree;
 mod git_new;
+mod git_output_chars;
 mod git_path_kind;
 mod git_push;
 mod git_range_diff;
@@ -98,6 +102,7 @@ mod oid_display;
 mod oid_line;
 mod oid_parse;
 mod output;
+mod output_chars_request;
 mod path_from_bytes;
 mod path_kind;
 mod path_line;
@@ -146,6 +151,7 @@ mod replay_outcome;
 mod replay_request;
 mod rev_list_request;
 mod rev_parse_request;
+mod run_counted;
 mod run_opts;
 mod set_index_request;
 mod settle;
@@ -188,6 +194,7 @@ mod worktree_fill_request;
 mod worktree_remove_request;
 mod write_blob_paths_request;
 
+pub use baseline_query::BaselineQuery;
 pub use commit_info::CommitInfo;
 pub use entry_kind::EntryKind;
 pub use fetch_ref_outcome::FetchRefOutcome;
@@ -231,6 +238,10 @@ mod classify_update_refs_tests;
 mod commit_info_request_tests;
 #[cfg(test)]
 mod commit_tree_request_tests;
+#[cfg(test)]
+mod count_chars_tests;
+#[cfg(test)]
+mod count_stream_tests;
 #[cfg(test)]
 mod disk_usage_only_request_tests;
 #[cfg(test)]
@@ -305,6 +316,8 @@ mod oid_line_tests;
 mod oid_parse_tests;
 #[cfg(test)]
 mod oid_tests;
+#[cfg(test)]
+mod output_chars_request_tests;
 #[cfg(test)]
 mod output_tests;
 #[cfg(test)]
@@ -387,6 +400,8 @@ mod replay_request_tests;
 mod rev_list_request_tests;
 #[cfg(test)]
 mod rev_parse_request_tests;
+#[cfg(test)]
+mod run_counted_tests;
 #[cfg(test)]
 mod run_opts_tests;
 #[cfg(test)]

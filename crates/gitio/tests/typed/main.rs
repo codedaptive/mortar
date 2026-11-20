@@ -12,5 +12,6 @@ mod snapshot;
 mod set_index;
 mod tree_with_paths;
 mod disk_usage;
+mod output_chars;
 mod trailers;
 mod worktrees;
