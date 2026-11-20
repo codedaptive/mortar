@@ -7,7 +7,6 @@ mod is_joined;
 mod is_saved;
 mod missing_branch_report;
 mod move_stalled;
-mod no_index_refresh_env;
 mod no_work_yet;
 mod open_requests_for;
 mod overlaps_with;
@@ -43,8 +42,6 @@ mod missing_branch_report_tests;
 #[cfg(test)]
 mod move_stalled_tests;
 #[cfg(test)]
-mod no_index_refresh_env_tests;
-#[cfg(test)]
 mod no_work_yet_tests;
 #[cfg(test)]
 mod open_requests_for_tests;
@@ -75,7 +72,6 @@ pub(crate) use is_joined::is_joined;
 pub(crate) use is_saved::is_saved;
 pub(crate) use missing_branch_report::missing_branch_report;
 pub(crate) use move_stalled::move_stalled;
-pub(crate) use no_index_refresh_env::no_index_refresh_env;
 pub(crate) use no_work_yet::no_work_yet;
 pub(crate) use open_requests_for::open_requests_for;
 pub(crate) use overlaps_with::overlaps_with;

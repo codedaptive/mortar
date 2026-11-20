@@ -21,10 +21,7 @@
 use folders::FolderKind;
 use gitio::Git;
 
-use super::{
-    attempt_status_report, no_index_refresh_env, progress_branch, read_status, status_queries, status_report,
-    StatusState,
-};
+use super::{attempt_status_report, progress_branch, read_status, status_queries, status_report, StatusState};
 use crate::args::no_arguments_report;
 use crate::config::snapshot_settings_for;
 use crate::report::{failure_report, Report};
@@ -36,9 +33,10 @@ use crate::shell::ShellContext;
 /// the config's snapshot settings, reported by status_report; in attempt folder k it reports attempt k's own branch
 /// and snapshot by attempt_status_report, whose next is mr save or the wait for the harness, never join. A Done
 /// report gets its savings by with_counted_savings, after its own fields: two more git reads of the whole folder
-/// (status_queries: git status and git diff HEAD), their output characters summed by Git::output_chars, run with
-/// diff.autoRefreshIndex off (no_index_refresh_env). A count that fails drops the savings, so the answer goes out
-/// without the line; any other report runs no count.
+/// (status_queries: git status and git diff HEAD), their output characters summed by Git::output_chars, whose
+/// read-only runs set GIT_OPTIONAL_LOCKS=0 and keep diff.autoRefreshIndex off, so the count leaves the folder's index
+/// as it was. A count that fails drops the savings, so the answer goes out without the line; any other report runs
+/// no count.
 /// No lock: status reads the repository only.
 pub fn run_status(context: &ShellContext) -> Report {
     let args = &context.args;
@@ -52,9 +50,7 @@ pub fn run_status(context: &ShellContext) -> Report {
     match read_status(folder, &snapshot_settings_for(config), &context.actor, "status") {
         Err(refusal) => refusal,
         Ok(state) => {
-            let mut git = Git::new(&folder.toplevel);
-            // The count must leave the folder's index as it was, and `git diff HEAD` would refresh it otherwise.
-            git.env.extend(no_index_refresh_env(std::env::var_os("GIT_CONFIG_COUNT").as_deref()));
+            let git = Git::new(&folder.toplevel);
             with_counted_savings(report_for(folder.record.kind, &state), &status_queries(), &|query| {
                 git.output_chars(&folder.toplevel, query)
             })
