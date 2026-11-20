@@ -2,26 +2,58 @@
 //! tests/land_rit/guard_codec.rs and guard_installation.rs check the guard.json bytes it writes;
 //! guard_installation.rs also checks the hook contents and exec bits.
 
-use std::ffi::OsString;
-use std::fs::{self, Permissions};
-use std::io;
+use std::fs::{self, File, OpenOptions, Permissions};
+use std::io::{self, ErrorKind, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
+use super::draw_temp_path::draw_temp_path;
 use super::GuardError;
 
-/// Writes `bytes` to `<path>.mortar-tmp` in the same folder, sets `mode` on it when given, and renames it over
-/// `path`. A reader (git running a hook, or the hook reading guard.json) sees the old file or the whole new one,
-/// never a part, and a hook is executable from the moment it appears.
+/// Temp names drawn before giving up. Each name is drawn at random, so one already taken means a crash-left temp
+/// or a hostile writer; eight collisions in a row is no accident, and the caller is better told than kept looping.
+const CREATE_ATTEMPTS: usize = 8;
+
+/// Writes `bytes` to a temp file in `path`'s folder named by `draw_temp_path` (`<name>.mortar-tmp-<16 hex>`),
+/// sets `mode` on it when given, and renames it over `path`. A reader (git running a hook, or the hook reading
+/// guard.json) sees the old file or the whole new one, never a part, and a hook is executable from the moment it
+/// appears.
+///
+/// The temp is opened with `create_new`, so it never follows or reuses anything already at its name (a planted
+/// symlink, a crash-left temp); a name already taken is drawn again, up to `CREATE_ATTEMPTS` names in all.
+/// Failures are `GuardError::Io`: creating, writing or setting the mode names the temp path, the rename names
+/// `path`. A failure after the temp exists removes it first, best effort.
 pub(crate) fn write_replacing(path: &Path, bytes: &[u8], mode: Option<u32>) -> Result<(), GuardError> {
-    let mut tmp = OsString::from(path);
-    tmp.push(".mortar-tmp");
-    let tmp = PathBuf::from(tmp);
-    fs::write(&tmp, bytes).map_err(io_error(&tmp))?;
-    if let Some(mode) = mode {
-        fs::set_permissions(&tmp, Permissions::from_mode(mode)).map_err(io_error(&tmp))?;
+    let (tmp, file) = create_temp(path)?;
+    let result = fill(file, bytes, mode)
+        .map_err(io_error(&tmp))
+        .and_then(|()| fs::rename(&tmp, path).map_err(io_error(path)));
+    if result.is_err() {
+        let _ = fs::remove_file(&tmp);
     }
-    fs::rename(&tmp, path).map_err(io_error(path))
+    result
+}
+
+/// Creates a fresh temp beside `path`, drawing a new name while the drawn one is taken.
+fn create_temp(path: &Path) -> Result<(PathBuf, File), GuardError> {
+    let mut attempt = 1;
+    loop {
+        let tmp = draw_temp_path(path);
+        match OpenOptions::new().write(true).create_new(true).open(&tmp) {
+            Ok(file) => return Ok((tmp, file)),
+            Err(error) if error.kind() == ErrorKind::AlreadyExists && attempt < CREATE_ATTEMPTS => attempt += 1,
+            Err(error) => return Err(GuardError::Io { path: tmp, error }),
+        }
+    }
+}
+
+/// Writes `bytes` and sets `mode` through the open handle; the file closes when this returns.
+fn fill(mut file: File, bytes: &[u8], mode: Option<u32>) -> io::Result<()> {
+    file.write_all(bytes)?;
+    if let Some(mode) = mode {
+        file.set_permissions(Permissions::from_mode(mode))?;
+    }
+    Ok(())
 }
 
 /// Io naming `path`, for map_err.
