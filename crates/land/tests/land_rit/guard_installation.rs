@@ -1,12 +1,12 @@
 //! Land -> Gitio RITs joining guard_install, guard_status and read_guard_config on disposable TestRepos.
-//! guard_installation.rs holds ten real-repository guard cases with literal byte/state oracles.
+//! guard_installation.rs holds thirteen real-repository guard cases with literal byte/state oracles.
 //! check_hooks_path.rs covers the relative-path check's refusal in isolation, not its ordering with guard_install.
 //! CLI run_guard_install owns that ordering.
 //! Every setup and public-API Git call isolates global/system config; TestRepo removes its repository on drop.
 
 use std::ffi::OsString;
 use std::fs;
-use std::os::unix::fs::PermissionsExt;
+use std::os::unix::fs::{symlink, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -190,4 +190,74 @@ fn foreign_pre_push_of_the_exact_script_plus_one_byte() {
 #[test]
 fn foreign_pre_push_that_is_empty() {
     foreign_pre_push_is_reported_and_refused(b"");
+}
+
+#[test]
+fn guard_install_preserves_victims_and_links_at_old_fixed_temp_names() {
+    // Joins Land guard_install/write_replacing -> Gitio common_dir/hooks_path -> real file replacement.
+    let (_repo, root) = repo();
+    let hooks = root.join(".git/hooks");
+    let mortar = root.join(".git/mortar");
+    fs::create_dir_all(&hooks).unwrap();
+    fs::create_dir_all(&mortar).unwrap();
+    let planted = [
+        (hooks.join("pre-push.mortar-tmp"), root.join("victim-pre-push")),
+        (hooks.join("reference-transaction.mortar-tmp"), root.join("victim-reference-transaction")),
+        (mortar.join("guard.json.mortar-tmp"), root.join("victim-guard-json")),
+    ];
+    for (link, victim) in &planted {
+        fs::write(victim, b"untouched\n").unwrap();
+        symlink(victim, link).unwrap();
+    }
+
+    guard_install(&git(&root), &refs()).unwrap();
+
+    for (link, victim) in &planted {
+        assert_eq!(fs::read(victim).unwrap(), b"untouched\n", "victim {} was overwritten", victim.display());
+        assert!(fs::symlink_metadata(link).unwrap().file_type().is_symlink(), "{} was replaced", link.display());
+        assert_eq!(fs::read_link(link).unwrap(), *victim);
+    }
+    assert_eq!(fs::read_to_string(mortar.join("guard.json")).unwrap(), CONFIG);
+    assert_eq!(fs::read_to_string(hooks.join("pre-push")).unwrap(), PRE_PUSH);
+    assert_eq!(fs::read_to_string(hooks.join("reference-transaction")).unwrap(), REFERENCE_TRANSACTION);
+    assert_eq!(hook_mode(&hooks.join("pre-push")), 0o755);
+    assert_eq!(hook_mode(&hooks.join("reference-transaction")), 0o755);
+    for path in [hooks.join("pre-push"), hooks.join("reference-transaction"), mortar.join("guard.json")] {
+        assert!(fs::symlink_metadata(&path).unwrap().file_type().is_file(), "{} is not a regular file", path.display());
+    }
+}
+
+#[test]
+fn guard_install_leaves_no_temp_entries_after_clean_install() {
+    // Joins Land guard_install/write_replacing -> Gitio common_dir/hooks_path -> real directory contents.
+    let (_repo, root) = repo();
+
+    guard_install(&git(&root), &refs()).unwrap();
+
+    assert_eq!(fs::read_to_string(root.join(".git/mortar/guard.json")).unwrap(), CONFIG);
+    for directory in [root.join(".git/hooks"), root.join(".git/mortar")] {
+        for entry in fs::read_dir(&directory).unwrap() {
+            let path = entry.unwrap().path();
+            assert!(!path.file_name().unwrap().to_string_lossy().contains(".mortar-tmp"), "temp entry remains: {}", path.display());
+        }
+    }
+}
+
+#[test]
+fn guard_install_does_not_reuse_crash_left_fixed_temp() {
+    // Joins Land guard_install/write_replacing -> Gitio common_dir/hooks_path -> stale-file preservation.
+    let (_repo, root) = repo();
+    let hooks = root.join(".git/hooks");
+    fs::create_dir_all(&hooks).unwrap();
+    let stale = hooks.join("pre-push.mortar-tmp");
+    fs::write(&stale, b"stale\n").unwrap();
+    fs::set_permissions(&stale, fs::Permissions::from_mode(0o644)).unwrap();
+
+    guard_install(&git(&root), &refs()).unwrap();
+
+    assert_eq!(fs::read_to_string(hooks.join("pre-push")).unwrap(), PRE_PUSH);
+    assert_eq!(hook_mode(&hooks.join("pre-push")), 0o755);
+    assert!(fs::symlink_metadata(hooks.join("pre-push")).unwrap().file_type().is_file());
+    assert_eq!(fs::read(&stale).unwrap(), b"stale\n");
+    assert_eq!(hook_mode(&stale), 0o644);
 }
