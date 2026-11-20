@@ -25,7 +25,7 @@ severity = "error"
 fix = "Move each public function, type or trait but one into its own file named after it, or make it private if only this file uses it."
 
 # kill_process_group.rs holds both functions that call its two extern declarations, the crate's only unsafe code:
-# settled ruling S-38 (Orc-Mortar, 2026-11-13, Coord-snapshot #565) put the second extern, waitid, in the same file.
+# the second extern, waitid, was put in the same file on purpose, so the unsafe code stays in one place (2026-11-13).
 # Each exception names one function (what matches the finding's message), so any other public item there with another name is reported.
 # The match is by name only: another public item spelled the same (a struct kill_process_group) would be silenced too.
 [[exception]]
@@ -33,11 +33,11 @@ rule = "one-public-symbol-per-file"
 path = "crates/snapshot/src/kill_process_group.rs"
 what = "`kill_process_group`"
 reason = "calls kill(2), one of the file's two externs, the crate's only unsafe code; the file's header says why"
-approved = "S-38 (Orc-Mortar, 2026-11-13, Coord-snapshot #565)"
+approved = "Orc-Mortar, 2026-11-13, keep the unsafe code in one file"
 
 [[exception]]
 rule = "one-public-symbol-per-file"
 path = "crates/snapshot/src/kill_process_group.rs"
 what = "`peek_leader_exit`"
-reason = "calls waitid(2), the second extern S-38 put in this file; the file's header says why"
-approved = "S-38 (Orc-Mortar, 2026-11-13, Coord-snapshot #565)"
+reason = "calls waitid(2), the file's second extern; the file's header says why"
+approved = "Orc-Mortar, 2026-11-13, keep the unsafe code in one file"
