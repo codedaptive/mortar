@@ -34,6 +34,8 @@ mod rereview;
 mod resolve;
 mod restore;
 mod save;
+mod savings;
+mod savings_record;
 mod shell;
 mod squash;
 mod status;

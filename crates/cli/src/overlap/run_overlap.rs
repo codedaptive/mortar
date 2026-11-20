@@ -1,7 +1,10 @@
 //! run_overlap: `mr overlap <zone>`, which open requests of the zone change the same paths, before anyone joins.
-//! Takes no lock and writes nothing.
+//! Takes no lock, moves no ref and writes nothing in the repository. Its Done answer carries savings, so the binary's
+//! edge (entry/main_entry, through record_savings) appends one line to the user's savings.jsonl, outside the
+//! repository.
 //! No sibling test: it runs git and reads the folders' records through read_named_zones and join's overlap;
-//! parse_overlap_args_tests, overlap_report_tests and overlap_error_report_tests cover its decisions.
+//! parse_overlap_args_tests, overlap_report_tests, overlap_error_report_tests and overlap_queries_tests cover its
+//! decisions.
 //! The integration tests crates/cli/tests/across_kits/snapshot_overlap_disk_sweep/{overlap,guards}.rs cover, with the
 //! mortar binary as a child process in request folders made by the landing verbs in a throwaway repository:
 //! - overlap with two requests touching one file lists the pair and that path, exit 0, outcome overlaps;
@@ -10,16 +13,20 @@
 //!   its fork point from the zone);
 //! - overlap of a zone not in the config, no zone, or a second word, exit 4; without a config, exit 1;
 //! - a request whose zone branch is missing, exit 5 under the verb overlap, naming the ref;
-//! - overlap moves no ref and writes nothing.
+//! - overlap moves no ref and writes nothing in the repository;
+//! - overlap_savings_counts_each_open_request_range: the "[mr] tokens saved" line first in the plain answer, its
+//!   baseline equal to git log -p of each open request's range from its fork point, the --json "savings" object,
+//!   and one savings.jsonl line per answer.
 
 use std::path::Path;
 
 use gitio::Git;
 
-use super::{overlap_error_report, overlap_report, parse_overlap_args};
+use super::{overlap_error_report, overlap_queries, overlap_report, parse_overlap_args};
 use crate::after_publish::read_named_zones;
 use crate::args::{usage_report, UsageError};
 use crate::report::{failure_report, Report};
+use crate::savings::with_counted_savings;
 use crate::shell::ShellContext;
 
 const VERB: &str = "overlap";
@@ -27,7 +34,10 @@ const VERB: &str = "overlap";
 /// The config, then the zone read by parse_overlap_args (an Err is overlap's usage report, exit 4, before the verb
 /// runs git). Then the zone's open requests from the folder records, each based at its fork point from the zone
 /// (read_named_zones; its failure report is relabelled to the verb overlap), and join's overlap over
-/// them (a failure is overlap_error_report); reported by overlap_report.
+/// them (a failure is overlap_error_report); reported by overlap_report. That report gets its savings by
+/// with_counted_savings: one counted git log -p per open request (overlap_queries: `<base>..<tip>`), their output
+/// characters summed by Git::output_chars; no open requests counts 0. A count that fails drops the savings, so the
+/// answer goes out without the line; an error report is not Done and runs no count.
 pub fn run_overlap(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let Some(config) = &context.config else {
@@ -48,8 +58,9 @@ pub fn run_overlap(context: &ShellContext, cwd: &Path) -> Report {
         }
     };
     let requests = named.into_iter().flat_map(|named| named.requests).collect::<Vec<_>>();
-    match ::join::overlap(&git, &requests) {
+    let report = match ::join::overlap(&git, &requests) {
         Ok(pairs) => overlap_report(&zone, &pairs),
         Err(error) => overlap_error_report(&error),
-    }
+    };
+    with_counted_savings(report, &overlap_queries(&requests), &|query| git.output_chars(cwd, query))
 }

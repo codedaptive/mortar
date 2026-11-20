@@ -1,8 +1,8 @@
-//! Strict parser of the report's documented flat JSON schema; no new JSON dependency in the product.
+//! Strict parser of the report's documented JSON schema, including nested objects; no new JSON dependency in the product.
 use std::{collections::BTreeMap, process::Output};
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Value { Text(String), Number(u64), Bool(bool), Null, Texts(Vec<String>) }
+pub enum Value { Text(String), Number(u64), Bool(bool), Null, Texts(Vec<String>), Object(Vec<(String, Value)>) }
 #[derive(Debug)]
 pub struct Report(BTreeMap<String, Value>);
 impl Report {
@@ -11,6 +11,7 @@ impl Report {
     pub fn flag(&self, key: &str) -> bool { match self.0[key] { Value::Bool(b) => b, ref other => panic!("{key}: {other:?}") } }
     pub fn is_null(&self, key: &str) -> bool { self.0[key] == Value::Null }
     pub fn strings(&self, key: &str) -> &[String] { match &self.0[key] { Value::Texts(v) => v, other => panic!("{key}: {other:?}") } }
+    pub fn object(&self, key: &str) -> &[(String, Value)] { match &self.0[key] { Value::Object(v) => v, other => panic!("{key}: {other:?}") } }
     pub fn lines(&self) -> String { self.strings("lines").join("\n") }
 }
 pub fn check(output: Output, verb: &str, exit: i32, outcome: &str) -> Report {
@@ -49,6 +50,19 @@ fn take(text: &str, at: &mut usize, expected: u8) {
 fn value(text: &str, at: &mut usize) -> Value {
     match text.as_bytes().get(*at) {
         Some(b'"') => Value::Text(string(text, at)),
+        Some(b'{') => {
+            *at += 1; let mut out = Vec::new();
+            if text.as_bytes().get(*at) != Some(&b'}') {
+                loop {
+                    let key = string(text, at); take(text, at, b':');
+                    let item = value(text, at);
+                    assert!(!out.iter().any(|(k, _)| k == &key), "duplicate JSON key");
+                    out.push((key, item));
+                    if text.as_bytes().get(*at) == Some(&b',') { *at += 1; } else { break; }
+                }
+            }
+            take(text, at, b'}'); Value::Object(out)
+        }
         Some(b'[') => {
             *at += 1; let mut out = Vec::new();
             if text.as_bytes().get(*at) != Some(&b']') {

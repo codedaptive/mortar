@@ -6,7 +6,7 @@ use super::{ExitCode, OutValue};
 /// `verb` is "" when no verb was read. `outcome` is one word ("written", "already-done", "refused", "busy",
 /// "usage", ...). `lines` say what happened, then where things stand; for a refusal, why. `owner` names who
 /// owns the thing refused or busy. `next` is one step, without the "next: " prefix. `fields` are the extra
-/// --json members, in order.
+/// --json members, in order; a Saved field also opens the plain form with its "[mr] tokens saved" line.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Report {
     pub verb: String,

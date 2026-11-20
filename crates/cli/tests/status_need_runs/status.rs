@@ -2,7 +2,7 @@ use crate::{json::check, observe::*, support::*};
 use std::fs;
 
 #[test]
-fn status_reads_clean_saved_unjoined_and_joined_tips_without_writing() {
+fn status_reads_clean_saved_unjoined_and_joined_tips_without_changing_the_repository() {
     // mortar status -> read_tips/saved_state/ancestry -> literal next/fields, both branch states.
     let f = Fixture::new(); f.save_topic();
     let saved = status(&f, "saved");

@@ -14,7 +14,8 @@
 //! - a needed path outside the work order is listed as a gap;
 //! - work snapshotted after a join but never saved to the request branch is neither saved nor joined, next mr
 //!   save (the integration test crates/cli/tests/status_need_runs/status_joined_tests.rs);
-//! - status writes no file and moves no ref: refs, the folder's index and the op log are unchanged after it.
+//! - status moves no ref and leaves the repository's files alone: refs, the folder's index and the op log are
+//!   unchanged after it.
 
 use folders::gaps;
 use gitio::Git;

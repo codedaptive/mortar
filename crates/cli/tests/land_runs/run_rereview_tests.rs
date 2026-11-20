@@ -38,7 +38,7 @@ const GIT_ENV: [(&str, &str); 6] = [
 
 /// A throwaway repository (removed on drop) with zones a (src/a) and b (src/b), main's first commit holding
 /// src/a/x, src/b/y and Cargo.toml, integration at that commit, and its canonical root.
-fn repo() -> (TestRepo, PathBuf) {
+pub(super) fn repo() -> (TestRepo, PathBuf) {
     let repo = TestRepo::new().unwrap();
     let root = repo.path.canonicalize().unwrap();
     write_fixture_config(&root, &Config {
@@ -76,7 +76,7 @@ fn git(dir: &Path, args: &[&str]) -> String {
 }
 
 /// One commit on `branch` writing `text` to `path`; main is checked out again after.
-fn commit_on(root: &Path, branch: &str, path: &str, text: &str) {
+pub(super) fn commit_on(root: &Path, branch: &str, path: &str, text: &str) {
     git(root, &["checkout", "-q", branch]);
     write(root, path, text);
     git(root, &["add", "-A"]);
@@ -85,7 +85,7 @@ fn commit_on(root: &Path, branch: &str, path: &str, text: &str) {
 }
 
 /// A squash of `zone` made in setup through land::squash, under the land lock after recover, as the cli does.
-fn squash_in_setup(root: &Path, zone: &str) -> Squash {
+pub(super) fn squash_in_setup(root: &Path, zone: &str) -> Squash {
     let mut git = Git::new(root);
     git.env = GIT_ENV.iter().map(|(name, value)| (name.into(), value.into())).collect();
     let common = git.common_dir().unwrap();
@@ -102,8 +102,9 @@ fn squash_in_setup(root: &Path, zone: &str) -> Squash {
 
 /// `mortar <args>` run in `root`, git's config isolated.
 fn mortar(root: &Path, args: &[&str]) -> Output {
+    let home = crate::support::OwnDir::new();
     Command::new(env!("CARGO_BIN_EXE_mortar")).current_dir(root).env_clear().envs(GIT_ENV)
-        .env("PATH", std::env::var_os("PATH").unwrap()).env("HOME", root).env("TMPDIR", root)
+        .env("PATH", std::env::var_os("PATH").unwrap()).env("HOME", &home.0).env("TMPDIR", &home.0)
         .env("CODETEAM_SESSION", "rereview-test").stdin(Stdio::null()).args(args).output().unwrap()
 }
 

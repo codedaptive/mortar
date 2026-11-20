@@ -5,6 +5,8 @@
 //! Help is answered next (help::help_asked): after --version and before the current directory, config,
 //! folder context, lock, recover or snapshot are read, from the help's data alone, so it changes nothing and works
 //! in any directory.
+//! After the verb runs, an answer carrying savings is logged to the user's savings.jsonl (savings_record) and,
+//! plain with the user's switch off, printed without its "[mr] tokens saved" line.
 //! No sibling unit test: it reads the process's arguments and directory and prints; cli's unit tests
 //! cover the reports. Integration tests to write (not written here), with the binary as a child process in a throwaway
 //! repository: `mr init --actor h --origin main --integration integration --remote origin` writes the
@@ -26,6 +28,7 @@ use std::io::Write;
 
 use crate::help::{help_asked, help_report};
 use crate::report::Report;
+use crate::savings_record::record_savings;
 use crate::version::{version_asked, version_text};
 use crate::{failure_report, prints_nothing, render_json, render_plain, run, usage_report, UsageError};
 
@@ -54,7 +57,10 @@ pub fn main_entry() -> i32 {
             (usage_report(&UsageError { verb: None, reason, json }), json)
         }
         (Ok(_), Err(error)) => (failure_report("", &format!("cannot read the current directory: {error}")), json),
-        (Ok(argv), Ok(cwd)) => run(&argv, &cwd),
+        (Ok(argv), Ok(cwd)) => {
+            let (report, json) = run(&argv, &cwd);
+            (record_savings(report, json, &cwd), json)
+        }
     };
     if !prints_nothing(&report) {
         write_report(&report, json);

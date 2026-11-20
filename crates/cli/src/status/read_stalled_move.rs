@@ -1,6 +1,6 @@
 //! read_stalled_move: the folder move a kill or a refused move left undone, if any, read without finishing it,
 //! from the op log settled in memory as recover would leave it (recovered_records), so a join
-//! rebase killed before its Done record is seen; status writes nothing and takes no lock.
+//! rebase killed before its Done record is seen; status changes nothing in the repository and takes no lock.
 //! No unit test: it reads the op log and runs git; recovered_records_tests, find_pending_move_tests and
 //! move_stalled_tests cover its decisions. The integration tests
 //! crates/cli/tests/status_need_runs/{precheck_status,handoff,status}.rs and
@@ -20,7 +20,8 @@
 //!   reports the stall (integration test to write, not written here: no test in the files above kills there);
 //! - a finished move followed by a staged edit is not reported as a stall (next mr save);
 //! - an index with unmerged entries (left by git run by hand in the folder) is not reported as a stall;
-//! - status moves no ref and writes no file: refs, the folder's index and the op log are unchanged after it.
+//! - status moves no ref and leaves the repository's files alone: refs, the folder's index and the op log are
+//!   unchanged after it.
 
 use gitio::{Git, IndexTreeError};
 use oplog::{
