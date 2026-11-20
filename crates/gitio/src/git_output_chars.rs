@@ -1,6 +1,7 @@
 //! Git::output_chars: how many characters one git read writes. It only runs git, so it has no unit tests;
 //! tests/typed/output_chars.rs covers it: each query kind against plain git, paths limiting a diff, output larger than
-//! one read, the folder it runs in, git's exit and the refused queries.
+//! one read, the folder it runs in, git's exit and the refused queries, and that DiffHead and Status leave the folder's
+//! index byte-identical.
 
 use crate::output_chars_request::output_chars_request;
 use crate::run_counted::run_counted;

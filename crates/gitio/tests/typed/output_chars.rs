@@ -30,6 +30,47 @@ fn plain(r: &GitRepo, args: &[&str]) -> String {
     String::from_utf8(output.stdout).unwrap()
 }
 
+fn dirty_with_zeroed_index(r: &GitRepo) -> Vec<u8> {
+    dirty(r);
+    r.git.run(&["read-tree", "HEAD"], &RunOpts::default()).unwrap();
+    fs::read(r.path.join(".git/index")).unwrap()
+}
+
+#[test]
+fn diff_head_preserves_index_and_matches_plain_git() {
+    let (r, _, _) = history();
+    let before = dirty_with_zeroed_index(&r);
+    let count = r.git.output_chars(&r.path, &BaselineQuery::DiffHead { paths: vec![] }).unwrap();
+    let after = fs::read(r.path.join(".git/index")).unwrap();
+    assert!(before == after, "DiffHead rewrote the index");
+    let expected = plain(&r, &["diff", "HEAD"]);
+    assert!(expected.contains("dirty héllo"));
+    assert_eq!(count, u64::try_from(expected.chars().count()).unwrap());
+}
+
+#[test]
+fn status_preserves_index() {
+    let (r, _, _) = history();
+    let before = dirty_with_zeroed_index(&r);
+    r.git.output_chars(&r.path, &BaselineQuery::Status { paths: vec![] }).unwrap();
+    // Status already respects gitio's read settings; guard that behavior too.
+    assert!(before == fs::read(r.path.join(".git/index")).unwrap(), "Status rewrote the index");
+}
+
+#[test]
+fn diff_head_preserves_index_with_caller_config_env() {
+    let (r, _, _) = history();
+    let before = dirty_with_zeroed_index(&r);
+    let mut git = r.git.clone();
+    git.env.extend([
+        ("GIT_CONFIG_COUNT".into(), "1".into()),
+        ("GIT_CONFIG_KEY_0".into(), "diff.autoRefreshIndex".into()),
+        ("GIT_CONFIG_VALUE_0".into(), "true".into()),
+    ]);
+    git.output_chars(&r.path, &BaselineQuery::DiffHead { paths: vec![] }).unwrap();
+    assert!(before == fs::read(r.path.join(".git/index")).unwrap(), "DiffHead rewrote the index with caller config");
+}
+
 #[test]
 fn log_patches_counts_characters_not_bytes() {
     let (r, first, second) = history();

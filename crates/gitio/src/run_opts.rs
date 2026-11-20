@@ -14,6 +14,7 @@ pub struct RunOpts {
     pub cwd: Option<PathBuf>,
     /// Non-zero exit codes that are answers rather than errors (merge-tree's 1 is a conflict answer).
     pub answer_codes: Vec<i32>,
-    /// A read command: git is told not to take optional locks.
+    /// A read command: git takes no optional locks (such as status's index refresh) and `git diff` does not refresh
+    /// the index's stat data; those are the index writes these settings stop.
     pub read_only: bool,
 }
