@@ -1,0 +1,17 @@
+//! Public resolve -> real gitio typed readers, conversions and refusal Display.
+//! RIT only: no unit/ZIT target is included. Each parent owns a disposable, config-isolated TestRepo.
+//! No private API is exposed. Two extracted inputs cannot reach the private helper from this surface:
+//! tree_entry verifies the response path before constructing NotABlob; typed Overlap names paths from its input.
+//! Their public equivalents reject a wrong-path commit record and name an earlier-round overlap from all_files,
+//! even when neither path is in current files. They do NOT claim a mismatched NotABlob or path=None Overlap.
+//! State fixtures are literal on-disk reader inputs with real objects/refs, not private state/codec inclusion.
+
+// resolve -> Oplog undo/valued log -> restore_join_state -> resolve, with real Git.
+mod restore;
+mod restore_crash;
+mod restore_support;
+mod precheck;
+mod precheck_crash;
+mod classify;
+mod support;
+mod tree_refusals;

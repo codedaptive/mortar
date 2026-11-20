@@ -1,0 +1,10 @@
+# Mortar workspace: one library crate per part of the program, the binary crate (cli) on top, and testkit, used by
+# the tests only.
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+publish = false

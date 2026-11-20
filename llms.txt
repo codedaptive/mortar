@@ -1,0 +1,133 @@
+# Mortar documentation map
+
+Mortar writes version-control history for teams of coding agents, with plain
+git. It makes the folders agents work in, saves their work, joins a request to
+its zone, squashes a zone's work, lands it, and guards the branches that hold
+proven code. It runs `git` as a program and links no git library. The command
+is `mr`; `mortar` is the long name for the same program. This file routes
+humans and AI agents to the maintained sources.
+
+## Start here
+
+- Product overview, install, a first run, every verb: README.md
+- What an AI should read first, and the rules for an agent: AI_START_HERE.md
+- Documentation index, by reader and by topic: docs/README.md
+- What the guard protects and what it does not: SECURITY.md
+- Build, test and layout of the code: CONTRIBUTING.md
+- What each version does: CHANGELOG.md
+- License (MIT): LICENSE
+
+## The program is a source
+
+- `mr help` lists every verb with one line each.
+- `mr help <verb>` and `mr <verb> --help` print one verb's usage.
+- A command line that cannot be read exits 4, lists the verbs, and gives as its
+  next step the verb's usage line when the verb is known, or the list of verbs
+  when it is not.
+- Every verb's last line is `next: <one step>`. `--version` prints its one line only, and the guard hook prints nothing when it allows a move.
+- `--json` on any verb prints one JSON object on one line: verb, ok, outcome,
+  exit, next, lines, owner, then the verb's own fields. `--version --json`
+  prints verb, ok, version and commit; `mortar --json guard-hook` prints
+  nothing when it allows a move.
+
+When a document and the program disagree, the program is right.
+
+## The verbs
+
+Agent verbs, run inside a request folder, with no folder argument and no
+`--actor`:
+
+- `mr status`
+- `mr save "<sentence>"`
+- `mr join`
+- `mr resolve`
+- `mr need <path>`
+- `mr undo`
+
+Set-up and folder verbs, run by a harness or a person, with `--actor <name>`:
+
+- `mr init --origin <branch> --integration <branch> --remote <name> [--zone <zone>=<path>[,<path>...]]...`
+- `mr guard install`, `mr guard status`
+- `mr folder zone <zone> <path> [--start <commit>]`
+- `mr folder request <zone> <request> <path> --paths <path>...`
+- `mr folder remove <path>`
+- `mr folder attempts <n> <dir>`, `mr folder keep <k>`, `mr folder drop`
+- `mr snapshot`, `mr overlap <zone>`, `mr disk`, `mr sweep [--idle-days <n>] [--ref <full ref name>]...`
+- `mr restore <op id> <full ref name>...`
+
+Landing verbs, with `--actor <name>`:
+
+- `mr squash <zone>`
+- `mr would-merge <commit or change ID>`
+- `mr rereview <reviewed commit> <new commit>`
+- `mr land <commit>`
+- `mr back-out`
+- `mr publish`
+- `mr after-publish <zone> [--move <zone>]...`
+- `mr backup`, `mr restore-backup <host>`
+- `mr bisect <last pass> <failed> --timeout <seconds> -- <command>...`
+
+Read only, no `--actor` needed:
+
+- `mr log [--ref <full ref name>] [--actor <name>] [--key <operation key>]`
+
+Run by git's hooks, never by hand:
+
+- `mortar guard-hook`
+
+Program verbs:
+
+- `mortar install`, `mortar uninstall`, `mortar --version`, `mr help [<verb>]`
+
+## Exit codes
+
+- 0: done, or already done (a repeat of a finished command)
+- 1: refused; the text says why, who owns the thing in the way, and what to do
+- 2: conflict; the files are listed
+- 3: busy; a lock is held, or a branch or snapshot ref moved while mr save
+  or mr snapshot ran (repeat later); or a landing is in flight (finish it
+  first with mr publish or mr back-out)
+- 4: usage
+- 5: failure; git or the disk failed. The report says what happened, and its
+  next line says what to do: usually the same command again, sometimes a path
+  to remove by hand first.
+
+## Where Mortar keeps things
+
+- Config: `<git common dir>/mortar/config.json`
+- Operation log: `<git common dir>/mortar/oplog.jsonl`
+- Locks: `<git common dir>/mortar/locks/`
+- Guard config and landing in flight: `<git common dir>/mortar/guard.json`, `<git common dir>/mortar/landing.json`
+- A folder's record and a paused join: `mortar-folder.json` and `mortar-join.json` in the worktree's own git dir
+- Branches: `zone/<zone>`, `req/<zone>/<request>`, `try/<zone>/<request>/<k>`
+- Hidden refs: `refs/mortar/snap/<zone>/<request>`, `refs/mortar/trysnap/<zone>/<request>/<k>`, `refs/mortar/squash/<zone>`
+
+## Code map
+
+- `crates/gitio`: the one place that runs git
+- `crates/oplog`: the operation log, recovery, undo and restore, locks, change IDs
+- `crates/folders`: worktrees, sparse paths, folder records, attempts, disk report, sweeps
+- `crates/snapshot`: saving a folder to a commit or a hidden ref; the formatter run
+- `crates/join`: joining a request to its zone: replay, conflicts, resolve, overlap
+- `crates/land`: squash, would-merge, re-review, land, back-out, publish, after-publish, the guard, backup, bisect
+- `crates/cli`: the program: verbs, arguments, output, exit codes
+- `crates/testkit`: throwaway repositories for tests
+
+## Sibling tools
+
+- Tessera (`ts`) reads a codebase and answers questions about it from an index.
+- Temperare (`tm`) checks code against the rules a repository has chosen.
+
+Each works alone. Mortar needs neither and calls neither.
+
+## What Mortar is not
+
+Not a replacement for git, not a harness that starts agents, not a test runner
+or reviewer, not a hosting or pull-request tool, not a security boundary, and
+not for Windows.
+
+## Version note
+
+This is version 0.1.0, the first public version. Mortar is built from source.
+The command line, the `--json` fields and the layout under `refs/mortar/` may
+still change before 1.0.

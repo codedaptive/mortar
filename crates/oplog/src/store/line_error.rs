@@ -1,0 +1,9 @@
+//! Why one op log line is not a record: a torn write, or a bad line.
+//! A bare type; decode_marked_log_tests and decode_valued_log_tests exercise each variant.
+
+/// `Torn`: the line stops before its JSON is complete. `Malformed`: anything else, with what is wrong.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum LineError {
+    Torn,
+    Malformed(String),
+}

@@ -1,0 +1,43 @@
+# Mortar's rule file for tm check. Two rules: every clippy warning is an error, over all targets, except two lints
+# Mortar allows (result_large_err: refusals carry their reasons and next steps by design; module_inception: files and
+# folders are named after their symbol and module path); and one public symbol per product file (small-files rule 1).
+version = 1
+owner = "orc"
+
+[[rule]]
+id = "clippy-warnings"
+engine = "clippy"
+check = "warnings"
+severity = "error"
+params = { allow = ["clippy::result_large_err", "clippy::module_inception"] }
+fix = "Fix the warning in your own crate, or allow it at the line with a comment saying why."
+
+# Product code only: test files and the cfg(test) install integration tests (cli/src/install/integration, declared
+# cfg(test) in cli/src/install/mod.rs) are not checked.
+# Cases: rules/cases/one-public-symbol-per-file-test.yml (ast-grep test -c rules/sgconfig.yml --skip-snapshot-tests).
+[[rule]]
+id = "one-public-symbol-per-file"
+engine = "ast-grep"
+check = "rules/rust/one-public-symbol-per-file.yml"
+paths = ["crates/*/src/**/*.rs"]
+exclude = ["**/*_tests.rs", "crates/cli/src/install/integration/**"]
+severity = "error"
+fix = "Move each public function, type or trait but one into its own file named after it, or make it private if only this file uses it."
+
+# kill_process_group.rs holds both functions that call its two extern declarations, the crate's only unsafe code:
+# the second extern, waitid, was put in the same file on purpose, so the unsafe code stays in one place (2026-11-13).
+# Each exception names one function (what matches the finding's message), so any other public item there with another name is reported.
+# The match is by name only: another public item spelled the same (a struct kill_process_group) would be silenced too.
+[[exception]]
+rule = "one-public-symbol-per-file"
+path = "crates/snapshot/src/kill_process_group.rs"
+what = "`kill_process_group`"
+reason = "calls kill(2), one of the file's two externs, the crate's only unsafe code; the file's header says why"
+approved = "Orc-Mortar, 2026-11-13, keep the unsafe code in one file"
+
+[[exception]]
+rule = "one-public-symbol-per-file"
+path = "crates/snapshot/src/kill_process_group.rs"
+what = "`peek_leader_exit`"
+reason = "calls waitid(2), the file's second extern; the file's header says why"
+approved = "Orc-Mortar, 2026-11-13, keep the unsafe code in one file"

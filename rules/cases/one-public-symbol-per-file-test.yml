@@ -1,0 +1,94 @@
+# Cases for rules/rust/one-public-symbol-per-file.yml (small-files charter rule 1, its first line: one public
+# function, type or trait per file). Each valid case is a file the rule must pass; each invalid case is a file it must
+# report. The charter's second line (a type's methods each in their own file) is not this rule's, so no case here
+# says whether a method may sit beside its type. Run: ast-grep test -c rules/sgconfig.yml --skip-snapshot-tests
+id: one-public-symbol-per-file
+valid:
+  # One public function with private helpers.
+  - |
+    pub fn open_database(path: &str) -> Db { helper(path) }
+    fn helper(path: &str) -> Db { Db::at(path) }
+  # A method's own file: one impl block holding one public method, which is not counted as a file symbol.
+  - |
+    use super::Oid;
+    impl Oid { pub fn as_str(&self) -> &str { &self.0 } }
+  # pub(self) is private: a second function with it is a helper, not a symbol.
+  - |
+    pub fn run() -> usize { count() }
+    pub(self) fn count() -> usize { 0 }
+  # One public function inside a public inline module is still one symbol.
+  - |
+    pub mod api { pub fn open() {} }
+  # A bridge: mod declarations and re-exports are not symbols of the file.
+  - |
+    mod open_database;
+    pub mod refs;
+    pub use open_database::open_database;
+    pub use refs::Refs;
+  # A file of related constants: rule 1 counts functions, types and traits.
+  - |
+    pub const MORTAR_ZONE: &str = "Mortar-Zone";
+    pub const MORTAR_REQUEST: &str = "Mortar-Request";
+  # One function under two cfgs is one symbol.
+  - |
+    #[cfg(unix)]
+    pub(crate) fn kill_group(pid: u32) { unix_kill(pid) }
+    #[cfg(not(unix))]
+    pub(crate) fn kill_group(_pid: u32) {}
+  # Private types and functions beside the one public symbol.
+  - |
+    struct Buffer([u8; 64]);
+    enum Step { One, Two }
+    pub fn run() -> usize { 0 }
+    fn step(s: Step) -> Buffer { Buffer([0; 64]) }
+  # A test module declared beside the symbol.
+  - |
+    pub fn parse(text: &str) -> u32 { text.len() as u32 }
+    #[cfg(test)]
+    mod parse_tests;
+invalid:
+  # Two public functions.
+  - |
+    pub fn open_database(path: &str) -> Db { Db::at(path) }
+    pub fn close_database(db: Db) {}
+  # A public type and a public function.
+  - |
+    pub struct Report { lines: Vec<String> }
+    pub fn render(report: &Report) -> String { String::new() }
+  # Crate-visible counts as public: another file can call it.
+  - |
+    pub fn run() {}
+    pub(crate) fn helper() {}
+  # A public enum and a public trait.
+  - |
+    pub enum Kind { A, B }
+    pub trait Named { fn name(&self) -> &str; }
+  # A public type alias beside a public struct.
+  - |
+    pub struct Folder;
+    pub type Folders = Vec<Folder>;
+  # Two names, each under two cfgs: all four items are reported, since each sees the other name.
+  - |
+    #[cfg(unix)]
+    pub(crate) fn kill_group(pid: u32) {}
+    #[cfg(unix)]
+    pub(crate) fn peek_exit(pid: u32) -> bool { false }
+    #[cfg(not(unix))]
+    pub(crate) fn kill_group(_pid: u32) {}
+    #[cfg(not(unix))]
+    pub(crate) fn peek_exit(_pid: u32) -> bool { false }
+  # Two public functions in an inline module.
+  - |
+    pub mod api {
+        pub fn a() {}
+        pub fn b() {}
+    }
+  # A public function at the top and another in a private inline module.
+  - |
+    pub fn run() {}
+    mod inner { pub fn helper() {} }
+  # A type and a function spelt the same live in different namespaces: two symbols.
+  - |
+    pub struct Foo { x: u8 }
+    #[allow(non_snake_case)]
+    pub fn Foo() -> Foo { Foo { x: 0 } }

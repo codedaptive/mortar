@@ -1,0 +1,31 @@
+[package]
+name = "cli"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gitio = { path = "../gitio" }
+oplog = { path = "../oplog" }
+folders = { path = "../folders" }
+snapshot = { path = "../snapshot" }
+join = { path = "../join" }
+land = { path = "../land" }
+
+[dev-dependencies]
+testkit = { path = "../testkit" }
+
+# build.rs reads HEAD through gitio to embed MORTAR_COMMIT for `--version`.
+[build-dependencies]
+gitio = { path = "../gitio" }
+
+[[bin]]
+name = "mortar"
+path = "src/main.rs"
+
+# Both bins (`mortar`, src/main.rs, and `mr`, src/bin/mr.rs) call cli::main_entry, so the binary answers alike
+# under either name. `make accept` runs `mr` with both names on PATH (the steps drive `mr`; ACCEPT-4's agent also
+# reaches `mortar`, through the `mortar` script in its agent bin; its git shim holds only the logging git).
+[[bin]]
+name = "mr"
+path = "src/bin/mr.rs"

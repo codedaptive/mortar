@@ -1,0 +1,80 @@
+//! The replay record consumed by the publish it serves. Zone `land` is squashed at A1 and the squash
+//! kept; zone `b` is squashed, landed and published first, and after_publish(b, others=[land]) replays A1 onto b's
+//! origin as A1' and records `refs/mortar/replayed/land/<A1>` = A1' (fixture replayed). The kept squash, naming A1
+//! in its Mortar-Squash-Of, then lands as a merge and publishes. after_publish(land) moves zone `land` past A1 and
+//! deletes the record in the same op: when A1' is the zone tip (put on origin) and when a join J sits on A1' (J
+//! replayed onto origin); a repeat after the consuming publish moves nothing and writes no op. Origin is never
+//! rewritten.
+
+use crate::fixture::{
+    land_and_publish, origin_untouched, record_ref, refs, replayed, zone, Fixture, Replayed, ACTOR, JOINED_FILES,
+    PUBLISHED,
+};
+use gitio::Oid;
+use land::{after_publish, ZoneMove};
+
+/// The replay of fixture replayed, checked to record A1' at A1's replay record. Answers it and the record ref.
+fn recorded(fx: &Fixture) -> (Replayed, String) {
+    let replayed = replayed(fx);
+    let record = record_ref(PUBLISHED, &replayed.a1);
+    assert_eq!(fx.git.read_ref(&record).unwrap(), Some(replayed.a1_replayed.clone()));
+    (replayed, record)
+}
+
+/// Up to the consuming publish: land's kept squash landed and published, after_publish(land, []) checked to put
+/// the zone on origin. Answers (the record ref, origin).
+fn consumed(fx: &Fixture) -> (String, Oid) {
+    let (replayed, record) = recorded(fx);
+    let origin = land_and_publish(fx, &replayed.land_squash);
+    let moves = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![]), &[], ACTOR);
+    let expected = vec![ZoneMove::Moved {
+        zone: PUBLISHED.to_string(),
+        old: replayed.a1_replayed,
+        new: origin.clone(),
+        rebase: vec![],
+    }];
+    assert!(matches!(&moves, Ok(answer) if *answer == expected), "{moves:?}");
+    (record, origin)
+}
+
+#[test]
+fn the_publish_that_consumes_the_record_deletes_it() {
+    let fx = Fixture::new();
+    let (record, origin) = consumed(&fx);
+    assert_eq!(fx.git.read_ref(&record).unwrap(), None);
+    assert_eq!(fx.branch("zone/land"), origin);
+    origin_untouched(&fx, &origin);
+}
+
+#[test]
+fn a_replayed_publish_deletes_the_record_too() {
+    let fx = Fixture::new();
+    let (replayed, record) = recorded(&fx);
+    let joined = fx.join_onto(PUBLISHED, &replayed.a1_replayed, &JOINED_FILES, "joined after the replay");
+    let origin = land_and_publish(&fx, &replayed.land_squash);
+    let moves = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![]), &[], ACTOR);
+    assert!(moves.is_ok(), "{moves:?}");
+    let moves = moves.unwrap();
+    let [ZoneMove::Moved { zone: name, old, new, rebase }] = moves.as_slice() else {
+        panic!("the published zone must move: {moves:?}");
+    };
+    assert_eq!((name.as_str(), old, rebase), (PUBLISHED, &joined, &vec![]));
+    assert_eq!(fx.git.read_ref(&record).unwrap(), None);
+    assert_eq!(fx.branch("zone/land"), *new);
+    assert_eq!(fx.git.commit_info(new).unwrap().parents, vec![origin.clone()]);
+    origin_untouched(&fx, &origin);
+}
+
+#[test]
+fn a_repeat_after_the_consuming_publish_moves_nothing() {
+    let fx = Fixture::new();
+    let (record, origin) = consumed(&fx);
+    let records = fx.after_publish_records();
+    let repeat = after_publish(&fx.git, &refs(), &zone(PUBLISHED, vec![]), &[], ACTOR);
+    let expected = vec![ZoneMove::Current { zone: PUBLISHED.to_string(), tip: origin.clone() }];
+    assert!(matches!(&repeat, Ok(answer) if *answer == expected), "{repeat:?}");
+    assert_eq!(fx.git.read_ref(&record).unwrap(), None);
+    assert_eq!(fx.after_publish_records(), records);
+    assert_eq!(fx.branch("zone/land"), origin);
+    origin_untouched(&fx, &origin);
+}

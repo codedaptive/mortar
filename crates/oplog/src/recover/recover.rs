@@ -1,0 +1,56 @@
+//! Settles every open intent in the op log not marked with a remote: reads its refs, decides, appends the
+//! closing record, which carries the intent's values. An intent marked with a remote (open_remote_intent) is
+//! neither read nor closed: not failed, not unknown, nothing appended; its caller closes it with
+//! close_intent.
+//! No unit test: it reads the log, runs git and appends to the log; the decisions are covered by
+//! open_intents_in_tests, decide_recovery_tests, recovery_close_valued_tests and
+//! settled_or_first_error_tests, and which intents it settles by crates/oplog/tests/oplog/recoverable.rs.
+//! Covered by the crate's integration tests, each in a throwaway repository: a missing log returns no
+//! records (tests/oplog/recovery.rs); an intent whose changing moves are all at new (unchanged moves never
+//! decide) gets a done/moved record, one with at least one changing ref and none at new a failed/not-moved
+//! record naming each ref and its actual value, each read back by read_op_log, and a second recover after the
+//! first appends nothing (tests/oplog/refined_recovery.rs); an intent already closed gets nothing
+//! (tests/oplog/recoverable.rs); a true mix (a changing ref at new beside a changing ref not at new) is
+//! OplogError::Mixed naming its op_id, key and refs and appends nothing for it (tests/oplog/recovery.rs,
+//! tests/oplog/refined_recovery.rs); a kill between apply's transaction and its done append is settled as
+//! done (tests/oplog/crash.rs); an intent with a ref moved by a foreign actor to a third value and at least
+//! one changing ref, none at new, is failed (tests/oplog/refined_recovery.rs); an intent written with values
+//! is closed done by a record that read_valued_log returns with the same values in the same order
+//! (tests/oplog/values_recover.rs, tests/oplog/recoverable.rs). Integration tests should cover: an empty log
+//! returns no records; beside a true mix, the other open intents are still settled; a kill after a Stale
+//! answer, then recover, is failed recording the actual values for an op that changes a ref, and done for
+//! one that changes none; an intent written with values is closed failed by a record that read_valued_log
+//! returns with the same values in the same order.
+//! crates/oplog/tests/oplog/remote_intents.rs covers a marked intent left open beside a settled unmarked one.
+
+use std::path::Path;
+
+use gitio::Git;
+
+use super::{decide_recovery, recoverable_intents, recovery_close_valued, settled_or_first_error};
+use crate::store::{
+    append_valued_record, read_marked_log, read_ref_value, unix_now, OpRecord, OplogError, ValuedRecord,
+};
+
+/// The closing records appended, in log order; after settling every other intent, the first error met.
+/// Intents marked with a remote are skipped.
+pub fn recover(git: &Git, common: &Path) -> Result<Vec<OpRecord>, OplogError> {
+    let results = recoverable_intents(&read_marked_log(common)?.records)
+        .iter()
+        .map(|intent| settle(git, common, intent))
+        .collect();
+    settled_or_first_error(results)
+}
+
+/// Reads each move's ref, closes the intent by the decision with its values and appends the record.
+fn settle(git: &Git, common: &Path, intent: &ValuedRecord) -> Result<OpRecord, OplogError> {
+    let refs = intent
+        .record
+        .moves
+        .iter()
+        .map(|m| Ok((m.clone(), read_ref_value(git, &m.refname)?)))
+        .collect::<Result<Vec<_>, OplogError>>()?;
+    let closing = recovery_close_valued(intent, decide_recovery(&refs), unix_now())?;
+    append_valued_record(common, &closing.record, &closing.values)?;
+    Ok(closing.record)
+}
