@@ -220,3 +220,38 @@ fn index_not_set_names_where_the_branch_stands_and_the_earlier_move() {
         }
     );
 }
+
+#[test]
+fn detached_head_for_join_is_refused_after_the_earlier_move() {
+    assert_eq!(
+        snapshot_step_failure(
+            "join",
+            &SnapshotError::DetachedHead { folder: std::path::PathBuf::from("/w/a") },
+            Some(MOVED),
+        ),
+        Report {
+            verb: "join".to_string(), exit: ExitCode::Refused, outcome: "refused".to_string(),
+            owner: Some("the folder's HEAD".to_string()),
+            next: "check out the request's branch in the folder, then repeat the same command".to_string(),
+            fields: vec![],
+            lines: vec![
+                "the snapshot ref moved as the work was saved first".to_string(),
+                "HEAD of the folder /w/a names no branch".to_string(),
+            ],
+        }
+    );
+}
+
+#[test]
+fn unborn_head_for_resolve_is_refused() {
+    assert_eq!(
+        snapshot_step_failure("resolve", &SnapshotError::UnbornHead { folder: std::path::PathBuf::from("/w/a") }, None),
+        Report {
+            verb: "resolve".to_string(), exit: ExitCode::Refused, outcome: "refused".to_string(),
+            owner: Some("the folder's HEAD".to_string()),
+            next: "check out the request's branch in the folder, then repeat the same command".to_string(),
+            fields: vec![],
+            lines: vec!["HEAD of the folder /w/a has no commit".to_string()],
+        }
+    );
+}

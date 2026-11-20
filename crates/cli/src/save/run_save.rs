@@ -12,6 +12,11 @@
 //! - a blank or two-line sentence is exit 1 and nothing runs (no lock file, no snapshot ref move);
 //! - a new file over the config's cap_bytes is listed with its size and the cap, exit 0;
 //! - with a formatter configured the saved tree holds the formatted file;
+//! - a formatter that moves the request branch: the save's parent is the formatter's commit
+//!   (saves.rs::save_uses_request_branch_tip_moved_by_formatter_as_parent);
+//! - a detached HEAD with a formatter is refused naming the moved snapshot ref, which holds the edit, and the
+//!   request branch does not move
+//!   (saves.rs::detached_head_save_with_formatter_preserves_edit_in_snapshot_without_moving_request_branch);
 //! - a formatter past its timeout is listed and the save goes ahead;
 //! - a held join-<zone> lock is exit 3 naming the holder;
 //! - run in a zone folder it is refused, exit 1;
@@ -24,10 +29,10 @@
 //! - a pending move refused again (the edit still in the way) is exit 1 listing the paths, and nothing is saved.
 
 use oplog::KillPidProbe;
-use snapshot::{save_with_snapshot, snapshot_formatted};
+use snapshot::save_with_snapshot;
 
 use super::{save_report, save_run_for, save_sentence, save_step_failure};
-use crate::join::{finish_pending_move, moved_before, snapshot_moved};
+use crate::join::{finish_pending_move, moved_before, save_from_formatted, snapshot_moved};
 use crate::lock::locked_act;
 use crate::report::Report;
 use crate::shell::ShellContext;
@@ -35,13 +40,14 @@ use crate::shell::ShellContext;
 /// Checks the sentence before any lock, formatter or git; then reads the run (save_run_for: the folder's own
 /// branch, its snapshot target, the config's settings, the lock from the verb table's LockNeed and the key). Under
 /// `join-<zone>` with recover run first, it first finishes the folder's pending move, a join rebase's
-/// or an undo's (finish_pending_move, as join does; a refused move is that report and nothing is saved),
-/// then runs the configured formatter through snapshot_formatted and commits with snapshot::save_with_snapshot, both
-/// with the config's excludes and cap. Every error of the pending move's snapshot, snapshot_formatted and
-/// save_with_snapshot goes through save_step_failure, with moved_before's line for the snapshot ref when a step before
+/// or an undo's (finish_pending_move, as join does; a refused move is that report and nothing is saved), then saves
+/// with the config's excludes and cap. With a formatter configured it runs snapshot_formatted then
+/// save_from_snapshot through join's save_from_formatted, so the folder is snapshotted once; without one it commits
+/// with snapshot::save_with_snapshot, which takes its own snapshot. Every error of the pending move's snapshot and of
+/// the save's steps goes through save_step_failure, with moved_before's line for the snapshot ref when a step before
 /// the failed one moved it (none for the pending move's snapshot, the first step). It reports the finished move with
-/// the save, and moved_before's line when the pending move's snapshot, the formatter's or save's own snapshot step
-/// moved the snapshot ref (snapshot_moved). The key (--key, else the verb and the folder with no
+/// the save, and moved_before's line when the pending move's snapshot, the formatter's or save_with_snapshot's own
+/// snapshot step moved the snapshot ref (snapshot_moved). The key (--key, else the verb and the folder with no
 /// moves) names the lock's holder only and is not passed to oplog's apply; a plain repeat
 /// is safe because save writes no commit and moves no branch when the folder equals HEAD, and a
 /// finished move is a no-op when repeated. The shell gives an agent verb its folder (actor_for refuses a zone
@@ -59,18 +65,26 @@ pub fn run_save(context: &ShellContext) -> Report {
     let moved_line = |snapshot_written: bool| moved_before(false, snapshot_written, &run.request_ref);
     locked_act(git, &run.folder.common, &run.lock, &run.key, &KillPidProbe, "save", || {
         let (finished, finish_wrote) = finish_pending_move(&run, "save", &|error| save_step_failure(&error, None))?;
-        let (formatted, format_wrote) = match &settings.formatter {
+        let (saved, formatted, earlier) = match &settings.formatter {
             Some(formatter) => {
-                let taken =
-                    snapshot_formatted(git, toplevel, target, &settings.excludes, settings.cap_bytes, Some(formatter))
-                        .map_err(|error| save_step_failure(&error, moved_line(finish_wrote).as_deref()))?;
-                (taken.formatted, taken.written)
+                let (saved, formatted, written) = save_from_formatted(
+                    git,
+                    toplevel,
+                    target,
+                    sentence,
+                    &settings.excludes,
+                    settings.cap_bytes,
+                    Some(formatter),
+                )
+                .map_err(|(error, written)| save_step_failure(&error, moved_line(finish_wrote || written).as_deref()))?;
+                (saved, formatted, finish_wrote || written)
             }
-            None => (None, false),
+            None => {
+                let saved = save_with_snapshot(git, toplevel, target, sentence, &settings.excludes, settings.cap_bytes)
+                    .map_err(|error| save_step_failure(&error, moved_line(finish_wrote).as_deref()))?;
+                (saved, None, finish_wrote)
+            }
         };
-        let earlier = finish_wrote || format_wrote;
-        let saved = save_with_snapshot(git, toplevel, target, sentence, &settings.excludes, settings.cap_bytes)
-            .map_err(|error| save_step_failure(&error, moved_line(earlier).as_deref()))?;
         let moved = moved_line(snapshot_moved(earlier, &saved));
         Ok(save_report(&saved.outcome, formatted.as_ref(), finished.as_ref(), moved.as_deref()))
     })

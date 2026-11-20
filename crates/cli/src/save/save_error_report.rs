@@ -1,7 +1,7 @@
 //! save_error_report: the report of a save that did not happen, one arm per SnapshotError.
 //! The cli writes its own text per arm, for its own exit, owner and next; the inner git, op log, trailer and
 //! change ID errors are shown through their own Display. mr save reports its Git, Trailers, ChangeId and Oplog errors
-//! (from the pending move's snapshot, the formatter's snapshot and snapshot::save_with_snapshot) through
+//! (from the pending move's snapshot, the formatter's snapshot, snapshot::save_from_snapshot and snapshot::save_with_snapshot) through
 //! save_step_failure, which passes every other error here; mr status uses this report for the errors of its
 //! saved_state read.
 
