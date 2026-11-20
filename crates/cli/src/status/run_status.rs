@@ -10,21 +10,36 @@
 //! - a zone folder is refused;
 //! - any argument is exit 4;
 //! - --json gives one object;
-//! - status writes no file and moves no ref (refs, index and op log unchanged).
+//! - status moves no ref and leaves the repository's files alone (refs, index and op log unchanged); its answer
+//!   carries savings, so the binary's edge (entry/main_entry, through record_savings) appends one line to the
+//!   user's savings.jsonl, outside the repository.
+//!
+//! crates/cli/tests/status_need_runs/savings.rs covers the "[mr] tokens saved" line first in the plain answer, its
+//! baseline equal to git status plus git diff HEAD over the folder, the --json "savings" object, the switch that drops
+//! the line, and the savings.jsonl line.
 
 use folders::FolderKind;
+use gitio::Git;
 
-use super::{attempt_status_report, progress_branch, read_status, status_report, StatusState};
+use super::{
+    attempt_status_report, no_index_refresh_env, progress_branch, read_status, status_queries, status_report,
+    StatusState,
+};
 use crate::args::no_arguments_report;
 use crate::config::snapshot_settings_for;
 use crate::report::{failure_report, Report};
+use crate::savings::with_counted_savings;
 use crate::shell::ShellContext;
 
 /// Any argument is no_arguments_report's usage report. The shell gives an agent verb its folder (actor_for refuses a
 /// zone folder) and a verb that needs the config its config; a missing one is a failure here. Then read_status with
 /// the config's snapshot settings, reported by status_report; in attempt folder k it reports attempt k's own branch
-/// and snapshot by attempt_status_report, whose next is mr save or the wait for the harness, never join.
-/// No lock: status is read only.
+/// and snapshot by attempt_status_report, whose next is mr save or the wait for the harness, never join. A Done
+/// report gets its savings by with_counted_savings, after its own fields: two more git reads of the whole folder
+/// (status_queries: git status and git diff HEAD), their output characters summed by Git::output_chars, run with
+/// diff.autoRefreshIndex off (no_index_refresh_env). A count that fails drops the savings, so the answer goes out
+/// without the line; any other report runs no count.
+/// No lock: status reads the repository only.
 pub fn run_status(context: &ShellContext) -> Report {
     let args = &context.args;
     if let Some(usage) = no_arguments_report("status", &args.rest, args.json) {
@@ -36,7 +51,14 @@ pub fn run_status(context: &ShellContext) -> Report {
     };
     match read_status(folder, &snapshot_settings_for(config), &context.actor, "status") {
         Err(refusal) => refusal,
-        Ok(state) => report_for(folder.record.kind, &state),
+        Ok(state) => {
+            let mut git = Git::new(&folder.toplevel);
+            // The count must leave the folder's index as it was, and `git diff HEAD` would refresh it otherwise.
+            git.env.extend(no_index_refresh_env(std::env::var_os("GIT_CONFIG_COUNT").as_deref()));
+            with_counted_savings(report_for(folder.record.kind, &state), &status_queries(), &|query| {
+                git.output_chars(&folder.toplevel, query)
+            })
+        }
     }
 }
 

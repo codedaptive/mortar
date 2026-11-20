@@ -1,5 +1,5 @@
 //! recovered_records: the op log as oplog's recover would leave it, computed in memory, so status can read a move an
-//! open intent left undone without settling it (status writes nothing and takes no lock).
+//! open intent left undone without settling it (status changes nothing in the repository and takes no lock).
 //! The open intents come from oplog's exported walk, open_marked_intents: an Intent record with no later Done
 //! or Failed record of its op_id, remote-marked ones included; this filters those out, as recover leaves them for
 //! their caller. recovered_records_tests is a unit test: the walk it runs is oplog's, exported, pure and downward.

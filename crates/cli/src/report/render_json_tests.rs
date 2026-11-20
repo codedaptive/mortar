@@ -1,6 +1,7 @@
 //! render_json: one line, keys verb, ok, outcome, exit, next, lines, owner, then the fields in order.
 
 use super::{render_json, ExitCode, OutValue, Report};
+use crate::savings::Savings;
 
 fn report(exit: ExitCode, outcome: &str) -> Report {
     Report {
@@ -84,5 +85,22 @@ fn a_raw_field_writes_its_values_as_they_are() {
         render_json(&listed),
         "{\"verb\":\"init\",\"ok\":true,\"outcome\":\"listed\",\"exit\":0,\"next\":\"mr init\",\"lines\":[],\
          \"owner\":null,\"records\":[{\"op_id\":\"a\"},[1,null]],\"none\":[]}\n"
+    );
+}
+
+#[test]
+fn a_saved_field_is_the_savings_object_with_the_body_chars() {
+    // Plain body "one\n" + "two \"q\"\n" + "next: mr init\n" is 4 + 8 + 14 = 26 chars.
+    let mut done = report(ExitCode::Done, "clean");
+    let savings = Savings { baseline: "git status --short over this folder".to_string(), baseline_chars: 400 };
+    done.fields = vec![
+        ("zone".to_string(), OutValue::Text("z".to_string())),
+        ("savings".to_string(), OutValue::Saved(savings)),
+    ];
+    assert_eq!(
+        render_json(&done),
+        "{\"verb\":\"init\",\"ok\":true,\"outcome\":\"clean\",\"exit\":0,\"next\":\"mr init\",\
+         \"lines\":[\"one\",\"two \\\"q\\\"\"],\"owner\":null,\"zone\":\"z\",\"savings\":{\"baseline\":\
+         \"git status --short over this folder\",\"baselineChars\":400,\"outputChars\":26}}\n"
     );
 }

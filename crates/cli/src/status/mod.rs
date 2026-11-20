@@ -1,5 +1,5 @@
 //! `mr status`: the state it reports, the reads that fill it, the decisions it makes from that state,
-//! its report and its runner, for request folders and attempt folders.
+//! its report, the git reads its savings are counted against and its runner, for request folders and attempt folders.
 
 mod attempt_next;
 mod attempt_status_report;
@@ -7,6 +7,7 @@ mod is_joined;
 mod is_saved;
 mod missing_branch_report;
 mod move_stalled;
+mod no_index_refresh_env;
 mod no_work_yet;
 mod open_requests_for;
 mod overlaps_with;
@@ -25,6 +26,7 @@ mod status_next;
 mod status_outcome;
 mod status_phase;
 mod status_phase_from_status_state;
+mod status_queries;
 mod status_report;
 mod status_state;
 
@@ -40,6 +42,8 @@ mod is_saved_tests;
 mod missing_branch_report_tests;
 #[cfg(test)]
 mod move_stalled_tests;
+#[cfg(test)]
+mod no_index_refresh_env_tests;
 #[cfg(test)]
 mod no_work_yet_tests;
 #[cfg(test)]
@@ -61,6 +65,8 @@ mod status_outcome_tests;
 #[cfg(test)]
 mod status_phase_from_status_state_tests;
 #[cfg(test)]
+mod status_queries_tests;
+#[cfg(test)]
 mod status_report_tests;
 
 pub(crate) use attempt_next::attempt_next;
@@ -69,6 +75,7 @@ pub(crate) use is_joined::is_joined;
 pub(crate) use is_saved::is_saved;
 pub(crate) use missing_branch_report::missing_branch_report;
 pub(crate) use move_stalled::move_stalled;
+pub(crate) use no_index_refresh_env::no_index_refresh_env;
 pub(crate) use no_work_yet::no_work_yet;
 pub(crate) use open_requests_for::open_requests_for;
 pub(crate) use overlaps_with::overlaps_with;
@@ -86,5 +93,6 @@ pub(crate) use status_lines::status_lines;
 pub(crate) use status_next::status_next;
 pub(crate) use status_outcome::status_outcome;
 pub(crate) use status_phase::StatusPhase;
+pub(crate) use status_queries::status_queries;
 pub(crate) use status_report::status_report;
 pub(crate) use status_state::StatusState;

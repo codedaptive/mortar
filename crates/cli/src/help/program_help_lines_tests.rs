@@ -1,5 +1,5 @@
 //! program_help_lines: the usage line, the four groups' headings in order, one row per term padded to the longest
-//! term.
+//! term, then the eight lines about tokens saved.
 //! Unit test: the help groups are pure data.
 //! The longest term is bisect's, "bisect <last pass> <failed> --timeout <s> -- <command>..." (57 characters), so
 //! every term is padded to 57: "status" (6) with 51 spaces, "install, uninstall" (18) with 39.
@@ -20,7 +20,7 @@ fn the_first_line_is_the_usage() {
 #[test]
 fn the_headings_follow_an_empty_line_in_order() {
     let lines = program_help_lines();
-    let headings = lines
+    let headings = lines[..37]
         .windows(2)
         .filter(|pair| pair[0].is_empty())
         .map(|pair| pair[1].as_str())
@@ -62,9 +62,26 @@ fn backup_and_restore_backup_share_one_row() {
 #[test]
 fn there_are_twenty_eight_rows_and_no_trailing_spaces() {
     // 6 agent rows, 8 folder, 11 landing (backup shares one), 3 setup (install shares one): 28. With the usage line
-    // and an empty line and a heading per group, 37 lines.
+    // and an empty line and a heading per group, 37 lines; then the 8 lines about tokens saved: 45.
     let lines = program_help_lines();
     assert_eq!(lines.iter().filter(|line| line.starts_with("  ")).count(), 28);
-    assert_eq!(lines.len(), 37);
+    assert_eq!(lines.len(), 45);
     assert!(lines.iter().all(|line| !line.ends_with(' ')), "{lines:#?}");
+}
+
+#[test]
+fn the_tokens_saved_lines_follow_the_groups() {
+    assert_eq!(
+        program_help_lines()[37..],
+        [
+            "",
+            "Tokens saved: an answer that replaces reading git output opens with a \"[mr] tokens saved\" line,",
+            "and its --json carries a \"savings\" object. The number is an upper bound: it counts as if the whole",
+            "git output the answer replaces would have been read.",
+            "{\"savings_line\": false} in $XDG_CONFIG_HOME/mortar/config.json (else ~/.config/mortar/config.json)",
+            "turns the line off; --json keeps \"savings\".",
+            "Each such answer also appends a line to $XDG_STATE_HOME/mortar/savings.jsonl",
+            "(else ~/.local/state/mortar/savings.jsonl).",
+        ]
+    );
 }

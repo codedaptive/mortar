@@ -57,7 +57,7 @@ fn a_verb_help_is_done_and_next_is_status() {
     assert_eq!(
         render_plain(&report),
         "mr status [--json]\nwhere you are, what you changed, whether your zone moved, anything conflicted, and the \
-         next step\nnext: mr status\n"
+         next step\ntokens saved is counted against: git status and git diff HEAD over this folder\nnext: mr status\n"
     );
 }
 
