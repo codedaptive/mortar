@@ -28,8 +28,9 @@ use crate::make::{ref_moved_from, FolderError};
 use crate::plan::{attempt_branch, request_branch};
 
 /// Keeps attempt `k` of `request` in `zone` and returns (the request branch's tip before, the kept tip), so the caller
-/// can move the request folder with move_folder(old, new). `saved` is the caller's is_saved per attempt to be
-/// dropped, as (k, saved). Before anything is touched: the request branch must exist (RequestBranchMissing),
+/// can move the request folder with move_folder(old, new). `saved` is the caller's answer per attempt to be
+/// dropped, as (k, saved): for an attempt with a folder, snapshot's saved_state(..).saved with no file refused.
+/// Before anything is touched: the request branch must exist (RequestBranchMissing),
 /// attempt k must exist (AttemptMissing, which is also the answer for an orphan k, as it has no branch), no attempt
 /// folder may have lost its branch (OrphanAttempt naming them; next step: remake_orphans, which the caller runs), every
 /// other attempt, with a folder or not, must be saved (AttemptsUnsaved), and the kept tip must descend

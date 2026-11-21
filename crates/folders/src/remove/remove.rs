@@ -27,7 +27,7 @@ use crate::make::{read_folder_record, FolderError};
 use crate::plan::{request_branch, snap_ref, zone_branch};
 use crate::record::FolderKind;
 
-/// Removes the request folder at `folder`. `saved` is the caller's is_saved with no refused file; false, or any
+/// Removes the request folder at `folder`. `saved` is snapshot's saved_state(..).saved for it; false, or any
 /// file in `refused` (those the snapshot size cap of `cap` bytes refused), is NotRemovedUnsaved before any git run. A
 /// HEAD with no branch or no commit, a worktree with no folder record, a request record with no request, or HEAD on
 /// another branch than the record's request branch is NotAFolder; an attempt folder is AttemptFolder, as soon as its
