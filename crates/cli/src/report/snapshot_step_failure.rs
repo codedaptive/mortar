@@ -4,10 +4,10 @@
 
 use snapshot::SnapshotError;
 
-use super::{failure_report, head_refusal, snapshot_error_detail, with_moved_first, Report};
+use super::{failure_report, repeat_head_refusal, snapshot_error_detail, with_moved_first, Report};
 
-/// UnbornHead and DetachedHead are head_refusal's refusal (exit Refused, owner the folder's HEAD, next check out the
-/// request's branch, then repeat), since no repeat can pass until HEAD is mended; its lines are `moved` when given,
+/// UnbornHead and DetachedHead are repeat_head_refusal's refusal (exit Refused, owner the folder's HEAD, next check out
+/// the request's branch, then repeat), since no repeat can pass until HEAD is mended; its lines are `moved` when given,
 /// then the detail. Every other error is exit Failure, outcome "failed", next "repeat the same command", under
 /// `verb`. The lines come in this order:
 /// `moved` when given (moved_before's line for what the verb's steps before the failed one moved; None when nothing
@@ -57,7 +57,7 @@ use super::{failure_report, head_refusal, snapshot_error_detail, with_moved_firs
 ///   more than those steps can have done.
 pub(crate) fn snapshot_step_failure(verb: &str, error: &SnapshotError, moved: Option<&str>) -> Report {
     if let SnapshotError::UnbornHead { .. } | SnapshotError::DetachedHead { .. } = error {
-        return head_refusal(verb, with_moved_first(moved, vec![snapshot_error_detail(error)]));
+        return repeat_head_refusal(verb, with_moved_first(moved, vec![snapshot_error_detail(error)]));
     }
     let left = step_left(error);
     let repeat = left.is_some();

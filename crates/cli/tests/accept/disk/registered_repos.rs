@@ -1,4 +1,4 @@
-//! The team repositories codeteam's manifests register. Real files, repositories and processes: the drive
+//! The team repositories that team manifests register. Real files, repositories and processes: the drive
 //! (steps/disk.rs) runs it through run_disk on every drive where the copy and its git common dir were read.
 
 use std::path::{Path, PathBuf};

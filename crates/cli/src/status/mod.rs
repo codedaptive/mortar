@@ -4,6 +4,7 @@
 mod attempt_next;
 mod attempt_status_report;
 mod branch_reads;
+mod branchless_request_line;
 mod is_joined;
 mod is_saved;
 mod joined_from_reads;
@@ -37,6 +38,8 @@ mod status_state;
 mod attempt_next_tests;
 #[cfg(test)]
 mod attempt_status_report_tests;
+#[cfg(test)]
+mod branchless_request_line_tests;
 #[cfg(test)]
 mod is_joined_tests;
 #[cfg(test)]
@@ -77,6 +80,7 @@ mod status_report_tests;
 pub(crate) use attempt_next::attempt_next;
 pub(crate) use attempt_status_report::attempt_status_report;
 pub(crate) use branch_reads::BranchReads;
+pub(crate) use branchless_request_line::branchless_request_line;
 pub(crate) use is_joined::is_joined;
 pub(crate) use is_saved::is_saved;
 pub(crate) use joined_from_reads::joined_from_reads;

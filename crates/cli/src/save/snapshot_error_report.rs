@@ -4,7 +4,7 @@
 use oplog::OpResult;
 use snapshot::SnapshotError;
 
-use crate::report::{failure_report, head_refusal, ExitCode, Report};
+use crate::report::{failure_report, repeat_head_refusal, ExitCode, Report};
 
 const VERB: &str = "snapshot";
 
@@ -15,11 +15,8 @@ const VERB: &str = "snapshot";
 /// which snapshot_formatted does not return, worded all the same.
 pub fn snapshot_error_report(error: &SnapshotError) -> Report {
     match error {
-        SnapshotError::UnbornHead { folder } => {
-            head_refused(format!("HEAD of the folder {} has no commit", folder.display()))
-        }
-        SnapshotError::DetachedHead { folder } => {
-            head_refused(format!("HEAD of the folder {} names no branch", folder.display()))
+        SnapshotError::UnbornHead { .. } | SnapshotError::DetachedHead { .. } => {
+            repeat_head_refusal(VERB, vec![error.to_string(), "nothing was snapshotted".to_string()])
         }
         SnapshotError::PathNotUtf8 { path } => refused(
             vec![format!(
@@ -93,8 +90,4 @@ fn refused(lines: Vec<String>, owner: String, next: &str) -> Report {
         next: next.to_string(),
         fields: Vec::new(),
     }
-}
-
-fn head_refused(why: String) -> Report {
-    head_refusal(VERB, vec![why, "nothing was snapshotted".to_string()])
 }

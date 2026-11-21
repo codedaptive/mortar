@@ -4,7 +4,7 @@
 //! folder, and those objects go to an object quarantine (with_object_quarantine); its temp index and the quarantine dir
 //! sit in the OS temp dir and are removed.
 //! No sibling test: it runs git and reads the file system through folders' disk; config_zones_tests,
-//! no_zones_report_tests, folders_error_report_tests, with_object_quarantine_tests and disk_report_tests cover its
+//! no_zones_report_tests, folders_error_report_tests, quarantined_git_tests and disk_report_tests cover its
 //! decisions. The integration tests crates/cli/tests/across_kits/snapshot_overlap_disk_sweep/{disk,guards}.rs cover:
 //! disk on a zone folder and a request folder lists both with their files and build bytes and counts the object store
 //! once, the same over two runs; a request folder with one edited tracked file and two untracked files shows 1 and 2,

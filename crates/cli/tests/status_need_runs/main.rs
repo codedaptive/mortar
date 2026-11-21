@@ -12,6 +12,7 @@ mod status;
 mod need;
 mod handoff;
 mod status_joined_tests;
+mod disk_quarantine;
 mod status_attempt_folder_tests;
 mod run_need_tests;
 mod precheck_status;

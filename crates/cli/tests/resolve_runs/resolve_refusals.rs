@@ -18,6 +18,29 @@ fn resolve_live_join_lock_is_exit_three_with_exact_holder_and_no_snapshot_or_sta
 }
 
 #[test]
+fn unborn_head_resolve_is_refused_without_moving_any_refs() {
+    let f = Fixture::new();
+    let request = f.git.read_ref(REQUEST).unwrap();
+    let zone = f.git.read_ref(ZONE).unwrap();
+    let snapshot = f.git.read_ref(SNAP).unwrap();
+    raw(&f.local(), &["checkout", "--orphan", "unborn-test"]);
+    f.write("src/file", b"unsaved unborn work\n");
+
+    let report = f.report(&["--json", "resolve"], "resolve", 1, "refused");
+    assert_eq!(report.text("owner"), "the folder's HEAD");
+    assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
+    assert_eq!(report.strings("lines"), &[
+        format!("HEAD of the folder {} has no commit", f.request.display()),
+    ]);
+    assert_eq!(f.git.read_ref("refs/heads/unborn-test").unwrap(), None);
+    assert_eq!(f.git.read_ref(REQUEST).unwrap(), request);
+    assert_eq!(f.git.read_ref(ZONE).unwrap(), zone);
+    assert_eq!(f.git.read_ref(SNAP).unwrap(), snapshot);
+    assert_eq!(fs::read(f.request.join("src/file")).unwrap(), b"unsaved unborn work\n");
+    assert!(!f.lock_path().exists());
+}
+
+#[test]
 fn resolve_argument_is_exit_four_with_full_usage_and_no_lock_or_work() {
     let r = Paused::new(false); let f = &r.f; let before = f.observe(); let state = r.state_bytes();
     let report = f.report(&["--json", "resolve", "unexpected"], "resolve", 4, "usage");

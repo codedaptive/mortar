@@ -1,6 +1,6 @@
 //! saved_state_report: the cli's words for saved_state's Git, FileSize and BadTarget errors with none of the inner
-//! error's text, and save_error_report's UnbornHead report under the given verb.
-//! Unit tests: the errors are built as data; report::failure_report and save::save_error_report are pure.
+//! error's text, and UnbornHead as the HEAD refusal whose next is a repeat, under the given verb.
+//! Unit tests: the errors are built as data; report::failure_report and report::repeat_head_refusal are pure.
 
 use std::path::PathBuf;
 
@@ -59,7 +59,7 @@ fn bad_target_names_request_and_zone_without_its_reason() {
 }
 
 #[test]
-fn unborn_head_keeps_save_error_reports_refusal_under_the_given_verb() {
+fn unborn_head_is_the_head_refusal_whose_next_is_a_repeat_under_the_given_verb() {
     let error = SnapshotError::UnbornHead { folder: PathBuf::from("/work/req") };
     let report = saved_state_report(&error, "r1", "z1", "disk");
     assert_eq!(
@@ -68,12 +68,9 @@ fn unborn_head_keeps_save_error_reports_refusal_under_the_given_verb() {
             verb: "disk".to_string(),
             exit: ExitCode::Refused,
             outcome: "refused".to_string(),
-            lines: vec![
-                "HEAD of the folder /work/req has no commit".to_string(),
-                "no save commit was written".to_string(),
-            ],
+            lines: vec!["HEAD of the folder /work/req has no commit".to_string()],
             owner: Some("the folder's HEAD".to_string()),
-            next: "check out the request's branch in this folder, then mr save again".to_string(),
+            next: "check out the request's branch in the folder, then repeat the same command".to_string(),
             fields: Vec::new(),
         }
     );

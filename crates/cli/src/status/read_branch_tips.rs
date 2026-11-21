@@ -13,12 +13,18 @@
 use folders::plan::request_branch;
 use gitio::{Git, Oid};
 
-use super::read_tips;
+use super::{branchless_request_line, read_tips};
 use crate::report::{failure_report, Report};
 
 /// The request branch's full name, its tip and the zone branch's tip (read_tips of request_branch). A missing
-/// branch is missing_branch_report for `verb`; a name the plan refuses or a git failure is failure_report. Reads
-/// only: it moves no ref.
+/// branch is missing_branch_report for `verb`; a name the plan refuses is failure_report in the cli's words
+/// (branchless_request_line, never the plan's own text); a git failure is failure_report. Reads only: it moves no
+/// ref.
 pub fn read_branch_tips(git: &Git, zone: &str, request: &str, verb: &str) -> Result<(String, Oid, Oid), Report> {
-    read_tips(git, &request_branch(zone, request).map_err(|error| failure_report(verb, &error.reason))?, zone, verb)
+    read_tips(
+        git,
+        &request_branch(zone, request).map_err(|_| failure_report(verb, &branchless_request_line(request, zone)))?,
+        zone,
+        verb,
+    )
 }

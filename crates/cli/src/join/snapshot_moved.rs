@@ -1,5 +1,5 @@
-//! snapshot_moved: whether the snapshot ref moved by the end of a save, counting save's own snapshot step (join's
-//! save and save with a formatter take none, so for them the answer is `earlier`).
+//! snapshot_moved: whether the snapshot ref moved by the end of a save, counting save's own snapshot step (join
+//! and save with a formatter take none, so for them the answer is `earlier`).
 //! Shell API: run_join and run_save call it; snapshot_moved_tests covers it.
 
 use snapshot::SavedWithSnapshot;

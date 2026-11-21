@@ -1,4 +1,4 @@
-//! Reads the repository paths out of one codeteam team manifest.
+//! Reads the repository paths out of one team manifest.
 
 /// The quoted value of every `repo = "<path>"` line, in file order with duplicates kept. The key may be indented
 /// and spaced from `=`; the value runs from its opening quote to the next one, so a trailing comment is fine. A
