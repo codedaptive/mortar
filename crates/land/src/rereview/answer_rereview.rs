@@ -1,11 +1,12 @@
 //! answer_rereview: the re-review diff with whether the patch is the same. Read only: it moves no ref and takes no
-//! lock. It runs git only to gather inputs; same_change, plan_rereview and same_patch make every decision.
+//! lock. It runs git only to gather inputs; same_change, plan_rereview, range_diff_answer (which failed patch-ID
+//! read is the error) and same_patch make every decision.
 //! No unit test: it runs git. Its zone integration tests are in crates/land/tests/rereview_zit.rs.
 
 use gitio::{Git, Oid};
 use oplog::read_mortar_trailers;
 
-use super::{plan_rereview, same_change, same_patch, RereviewAnswer, RereviewError, RereviewPlan};
+use super::{plan_rereview, range_diff_answer, same_change, same_patch, RereviewAnswer, RereviewError, RereviewPlan};
 
 /// What changed from `reviewed` to `new`, two versions of one squash, and whether `new` carries the same patch.
 /// The text is git's range-diff of `reviewed^..reviewed` against `new^..new`, also when origin moved between them,
@@ -31,9 +32,7 @@ pub fn answer_rereview(git: &Git, reviewed: &Oid, new: &Oid) -> Result<RereviewA
         }),
         RereviewPlan::RangeDiff { reviewed_base, new_base } => {
             let text = git.range_diff_ranges(reviewed_base, reviewed, new_base, new).map_err(RereviewError::Git)?;
-            let reviewed_patch = git.patch_id(reviewed).map_err(RereviewError::Git)?;
-            let new_patch = git.patch_id(new).map_err(RereviewError::Git)?;
-            Ok(RereviewAnswer { text, same_patch: same_patch(&plan, reviewed_patch.as_ref(), new_patch.as_ref()) })
+            range_diff_answer(&plan, text, git.patch_id(reviewed), git.patch_id(new))
         }
     }
 }
