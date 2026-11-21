@@ -11,7 +11,7 @@ use folders::FolderRecord;
 use gitio::Git;
 use snapshot::saved_state;
 
-use super::{progress_branch, read_tips, saved_state_report, BranchReads};
+use super::{branchless_request_line, progress_branch, read_tips, saved_state_report, BranchReads};
 use crate::config::SnapshotSettings;
 use crate::report::{failure_report, Report};
 use crate::save::snapshot_target_for;
@@ -20,11 +20,13 @@ use crate::save::snapshot_target_for;
 /// request branch, or attempt k's try branch: progress_branch) and of the zone (read_tips: a missing branch is its
 /// refusal); saved_state with the config's excludes and cap, as save snapshots (`settings`); the branch tip's tree;
 /// and whether the zone holds the branch tip. Every run goes through `git`, so its env reaches each one. A record
-/// naming no request is refused. Every failure is in the cli's words, never another crate's text: a request the plan
-/// cannot name a branch for is "request <r> in zone <z> is not a name a branch can carry"; a commit git cannot read
+/// naming no request is a failure_report: "this folder's record names no request". Every failure is in the cli's
+/// words, never another crate's text: a request the plan cannot name a branch for is branchless_request_line's
+/// "request <r> in zone <z> is not a name a branch can carry"; a commit git cannot read
 /// is "git could not read the commit <oid>"; an ancestry git cannot answer is "git could not tell whether <branch
 /// tip> is in the zone at <zone tip>"; saved_state's errors are saved_state_report's. Each is failure_report for
-/// `verb` but saved_state's refusals. Moves no ref and takes no lock; saved_state writes the folder's tree objects.
+/// `verb` but a missing branch (read_tips: missing_branch_report's refusal) and saved_state's refusals. Moves no ref and takes no
+/// lock; saved_state writes the folder's tree objects.
 pub fn read_branch_reads(
     git: &Git,
     toplevel: &Path,
@@ -41,7 +43,7 @@ pub fn read_branch_reads(
     let (branch_ref, branch_tip, zone_tip) = read_tips(
         git,
         &progress_branch(zone, request, record.kind)
-            .map_err(|_| fail(format!("request {request} in zone {zone} is not a name a branch can carry")))?,
+            .map_err(|_| fail(branchless_request_line(request, zone)))?,
         zone,
         verb,
     )?;

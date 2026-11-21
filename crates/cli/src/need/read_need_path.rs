@@ -5,7 +5,7 @@
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a path not at the folder's commit is exit 1, and nothing changed (record, cone, refs and op log);
 //! - a bad path ("../x", an absolute path) is exit 1;
-//! - a folder whose HEAD has no commit: need fails with failure_report, exit 5, nothing changed.
+//! - a folder whose HEAD has no commit: need is refused with repeat_head_refusal, exit 1, nothing changed.
 
 use std::path::Path;
 
@@ -14,12 +14,12 @@ use folders::FolderError;
 use gitio::Git;
 
 use super::{missing_path_report, need_error_report};
-use crate::report::{failure_report, Report};
+use crate::report::{failure_report, repeat_head_refusal, Report};
 
 /// `raw` cleaned as folders' sparse_paths cleans a cone path (its trailing '/' removed); a path it refuses is
 /// need_error_report of the plan's refusal. The path must be in the tree of the commit the folder's HEAD stands at,
-/// as gitio's path_kind answers; a path it does not find is missing_path_report. A HEAD with no commit or
-/// a git failure is failure_report. Reads only.
+/// as gitio's path_kind answers; a path it does not find is missing_path_report. A HEAD with no commit is
+/// repeat_head_refusal; a git failure is failure_report. Reads only.
 pub fn read_need_path(git: &Git, toplevel: &Path, raw: &str) -> Result<String, Report> {
     let fail = |what: String| failure_report("need", &what);
     let clean = sparse_paths(&[raw.to_string()], &[])
@@ -28,7 +28,8 @@ pub fn read_need_path(git: &Git, toplevel: &Path, raw: &str) -> Result<String, R
         .next()
         .ok_or_else(|| fail(format!("the path {raw:?} cleaned to no path")))?;
     let Some(commit) = git.head(toplevel).map_err(|error| fail(error.to_string()))?.1 else {
-        return Err(fail(format!("HEAD of the folder {} has no commit", toplevel.display())));
+        let line = format!("HEAD of the folder {} has no commit", toplevel.display());
+        return Err(repeat_head_refusal("need", vec![line]));
     };
     match git.path_kind(&commit, Path::new(&clean)).map_err(|error| fail(error.to_string()))? {
         Some(_) => Ok(clean),

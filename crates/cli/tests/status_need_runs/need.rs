@@ -67,13 +67,37 @@ fn need_missing_zone_ref_refuses_without_expanding_the_cone_or_record() {
 }
 
 #[test]
-fn need_unborn_head_is_failure_without_record_or_cone_changes() {
-    // Public request folder whose symbolic HEAD no longer resolves; read_need_path's explicit failure.
-    let n = Need::new(); raw(&n.f.git, &["update-ref", "-d", "refs/heads/req/core/need"]);
+fn need_with_a_request_name_no_branch_can_carry_fails_in_the_clis_words() {
+    let n = Need::new();
+    let record = record_path(&n.f, &n.folder);
+    let original = fs::read_to_string(&record).unwrap();
+    assert_eq!(original.matches("\"request\":\"need\"").count(), 1);
+    let changed = original.replace("\"request\":\"need\"", "\"request\":\"has space\"");
+    assert_eq!(folders::record::decode_folder_record(&changed).unwrap().request.as_deref(), Some("has space"));
+    fs::write(&record, changed).unwrap();
     let old = before(&n.f, &n.folder);
+    let cone = n.f.git.sparse_list(&n.folder).unwrap();
+
     let report = n.report(&["--json", "need", "sub"], 5, "failed");
-    assert!(report.lines().contains("has no commit")); assert_eq!(before(&n.f, &n.folder), old);
+    assert!(report.strings("lines").contains(&"request has space in zone core is not a name a branch can carry".to_string()));
+    assert!(report.strings("lines").iter().all(|line| !line.contains("request name \"has space\"")));
+    assert_eq!(before(&n.f, &n.folder), old);
+    assert_eq!(n.f.git.sparse_list(&n.folder).unwrap(), cone);
     assert!(!n.folder.join("sub/keep").exists());
+    assert!(!n.f.lock_path().exists());
+}
+
+#[test]
+fn need_unborn_head_is_refused_without_record_or_cone_changes() {
+    // Public request folder whose symbolic HEAD no longer resolves; read_need_path's HEAD refusal.
+    let n = Need::new(); raw(&n.f.git, &["update-ref", "-d", "refs/heads/req/core/need"]);
+    let old = before(&n.f, &n.folder); let cone = n.f.git.sparse_list(&n.folder).unwrap();
+    let report = n.report(&["--json", "need", "sub"], 1, "refused");
+    assert_eq!(report.text("owner"), "the folder's HEAD");
+    assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
+    assert_eq!(report.strings("lines"), &[format!("HEAD of the folder {} has no commit", n.folder.display())]);
+    assert_eq!(before(&n.f, &n.folder), old); assert_eq!(n.f.git.sparse_list(&n.folder).unwrap(), cone);
+    assert!(!n.folder.join("sub/keep").exists()); assert!(!n.f.lock_path().exists());
 }
 
 #[test]

@@ -11,9 +11,8 @@ use folders::plan::TRYSNAP_REF_PREFIX;
 use gitio::{Git, GitError, Oid};
 use snapshot::{saved_state, SnapshotTarget};
 
-use super::attempt_saved;
+use super::{attempt_saved, attempt_snapshot_failure};
 use crate::config::SnapshotSettings;
-use crate::join::snapshot_failure;
 use crate::report::{failure_report, Report};
 
 const VERB: &str = "folder";
@@ -22,8 +21,8 @@ const VERB: &str = "folder";
 /// and folders' attempts_of picks the request's try branches and their worktrees, so the cli holds no copy of
 /// folders' try-branch naming. An attempt with a folder is saved when snapshot's saved_state on that folder, against
 /// its trysnap ref (attempt Some(k)), says saved and no file was refused by the cap. An attempt with a branch and no
-/// folder is attempt_saved of its trysnap commit's tree and its tip's tree. A git or snapshot failure is
-/// failure_report.
+/// folder is attempt_saved of its trysnap commit's tree and its tip's tree. A git failure is failure_report; a
+/// snapshot error is attempt_snapshot_failure's report for the attempt's branch.
 pub fn attempts_saved(
     git: &Git,
     zone: &str,
@@ -46,7 +45,7 @@ pub fn attempts_saved(
                         actor: actor.to_string(),
                     };
                     let state = saved_state(git, folder, &target, &settings.excludes, settings.cap_bytes)
-                        .map_err(|error| snapshot_failure(VERB, error))?;
+                        .map_err(|error| attempt_snapshot_failure(VERB, &attempt.branch, error))?;
                     state.saved && state.refused.is_empty()
                 }
                 None => {
