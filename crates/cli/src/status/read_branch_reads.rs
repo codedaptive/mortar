@@ -7,7 +7,7 @@
 
 use std::path::Path;
 
-use folders::FolderRecord;
+use folders::{FolderKind, FolderRecord};
 use gitio::Git;
 use snapshot::saved_state;
 
@@ -24,7 +24,8 @@ use crate::save::snapshot_target_for;
 /// words, never another crate's text: a request the plan cannot name a branch for is branchless_request_line's
 /// "request <r> in zone <z> is not a name a branch can carry"; a commit git cannot read
 /// is "git could not read the commit <oid>"; an ancestry git cannot answer is "git could not tell whether <branch
-/// tip> is in the zone at <zone tip>"; saved_state's errors are saved_state_report's. Each is failure_report for
+/// tip> is in the zone at <zone tip>"; saved_state's errors are saved_state_report's, given the try branch in an
+/// attempt folder. Each is failure_report for
 /// `verb` but a missing branch (read_tips: missing_branch_report's refusal) and saved_state's refusals. Moves no ref and takes no
 /// lock; saved_state writes the folder's tree objects.
 pub fn read_branch_reads(
@@ -40,15 +41,12 @@ pub fn read_branch_reads(
     let (Some(request), Some(target)) = (record.request.as_deref(), snapshot_target_for(record, actor)) else {
         return Err(fail("this folder's record names no request".to_string()));
     };
-    let (branch_ref, branch_tip, zone_tip) = read_tips(
-        git,
-        &progress_branch(zone, request, record.kind)
-            .map_err(|_| fail(branchless_request_line(request, zone)))?,
-        zone,
-        verb,
-    )?;
+    let branch =
+        progress_branch(zone, request, record.kind).map_err(|_| fail(branchless_request_line(request, zone)))?;
+    let (branch_ref, branch_tip, zone_tip) = read_tips(git, &branch, zone, verb)?;
+    let attempt_branch = matches!(record.kind, FolderKind::Attempt(_)).then_some(branch.as_str());
     let saved = saved_state(git, toplevel, &target, &settings.excludes, settings.cap_bytes)
-        .map_err(|error| saved_state_report(&error, request, zone, verb))?;
+        .map_err(|error| saved_state_report(&error, request, zone, verb, attempt_branch))?;
     let tip_tree =
         git.commit_info(&branch_tip).map_err(|_| fail(format!("git could not read the commit {branch_tip}")))?.tree;
     let request_in_zone = git.is_ancestor(&branch_tip, &zone_tip).map_err(|_| {
