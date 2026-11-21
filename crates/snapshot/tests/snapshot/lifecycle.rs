@@ -1,14 +1,14 @@
 use crate::support::{blob, run, tree_names, write, Fixture};
 use gitio::Git;
 use oplog::{oplog_path, read_op_log, OpPhase, OpResult, RefMove};
-use snapshot::{is_saved, snapshot, DEFAULT_SIZE_CAP};
+use snapshot::{saved_state, snapshot, DEFAULT_SIZE_CAP};
 use std::fs;
 
 #[test]
 fn first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op() {
-    // Joins snapshot/is_saved -> gitio tree/commit/ref operations -> oplog apply/read_op_log.
+    // Joins snapshot/saved_state -> gitio tree/commit/ref operations -> oplog apply/read_op_log.
     let f = Fixture::new(&[]);
-    assert!(!is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(!saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     assert!(!oplog_path(&f.common).exists());
     write(&f.repo.path, "root.txt", b"first change\n");
     write(&f.repo.path, "new.txt", b"new file\n");
@@ -41,7 +41,7 @@ fn first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op() {
     assert_eq!(log.records[0].op_id, log.records[1].op_id);
     assert_eq!(log.records[0].key, log.records[1].key);
     let before = fs::read(oplog_path(&f.common)).unwrap();
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     assert_eq!(fs::read(oplog_path(&f.common)).unwrap(), before);
 }
 
@@ -61,7 +61,7 @@ fn unchanged_writes_nothing_then_changed_snapshot_chains_head_and_previous() {
     assert_eq!(object_ids(&f.git), objects_before);
     assert_eq!(f.git.read_ref(&f.refname).unwrap(), Some(first.commit.clone()));
     write(&f.repo.path, "root.txt", b"second change\n");
-    assert!(!is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(!saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     assert_eq!(fs::read(oplog_path(&f.common)).unwrap(), log_before);
     let second = snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap();
     assert!(second.written);
@@ -75,7 +75,7 @@ fn unchanged_writes_nothing_then_changed_snapshot_chains_head_and_previous() {
     assert_eq!(records[3].phase, OpPhase::Done);
     assert_eq!(records[3].result, Some(OpResult::Moved));
     assert_eq!(records[3].moves, vec![RefMove { refname: f.refname.clone(), old: Some(first.commit), new: second.commit }]);
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
 }
 
 fn object_ids(git: &Git) -> Vec<String> {
