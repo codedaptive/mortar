@@ -1,14 +1,14 @@
-//! Zone integration tests for land::rereview on throwaway repositories: an edit after review shows
+//! Zone integration tests for land::answer_rereview on throwaway repositories: an edit after review shows
 //! only the edit, a remake on a moved origin shows no change of its own, identical squashes say nothing changed,
 //! and two different changes are refused. Setup uses plain git with a fixed author, committer and date, so every
-//! run builds the same commits; rereview's own git runs ignore the machine's global and system git config.
+//! run builds the same commits; answer_rereview's own git runs ignore the machine's global and system git config.
 //! The typed answer also reports whether moved, edited, and identical squashes carry the same patch.
 
 use std::path::Path;
 use std::process::Command;
 
 use gitio::{Git, Oid};
-use land::{rereview, RereviewError};
+use land::{answer_rereview, RereviewError};
 use testkit::TestRepo;
 
 const CHANGE_X: &str = "kzlymxnwovpuqtrssrtqupvowxnymlzk";
@@ -61,7 +61,7 @@ fn base(repo: &TestRepo) -> String {
     git(&repo.path, &["rev-parse", "HEAD"])
 }
 
-/// The gitio value rereview runs with. Its runs ignore the machine's global and system git config, so settings
+/// The gitio value answer_rereview runs with. Its runs ignore the machine's global and system git config, so settings
 /// such as core.hooksPath or diff options cannot reach the throwaway repository or change range-diff's output.
 fn git_of(path: &Path) -> Git {
     let env = vec![("GIT_CONFIG_GLOBAL".into(), "/dev/null".into()), ("GIT_CONFIG_NOSYSTEM".into(), "1".into())];
@@ -84,7 +84,7 @@ fn an_edit_after_review_shows_only_the_edit() {
     let reviewed = commit_on(&repo.path, &b, &[("f", REVIEWED_F)], "add f", CHANGE_X);
     let new = commit_on(&repo.path, &b, &[("f", EDITED_F)], "add f", CHANGE_X);
 
-    let text = rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&new)).unwrap();
+    let text = answer_rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&new)).unwrap().text;
 
     let pairs = pair_lines(&text);
     assert_eq!(pairs.len(), 1, "{text}");
@@ -105,7 +105,7 @@ fn a_remake_on_a_moved_origin_shows_no_change_of_its_own() {
     let moved = commit_on(&repo.path, &b, &[("unrelated", "other\n")], "origin moved", CHANGE_Y);
     let new = commit_on(&repo.path, &moved, &[("f", REVIEWED_F)], "add f", CHANGE_X);
 
-    let text = rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&new)).unwrap();
+    let text = answer_rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&new)).unwrap().text;
 
     let pairs = pair_lines(&text);
     assert_eq!(pairs.len(), 1, "{text}");
@@ -126,8 +126,8 @@ fn identical_squashes_say_nothing_changed() {
     let reworded = git(&repo.path, &["commit-tree", &tree, "-p", &b, "-m", "add f, reworded", "-m", &trailer]);
     assert_ne!(reworded, reviewed);
 
-    let same = rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&reviewed)).unwrap();
-    let recommitted = rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&reworded)).unwrap();
+    let same = answer_rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&reviewed)).unwrap().text;
+    let recommitted = answer_rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&reworded)).unwrap().text;
 
     assert_eq!(same, format!("nothing changed: {reviewed} has the same tree and parents as {reviewed}\n"));
     assert_eq!(recommitted, format!("nothing changed: {reworded} has the same tree and parents as {reviewed}\n"));
@@ -140,7 +140,7 @@ fn two_different_changes_are_refused() {
     let reviewed = commit_on(&repo.path, &b, &[("f", REVIEWED_F)], "add f", CHANGE_X);
     let new = commit_on(&repo.path, &b, &[("f", EDITED_F)], "add f", CHANGE_Y);
 
-    let refused = rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&new));
+    let refused = answer_rereview(&git_of(&repo.path), &oid(&reviewed), &oid(&new));
 
     assert!(matches!(refused, Err(RereviewError::NotSameChange { .. })), "{refused:?}");
 }
@@ -154,8 +154,7 @@ fn answer_same_patch_on_moved_origin() {
     let new = oid(&commit_on(&repo.path, &moved, &[("f", REVIEWED_F)], "add f", CHANGE_X));
     let git = git_of(&repo.path);
 
-    let answer = land::answer_rereview(&git, &reviewed, &new).unwrap();
-    assert_eq!(answer.text, rereview(&git, &reviewed, &new).unwrap());
+    let answer = answer_rereview(&git, &reviewed, &new).unwrap();
     assert!(answer.same_patch, "{answer:?}");
 }
 
@@ -167,8 +166,7 @@ fn answer_same_patch_for_changed_squash() {
     let new = oid(&commit_on(&repo.path, &b, &[("f", EDITED_F)], "add f", CHANGE_X));
     let git = git_of(&repo.path);
 
-    let answer = land::answer_rereview(&git, &reviewed, &new).unwrap();
-    assert_eq!(answer.text, rereview(&git, &reviewed, &new).unwrap());
+    let answer = answer_rereview(&git, &reviewed, &new).unwrap();
     assert!(!answer.same_patch, "{answer:?}");
 }
 
@@ -186,8 +184,7 @@ fn answer_same_patch_for_identical_commits() {
     let git = git_of(&repo.path);
 
     for new in [&reviewed, &reworded] {
-        let answer = land::answer_rereview(&git, &reviewed, new).unwrap();
-        assert_eq!(answer.text, rereview(&git, &reviewed, new).unwrap());
+        let answer = answer_rereview(&git, &reviewed, new).unwrap();
         assert!(answer.same_patch, "{answer:?}");
     }
 }

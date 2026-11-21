@@ -2,6 +2,7 @@
 
 mod check_hooks_path;
 mod classify_hook;
+mod create_with_redraw;
 mod decide_config_write;
 mod decide_hook_writes;
 mod decide_hooks_path;
@@ -31,6 +32,8 @@ mod write_replacing;
 
 #[cfg(test)]
 mod classify_hook_tests;
+#[cfg(test)]
+mod create_with_redraw_tests;
 #[cfg(test)]
 mod decide_config_write_tests;
 #[cfg(test)]

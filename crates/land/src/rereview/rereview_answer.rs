@@ -5,7 +5,7 @@
 /// The re-review of `new` against `reviewed`, two versions of one squash.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RereviewAnswer {
-    /// Exactly what rereview returns: the "nothing changed" line, or git's range-diff.
+    /// answer_rereview's text: the "nothing changed" line, or git's range-diff.
     pub text: String,
     /// True when `new` carries the same patch as `reviewed`: the same tree and parents, or both commits' patch IDs,
     /// each against its own first parent, present and equal. A fact about the two commits only: it says nothing
