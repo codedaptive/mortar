@@ -128,6 +128,6 @@ not for Windows.
 
 ## Version note
 
-This is version 0.1.0, the first public version. Mortar is built from source.
+This is version 0.2.0. Mortar is built from source.
 The command line, the `--json` fields and the layout under `refs/mortar/` may
 still change before 1.0.

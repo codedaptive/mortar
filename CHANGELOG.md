@@ -2,6 +2,26 @@
 
 All notable changes to Mortar are recorded here, in terms of what the program does for the people and agents who use it. Versions are the workspace's version in `Cargo.toml`.
 
+## 0.2.0
+
+### Landing
+
+- **`mr rereview` says when the patch is the same.** When the new squash carries the same patch as the reviewed one (the same tree and parents, or equal patch IDs against their first parents), the outcome is `same-patch` and `--json` carries `"same_patch": true`. Its next step leaves it to the caller to decide whether the review still holds on the new base. A squash whose patch changed is answered with only what changed, outcome `rereviewed`, `same_patch` false.
+
+### Upkeep
+
+- **`mr disk` says which folders hold work.** Under each folder's size it shows the folder's unsaved tracked and untracked files, and whether its request has joined its zone: yes, no, or unknown with the reason. `--json` adds `holds`, one entry per folder with `tracked`, `untracked`, `joined` (true, false or null) and `no_joined_answer`. A folder whose answer cannot be read does not stop the report, and `mr disk` still removes nothing.
+
+### Refusals
+
+- **A folder whose HEAD is detached, or whose branch has no commit yet, is refused with the step that fixes it** (exit 1). This covers `mr join` (both cases), `mr undo`, `mr folder keep`, `mr folder remove`, `mr folder drop`, `mr resolve` and `mr need`. They used to fail (exit 5) and ask for a repeat that could not succeed. In an attempt folder the step names the attempt's branch.
+- `mr status` and `mr need` give a failed read of a request's branch in Mortar's own words.
+
+### Fixes
+
+- **`mr save` with a formatter snapshots the folder once,** as `mr join` does. An edit made outside Mortar between the formatter's snapshot and the save is no longer folded into the save.
+- **`mr guard install` writes its hooks and `guard.json` through a temporary file it creates fresh** under a drawn name, so a link planted, or a file left by a crash, at a temporary name is never written through or reused.
+
 ## 0.1.0
 
 The first public version. Mortar writes version-control history for teams of coding agents with plain git: it runs `git` as a program, keeps no store of its own, and every folder it makes is an ordinary git worktree.
