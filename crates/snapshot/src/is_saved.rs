@@ -19,9 +19,10 @@ use std::path::Path;
 
 /// saved_state's `saved`: true when `folder`'s tree, built as snapshot builds it, equals the tree of the target's
 /// snapshot ref; false when it differs or there is no snapshot yet. The caller passes the excludes and the size cap
-/// it snapshots with, or the trees differ. The cap leaves new files over it out of the tree, so a folder whose only
+/// it snapshots with; any other pair can make the trees differ.
+/// The cap leaves new files over it out of the tree, so a folder whose only
 /// change is such a file reads saved. The bool alone does not show the cap's refusals: a caller that must know them
-/// (the remove rule, which keeps a folder with a refused file, and the cli's status) reads saved_state.
+/// (such as the cli's folder remove, which passes them to folders' remove) reads saved_state.
 /// Writes tree objects (folder_tree does, through gitio's snapshot_tree) but moves no ref and appends no op record.
 pub fn is_saved(
     git: &Git,
