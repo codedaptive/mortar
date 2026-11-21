@@ -1,4 +1,4 @@
-//! The report of an `mr rereview` that land's rereview stopped, in the cli's own words: land's, gitio's and
+//! The report of an `mr rereview` that land's answer_rereview stopped, in the cli's own words: land's, gitio's and
 //! oplog's Display texts are never printed; commit ids and change ids are.
 //! The Git and Trailers cases are integration tests to write (not written here): git itself must
 //! fail to read a commit or produce the range-diff, or a commit's Mortar trailers must be unreadable, and the test
