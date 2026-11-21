@@ -1,8 +1,8 @@
 //! What a verb reports: its exit code, its outcome and lines, and the plain and --json forms of it; the report of
 //! save, join or resolve failing in a step that may follow the snapshot ref's move, and the placing of
 //! moved_before's line first in a report's lines, which all three share; and the refusal of a verb whose folder's
-//! HEAD is unborn or detached (head_refusal), with the next the verbs take (repeat_head_refusal): save and an
-//! attempt folder's snapshot in mr folder keep and drop name their own next.
+//! HEAD is unborn or detached (head_refusal), with the next the verbs take (repeat_head_refusal): save, an attempt
+//! folder's snapshot in mr folder keep and drop, and status in an attempt folder name their own next.
 
 mod exit_code;
 mod failure_report;
