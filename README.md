@@ -164,7 +164,7 @@ One landing at a time. The origin branch only ever moves forward, and a reviewed
 |---|---|
 | `mr squash <zone>` | The zone's joined work as one commit on the current origin |
 | `mr would-merge <commit or change ID>` | Whether a squash would merge onto integration, without merging |
-| `mr rereview <reviewed commit> <new commit>` | Only what changed since a reviewed squash |
+| `mr rereview <reviewed commit> <new commit>` | Only what changed since a reviewed squash; says when the new squash carries the same patch |
 | `mr land <commit>` | Moves integration to the squash, or, when integration has moved on since the squash was made, to a merge commit of integration and the squash |
 | `mr back-out` | Puts integration back on origin after a failed test |
 | `mr publish` | Pushes integration to the remote's origin, then moves the local origin. If someone else moved the remote's origin meanwhile and it does not hold this landing, it fetches that, puts integration back on it and reports it; the squash then lands again |
@@ -182,7 +182,7 @@ These are the harness's too. Each takes `--actor <name>` except `mr log`, where 
 | `mr restore <op id> <full ref name>...` | Sets refs back to their values as of an operation in the log, and moves the request folders that stand on them |
 | `mr snapshot` | Run in a request or attempt folder: saves the folder's state to a hidden ref, without a commit on its branch |
 | `mr overlap <zone>` | Which open requests of a zone change the same paths, before anyone joins |
-| `mr disk` | What each folder, the object store and the refs cost on disk, and what a sweep frees |
+| `mr disk` | What each folder, the object store and the refs cost on disk, what a sweep frees, and which folders hold unsaved or unjoined work |
 | `mr sweep [--idle-days <n>] [--ref <full ref name>]...` | Deletes what finished requests and removed zones leave behind (closed requests' snapshot refs, leftover joined branches, replay records), and any ref named with `--ref` that is outside `refs/heads/`, `refs/mortar/` and `refs/remotes/`. With `--idle-days`, also clears the `target` folder of each Mortar folder untouched for that many days |
 | `mr backup` | Pushes this machine's in-flight branches, snapshots and squashes to its own namespace on the remote |
 | `mr restore-backup <host>` | Brings a machine's backup back from the remote. A local ref that differs from its backup is listed, never moved |
@@ -245,7 +245,7 @@ Mortar needs neither and calls neither. It holds no opinion about the code it mo
 
 ## Status
 
-Version 0.1.0, the first public version. See [`CHANGELOG.md`](CHANGELOG.md).
+Version 0.2.0. See [`CHANGELOG.md`](CHANGELOG.md).
 
 - Mortar is built from source. The crates are not published to crates.io.
 - It runs on Unix systems only.

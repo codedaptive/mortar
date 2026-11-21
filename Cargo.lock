@@ -16,7 +16,7 @@ checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
 
 [[package]]
 name = "cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "folders",
  "gitio",
@@ -45,7 +45,7 @@ checksum = "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223"
 
 [[package]]
 name = "folders"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "gitio",
  "oplog",
@@ -65,14 +65,14 @@ dependencies = [
 
 [[package]]
 name = "gitio"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "testkit",
 ]
 
 [[package]]
 name = "join"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "gitio",
  "oplog",
@@ -81,7 +81,7 @@ dependencies = [
 
 [[package]]
 name = "land"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "gitio",
  "join",
@@ -110,7 +110,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "oplog"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "gitio",
  "testkit",
@@ -137,7 +137,7 @@ dependencies = [
 
 [[package]]
 name = "snapshot"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "gitio",
  "oplog",
@@ -159,7 +159,7 @@ dependencies = [
 
 [[package]]
 name = "testkit"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "tempfile",
 ]
