@@ -1,4 +1,4 @@
-//! Snapshot/is_saved joined to real gitio trees and oplog transactions.
+//! Snapshot/saved_state joined to real gitio trees and oplog transactions.
 //! Every parent owns a disposable repository.
 #[path = "../support/mod.rs"]
 mod support;

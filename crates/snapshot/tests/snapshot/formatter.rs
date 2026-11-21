@@ -1,5 +1,5 @@
 use crate::support::{assert_snapshot_written, blob, formatter_script, write, Fixture};
-use snapshot::{is_saved, snapshot_formatted, Formatter, FormatterResult, DEFAULT_SIZE_CAP};
+use snapshot::{saved_state, snapshot_formatted, Formatter, FormatterResult, DEFAULT_SIZE_CAP};
 use std::{fs, path::PathBuf};
 use testkit::write_git_shim;
 
@@ -31,9 +31,9 @@ fn rewriting_formatter_runs_once_with_literal_argv_in_folder_and_snapshot_saves_
     assert_eq!(fs::read(f.common.join("index")).unwrap(), before_index);
     let log_before = fs::read(oplog::oplog_path(&f.common)).unwrap();
     let trace_before = fs::read(&trace).unwrap();
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     write(&f.repo.path, "root.txt", b"dirty again\n");
-    assert!(!is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(!saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     assert_eq!(fs::read(&trace).unwrap(), trace_before);
     assert_eq!(fs::read(trace.with_extension("count")).unwrap(), b"run\n");
     assert_eq!(fs::read(f.repo.path.join("root.txt")).unwrap(), b"dirty again\n");

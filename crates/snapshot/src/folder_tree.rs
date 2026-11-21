@@ -16,13 +16,13 @@
 //!   caps.rs::caller_cap_is_inclusive_and_refused_glob_name_excludes_only_that_path;
 //! - a file new against HEAD that grows over the cap, and then is renamed, is refused and absent from the tree:
 //!   caps.rs::new_against_head_file_that_grows_or_is_renamed_over_cap_drops_from_next_snapshot;
-//! - an unborn HEAD gives UnbornHead, through snapshot and is_saved, with nothing written:
+//! - an unborn HEAD gives UnbornHead, through snapshot and saved_state, with nothing written:
 //!   tests/snapshot/sizing_edges.rs::unborn_head_is_named_before_any_snapshot_commit_ref_or_op;
 //! - a HEAD directory replaced by a new over-cap file of the same name: the file is refused and the directory's files
 //!   are gone from the tree:
 //!   sizing_edges.rs::over_cap_file_replacing_head_directory_is_refused_without_resurrecting_old_children;
 //! - with GIT_NOGLOB_PATHSPECS=1 in the caller's Git env, a refused glob-named file gives CapMismatch naming it,
-//!   through snapshot and is_saved:
+//!   through snapshot and saved_state:
 //!   sizing_edges.rs::caller_noglob_environment_produces_exact_cap_mismatch_without_losing_previous_snapshot.
 
 use crate::cap_candidates::cap_candidates;

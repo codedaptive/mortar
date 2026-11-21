@@ -4,7 +4,7 @@
 //! their tests; run_in_group is its process runner.
 //! The integration tests in tests/snapshot cover it through snapshot_formatted, in a throwaway repository:
 //! - a formatter that rewrites a changed file (the snapshot tree holds the formatted contents, formatted lists
-//!   Formatted with the paths), and is_saved never running the formatter:
+//!   Formatted with the paths), and saved_state, which runs no formatter, reading saved then unsaved after an edit:
 //!   tests/snapshot/formatter.rs::rewriting_formatter_runs_once_with_literal_argv_in_folder_and_snapshot_saves_its_output;
 //! - one exiting 1 (Failed with code 1 and its stderr, snapshot written):
 //!   formatter.rs::exit_one_is_reported_with_code_and_stderr_but_snapshot_still_records_unformatted_files;
