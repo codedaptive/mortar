@@ -1,7 +1,8 @@
 //! squash_message_requests: messages written out as squash_message writes them, with a trailer paragraph appended
-//! as text. 0 requests gives an empty list; one and several are read in message order; a count larger or smaller
-//! than the request lines, a subject not of the form and a "- " line without ": " are None; a request line whose
-//! subjects hold ": " and "; " is read to its first ": " only.
+//! as text. Mortar's subject: 0 requests gives an empty list; one and several are read in message order; a count
+//! larger or smaller than the request lines and a "- " line without ": " are None; a request line whose subjects
+//! hold ": " and "; " is read to its first ": " only. A caller's subject: the request paragraph is read with no
+//! count, and a message with no all-"- " paragraph between the first and the trailers has no requests.
 
 use super::squash_message_requests;
 
@@ -46,10 +47,21 @@ fn a_count_smaller_than_the_lines_is_none() {
 }
 
 #[test]
-fn a_subject_not_of_the_form_is_none() {
-    for subject in ["land: two requests\n", "land 1 requests\n", "land: 1 request\n", "fix the build\n"] {
-        let message = with_trailers(&format!("{subject}\n- r1: first\n"));
-        assert_eq!(squash_message_requests(&message), None, "{subject:?}");
+fn a_caller_subject_reads_its_request_paragraph_with_no_count() {
+    let rows: [(&str, &str, &[&str]); 6] = [
+        ("subject and requests", "fix the build\n\n- r1: first\n- r2: second\n", &["r1", "r2"]),
+        (
+            "subject, body and requests",
+            "fix the build\n\nThe guard waits.\nIt reads the lock.\n\n- r2: second\n- r1: first\n",
+            &["r2", "r1"],
+        ),
+        ("no requests", "fix the build\n\nThe guard waits.\n", &[]),
+        ("body paragraph mixing - and other lines", "fix the build\n\n- r1: first\nand a line\n", &[]),
+        ("a single line - a: b is the subject, never requests", "- a: b\n", &[]),
+        ("land: 1 request is not Mortar's form, so a caller's subject", "land: 1 request\n\n- r1: first\n", &["r1"]),
+    ];
+    for (row, text, expected) in rows {
+        assert_eq!(squash_message_requests(&with_trailers(text)), Some(strings(expected)), "{row}");
     }
 }
 
