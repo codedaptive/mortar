@@ -11,7 +11,8 @@ pub const LANDING_GROUP: HelpGroup = HelpGroup {
     key: "landing",
     heading: "Landing verbs (for the landing script)",
     entries: &[
-        HelpEntry { name: "squash", term: "squash <zone>", line: "make a zone's squash" },
+        HelpEntry { name: "squash", term: "squash <zone> [--message <text>]", line: "make a zone's squash" },
+        HelpEntry { name: "withdraw", term: "withdraw <zone>", line: "withdraw a zone's squash before it lands" },
         HelpEntry {
             name: "would-merge",
             term: "would-merge <commit or change ID>",
@@ -24,7 +25,11 @@ pub const LANDING_GROUP: HelpGroup = HelpGroup {
         },
         HelpEntry { name: "land", term: "land <commit>", line: "land a squash on integration" },
         HelpEntry { name: "back-out", term: "back-out", line: "put integration back on origin" },
-        HelpEntry { name: "publish", term: "publish", line: "push integration to origin" },
+        HelpEntry {
+            name: "publish",
+            term: "publish [--no-push]",
+            line: "push integration to origin; with --no-push, move the local origin only",
+        },
         HelpEntry {
             name: "after-publish",
             term: "after-publish <zone> [--move <zone>]...",

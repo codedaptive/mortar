@@ -1,4 +1,6 @@
-//! parse_squash_args: one configured zone is the answer; no word, two words and an unknown zone are refused.
+//! parse_squash_args: one configured zone, with at most one --message text before or after it, is the answer; no
+//! word, two words, an unknown zone, and a --message with no text, an empty or blank text, or given twice are
+//! refused.
 
 use std::collections::BTreeMap;
 
@@ -27,27 +29,33 @@ fn words(list: &[&str]) -> Vec<String> {
 }
 
 #[test]
-fn a_configured_zone_is_the_zone() {
-    assert_eq!(parse_squash_args(&words(&["b"]), &config()), Ok("b".to_string()));
+fn the_zone_and_the_message_are_read() {
+    for (line, zone, message) in [
+        (&["b"][..], "b", None),
+        (&["b", "--message", "Subject\n\nBody."], "b", Some("Subject\n\nBody.")),
+        (&["--message", " leading space kept ", "a"], "a", Some(" leading space kept ")),
+        (&["a", "--message=x: y"], "a", Some("x: y")),
+        (&["--message=--json", "b"], "b", Some("--json")),
+    ] {
+        let expected = Ok((zone.to_string(), message.map(str::to_string)));
+        assert_eq!(parse_squash_args(&words(line), &config()), expected, "{line:?}");
+    }
 }
 
 #[test]
-fn no_word_is_refused() {
-    assert_eq!(parse_squash_args(&[], &config()), Err("squash needs a zone".to_string()));
-}
-
-#[test]
-fn a_second_word_is_refused_naming_it() {
-    assert_eq!(
-        parse_squash_args(&words(&["a", "b"]), &config()),
-        Err("unexpected word \"b\" after the zone".to_string())
-    );
-}
-
-#[test]
-fn an_unknown_zone_is_refused_naming_it_and_the_configs_zones() {
-    assert_eq!(
-        parse_squash_args(&words(&["c"]), &config()),
-        Err("unknown zone \"c\": the config names a, b".to_string())
-    );
+fn bad_lines_are_refused_with_the_reason() {
+    for (line, reason) in [
+        (&[][..], "squash needs a zone"),
+        (&["a", "b"], "unexpected word \"b\" after the zone"),
+        (&["--force"], "unknown zone \"--force\": the config names a, b"),
+        (&["a", "--message"], "--message needs a text"),
+        (&["--message", "", "a"], "--message needs a text that is not empty or only whitespace"),
+        (&["a", "--message="], "--message needs a text that is not empty or only whitespace"),
+        (&["a", "--message", " \n\t"], "--message needs a text that is not empty or only whitespace"),
+        (&["a", "--message", "one", "--message=two"], "--message is given twice"),
+        (&["--message", "text"], "squash needs a zone"),
+        (&["a", "b", "--message"], "unexpected word \"b\" after the zone"),
+    ] {
+        assert_eq!(parse_squash_args(&words(line), &config()), Err(reason.to_string()), "{line:?}");
+    }
 }

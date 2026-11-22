@@ -10,8 +10,8 @@ pub const FOLDER_GROUP: HelpGroup = HelpGroup {
         HelpEntry { name: "init", term: "init", line: "write this repository's Mortar config" },
         HelpEntry {
             name: "folder",
-            term: "folder zone|request|remove|attempts|keep|drop",
-            line: "make and remove zone, request and attempt folders",
+            term: "folder zone|request|remove|attempts|keep|drop|refresh",
+            line: "make, refresh and remove zone, request and attempt folders",
         },
         HelpEntry { name: "snapshot", term: "snapshot", line: "save the folder's state to its hidden ref" },
         HelpEntry {

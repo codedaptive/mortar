@@ -1,4 +1,4 @@
-//! ZoneFolderOutcome: what became of one named zone's folder after land answered.
+//! ZoneFolderOutcome: what became of one zone's folder when after-publish or folder refresh brought it to the tip.
 //! A bare type; zone_folder_lines_tests and after_publish_report_tests exercise each variant.
 
 use std::path::PathBuf;

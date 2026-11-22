@@ -97,6 +97,19 @@ fn remove_takes_one_path() {
 }
 
 #[test]
+fn refresh_takes_one_path() {
+    let rows: Vec<(&[&str], Result<FolderCommand, String>)> = vec![
+        (&["refresh", "/w/zone"], Ok(FolderCommand::Refresh { path: PathBuf::from("/w/zone") })),
+        (&["refresh"], Err("folder refresh needs <path>".to_string())),
+        (&["refresh", "/w/a", "/w/b"], Err("unexpected word \"/w/b\" in folder refresh".to_string())),
+        (&["refresh", "--start"], Err("unknown folder refresh argument \"--start\"".to_string())),
+    ];
+    for (words, expected) in rows {
+        assert_eq!(parse(words), expected, "{words:?}");
+    }
+}
+
+#[test]
 fn attempts_takes_a_positive_count_and_a_dir() {
     assert_eq!(
         parse(&["attempts", "3", "/w/tries"]),
@@ -144,7 +157,7 @@ fn an_empty_word_is_refused() {
 fn no_sub_verb_or_an_unknown_one_is_refused() {
     assert_eq!(
         parse(&[]),
-        Err("folder needs a sub-verb: zone, request, remove, attempts, keep or drop".to_string())
+        Err("folder needs a sub-verb: zone, request, remove, refresh, attempts, keep or drop".to_string())
     );
     assert_eq!(parse(&["move", "/w/a"]), Err("unknown folder sub-verb \"move\"".to_string()));
 }

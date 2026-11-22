@@ -5,7 +5,7 @@
 use super::usage_forms;
 
 #[test]
-fn folder_has_six_forms() {
+fn folder_has_seven_forms() {
     assert_eq!(
         usage_forms("folder"),
         vec![
@@ -16,6 +16,7 @@ fn folder_has_six_forms() {
             "mr folder attempts <n> <dir> --actor <name> [--key <operation key>] [--json]",
             "mr folder keep <k> --actor <name> [--key <operation key>] [--json]",
             "mr folder drop --actor <name> [--key <operation key>] [--json]",
+            "mr folder refresh <path> --actor <name> [--key <operation key>] [--json]",
         ]
     );
 }

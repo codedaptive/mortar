@@ -1,16 +1,16 @@
-//! `mortar publish`: a landing is put on the remote's main and then local main, and the squash ref removed; with no
-//! landing there is nothing to publish and the remote is untouched; a remote main someone else moved exits 1
-//! origin-moved, with local main and integration on the commit found, the integration worktree's files at it and the
-//! squash ref kept; an extra word is a usage error (exit 4) with publish's usage line as next.
+//! `mortar publish`: a landing is put on the remote's main and then local main, `pushed` true, and the squash ref
+//! removed; with no landing there is nothing to publish and the remote is untouched; a remote main someone else moved
+//! exits 1 origin-moved, with local main and integration on the commit found, the integration worktree's files at it
+//! and the squash ref kept; an extra word is a usage error (exit 4) with publish's usage line as next. --no-push is
+//! run_publish_no_push_tests'.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! A bare repository in a second throwaway directory is the remote; the squash and the landing are made in
 //! setup through land::squash and land::land under the land lock.
-//! Tests to write (not written here):
-//! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
+//! Tests to write (not written here; the land lock held by a live pid is land_flow/landing.rs', an open push intent
+//! run_publish_no_push_tests', and acceptance step 1's checks 7, 9, 11 and 12 are tests/accept's):
 //! - without a config: exit 1, next mortar init (the shell's load_config);
 //! - each land error variant's text that needs git or the op log to fail: PublishError PushRefused, RemoteMissing
-//!   and PushIntent, and LandError's;
-//! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones;
+//!   and a PushIntent already done, and LandError's;
 //! - publish with --key: the key names the lock holder only.
 
 use std::collections::BTreeMap;
@@ -25,7 +25,7 @@ use land::{LandAnswer, LandRefs, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName};
 use testkit::TestRepo;
 
-const USAGE: &str = "mr publish --actor <name> [--key <operation key>] [--json]";
+const USAGE: &str = "mr publish [--no-push] --actor <name> [--key <operation key>] [--json]";
 const SQUASH_A: &str = "refs/mortar/squash/a";
 const X: &str = "x1\nx2\nx3\n";
 const X_ZONE: &str = "zone edit of x1\nx2\nx3\n";
@@ -142,6 +142,7 @@ fn publish_after_a_landing_moves_the_remote_then_main_and_removes_the_squash_ref
     let squash = squash_and_land(&s.root);
     let report = check(publish(&s.root), "publish", 0, "published");
     assert_eq!(report.text("origin"), squash.commit.as_str());
+    assert!(report.flag("pushed"));
     assert_eq!(tip(&s.bare, "refs/heads/main"), squash.commit.as_str());
     assert_eq!(tip(&s.root, "refs/heads/main"), squash.commit.as_str());
     assert!(!exists(&s.root, SQUASH_A));

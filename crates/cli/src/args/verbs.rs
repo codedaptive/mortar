@@ -2,7 +2,7 @@
 
 use super::{
     LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, DISK_SPEC, HELP_SPEC, INSTALL_SPEC,
-    OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC, UNINSTALL_SPEC,
+    OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC, UNINSTALL_SPEC, WITHDRAW_SPEC,
 };
 
 /// In the order the usage error lists them.
@@ -24,8 +24,8 @@ pub const VERBS: &[VerbSpec] = &[
         lock: LockNeed::Join,
         needs_config: true,
         usage: "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
-                <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key \
-                <operation key>] [--json]",
+                <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <path>) --actor <name> \
+                [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "guard",
@@ -87,7 +87,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mr publish --actor <name> [--key <operation key>] [--json]",
+        usage: "mr publish [--no-push] --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "rereview",
@@ -124,7 +124,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mr squash <zone> --actor <name> [--key <operation key>] [--json]",
+        usage: "mr squash <zone> [--message <text>] --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "status",
@@ -136,6 +136,7 @@ pub const VERBS: &[VerbSpec] = &[
     SWEEP_SPEC,
     UNDO_SPEC,
     UNINSTALL_SPEC,
+    WITHDRAW_SPEC,
     VerbSpec {
         name: "would-merge",
         kind: VerbKind::Harness,

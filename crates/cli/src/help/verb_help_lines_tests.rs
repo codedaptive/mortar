@@ -1,8 +1,8 @@
-//! verb_help_lines: a verb's usage one line per form, then its row's line, then its tokens saved baseline if it has
-//! one.
-//! Unit test: the help groups, find_help_entry, usage_forms and the verb table are pure and used directly.
+//! verb_help_lines: a verb's usage, then its row's line, then its notes (their text is verb_notes_tests'), then its
+//! tokens saved baseline if it has one. No verb has both notes and a baseline, so their order is not reachable here.
+//! Unit test: the help groups, find_help_entry, usage_forms, verb_notes and the verb table are pure and used directly.
 
-use super::{find_help_entry, verb_help_lines};
+use super::{find_help_entry, verb_help_lines, verb_notes};
 
 fn help_of(name: &str) -> Vec<String> {
     let (_, entry) = find_help_entry(name).expect("the verb is in the help");
@@ -42,18 +42,25 @@ fn log_has_no_baseline_line() {
 }
 
 #[test]
-fn folder_is_six_forms_and_its_line() {
+fn squash_is_its_usage_its_line_then_its_notes_and_no_baseline() {
+    let lines = help_of("squash");
     assert_eq!(
-        help_of("folder"),
+        lines[..2],
+        [
+            "mr squash <zone> [--message <text>] --actor <name> [--key <operation key>] [--json]",
+            "make a zone's squash",
+        ]
+    );
+    assert_eq!(lines[2..], *verb_notes("squash"));
+}
+
+#[test]
+fn withdraw_is_its_usage_and_its_line() {
+    assert_eq!(
+        help_of("withdraw"),
         vec![
-            "mr folder zone <zone> <path> [--start <commit>] --actor <name> [--key <operation key>] [--json]",
-            "mr folder request <zone> <request> <path> --paths <path>... --actor <name> [--key <operation key>] \
-             [--json]",
-            "mr folder remove <path> --actor <name> [--key <operation key>] [--json]",
-            "mr folder attempts <n> <dir> --actor <name> [--key <operation key>] [--json]",
-            "mr folder keep <k> --actor <name> [--key <operation key>] [--json]",
-            "mr folder drop --actor <name> [--key <operation key>] [--json]",
-            "make and remove zone, request and attempt folders",
+            "mr withdraw <zone> --actor <name> [--key <operation key>] [--json]",
+            "withdraw a zone's squash before it lands",
         ]
     );
 }

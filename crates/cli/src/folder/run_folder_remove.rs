@@ -12,14 +12,13 @@
 
 use std::path::{Path, PathBuf};
 
-use folders::make::read_folder_record;
 use folders::plan::attempt_branch;
 use folders::remove;
 use gitio::Git;
 use oplog::{KillPidProbe, LockName};
 use snapshot::{saved_state, SnapshotError, SnapshotTarget};
 
-use super::{folder_error_report, folder_removed_report};
+use super::{folder_error_report, folder_removed_report, read_folder_at};
 use crate::config::{snapshot_settings_for, Config};
 use crate::join::snapshot_failure;
 use crate::lock::locked_act;
@@ -30,8 +29,8 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "folder";
 
-/// `path` is taken from `cwd` when relative and read as the top of its worktree; git finding no worktree there, or a
-/// worktree with no Mortar record, is exit 1 "not-a-folder" before any lock. Under join-<record's zone> after recover
+/// `path` is taken from `cwd` when relative; read_folder_at finds the top of its worktree and its record before any
+/// lock, git finding no worktree there, or a worktree with no Mortar record, being exit 1 "not-a-folder". Under join-<record's zone> after recover
 /// (locked_act), keyed by --key or op_key("folder-remove", the folder): a request or attempt folder's saved state is
 /// snapshot's saved_state against its own snapshot ref, with the config's excludes and cap, its cap-refused files
 /// passed as refused; then folders' remove with the cap, as the actor. A saved_state error is snapshot_failure's
@@ -39,18 +38,9 @@ const VERB: &str = "folder";
 /// (folders' attempt_branch), since the request's branch is not the attempt's. A try branch attempt_branch cannot
 /// name leaves snapshot_failure's report as it is.
 pub fn run_folder_remove(context: &ShellContext, config: &Config, cwd: &Path, path: &Path) -> Report {
-    let path = cwd.join(path);
-    let Ok(folder) = Git::new(&path).toplevel() else {
-        return not_a_folder(&path, "git finds no worktree there");
-    };
-    let git_dir = match Git::new(&folder).git_dir(&folder) {
-        Ok(git_dir) => git_dir,
-        Err(error) => return not_a_folder(&folder, &error.to_string()),
-    };
-    let record = match read_folder_record(&git_dir) {
-        Ok(Some(record)) => record,
-        Ok(None) => return not_a_folder(&folder, "the worktree has no Mortar record"),
-        Err(error) => return folder_error_report("remove", &error),
+    let (folder, record) = match read_folder_at(&cwd.join(path), "remove", not_a_folder) {
+        Ok(read) => read,
+        Err(report) => return report,
     };
     let common = match Git::new(&folder).common_dir() {
         Ok(common) => common,

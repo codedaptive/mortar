@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use gitio::Oid;
 
 use super::find_zone_old;
-use crate::after_publish::ZoneOld;
+use crate::zone_folder_move::ZoneOld;
 
 const INDEX_TREE: &str = "7f2e4d6c8b0a1f3e5d7c9b2a4f6e8d0c1b3a5f79";
 const TIP_TREE: &str = "b1d3f5a7c9e2b4d6f8a0c3e5b7d9f1a2c4e6b8d0";

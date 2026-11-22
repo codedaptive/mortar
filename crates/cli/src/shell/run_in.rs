@@ -36,6 +36,7 @@ use crate::squash::run_squash;
 use crate::status::run_status;
 use crate::sweep::run_sweep;
 use crate::undo::run_undo;
+use crate::withdraw::run_withdraw;
 use crate::would_merge::run_would_merge;
 
 /// The report of `argv` (without the program name) run in `cwd`, and whether to render it as JSON. The line is
@@ -111,6 +112,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "sweep" => run_sweep(context, cwd),
         "undo" => run_undo(context),
         "uninstall" => run_uninstall(context),
+        "withdraw" => run_withdraw(context, cwd),
         "would-merge" => run_would_merge(context, cwd),
         other => failure_report(other, &format!("the verb {other} is in the verb table but has no runner")),
     }

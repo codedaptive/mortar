@@ -196,8 +196,9 @@ fn malformed_request_lines_are_refused_naming_the_commit() {
     assert_eq!(
         squash_error_report("squash", &error),
         refused(
-            "commit 1111111111111111111111111111111111111111's request lines do not match the request count in its \
-             subject, so it is not a squash Mortar wrote",
+            "commit 1111111111111111111111111111111111111111's message does not list its requests as squash reads \
+             them: one \"- <request>: ...\" line each in the paragraph before the trailers, as many as a \"<zone>: \
+             <n> requests\" subject counts",
             "the commit 1111111111111111111111111111111111111111",
             "make the squash again: mr squash <zone> --actor <name>",
         )

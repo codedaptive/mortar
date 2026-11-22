@@ -1,6 +1,6 @@
 //! help: mr help, mr --help, mr -h and mr <verb> --help: whether a command line asks for help,
-//! and the report that answers it: the program help's groups and rows, or one verb's usage one line per form and its
-//! row's line, plain or as the `--json` object.
+//! and the report that answers it: the program help's groups and rows, or one verb's usage one line per form, its
+//! row's line and its notes, plain or as the `--json` object.
 
 mod agent_group;
 mod find_help_entry;
@@ -21,6 +21,7 @@ mod setup_group;
 mod split_usage_forms;
 mod usage_forms;
 mod verb_help_lines;
+mod verb_notes;
 
 #[cfg(test)]
 mod find_help_entry_tests;
@@ -42,6 +43,8 @@ mod split_usage_forms_tests;
 mod usage_forms_tests;
 #[cfg(test)]
 mod verb_help_lines_tests;
+#[cfg(test)]
+mod verb_notes_tests;
 
 pub(crate) use help_asked::help_asked;
 pub(crate) use help_report::help_report;
@@ -63,3 +66,4 @@ use setup_group::SETUP_GROUP;
 use split_usage_forms::split_usage_forms;
 use usage_forms::usage_forms;
 use verb_help_lines::verb_help_lines;
+use verb_notes::verb_notes;
