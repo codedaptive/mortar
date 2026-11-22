@@ -14,7 +14,7 @@ All notable changes to Mortar are recorded here, in terms of what the program do
 
 ### Refusals
 
-- **A folder whose HEAD is detached, or whose branch has no commit yet, is refused with the step that fixes it** (exit 1). This covers `mr join`, `mr undo`, `mr folder keep` and `mr folder remove` (both cases), and `mr resolve`, `mr folder drop` and `mr need` (a branch with no commit yet). They used to fail (exit 5) and ask for a repeat that could not succeed. In an attempt folder whose branch has no commit yet, `mr status` names the attempt's branch as its step.
+- **`mr join` refuses a folder whose HEAD is detached, or whose branch has no commit yet, with the step that fixes it** (exit 1), and so do `mr resolve` and `mr need` for a branch with no commit yet. They used to fail (exit 5) and ask for a repeat that could not succeed. In an attempt folder whose branch has no commit yet, `mr status` names the attempt's branch as its step.
 - `mr status` and `mr need` give a failed read of a request's branch in Mortar's own words.
 
 ### Fixes
