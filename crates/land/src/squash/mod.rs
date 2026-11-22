@@ -31,6 +31,7 @@ mod squash_request;
 mod squash_requests;
 mod squash_trailer_pairs;
 mod squash_type;
+mod squash_with_message;
 mod would_merge;
 mod would_merge_answer;
 mod would_merge_from;
@@ -68,6 +69,7 @@ pub use squash::squash;
 pub use squash_answer::SquashAnswer;
 pub use squash_error::SquashError;
 pub use squash_type::Squash;
+pub use squash_with_message::squash_with_message;
 pub use would_merge::would_merge;
 pub use would_merge_answer::WouldMerge;
 

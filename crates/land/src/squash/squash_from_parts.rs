@@ -7,8 +7,9 @@ use oplog::{ChangeIdError, MortarTrailers, MORTAR_CHANGE_ID_KEY};
 
 /// `commit`'s Squash from its picked Mortar trailers, its trailer pairs and its message. A malformed
 /// Mortar-Change-Id is TrailerMalformed naming its text, any other pick error ChangeId; a missing Mortar-Change-Id
-/// or Mortar-Squash-Of is TrailerMissing; a Mortar-Squash-Of that is not a commit id is TrailerMalformed; request
-/// lines that do not match the subject's count are RequestsMalformed. Mortar-Zone is not read: Squash has no zone.
+/// or Mortar-Squash-Of is TrailerMissing; a Mortar-Squash-Of that is not a commit id is TrailerMalformed; a request
+/// line with no `": "`, or request lines that do not match the count of a `<zone>: <n> requests` subject, are
+/// RequestsMalformed. Mortar-Zone is not read: Squash has no zone.
 pub(crate) fn squash_from_parts(
     commit: Oid,
     picked: Result<MortarTrailers, ChangeIdError>,
