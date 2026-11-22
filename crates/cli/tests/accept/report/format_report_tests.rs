@@ -21,6 +21,7 @@ fn blocks_lines_and_a_passing_result() {
         },
     ];
     let expected = "mortar acceptance report\n\
+                    commit 0123456789abcdef0123456789abcdef01234567\n\
                     \n\
                     Step 0 the shell: PASS\n  \
                     ok    ran init: exit 0\n  \
@@ -29,7 +30,7 @@ fn blocks_lines_and_a_passing_result() {
                     Step 4 the agent test: NOT RUN (set ACCEPT_AGENT to an agent)\n\
                     \n\
                     Result: PASS\n";
-    assert_eq!(format_report(&blocks), expected);
+    assert_eq!(format_report("commit 0123456789abcdef0123456789abcdef01234567", &blocks), expected);
 }
 
 #[test]
@@ -41,6 +42,7 @@ fn a_failed_block_fails_the_result_and_extra_lines_are_indented() {
         lines: vec![check(false, "ran join", "exit 2\nCONFLICT a.txt"), Line::Log("one\ntwo".to_string())],
     }];
     let expected = "mortar acceptance report\n\
+                    commit 0123456789abcdef0123456789abcdef01234567 with local changes\n\
                     \n\
                     Step 1 the flow: FAIL\n  \
                     FAIL  ran join: exit 2\n        \
@@ -49,10 +51,13 @@ fn a_failed_block_fails_the_result_and_extra_lines_are_indented() {
                     two\n\
                     \n\
                     Result: FAIL\n";
-    assert_eq!(format_report(&blocks), expected);
+    assert_eq!(format_report("commit 0123456789abcdef0123456789abcdef01234567 with local changes", &blocks), expected);
 }
 
 #[test]
-fn no_blocks_is_the_title_and_a_passing_result() {
-    assert_eq!(format_report(&[]), "mortar acceptance report\n\nResult: PASS\n");
+fn no_blocks_is_the_title_the_commit_and_a_passing_result() {
+    assert_eq!(
+        format_report("commit not read: git rev-parse HEAD exited 128: no HEAD", &[]),
+        "mortar acceptance report\ncommit not read: git rev-parse HEAD exited 128: no HEAD\n\nResult: PASS\n"
+    );
 }
