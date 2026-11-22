@@ -121,7 +121,7 @@ fn join_saves_on_branch_moved_by_formatter_then_fast_forwards_zone() {
 }
 
 #[test]
-fn unborn_head_join_reports_failure_without_moving_any_refs() {
+fn unborn_head_join_is_refused_without_moving_any_refs() {
     let f = Fixture::new();
     let request = f.git.read_ref(REQUEST).unwrap();
     let zone = f.git.read_ref(ZONE).unwrap();
@@ -129,7 +129,9 @@ fn unborn_head_join_reports_failure_without_moving_any_refs() {
     raw(&f.local(), &["checkout", "--orphan", "unborn-test"]);
     f.write("src/file", b"unsaved unborn work\n");
 
-    let report = f.report(&["--json", "join"], "join", 5, "failed");
+    let report = f.report(&["--json", "join"], "join", 1, "refused");
+    assert_eq!(report.text("owner"), "the folder's HEAD");
+    assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
     assert_eq!(report.strings("lines"), &[
         format!("HEAD of the folder {} has no commit", f.request.display()),
     ]);
@@ -150,7 +152,9 @@ fn detached_head_join_preserves_edit_in_snapshot_without_moving_branches() {
     f.write("src/file", b"unsaved detached work\n");
     raw(&f.local(), &["checkout", "--detach"]);
 
-    let report = f.report(&["--json", "join"], "join", 5, "failed");
+    let report = f.report(&["--json", "join"], "join", 1, "refused");
+    assert_eq!(report.text("owner"), "the folder's HEAD");
+    assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
     assert_eq!(report.strings("lines"), &[
         "the snapshot ref moved as the work was saved first",
         &format!("HEAD of the folder {} names no branch", f.request.display()),

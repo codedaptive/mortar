@@ -1,5 +1,6 @@
 //! `mortar rereview <reviewed> <new>`: two squashes of one change answer rereviewed with both ids and a diff that
-//! names the file the second squash added and not the line both carry; squashes of two changes are refused as
+//! names the file the second squash added and not the line both carry, with same_patch false and next telling the
+//! caller to hand the diff to the reviewer; squashes of two changes are refused as
 //! not-same-change (exit 1); one word, three words and a word that is not a full commit id are usage errors (exit 4)
 //! with rereview's usage line as next.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
@@ -101,7 +102,7 @@ pub(super) fn squash_in_setup(root: &Path, zone: &str) -> Squash {
 }
 
 /// `mortar <args>` run in `root`, git's config isolated.
-fn mortar(root: &Path, args: &[&str]) -> Output {
+pub(super) fn mortar(root: &Path, args: &[&str]) -> Output {
     let home = crate::support::OwnDir::new();
     Command::new(env!("CARGO_BIN_EXE_mortar")).current_dir(root).env_clear().envs(GIT_ENV)
         .env("PATH", std::env::var_os("PATH").unwrap()).env("HOME", &home.0).env("TMPDIR", &home.0)
@@ -128,6 +129,8 @@ fn rereview_of_two_squashes_of_one_change_shows_only_what_changed() {
     let report = check(output, "rereview", 0, "rereviewed");
     assert_eq!(report.text("reviewed"), reviewed.commit.as_str());
     assert_eq!(report.text("new"), new.commit.as_str());
+    assert!(!report.flag("same_patch"));
+    assert_eq!(report.text("next"), format!("hand this diff to the reviewer of {}", reviewed.commit.as_str()));
     let lines = report.lines();
     assert!(lines.contains("src/a/z"), "{lines}");
     assert!(!lines.contains(X_EDIT_LINE), "{lines}");

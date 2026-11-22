@@ -1,25 +1,35 @@
 //! rereview: the re-review diff: what changed in a squash since it was reviewed.
 
+mod answer_rereview;
 mod plan_rereview;
-mod rereview;
+mod range_diff_answer;
+mod rereview_answer;
 mod rereview_error;
 mod rereview_error_display;
 mod rereview_error_source;
 mod rereview_plan;
 mod same_change;
+mod same_patch;
 
 #[cfg(test)]
 mod plan_rereview_tests;
+#[cfg(test)]
+mod range_diff_answer_tests;
 #[cfg(test)]
 mod rereview_error_display_tests;
 #[cfg(test)]
 mod rereview_error_source_tests;
 #[cfg(test)]
 mod same_change_tests;
+#[cfg(test)]
+mod same_patch_tests;
 
 pub(crate) use plan_rereview::plan_rereview;
+pub(crate) use range_diff_answer::range_diff_answer;
 pub(crate) use rereview_plan::RereviewPlan;
 pub(crate) use same_change::same_change;
+pub(crate) use same_patch::same_patch;
 
-pub use rereview::rereview;
+pub use answer_rereview::answer_rereview;
+pub use rereview_answer::RereviewAnswer;
 pub use rereview_error::RereviewError;

@@ -2,6 +2,7 @@
 //! data, its refusals and its reports, and the runners of its sub-verbs.
 
 mod attempt_saved;
+mod attempt_snapshot_failure;
 mod attempts_dir;
 mod attempts_made_report;
 mod attempts_saved;
@@ -31,6 +32,8 @@ mod zone_folder_paths;
 
 #[cfg(test)]
 mod attempt_saved_tests;
+#[cfg(test)]
+mod attempt_snapshot_failure_tests;
 #[cfg(test)]
 mod attempts_dir_tests;
 #[cfg(test)]
@@ -65,6 +68,7 @@ mod request_folder_refusal_tests;
 mod zone_folder_paths_tests;
 
 pub(crate) use attempt_saved::attempt_saved;
+pub(crate) use attempt_snapshot_failure::attempt_snapshot_failure;
 pub(crate) use attempts_dir::attempts_dir;
 pub(crate) use attempts_made_report::attempts_made_report;
 pub(crate) use attempts_saved::attempts_saved;

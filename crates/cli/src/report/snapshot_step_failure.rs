@@ -1,12 +1,15 @@
 //! snapshot_step_failure: the report of mr save, join or resolve failing in a snapshot or save step, any of which may
-//! follow an earlier step's move of the snapshot ref. It sits in report/, the lowest level covering save, join and
-//! resolve.
+//! follow an earlier step's move of the snapshot ref, or refused for a folder HEAD the verb cannot start from. It
+//! sits in report/, the lowest level covering save, join and resolve.
 
 use snapshot::SnapshotError;
 
-use super::{failure_report, snapshot_error_detail, with_moved_first, Report};
+use super::{failure_report, repeat_head_refusal, snapshot_error_detail, with_moved_first, Report};
 
-/// Exit Failure, outcome "failed", next "repeat the same command", under `verb`. The lines come in this order:
+/// UnbornHead and DetachedHead are repeat_head_refusal's refusal (exit Refused, owner the folder's HEAD, next check out
+/// the request's branch, then repeat), since no repeat can pass until HEAD is mended; its lines are `moved` when given,
+/// then the detail. Every other error is exit Failure, outcome "failed", next "repeat the same command", under
+/// `verb`. The lines come in this order:
 /// `moved` when given (moved_before's line for what the verb's steps before the failed one moved; None when nothing
 /// did), so what earlier steps moved is read before anything about the failed step; then snapshot_error_detail's
 /// line, whose no-movement and no-commit claims speak for the failed step only; then, for a Git, Trailers,
@@ -19,7 +22,8 @@ use super::{failure_report, snapshot_error_detail, with_moved_first, Report};
 ///
 /// Each "left" line follows the order of crates/snapshot/src/save_with_snapshot.rs. Its snapshot step (snapshot,
 /// which is snapshot_formatted with no formatter; a caller with a formatter runs snapshot_formatted before it) is the
-/// first that writes (join's snapshot_formatted is that step; its save_from_snapshot takes none after it): it moves
+/// first that writes (the snapshot_formatted of join's save_from_formatted, which join and save with a formatter
+/// run, is that step; its save_from_snapshot takes none after it): it moves
 /// the snapshot ref before commit_info, the trailers read, the change ID, the commit and apply.
 /// So any of these errors may follow that move. Trailers, ChangeIdMissing and ChangeId come before the save
 /// commit is written. A Git error never follows the branch's move: apply's own git errors come back as Oplog, and
@@ -40,17 +44,21 @@ use super::{failure_report, snapshot_error_detail, with_moved_first, Report};
 /// save's unchanged path, so the repeat writes no second commit.
 ///
 /// Per verb:
-/// - save (save/run_save.rs) runs snapshot_formatted (only when a formatter is set), then snapshot::save_with_snapshot,
-///   so every line can hold as written; join (join/run_join.rs, save_work) runs snapshot_formatted, then
-///   snapshot::save_from_snapshot, which writes no snapshot of its own, so the lines hold with the formatter's
-///   snapshot as the one that may have moved the ref. Save sends ChangeIdMissing and
+/// - save (save/run_save.rs) with a formatter runs snapshot_formatted, then snapshot::save_from_snapshot, through
+///   join's save_from_formatted as join does (join/run_join.rs, save_work); that save writes no snapshot of its own, so
+///   the lines hold with the formatter's snapshot as the one that may have moved the ref. Save without a formatter runs
+///   snapshot::save_with_snapshot alone, so every line can hold as written. Save sends ChangeIdMissing and
 ///   BranchMoved to save_error_report instead (save/save_step_failure.rs says why); join gets them here.
 /// - The pending move's snapshot (join/finish_pending_move.rs), which save, join and resolve run first, and resolve's
 ///   own snapshot (resolve/run_resolve.rs) are snapshot::snapshot only: snapshot_formatted with no formatter, which
-///   writes no save commit. They give Git and Oplog errors here, never Trailers, ChangeIdMissing, ChangeId or
+///   writes no save commit. They give Git and Oplog errors here, and UnbornHead, refused here; never DetachedHead
+///   (only save_head refuses one, in the save steps), Trailers, ChangeIdMissing, ChangeId or
 ///   BranchMoved. They move no branch, so the Oplog line's "the branch may have moved" is a hedge there: it covers
 ///   more than those steps can have done.
 pub(crate) fn snapshot_step_failure(verb: &str, error: &SnapshotError, moved: Option<&str>) -> Report {
+    if let SnapshotError::UnbornHead { .. } | SnapshotError::DetachedHead { .. } = error {
+        return repeat_head_refusal(verb, with_moved_first(moved, vec![snapshot_error_detail(error)]));
+    }
     let left = step_left(error);
     let repeat = left.is_some();
     let mut lines = with_moved_first(moved, vec![snapshot_error_detail(error)]);

@@ -1,6 +1,6 @@
 use crate::support::{blob, tree_names, write, Fixture};
 use oplog::oplog_path;
-use snapshot::{is_saved, snapshot, RefusedFile, DEFAULT_SIZE_CAP};
+use snapshot::{saved_state, snapshot, RefusedFile, DEFAULT_SIZE_CAP};
 use std::{fs, path::PathBuf};
 
 #[test]
@@ -25,13 +25,13 @@ fn new_six_mib_file_is_reported_but_large_changed_head_file_is_kept() {
 
 #[test]
 fn refused_only_change_is_saved_and_unchanged_outcome_still_reports_the_refusal() {
-    // Joins is_saved and snapshot -> the same capped tree -> no extra oplog/ref movement.
+    // Joins saved_state and snapshot -> the same capped tree -> no extra oplog/ref movement.
     let f = Fixture::new(&[]);
     let first = snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap();
     let log_before = fs::read(oplog_path(&f.common)).unwrap();
     let new = vec![b'n'; 6 * 1024 * 1024];
     write(&f.repo.path, "refused-only", &new);
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     assert_eq!(fs::read(oplog_path(&f.common)).unwrap(), log_before);
     let again = snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap();
     assert!(!again.written);
@@ -58,7 +58,7 @@ fn caller_cap_is_inclusive_and_refused_glob_name_excludes_only_that_path() {
     assert_eq!(blob(&f.git, &saved.tree, "at-cap"), b"1234567");
     assert_eq!(blob(&f.git, &saved.tree, "large1.dat"), b"keep");
     assert_eq!(fs::read(f.repo.path.join("large[1].dat")).unwrap(), b"12345678");
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], 7).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], 7).unwrap().saved);
 }
 
 #[test]
@@ -76,7 +76,7 @@ fn new_against_head_file_that_grows_or_is_renamed_over_cap_drops_from_next_snaps
     assert_eq!(tree_names(&f.git, &second.tree), ["root.txt"]);
     assert_eq!(f.git.commit_info(&second.commit).unwrap().parents, vec![f.head.clone(), first.commit]);
     fs::rename(f.repo.path.join("new.txt"), f.repo.path.join("renamed.txt")).unwrap();
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], 3).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], 3).unwrap().saved);
     let before = fs::read(oplog_path(&f.common)).unwrap();
     let third = snapshot(&f.git, &f.repo.path, &f.target, &[], 3).unwrap();
     assert!(!third.written);

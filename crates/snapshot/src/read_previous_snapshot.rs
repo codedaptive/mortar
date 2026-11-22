@@ -1,7 +1,7 @@
 //! read_previous_snapshot: the commit a snapshot ref names, and its tree.
 //! No unit test: it only runs git and holds no decision. The integration tests cover it through snapshot
-//! and is_saved, in a throwaway repository:
-//! - an absent ref reads as None: is_saved is false before any snapshot, and the first snapshot's parents are [HEAD]
+//! and saved_state, in a throwaway repository:
+//! - an absent ref reads as None: saved_state's saved is false before any snapshot, and the first snapshot's parents are [HEAD]
 //!   and its op-log move has no old value:
 //!   tests/snapshot/lifecycle.rs::first_snapshot_saves_real_tree_parent_trailers_ref_and_attributed_op;
 //! - a ref at a snapshot commit reads as that commit and its tree: an unchanged snapshot returns the first

@@ -1,7 +1,7 @@
-//! Snapshot/is_saved/save -> actual attempt refs, commit trailers and one-branch transactions.
+//! Snapshot/saved_state/save -> actual attempt refs, commit trailers and one-branch transactions.
 use crate::support::{blob, run, write, Fixture};
 use oplog::{oplog_path, read_mortar_trailers, read_op_log, OpPhase, OpResult};
-use snapshot::{is_saved, save, snapshot, DEFAULT_SIZE_CAP};
+use snapshot::{save, saved_state, snapshot, DEFAULT_SIZE_CAP};
 use std::fs;
 
 #[test]
@@ -12,7 +12,7 @@ fn attempts_have_independent_snapshot_chains_and_saved_reads_only_the_selected_r
     let mut target = f.target.clone(); target.attempt = Some(3);
     let selected_ref = "refs/mortar/trysnap/snapshot-zone/request-17/3";
     let mut other = f.target.clone(); other.attempt = Some(4);
-    assert!(!is_saved(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(!saved_state(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     write(&f.repo.path, "root.txt", b"attempt three content\n");
     let before_index = fs::read(f.common.join("index")).unwrap();
     let first = snapshot(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap();
@@ -22,9 +22,9 @@ fn attempts_have_independent_snapshot_chains_and_saved_reads_only_the_selected_r
     assert_eq!(blob(&f.git, &first.tree, "root.txt"), b"attempt three content\n");
     assert_eq!(f.git.read_ref(&f.refname).unwrap(), request_ref);
     assert_eq!(f.git.read_ref("refs/mortar/trysnap/snapshot-zone/request-17/4").unwrap(), None);
-    assert!(is_saved(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap());
-    assert!(!is_saved(&f.git, &f.repo.path, &other, &[], DEFAULT_SIZE_CAP).unwrap());
-    assert!(!is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
+    assert!(!saved_state(&f.git, &f.repo.path, &other, &[], DEFAULT_SIZE_CAP).unwrap().saved);
+    assert!(!saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     let before_log = fs::read(oplog_path(&f.common)).unwrap();
     let repeat = snapshot(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap();
     assert!(!repeat.written); assert_eq!(repeat.commit, first.commit);
@@ -39,8 +39,8 @@ fn attempts_have_independent_snapshot_chains_and_saved_reads_only_the_selected_r
     let own = snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap();
     assert_eq!(f.git.commit_info(&own.commit).unwrap().parents, vec![f.head.clone(), request_ref.unwrap()]);
     assert_eq!(f.git.read_ref(selected_ref).unwrap(), Some(second.commit));
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
-    assert!(is_saved(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
+    assert!(saved_state(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     let records = read_op_log(&f.common).unwrap().records;
     assert!(records.iter().all(|record| record.kind == "snapshot" && record.actor == "snapshot-caller"));
     assert_eq!(records.len(), 8);
@@ -78,7 +78,7 @@ fn attempt_saves_move_only_the_try_branch_and_inherit_the_requests_change_id_wit
         let snapshot_ref = format!("refs/mortar/trysnap/snapshot-zone/request-17/{k}");
         let snap = f.git.read_ref(&snapshot_ref).unwrap().unwrap();
         assert_eq!(f.git.commit_info(&snap).unwrap().tree, saved.tree);
-        assert!(is_saved(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap());
+        assert!(saved_state(&f.git, &f.repo.path, &target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
         assert!(run(&f.git, &["status", "--porcelain", "-z"]).is_empty());
         let records = read_op_log(&f.common).unwrap().records;
         assert_eq!(records.len(), 4);

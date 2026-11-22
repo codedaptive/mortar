@@ -1,10 +1,10 @@
 //! I/O edge cases of a snapshot's file sizing and tree: a symlink loop's size error, a caller's noglob pathspec
 //! environment giving CapMismatch, a symlink sized by its own length, a deleted path and a new gitlink that are not
 //! size refusals, an unborn HEAD refused before anything is written, and an over-cap file replacing a HEAD directory.
-//! Private sizing/tree decisions are exercised through snapshot/is_saved, real gitio and oplog, not source includes.
+//! Private sizing/tree decisions are exercised through snapshot/saved_state, real gitio and oplog, not source includes.
 use crate::support::{assert_snapshot_written, blob, run, tree_names, write, Fixture};
 use oplog::{oplog_path, read_op_log, OpPhase, OpResult};
-use snapshot::{is_saved, snapshot, RefusedFile, SnapshotError, DEFAULT_SIZE_CAP};
+use snapshot::{saved_state, snapshot, RefusedFile, SnapshotError, DEFAULT_SIZE_CAP};
 use std::{fs, io::ErrorKind, os::unix::fs::symlink, path::PathBuf};
 use testkit::write_git_shim;
 
@@ -68,7 +68,7 @@ fn caller_noglob_environment_produces_exact_cap_mismatch_without_losing_previous
     git.env.push(("GIT_NOGLOB_PATHSPECS".into(), "1".into()));
     for error in [
         snapshot(&git, &f.repo.path, &f.target, &[], 3).unwrap_err(),
-        is_saved(&git, &f.repo.path, &f.target, &[], 3).unwrap_err(),
+        saved_state(&git, &f.repo.path, &f.target, &[], 3).unwrap_err(),
     ] {
         match error {
             SnapshotError::CapMismatch { paths } => assert_eq!(paths, vec![PathBuf::from("glob[1].bin")]),
@@ -80,7 +80,7 @@ fn caller_noglob_environment_produces_exact_cap_mismatch_without_losing_previous
     assert_eq!(fs::read(f.common.join("index")).unwrap(), before_index);
     assert_eq!(f.git.read_ref(&f.refname).unwrap(), Some(first.commit));
     assert_eq!(fs::read(f.repo.path.join("glob[1].bin")).unwrap(), b"12345678");
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], 3).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], 3).unwrap().saved);
 }
 
 #[test]
@@ -122,7 +122,7 @@ fn deleted_changed_path_is_not_a_size_refusal_even_at_zero_cap() {
     assert_eq!(blob(&f.git, &saved.tree, "root.txt"), b"base\n");
     assert!(!f.repo.path.join("gone").exists());
     assert_eq!(fs::read(f.common.join("index")).unwrap(), index_before);
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], 0).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], 0).unwrap().saved);
 }
 
 #[test]
@@ -141,7 +141,7 @@ fn new_gitlink_directory_is_not_treated_as_a_file_or_refused_at_zero_cap() {
     assert_eq!(run(&f.git, &["ls-tree", saved.tree.as_str(), "module"]), format!("160000 commit {}\tmodule\n", source.head).as_bytes());
     assert_eq!(fs::read(f.repo.path.join("module/subfile")).unwrap(), b"local child repository\n");
     assert_eq!(fs::read(f.common.join("index")).unwrap(), index_before);
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], 0).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], 0).unwrap().saved);
 }
 
 #[test]
@@ -154,7 +154,7 @@ fn unborn_head_is_named_before_any_snapshot_commit_ref_or_op() {
     let before_index = fs::read(f.common.join("index")).unwrap();
     for error in [
         snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap_err(),
-        is_saved(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap_err(),
+        saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap_err(),
     ] {
         match error {
             SnapshotError::UnbornHead { folder } => assert_eq!(folder, f.repo.path),
@@ -183,7 +183,7 @@ fn over_cap_file_replacing_head_directory_is_refused_without_resurrecting_old_ch
     assert_eq!(tree_names(&f.git, &saved.tree), ["root.txt"]);
     assert_eq!(fs::read(f.repo.path.join("replace")).unwrap(), b"1234");
     assert_eq!(fs::read(f.common.join("index")).unwrap(), index_before);
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &[], 3).unwrap());
+    assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], 3).unwrap().saved);
     let before_log = fs::read(oplog_path(&f.common)).unwrap();
     let again = snapshot(&f.git, &f.repo.path, &f.target, &[], 3).unwrap();
     assert!(!again.written);

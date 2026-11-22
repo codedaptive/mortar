@@ -1,21 +1,22 @@
 //! save_error_report: the report of a save that did not happen, one arm per SnapshotError.
 //! The cli writes its own text per arm, for its own exit, owner and next; the inner git, op log, trailer and
 //! change ID errors are shown through their own Display. mr save reports its Git, Trailers, ChangeId and Oplog errors
-//! (from the pending move's snapshot, the formatter's snapshot and snapshot::save_with_snapshot) through
-//! save_step_failure, which passes every other error here; mr status uses this report for the errors of its
-//! saved_state read.
+//! (from the pending move's snapshot, the formatter's snapshot, snapshot::save_from_snapshot and snapshot::save_with_snapshot) through
+//! save_step_failure, which passes every other error here; mr status uses this report for the PathNotUtf8 and
+//! CapMismatch errors of its saved_state read.
 
 use oplog::{OpRecord, OpResult};
 use snapshot::SnapshotError;
 
-use crate::report::{failure_report, ExitCode, Report};
+use crate::report::{failure_report, head_refusal, ExitCode, Report};
 
 /// The step after a refused sentence.
 const NEXT_SENTENCE: &str = "mr save \"<one line saying what changed>\"";
-/// The step after a HEAD save cannot use.
+/// The step after a HEAD save cannot use: save's own next for head_refusal, naming mr save rather than a repeat.
 const NEXT_HEAD: &str = "check out the request's branch in this folder, then mr save again";
 
-/// Refused (exit 1): a bad sentence, an unborn or detached HEAD, a HEAD of this request without a change ID
+/// Refused (exit 1): a bad sentence, an unborn or detached HEAD (head_refusal, with snapshot's Display as its line
+/// and NEXT_HEAD as its next), a HEAD of this request without a change ID
 /// (save will not make a second ID for the request), a refused path that is not UTF-8 (this snapshot wrote no
 /// commit). Busy (exit 3): the branch moved while save ran, in two lines: the branch that moved (named when the
 /// failed record's result is Stale), then that this save did not move the branch and the snapshot ref may have
@@ -31,11 +32,8 @@ pub fn save_error_report(error: &SnapshotError) -> Report {
         SnapshotError::BadSentence { reason } => {
             refused(vec![reason.clone(), "nothing ran".to_string()], None, NEXT_SENTENCE)
         }
-        SnapshotError::UnbornHead { folder } => {
-            head_refused(format!("HEAD of the folder {} has no commit", folder.display()))
-        }
-        SnapshotError::DetachedHead { folder } => {
-            head_refused(format!("HEAD of the folder {} names no branch", folder.display()))
+        SnapshotError::UnbornHead { .. } | SnapshotError::DetachedHead { .. } => {
+            head_refusal("save", vec![error.to_string(), "no save commit was written".to_string()], NEXT_HEAD)
         }
         SnapshotError::ChangeIdMissing { head } => refused(
             vec![
@@ -107,10 +105,6 @@ fn refused(lines: Vec<String>, owner: Option<String>, next: &str) -> Report {
         next: next.to_string(),
         fields: Vec::new(),
     }
-}
-
-fn head_refused(why: String) -> Report {
-    refused(vec![why, "no save commit was written".to_string()], Some("the folder's HEAD".to_string()), NEXT_HEAD)
 }
 
 fn busy(lines: Vec<String>) -> Report {

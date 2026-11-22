@@ -26,7 +26,8 @@ use crate::make::{ref_moved_from, FolderError};
 use crate::plan::request_branch;
 
 /// Drops every attempt of `request` in `zone` and returns the attempt numbers dropped, in k order. `saved` is the
-/// caller's is_saved per attempt, as (k, saved). Before anything is touched: the names must make a request
+/// caller's answer per attempt, as (k, saved): for an attempt with a folder, snapshot's saved_state(..).saved with
+/// no file refused. Before anything is touched: the names must make a request
 /// branch (Plan), no attempt folder may have lost its branch (OrphanAttempt naming them; next step: remake_orphans,
 /// which the caller runs), and every attempt, with a folder or not, must be saved (AttemptsUnsaved). No attempts and no
 /// orphan folders: Ok(empty), nothing removed and no op logged, which is also what a repeat after a completed drop

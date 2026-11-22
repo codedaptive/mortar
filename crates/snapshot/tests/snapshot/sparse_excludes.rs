@@ -1,6 +1,6 @@
 use crate::support::{blob, run, tree_names, write, Fixture};
 use gitio::RunOpts;
-use snapshot::{is_saved, snapshot, DEFAULT_SIZE_CAP};
+use snapshot::{saved_state, snapshot, DEFAULT_SIZE_CAP};
 use std::{fs, path::{Path, PathBuf}};
 
 #[test]
@@ -37,14 +37,14 @@ fn sparse_snapshot_keeps_out_of_cone_tree_and_preserves_staged_index_and_all_fil
     assert_eq!(git.read_ref(&f.refname).unwrap(), Some(saved.commit.clone()));
     assert_eq!(f.git.read_ref(&f.refname).unwrap(), Some(saved.commit));
     assert_eq!(oplog::read_op_log(&f.common).unwrap().records.len(), 2);
-    assert!(is_saved(&f.git, &folder, &f.target, &[], DEFAULT_SIZE_CAP).unwrap());
+    assert!(saved_state(&f.git, &folder, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
     assert_eq!(fs::read(&index_path).unwrap(), index_before);
     assert_eq!(files(&folder), files_before);
 }
 
 #[test]
 fn ignored_build_outputs_and_caller_excludes_stay_out_but_similar_names_are_saved() {
-    // Joins snapshot_excludes (via snapshot/is_saved) -> gitio's real pathspec/gitignore tree -> oplog.
+    // Joins snapshot_excludes (via snapshot/saved_state) -> gitio's real pathspec/gitignore tree -> oplog.
     let f = Fixture::new(&[(".gitignore", b"ignored/\n*.ignored\n")]);
     let excluded = [
         "ignored/secret", "file.ignored", "target/root", "pkg/target/nested",
@@ -71,7 +71,11 @@ fn ignored_build_outputs_and_caller_excludes_stay_out_but_similar_names_are_save
     assert_eq!(files_except_git(&f.repo.path), files_before);
     let log_before = fs::read(oplog::oplog_path(&f.common)).unwrap();
     for name in excluded { write(&f.repo.path, name, b"still excluded after changing\n"); }
-    assert!(is_saved(&f.git, &f.repo.path, &f.target, &excludes, DEFAULT_SIZE_CAP).unwrap());
+    assert!(
+        saved_state(&f.git, &f.repo.path, &f.target, &excludes, DEFAULT_SIZE_CAP)
+            .unwrap()
+            .saved
+    );
     assert_eq!(fs::read(oplog::oplog_path(&f.common)).unwrap(), log_before);
 }
 

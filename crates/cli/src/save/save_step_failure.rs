@@ -1,5 +1,6 @@
 //! save_step_failure: the report of mr save failing in a snapshot or save step: an error from the pending move's
-//! snapshot (finish_pending_move), snapshot_formatted or snapshot::save_with_snapshot. Its Git, Trailers, ChangeId and
+//! snapshot (finish_pending_move), snapshot_formatted, snapshot::save_from_snapshot (save with a formatter) or
+//! snapshot::save_with_snapshot (save without one). Its Git, Trailers, ChangeId and
 //! Oplog errors are snapshot_step_failure's; every other error is save_error_report's, which mr status shares.
 
 use snapshot::SnapshotError;

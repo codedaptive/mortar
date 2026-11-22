@@ -1,4 +1,4 @@
-//! savings_log_line: the exact snake_case line the codeteam deck reads, with JSON-escaped strings.
+//! savings_log_line: the exact snake_case line a savings.jsonl reader expects, with JSON-escaped strings.
 
 use std::path::Path;
 

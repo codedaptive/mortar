@@ -1,9 +1,11 @@
-//! reverse_and_step: run_undo's undo of one chosen step: the snapshot, the check against a later op, the oplog undo
-//! and the folder step, with the paused join put back for a resolve step.
+//! reverse_and_step: run_undo's undo of one chosen step: the snapshot (whose refusal in an attempt folder with an
+//! unborn HEAD names the try branch, attempt_head_next), the check against a later op, the oplog undo and the folder
+//! step, with the paused join put back for a resolve step.
 //! No unit test: it runs git, snapshot or the op log; its decisions have their tests.
 
+use folders::FolderKind;
 use oplog::{undo, ApplyOutcome, OpRecord, ValuedRecord};
-use snapshot::snapshot;
+use snapshot::{snapshot, SnapshotError};
 
 use super::folder_step::folder_step;
 use super::{
@@ -11,13 +13,15 @@ use super::{
     with_restored, UndoStep,
 };
 use crate::join::RequestRun;
-use crate::report::Report;
+use crate::report::{attempt_head_next, Report};
 use crate::save::snapshot_error_report;
 use crate::shell::ShellContext;
 
 const VERB: &str = "undo";
 
-/// Snapshots the folder first (a SnapshotError is snapshot_error_report relabelled undo), checks that the op at
+/// Snapshots the folder first (a SnapshotError is snapshot_error_report relabelled undo; in an attempt folder, whose
+/// branch is run.request_ref, an unborn HEAD's next is attempt_head_next's, naming the try branch, since the
+/// request's branch is not the attempt's; its lines, exit, outcome and owner stay), checks that the op at
 /// `index` is still the last on its refs (later_op_refusal), undoes it through oplog on exactly its refs, then makes
 /// the folder step (folder_step): SetIndex sets the index to the tree of the commit the branch now holds; MoveFolder
 /// finishes the undo's own folder move (a refused move is that report and stays pending); RestoreJoin puts the
@@ -34,7 +38,7 @@ pub(super) fn reverse_and_step(
 ) -> Result<Report, Report> {
     let (excludes, cap) = (&run.settings.excludes, run.settings.cap_bytes);
     let kept = snapshot(&run.git, &run.folder.toplevel, &run.target, excludes, cap)
-        .map_err(|error| Report { verb: VERB.to_string(), ..snapshot_error_report(&error) })?;
+        .map_err(|error| snapshot_refusal(run, &error))?;
     let plain: Vec<OpRecord> = records.iter().map(|valued| valued.record.clone()).collect();
     let target = &plain[index];
     let scope: Vec<String> = target.moves.iter().map(|one| one.refname.clone()).collect();
@@ -51,4 +55,18 @@ pub(super) fn reverse_and_step(
     };
     let restored = folder_step(run, step, &records[index], &undo_op)?;
     Ok(restored.iter().fold(report, with_restored))
+}
+
+/// snapshot_error_report for `error` relabelled undo, its next attempt_head_next's when that gives one: the folder's
+/// branch is the try branch only in an attempt folder.
+fn snapshot_refusal(run: &RequestRun, error: &SnapshotError) -> Report {
+    let report = Report { verb: VERB.to_string(), ..snapshot_error_report(error) };
+    let attempt_branch = match run.folder.record.kind {
+        FolderKind::Attempt(_) => run.request_ref.strip_prefix("refs/heads/"),
+        FolderKind::Request | FolderKind::Zone => None,
+    };
+    match attempt_head_next(error, attempt_branch) {
+        Some(next) => Report { next, ..report },
+        None => report,
+    }
 }

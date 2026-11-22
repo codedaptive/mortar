@@ -1,6 +1,6 @@
 //! CLI run_save/run_undo -> real Snapshot save, Oplog reverse, Gitio index and Folders attempt isolation.
 use super::fixture::*;
-use crate::support::{write, REQUEST, SNAP};
+use crate::support::{raw, write, REQUEST, SNAP};
 use gitio::Oid;
 use std::fs;
 
@@ -38,6 +38,29 @@ fn pre_undo_snapshot_ref_can_be_restored_by_the_real_restore_verb_after_later_wo
     assert_eq!(ref_at(&w, SNAP), Some(snap.clone())); assert_eq!(w.s.f.blob(&snap, "src/file"), b"kept before undo\n");
     assert_eq!(ref_at(&w, REQUEST), branch); assert_eq!(w.folder_state(&w.s.f.request), folder);
     let before = observe(&w); w.s.app(&["restore", &kept.op_id, SNAP], 0, "already-done"); assert_eq!(observe(&w), before);
+}
+
+#[test]
+fn attempt_unborn_head_undo_refuses_with_try_branch_next() {
+    let w = World::new();
+    let attempts = w.s.f.root.join("attempts");
+    w.s.run(&w.s.f.request, &["folder", "attempts", "2", attempts.to_str().unwrap()], 0, "made");
+    let attempt = attempts.join("try-1");
+    write(&attempt, "src/file", b"attempt work\n");
+    agent(&w, &attempt, &["save", "Save attempt"], 0, "saved");
+    let git = gitio::Git { repo: attempt.clone(), ..w.s.f.git.clone() };
+    raw(&git, &["checkout", "--orphan", "unborn-test"]);
+    let branch = ref_at(&w, "refs/heads/try/core/task/1");
+    let snap = ref_at(&w, "refs/mortar/trysnap/core/task/1");
+    assert!(branch.is_some());
+    let undo_count = w.s.f.records().iter().filter(|r| r.kind == "undo").count();
+    let r = agent(&w, &attempt, &["undo"], 1, "refused");
+    assert_eq!(r.text("owner"), "the folder's HEAD");
+    assert_eq!(r.strings("lines"), &[format!("HEAD of the folder {} has no commit", attempt.display()), "nothing was snapshotted".into()]);
+    assert_eq!(w.s.f.records().iter().filter(|r| r.kind == "undo").count(), undo_count);
+    assert_eq!(ref_at(&w, "refs/heads/try/core/task/1"), branch);
+    assert_eq!(ref_at(&w, "refs/mortar/trysnap/core/task/1"), snap);
+    assert_eq!(r.text("next"), "check out the branch try/core/task/1 in the attempt's folder, then repeat the same command");
 }
 
 #[test]

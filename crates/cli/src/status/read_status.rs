@@ -30,7 +30,7 @@ use crate::report::{failure_report, Report};
 /// zone_moved, joined when the branch tip is in the zone, the branch has commits of its own and the folder is
 /// saved, no_work_yet, the paused join and the stalled folder move); then the changed, untracked and conflicted paths; the overlaps (read_overlaps, against
 /// each request's fork point from the zone tip read_progress read); the record's gaps. A save error is
-/// save_error_report relabelled for `verb`; every other failure is failure_report. Reads only: no lock, no
+/// read_branch_reads' (saved_state_report) for `verb`; every other failure is failure_report. Reads only: no lock, no
 /// recover, no ref move.
 pub fn read_status(
     folder: &FolderContext,

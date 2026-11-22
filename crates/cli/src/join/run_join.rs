@@ -19,11 +19,11 @@
 
 use folders::move_folder;
 use oplog::KillPidProbe;
-use snapshot::{save_from_snapshot, snapshot_formatted, SaveOutcome, SnapshotError};
+use snapshot::SaveOutcome;
 
 use super::{
     finish_pending_move, join_refusal_report, join_report, join_save_subject, move_refusal_report, moved_before,
-    request_run_for, snapshot_moved, JoinOutcome, RequestRun,
+    request_run_for, save_from_formatted, snapshot_moved, JoinOutcome, RequestRun,
 };
 use crate::lock::locked_act;
 use crate::report::Report;
@@ -71,27 +71,19 @@ fn act(run: &RequestRun) -> Result<Report, Report> {
     }))
 }
 
-/// Runs the formatter with a snapshot, reads the HEAD that snapshot was built on, then saves from it
-/// (save_from_snapshot, which takes no second snapshot), returning the save and whether the snapshot ref moved by its
-/// end (`finish_written`: the finished move's snapshot moved it; or the formatter's snapshot). HEAD is read after the
-/// formatter because the formatter may move the branch, and nothing runs between the snapshot and the read under the
-/// lock. A failure of any step names what the steps before it moved; HEAD with no commit is UnbornHead. Always run:
-/// save writes no commit when the folder's tree equals HEAD's.
+/// Saves the folder through save_from_formatted (the formatter's one snapshot, then the save from it), returning the
+/// save and whether the snapshot ref moved by its end (`finish_written`: the finished move's snapshot moved it; or
+/// the formatter's snapshot). A failure of any step names what the steps before it moved. Always run: save writes no
+/// commit when the folder's tree equals HEAD's.
 fn save_work(run: &RequestRun, finish_written: bool) -> Result<(SaveOutcome, bool), Report> {
     let (folder, excludes, cap) = (&run.folder.toplevel, &run.settings.excludes, run.settings.cap_bytes);
-    let failure = |error: SnapshotError, earlier: bool| {
-        snapshot_step_failure(VERB, &error, moved_before(false, earlier, &run.request_ref).as_deref())
-    };
-    let taken = snapshot_formatted(&run.git, folder, &run.target, excludes, cap, run.settings.formatter.as_ref())
-        .map_err(|error| failure(error, finish_written))?;
-    let earlier = finish_written || taken.written;
-    let (_, head) = run.git.head(folder).map_err(|error| failure(SnapshotError::Git(error), earlier))?;
-    let Some(built_on) = head else {
-        return Err(failure(SnapshotError::UnbornHead { folder: folder.clone() }, earlier));
-    };
     let subject = join_save_subject(&run.target.request);
-    let saved = save_from_snapshot(&run.git, folder, &run.target, &subject, &built_on, taken)
-        .map_err(|error| failure(error, earlier))?;
-    let moved = snapshot_moved(earlier, &saved);
+    let (saved, _, written) =
+        save_from_formatted(&run.git, folder, &run.target, &subject, excludes, cap, run.settings.formatter.as_ref())
+            .map_err(|(error, written)| {
+                let moved = moved_before(false, finish_written || written, &run.request_ref);
+                snapshot_step_failure(VERB, &error, moved.as_deref())
+            })?;
+    let moved = snapshot_moved(finish_written || written, &saved);
     Ok((saved.outcome, moved))
 }

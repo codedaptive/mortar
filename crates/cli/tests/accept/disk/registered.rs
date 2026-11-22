@@ -1,4 +1,4 @@
-//! One team repository a codeteam manifest registers. Data only: registered_repos makes it, copy_refusal reads it,
+//! One team repository a team manifest registers. Data only: registered_repos makes it, copy_refusal reads it,
 //! and copy_refusal_tests.rs covers that reading.
 
 use std::path::PathBuf;

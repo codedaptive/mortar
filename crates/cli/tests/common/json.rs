@@ -2,7 +2,7 @@
 use std::{collections::BTreeMap, process::Output};
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Value { Text(String), Number(u64), Bool(bool), Null, Texts(Vec<String>), Object(Vec<(String, Value)>) }
+pub enum Value { Text(String), Number(u64), Bool(bool), Null, Texts(Vec<String>), Items(Vec<Value>), Object(Vec<(String, Value)>) }
 #[derive(Debug)]
 pub struct Report(BTreeMap<String, Value>);
 impl Report {
@@ -66,9 +66,14 @@ fn value(text: &str, at: &mut usize) -> Value {
         Some(b'[') => {
             *at += 1; let mut out = Vec::new();
             if text.as_bytes().get(*at) != Some(&b']') {
-                loop { out.push(string(text, at)); if text.as_bytes().get(*at) == Some(&b',') { *at += 1; } else { break; } }
+                loop { out.push(value(text, at)); if text.as_bytes().get(*at) == Some(&b',') { *at += 1; } else { break; } }
             }
-            take(text, at, b']'); Value::Texts(out)
+            take(text, at, b']');
+            if out.iter().all(|item| matches!(item, Value::Text(_))) {
+                Value::Texts(out.into_iter().map(|item| match item { Value::Text(s) => s, _ => unreachable!() }).collect())
+            } else {
+                Value::Items(out)
+            }
         }
         Some(b't') => { assert!(text[*at..].starts_with("true")); *at += 4; Value::Bool(true) }
         Some(b'f') => { assert!(text[*at..].starts_with("false")); *at += 5; Value::Bool(false) }

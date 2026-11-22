@@ -8,9 +8,9 @@
 //! tests/snapshot/race.rs::foreign_logged_move_after_previous_read_is_refused_without_overwriting_ref_or_files;
 //! FileSize (an ELOOP) in
 //! tests/snapshot/sizing_edges.rs::real_metadata_symlink_loop_is_file_size_error_before_commit_ref_or_log_and_retry_preserves_work;
-//! CapMismatch, also through is_saved, in
+//! CapMismatch, also through saved_state, in
 //! sizing_edges.rs::caller_noglob_environment_produces_exact_cap_mismatch_without_losing_previous_snapshot;
-//! UnbornHead, also through is_saved, in
+//! UnbornHead, also through saved_state, in
 //! sizing_edges.rs::unborn_head_is_named_before_any_snapshot_commit_ref_or_op.
 //! Through save, in tests/snapshot/save_cases.rs: BadSentence (blank_and_multiline_sentences_refuse_before_snapshot_or_any_history_write),
 //! DetachedHead and UnbornHead (detached_and_unborn_heads_are_named_before_any_snapshot_commit_ref_or_op_is_written),

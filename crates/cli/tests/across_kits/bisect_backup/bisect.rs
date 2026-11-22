@@ -110,11 +110,13 @@ fn a_fifo_blocked_probe_is_reported_timed_out_and_counted_as_a_failure_without_a
     let s = Harness::new(); let (_, failed) = s.failing_landing(false);
     let fifo = s.f.root.join("blocked-probe"); let pid_file = s.f.root.join("blocked-probe.pid"); let program = s.f.root.join("timeout-probe.sh");
     let made = Command::new("mkfifo").arg(&fifo).output().unwrap(); assert!(made.status.success(), "{made:?}");
-    script(&program, b"#!/bin/sh\nset -eu\nif grep -qx base src/file; then exit 0; fi\nprintf '%s' \"$$\" >\"$2\"\nexec /bin/cat \"$1\"\n");
+    script(&program, b"#!/bin/sh\nset -eu\nprintf '%s\\n' \"$$\" >>\"$2\"\nif grep -qx base src/file; then exit 0; fi\nexec /bin/cat \"$1\"\n");
     let r = run(&s, &mut s.bisect_command(&s.f.base, &failed, "1", &program, &[fifo.to_str().unwrap(), pid_file.to_str().unwrap()]), 0, "culprit");
     assert_eq!(r.text("commit"), failed.as_str());
     assert_eq!(r.strings("probes"), &[format!("{failed}: timed out after 1 s, counted as a fail"), format!("{}: passed", s.f.base)]);
     assert!(r.strings("lines").contains(&format!("probe {failed}: timed out after 1 s, counted as a fail")));
-    let pid = fs::read_to_string(pid_file).unwrap().parse::<u32>().unwrap();
-    assert!(!oplog::PidProbe::pid_alive(&oplog::KillPidProbe, pid), "timed-out probe must be stopped and reaped");
+    let pids: Vec<u32> = fs::read_to_string(pid_file).unwrap().lines().map(|l| l.parse().unwrap()).collect();
+    assert!(matches!(pids.len(), 1 | 2), "one pid per probe that started, failed probe first: {pids:?}");
+    // One line: the timed-out probe was stopped before its first command, so it never reached its blocking read.
+    if let [pid, _] = pids[..] { assert!(!oplog::PidProbe::pid_alive(&oplog::KillPidProbe, pid), "timed-out probe must be stopped and reaped"); }
 }

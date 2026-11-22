@@ -92,3 +92,52 @@ fn save_and_join_exclude_top_level_and_nested_configured_build_dirs_without_dele
         assert_eq!(fs::read(f.request.join("sub/d/nested-build")).unwrap(), b"nested build output\n");
     }
 }
+
+#[test]
+fn save_uses_request_branch_tip_moved_by_formatter_as_parent() {
+    let f = Fixture::new();
+    let old = f.head();
+    let program = f.common.join("move-branch.sh");
+    let moved = f.common.join("formatter-commit");
+    script(&program, b"#!/bin/sh\nset -eu\nhead=$(git rev-parse HEAD)\ntree=$(git rev-parse HEAD^{tree})\nbranch=$(git symbolic-ref HEAD)\nnext=$(printf 'formatter move\\n' | git commit-tree \"$tree\" -p \"$head\")\ngit update-ref \"$branch\" \"$next\" \"$head\"\nprintf '%s\\n' \"$next\" >\"$1\"\n");
+    let mut config = f.init_args.clone();
+    config.formatter = Some(FormatterConfig { command: vec![program.to_str().unwrap().into(), moved.to_str().unwrap().into()], timeout_seconds: 60 });
+    f.configure(&config);
+    f.write("src/file", b"work saved after formatter move\n");
+
+    let report = f.report(&["--json", "save", "Save after formatter move"], "save", 0, "saved");
+    let head = f.head();
+    let formatter_commit = oid(&fs::read(&moved).unwrap());
+    assert!(report.flag("written"));
+    assert_eq!(report.text("commit"), head.as_str());
+    assert_eq!(f.git.commit_info(&head).unwrap().parents, vec![formatter_commit.clone()]);
+    assert_eq!(f.git.commit_info(&formatter_commit).unwrap().parents, vec![old]);
+    assert_eq!(f.blob(&head, "src/file"), b"work saved after formatter move\n");
+    assert!(!f.lock_path().exists());
+}
+
+#[test]
+fn detached_head_save_with_formatter_preserves_edit_in_snapshot_without_moving_request_branch() {
+    let f = Fixture::new();
+    let request = f.head();
+    assert_eq!(f.git.read_ref(SNAP).unwrap(), None);
+    let program = f.common.join("formatter.sh");
+    script(&program, b"#!/bin/sh\nexit 0\n");
+    let mut config = f.init_args.clone();
+    config.formatter = Some(FormatterConfig { command: vec![program.to_str().unwrap().into()], timeout_seconds: 60 });
+    f.configure(&config);
+    f.write("src/file", b"unsaved detached work\n");
+    raw(&f.local(), &["checkout", "--detach"]);
+
+    let report = f.report(&["--json", "save", "Save detached work"], "save", 1, "refused");
+    assert_eq!(report.strings("lines"), &[
+        "the snapshot ref moved as the work was saved first",
+        &format!("HEAD of the folder {} names no branch", f.request.display()),
+        "no save commit was written",
+    ]);
+    assert_eq!(f.git.read_ref(REQUEST).unwrap(), Some(request));
+    let snapshot = f.git.read_ref(SNAP).unwrap().unwrap();
+    assert_eq!(f.blob(&snapshot, "src/file"), b"unsaved detached work\n");
+    assert_eq!(fs::read(f.request.join("src/file")).unwrap(), b"unsaved detached work\n");
+    assert!(!f.lock_path().exists());
+}
