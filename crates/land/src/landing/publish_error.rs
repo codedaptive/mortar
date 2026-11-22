@@ -26,6 +26,7 @@ pub enum PublishError {
     /// The remote has no origin branch to publish onto.
     RemoteMissing { remote: String, refname: String },
     /// The push intent for this move was already in the log when publish opened it: open (`phase` Intent) or done
-    /// (Done), the record `op_id`. Nothing was pushed.
+    /// (Done), the record `op_id`. Nothing was pushed. Also push off refused while this publish's push intent is
+    /// open: `phase` Intent, nothing changed.
     PushIntent { op_id: String, phase: OpPhase },
 }

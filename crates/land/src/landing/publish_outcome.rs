@@ -6,8 +6,8 @@
 
 use crate::landing::PublishAnswer;
 
-/// `answer`: what publish did. `pushed`: true exactly when push was on and the answer is Published, so the
-/// published commit is on the remote; false on OriginMoved and NothingToPublish, and always with push off.
+/// `answer`: what publish did. `pushed`: true only when the answer is Published and this publish's push intent
+/// closed done, on either setting, so the published commit is on the remote; false otherwise.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PublishOutcome {
     pub answer: PublishAnswer,

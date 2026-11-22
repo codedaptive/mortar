@@ -47,9 +47,9 @@ impl fmt::Display for SquashError {
             ),
             SquashError::RequestsMalformed { commit } => write!(
                 f,
-                "commit {commit}'s message does not list its requests as squash writes them (`<zone>: <n> \
-                 requests`, then one `- <request>: ...` line each); squash the zone again to write a new squash \
-                 commit"
+                "commit {commit}'s message does not list its requests as squash reads them (one `- <request>: \
+                 ...` line each in the paragraph before the trailers, as many as a `<zone>: <n> requests` subject \
+                 counts when the subject is squash's own); squash the zone again to write a new squash commit"
             ),
         }
     }

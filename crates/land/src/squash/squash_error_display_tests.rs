@@ -99,5 +99,5 @@ fn trailer_malformed_text_names_the_commit_the_trailer_and_its_quoted_value_then
 
 #[test]
 fn requests_malformed_text_names_the_commit_and_the_request_lines_expected_then_what_to_do() {
-    assert_eq!(SquashError::RequestsMalformed { commit: a() }.to_string(), "commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa's message does not list its requests as squash writes them (`<zone>: <n> requests`, then one `- <request>: ...` line each); squash the zone again to write a new squash commit");
+    assert_eq!(SquashError::RequestsMalformed { commit: a() }.to_string(), "commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa's message does not list its requests as squash reads them (one `- <request>: ...` line each in the paragraph before the trailers, as many as a `<zone>: <n> requests` subject counts when the subject is squash's own); squash the zone again to write a new squash commit");
 }
