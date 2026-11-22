@@ -1,8 +1,9 @@
-//! repeat_head_refusal: head_refusal with the next of every verb but save, an attempt folder's snapshot and status in
-//! an attempt folder, which name their own. It is the one source
-//! of that next for snapshot (save/snapshot_error_report.rs), join and resolve (through snapshot_step_failure),
-//! crate::join::snapshot_failure's callers, need (need/read_need_path.rs) and status outside an attempt
-//! folder (status/saved_state_report.rs; disk keeps only its lines).
+//! repeat_head_refusal: head_refusal with the next of every verb but save and an attempt folder's snapshot, which
+//! name their own, and status, undo and mr folder remove in an attempt folder whose HEAD is unborn, which name the
+//! try branch (attempt_head_next). It is the one source of that next for snapshot (save/snapshot_error_report.rs,
+//! and undo's snapshot outside an attempt folder), join and resolve (through snapshot_step_failure),
+//! crate::join::snapshot_failure's callers (but folder remove in an attempt folder), need (need/read_need_path.rs)
+//! and status outside an attempt folder (status/saved_state_report.rs; disk keeps only its lines).
 
 use super::{head_refusal, Report};
 

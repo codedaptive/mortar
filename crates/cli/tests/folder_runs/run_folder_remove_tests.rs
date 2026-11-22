@@ -1,5 +1,5 @@
 //! `mortar folder remove`: a joined, saved request folder removed with its branch and snapshot ref; unsaved work,
-//! remaining attempts and a zone folder each refused with nothing removed.
+//! remaining attempts, a zone folder and an attempt folder with an unborn HEAD each refused with nothing removed.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
 //! - a file the snapshot cap refuses counts as unsaved: exit 1, the cli's facts naming the file and the cap
@@ -198,6 +198,25 @@ fn a_request_folder_with_attempts_left_is_refused_naming_keep_and_drop() {
     assert!(tries.join("try-1").exists(), "{out}");
     assert_eq!(fx.git.read_ref("refs/heads/try/core/task/1").unwrap(), try_branch, "{out}");
     assert_eq!(ops(&fx.common).len(), before, "{out}");
+}
+
+#[test]
+fn attempt_unborn_head_remove_refuses_with_try_branch_next() {
+    let fx = Fixture::new();
+    let tries = fx.repo.path.join("tries");
+    oplog::recover(&fx.git, &fx.common).unwrap();
+    folders::make_attempts(&setup(&fx.git, &tries), "core", "task", &paths(), 1).unwrap();
+    let attempt = tries.join("try-1");
+    let git = Git { repo: attempt.clone(), ..fx.git.clone() };
+    git.run(&["checkout", "--orphan", "unborn-test"], &RunOpts::default()).unwrap();
+    let branch = fx.git.read_ref("refs/heads/try/core/task/1").unwrap();
+    assert!(branch.is_some());
+    let r = crate::json::check(fx.remove(&attempt), "folder", 1, "refused");
+    assert_eq!(r.text("owner"), "the folder's HEAD");
+    assert_eq!(r.strings("lines"), &[format!("HEAD of the folder {} has no commit", attempt.display())]);
+    assert!(attempt.exists());
+    assert_eq!(fx.git.read_ref("refs/heads/try/core/task/1").unwrap(), branch);
+    assert_eq!(r.text("next"), "check out the branch try/core/task/1 in the attempt's folder, then repeat the same command");
 }
 
 #[test]

@@ -23,6 +23,8 @@
 //! - the snapshot taken first is restorable with mr restore;
 //! - a repeat after a kill answers already-done, finishing the folder step the kill left;
 //! - a held join-<zone> lock is exit 3 naming the holder;
+//! - undo in an attempt folder whose HEAD is unborn is refused, exit 1, owner the folder's HEAD, its next checking out
+//!   the try branch, with no undo op and no ref moved;
 //! - in attempt folder k, only attempt k's own save is undone, never the request's, and the reverse.
 
 use folders::FolderKind;
