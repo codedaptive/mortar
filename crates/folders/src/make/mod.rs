@@ -27,9 +27,11 @@ mod refill_cone;
 mod refill_folder;
 mod repeat;
 mod repeat_decision;
+mod set_zone_paths;
 mod skip_refill;
 mod with_folders_lock;
 mod write_folder_record;
+mod zone_paths_record;
 mod zone_start;
 mod zone_start_for;
 
@@ -60,6 +62,8 @@ mod repeat_decision_tests;
 #[cfg(test)]
 mod skip_refill_tests;
 #[cfg(test)]
+mod zone_paths_record_tests;
+#[cfg(test)]
 mod zone_start_for_tests;
 
 pub(crate) use branch_holder::branch_holder;
@@ -77,6 +81,8 @@ pub(crate) use ref_moved_from::ref_moved_from;
 pub(crate) use refill_cone::refill_cone;
 pub(crate) use repeat::Repeat;
 pub(crate) use repeat_decision::repeat_decision;
+pub use set_zone_paths::set_zone_paths;
 pub(crate) use with_folders_lock::with_folders_lock;
 pub(crate) use write_folder_record::write_folder_record;
+pub(crate) use zone_paths_record::zone_paths_record;
 pub(crate) use zone_start::ZoneStart;
