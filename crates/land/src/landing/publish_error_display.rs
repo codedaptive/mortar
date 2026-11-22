@@ -1,8 +1,9 @@
 //! Display for PublishError: each variant says why and names what it carries; the refusals publish makes itself
-//! also say that nothing was published.
+//! also say that nothing was published; PushIntent's text follows its phase (open, or already done).
 
 use crate::landing::PublishError;
 use gitio::PushRefusal;
+use oplog::OpPhase;
 use std::fmt;
 
 impl fmt::Display for PublishError {
@@ -23,10 +24,15 @@ impl fmt::Display for PublishError {
                 f,
                 "remote {remote} has no {refname} to publish onto; nothing was published"
             ),
+            PublishError::PushIntent { op_id, phase: OpPhase::Intent } => write!(
+                f,
+                "the push intent {op_id} for this move is still open: a publish was interrupted between its steps, \
+                 so nothing was pushed or changed; next: mr publish, which reads the remote and closes it"
+            ),
             PublishError::PushIntent { op_id, .. } => write!(
                 f,
-                "the push intent {op_id} for this move was already open or already done when publish opened it, so \
-                 nothing was pushed; next: check the remote's origin branch, then mr publish"
+                "the push intent {op_id} for this move was already done when publish opened it, so nothing was \
+                 pushed; next: check the remote's origin branch, then mr publish"
             ),
         }
     }

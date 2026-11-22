@@ -7,7 +7,9 @@ use gitio::Oid;
 /// off: step 2 without the remote); step 2, move the local origin. Cleanup: the local origin has it; remove the
 /// squash ref and the landing state. FetchOrigin: someone else moved the remote; fetch it and back the landing out
 /// onto it. BackOut: the local origin already moved to `onto` for that (with push off: the local origin was found
-/// at `onto`); finish the back-out onto it. RemoteMissing: the remote has no origin branch.
+/// at `onto`); finish the back-out onto it. RemoteMissing: the remote has no origin branch. PushOpen: push off while
+/// this publish's push intent `op_id` is open; refuse with nothing changed, for a push-on publish to read the remote
+/// and close it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum PublishStep {
     Nothing,
@@ -17,4 +19,5 @@ pub(crate) enum PublishStep {
     FetchOrigin,
     BackOut { onto: Oid },
     RemoteMissing,
+    PushOpen { op_id: String },
 }
