@@ -6,10 +6,12 @@
 
 use gitio::Oid;
 
-/// Published: the remote and the local origin branch are at `origin`, the landed commit; the landing state and the
-/// zone's squash ref are removed. OriginMoved: someone else moved the remote's origin branch, so the local origin
-/// was fast-forwarded to `found`, integration put on it and the landing state removed; the squash and its ref are
-/// kept, and the next step is to land again. NothingToPublish: no landing state, so no landing is waiting.
+/// Published: the local origin branch is at `origin`, the landed commit, and the remote is at it or past it (with
+/// push off only the local origin is at `origin`, the remote untouched); the landing state and the zone's squash
+/// ref are removed. OriginMoved: someone else moved the remote's origin branch, so the local origin was
+/// fast-forwarded to `found` (with push off: the local origin was found at `found`, nothing fetched), integration
+/// put on it and the landing state removed; the squash and its ref are kept, and the next step is to land again.
+/// NothingToPublish: no landing state, so no landing is waiting.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum PublishAnswer {
     Published { origin: Oid },
