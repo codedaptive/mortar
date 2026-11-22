@@ -10,11 +10,11 @@ All notable changes to Mortar are recorded here, in terms of what the program do
 
 ### Upkeep
 
-- **`mr disk` says which folders hold work.** Under each folder's size it shows the folder's unsaved tracked and untracked files, and whether its request has joined its zone: yes, no, or unknown with the reason. `--json` adds `holds`, one entry per folder with `tracked`, `untracked`, `joined` (true, false or null) and `no_joined_answer`. A folder whose answer cannot be read does not stop the report, and `mr disk` still removes nothing.
+- **`mr disk` says which folders hold work.** Under each folder's size it shows the folder's unsaved tracked and untracked files, and whether its request has joined its zone: yes, no, or unknown with the reason. `--json` adds `holds`, one entry per folder with `tracked`, `untracked`, `joined` (true, false or null) and `no_joined_answer`. A folder whose joined answer cannot be read is shown as unknown and does not stop the report, and `mr disk` still removes nothing.
 
 ### Refusals
 
-- **A folder whose HEAD is detached, or whose branch has no commit yet, is refused with the step that fixes it** (exit 1). This covers `mr join` (both cases), `mr undo`, `mr folder keep`, `mr folder remove`, `mr folder drop`, `mr resolve` and `mr need`. They used to fail (exit 5) and ask for a repeat that could not succeed. In an attempt folder the step names the attempt's branch.
+- **A folder whose HEAD is detached, or whose branch has no commit yet, is refused with the step that fixes it** (exit 1). This covers `mr join`, `mr undo`, `mr folder keep` and `mr folder remove` (both cases), and `mr resolve`, `mr folder drop` and `mr need` (a branch with no commit yet). They used to fail (exit 5) and ask for a repeat that could not succeed. In an attempt folder whose branch has no commit yet, `mr status` names the attempt's branch as its step.
 - `mr status` and `mr need` give a failed read of a request's branch in Mortar's own words.
 
 ### Fixes
