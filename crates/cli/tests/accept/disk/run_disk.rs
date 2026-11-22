@@ -1,20 +1,29 @@
-//! Step 5, disk. Real repositories, processes and files: the drive (steps/disk.rs) runs it as step 5's
-//! body on every drive with ACCEPT_MOOT_COPY set and not empty whose throwaway world was made.
+//! Step 5, disk. Real repositories, processes and files: the drive (steps/disk.rs) runs it as step 5's body on every
+//! drive with ACCEPT_MOOT_COPY set and not empty whose throwaway world was made.
 
 use std::path::Path;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{
-    actor_mr, disk_folders, disk_number_lines, parse_ls_tree, plan_checkout, reply_number, time_snapshot, tree_bytes,
-    writable_copy, CheckoutPlan, DiskNumbers,
+    build_number_lines, disk_init, disk_number_lines, kit_number_lines, measure_zone, parse_ls_tree, plan_checkout,
+    writable_copy, CheckoutPlan, DiskNumbers, ZoneNumbers, ZonePlan,
 };
 use crate::report::Checks;
+use crate::stage::git_out;
 use crate::world::World;
 
 const COPY_CHECK: &str = "the copy is one the drive may write (not a registered team repository or a worktree of one)";
 
 /// The refusal first (writable_copy): a copy the drive may not write, or one it cannot tell, is that one failed
-/// line and nothing more: no mr run, nothing written, nothing measured. Otherwise the plan from HEAD's tree (a plan
-/// not read leaves every number not taken, saying why), then the folders, the measures and the five number lines.
+/// line and nothing more: no mr run, nothing written, nothing measured. Otherwise the plan from HEAD's tree on a log
+/// line, then disk_init's check line for the all-packages zone alone. A plan not read, or an init line that did not
+/// hold, ends the step there with every number not taken, saying why: the five check lines, the all-packages
+/// zone's build line and the one-kit zone's line. One run name, `accept-disk-<unix seconds>-<pid>`, is the
+/// all-packages zone and its request, and `<run>-kit` the one-kit zone and its request, so no run needs a branch an
+/// earlier run's folder still holds (its worktree entry outlives its removed scratch). When the init line held: the
+/// all-packages zone through measure_zone on check lines, its five number lines and its build's log lines; then
+/// measure_kit and the kit's number lines; then a log line naming what stays in the copy, which gets no plain-git
+/// write.
 pub fn run_disk(world: &World, checks: &mut Checks) {
     let copy = match writable_copy(world) {
         Ok((copy, read)) => {
@@ -27,11 +36,76 @@ pub fn run_disk(world: &World, checks: &mut Checks) {
             return;
         }
     };
-    let numbers = match copy_plan(world, &copy) {
-        Ok(plan) => measure(world, checks, &copy, &plan),
-        Err(why) => not_taken(Err(format!("the copy's plan was not read: {why}")), "the copy's plan was not read"),
+    let plan = match copy_plan(world, &copy) {
+        Ok(plan) => plan,
+        Err(why) => {
+            let numbers = not_taken(Err(format!("the copy's plan was not read: {why}")), "the copy's plan was not read");
+            return not_measured(checks, &numbers, "the all-packages zone", "the copy's plan was not read");
+        }
+    };
+    checks.log(&plan_line(&plan));
+    let seconds = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |since| since.as_secs());
+    let run = format!("accept-disk-{seconds}-{}", std::process::id());
+    let label = format!("the all-packages zone ({})", plan.zone.zone_dir);
+    if !disk_init(world, checks, &copy, &plan, &run, None) {
+        let numbers = not_taken(Ok(plan.bytes), "the mr init and mr folder lines did not all hold");
+        return not_measured(checks, &numbers, &label, "the mr init line did not hold");
+    }
+    let head = git_out(world, &copy, &["rev-parse", "HEAD"]);
+    let at = (copy.as_path(), head.as_str());
+    let zone = measure_zone(world, checks, at, [&run, "zone-disk", "request-disk"], &plan.zone, true, &label);
+    let numbers = DiskNumbers {
+        checkout: Ok(plan.bytes),
+        zone_folder: zone.zone_folder.clone(),
+        request_folder: zone.request_folder.clone(),
+        store: zone.store.clone(),
+        snapshot: zone.snapshot.clone(),
     };
     disk_number_lines(&numbers, checks);
+    build_number_lines(&label, &zone, checks);
+    let kit = measure_kit(world, checks, at, &plan, &run);
+    kit_number_lines(&kit, checks);
+    checks.log(&format!(
+        "left in the copy: the mortar config and, of what this run made, the branches zone/{run}, req/{run}/{run}, \
+         zone/{run}-kit and req/{run}-kit/{run}-kit, the snapshot refs, and the worktree entries (prunable once the \
+         scratch is removed)"
+    ));
+}
+
+/// The one-kit zone. Runs on every drive whose all-packages init line held, after that zone was measured. When the
+/// plan has no kit it runs nothing and returns why. Else disk_init with the kit, on a log line, registers the zone
+/// `<run>-kit`; when that held, measure_zone takes the kit's numbers on log lines; when it did not, Err saying so.
+fn measure_kit(
+    world: &World,
+    checks: &mut Checks,
+    at: (&Path, &str),
+    plan: &CheckoutPlan,
+    run: &str,
+) -> Result<(String, ZoneNumbers), String> {
+    let kit = plan.kit.as_ref().map_err(Clone::clone)?;
+    if !disk_init(world, checks, at.0, plan, run, Some(&kit.zone_dir)) {
+        return Err("the mr init line registering the kit zone did not hold".to_string());
+    }
+    let label = format!("the one-kit zone ({})", kit.zone_dir);
+    let kit_run = format!("{run}-kit");
+    let names = [kit_run.as_str(), "zone-kit", "request-kit"];
+    Ok((kit.zone_dir.clone(), measure_zone(world, checks, at, names, kit, false, &label)))
+}
+
+/// An early exit's lines: the five check lines from `numbers`, then the all-packages zone's build and the one-kit
+/// zone, each one line not taken because of `why`.
+fn not_measured(checks: &mut Checks, numbers: &DiskNumbers, label: &str, why: &str) {
+    disk_number_lines(numbers, checks);
+    let untaken = ZoneNumbers {
+        zone_folder: Err(why.to_string()),
+        build: Err(why.to_string()),
+        request_folder: Err(why.to_string()),
+        built_request: Err(why.to_string()),
+        store: Err(why.to_string()),
+        snapshot: Err(why.to_string()),
+    };
+    build_number_lines(label, &untaken, checks);
+    kit_number_lines(&Err(why.to_string()), checks);
 }
 
 /// `git ls-tree -r -l -z HEAD` in the copy, read by parse_ls_tree and planned by plan_checkout.
@@ -43,29 +117,19 @@ fn copy_plan(world: &World, copy: &Path) -> Result<CheckoutPlan, String> {
     plan_checkout(&parse_ls_tree(&ran.stdout))
 }
 
-/// The plan on a log line, the folders (disk_folders, which also logs what stays in the copy), then, when they were
-/// made, each folder's tree_bytes, `mr disk`'s store (its lines logged) and the snapshot's wall time in the request
-/// folder, in that order.
-fn measure(world: &World, checks: &mut Checks, copy: &Path, plan: &CheckoutPlan) -> DiskNumbers {
-    checks.log(&format!(
-        "the plan: zone {}, request folder {}, edit file {}",
-        plan.zone_dir, plan.request_dir, plan.edit_file
-    ));
-    let Some((zone, request)) = disk_folders(world, checks, copy, plan) else {
-        return not_taken(Ok(plan.bytes), "the mr init and mr folder lines did not all hold");
+/// Both zones, each with its folders and its build command, or why the plan has no kit or no build.
+fn plan_line(plan: &CheckoutPlan) -> String {
+    let kit = plan.kit.as_ref().map_or_else(|why| format!("none, {why}"), zone_text);
+    format!("the plan: the all-packages zone: {}; the one-kit zone: {kit}", zone_text(&plan.zone))
+}
+
+fn zone_text(zone: &ZonePlan) -> String {
+    let build = match &zone.build {
+        Ok(build) if build.dir.is_empty() => format!("{} {} at the zone folder's top", build.program, build.args.join(" ")),
+        Ok(build) => format!("{} {} in {}", build.program, build.args.join(" "), build.dir),
+        Err(why) => format!("none, {why}"),
     };
-    let measured = |folder: &Path| {
-        tree_bytes(folder).map_err(|error| format!("cannot measure {}: {error}", folder.display()))
-    };
-    let zone_folder = measured(&zone);
-    let request_folder = measured(&request);
-    let disk = actor_mr(world, copy, &["disk"]);
-    for line in &disk.lines {
-        checks.log(&format!("mr disk: {line}"));
-    }
-    let store = reply_number(&disk, "store_bytes").map_err(|why| format!("mr disk --actor accept --json: {why}"));
-    let snapshot = time_snapshot(world, &request, &plan.edit_file);
-    DiskNumbers { checkout: Ok(plan.bytes), zone_folder, request_folder, store, snapshot }
+    format!("{}, request folder {}, edit file {}, build {build}", zone.zone_dir, zone.request_dir, zone.edit_file)
 }
 
 /// `checkout` as given and every other number not taken because `prerequisite` failed.

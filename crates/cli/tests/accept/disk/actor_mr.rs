@@ -1,7 +1,9 @@
-//! Runs a harness verb as the drive's actor in the repository copy or the request folder. Real processes: the drive
-//! (steps/disk.rs) runs `mr init` through it on every drive that passes the refusal and reads the plan with the
-//! copy's HEAD on a branch; `mr folder zone` only after the init line held, `mr folder request` only after the zone
-//! line held; `mr disk` and `mr snapshot` only on drives whose two folders were made.
+//! Runs a harness verb as the drive's actor in the repository copy or a request folder. Real processes: the drive
+//! (steps/disk.rs) runs `mr init` through it (disk_init) on every drive that passes the refusal and reads the plan
+//! with the copy's HEAD on a branch, and once more to register the one-kit zone, after the all-packages zone was
+//! measured, when that first init held and the plan has a kit. For the all-packages zone after the first init held,
+//! and for the one-kit zone after the second held (measure_zone): `mr folder zone`; `mr folder request` only after
+//! that zone's folder line held; `mr disk` and `mr snapshot` only for a zone whose two folders were made.
 
 use std::path::Path;
 

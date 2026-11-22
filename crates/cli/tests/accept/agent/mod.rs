@@ -1,5 +1,5 @@
-//! Step 4, the agent test: run_agent, its wrappers and agent run, its checks in order, and the pure
-//! readings of the wrappers' logs and the op log.
+//! Step 4, the agent test: run_agent, its wrappers and agent run, the copies of the wrappers' logs, its checks in
+//! order, and the pure readings of the wrappers' logs and the op log.
 
 mod actor_kinds;
 mod agent_brief;
@@ -10,12 +10,14 @@ mod agent_files_new;
 mod agent_git_check;
 mod agent_help_calls;
 mod agent_log_check;
+mod agent_log_copies;
 mod agent_not_run;
 mod agent_session;
 mod agent_verbs_check;
 mod agent_verbs_outside_six;
 mod agent_zone_check;
 mod conflict_seen;
+mod copy_agent_logs;
 mod git_call_is_read;
 mod help_or_version_call;
 mod log_call;
@@ -33,6 +35,8 @@ mod actor_kinds_tests;
 mod agent_files_new_tests;
 #[cfg(test)]
 mod agent_help_calls_tests;
+#[cfg(test)]
+mod agent_log_copies_tests;
 #[cfg(test)]
 mod agent_not_run_tests;
 #[cfg(test)]
@@ -62,12 +66,14 @@ pub use agent_files::AgentFiles;
 pub use agent_git_check::agent_git_check;
 pub use agent_help_calls::agent_help_calls;
 pub use agent_log_check::agent_log_check;
+pub use agent_log_copies::agent_log_copies;
 pub use agent_not_run::agent_not_run;
 pub use agent_session::agent_session;
 pub use agent_verbs_check::agent_verbs_check;
 pub use agent_verbs_outside_six::agent_verbs_outside_six;
 pub use agent_zone_check::agent_zone_check;
 pub use conflict_seen::conflict_seen;
+pub use copy_agent_logs::copy_agent_logs;
 pub use git_call_is_read::git_call_is_read;
 pub use help_or_version_call::help_or_version_call;
 pub use log_call::LogCall;

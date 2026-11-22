@@ -3,8 +3,8 @@
 
 use std::time::Duration;
 
-/// Each number, or why it was not taken: a full checkout's apparent bytes, the zone and request folders' apparent
-/// bytes, `mr disk`'s object store bytes, and `mr snapshot`'s wall time.
+/// Each number, or why it was not taken: a full checkout's apparent bytes, the all-packages zone folder's and its
+/// request folder's apparent bytes, `mr disk`'s object store bytes, and `mr snapshot`'s wall time.
 #[derive(Debug, Clone, PartialEq)]
 pub struct DiskNumbers {
     pub checkout: Result<u64, String>,

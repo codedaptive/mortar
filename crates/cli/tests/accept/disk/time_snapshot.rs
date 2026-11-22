@@ -1,5 +1,6 @@
 //! `mr snapshot`'s wall time after a small edit. Real files, processes and a clock: the drive (steps/disk.rs) runs
-//! it through run_disk in the request folder on every drive where both folders were made.
+//! it through measure_zone in a zone's request folder, for each zone (the all-packages one, and the one-kit one when
+//! the plan has a kit) whose two folders were made.
 
 use std::fs::OpenOptions;
 use std::io::Write;

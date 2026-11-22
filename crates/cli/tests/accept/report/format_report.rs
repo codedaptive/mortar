@@ -1,13 +1,14 @@
-//! The report's plain text: a title, one block per Done step, and the result.
+//! The report's plain text: a title, the commit line, one block per Done step, and the result.
 
 use super::{drive_passed, Block, Line, Verdict};
 
-/// Each block is its header (`Step <n> <title>: PASS | FAIL | NOT RUN (<reason>)`), one line per recorded line
-/// (`ok`, `FAIL` or `log` in a six-wide column after two spaces), then a blank line. A line's text that runs over
-/// several lines continues indented by 8 spaces, under the first line's text. Last comes `Result: PASS` or
-/// `Result: FAIL`, as drive_passed decides.
-pub fn format_report(blocks: &[Block]) -> String {
-    let mut text = String::from("mortar acceptance report\n\n");
+/// The title, then `commit` (commit_line's text, from read_commit) on the second line and a blank line. Each block
+/// is its header (`Step <n> <title>: PASS | FAIL | NOT RUN (<reason>)`), one line per recorded line (`ok`, `FAIL`
+/// or `log` in a six-wide column after two spaces), then a blank line. A line's text that runs over several lines
+/// continues indented by 8 spaces, under the first line's text. Last comes `Result: PASS` or `Result: FAIL`, as
+/// drive_passed decides.
+pub fn format_report(commit: &str, blocks: &[Block]) -> String {
+    let mut text = format!("mortar acceptance report\n{commit}\n\n");
     for block in blocks {
         let verdict = match &block.verdict {
             Verdict::Pass => "PASS".to_string(),
