@@ -1,9 +1,11 @@
 //! What a verb reports: its exit code, its outcome and lines, and the plain and --json forms of it; the report of
 //! save, join or resolve failing in a step that may follow the snapshot ref's move, and the placing of
 //! moved_before's line first in a report's lines, which all three share; and the refusal of a verb whose folder's
-//! HEAD is unborn or detached (head_refusal), with the next the verbs take (repeat_head_refusal): save, an attempt
-//! folder's snapshot in mr folder keep and drop, and status in an attempt folder name their own next.
+//! HEAD is unborn or detached (head_refusal), with the next the verbs take (repeat_head_refusal): save and an attempt
+//! folder's snapshot in mr folder keep and drop name their own next, and status, undo and mr folder remove in an
+//! attempt folder whose HEAD is unborn name the try branch (attempt_head_next).
 
+mod attempt_head_next;
 mod exit_code;
 mod failure_report;
 mod head_refusal;
@@ -18,6 +20,8 @@ mod snapshot_error_detail;
 mod snapshot_step_failure;
 mod with_moved_first;
 
+#[cfg(test)]
+mod attempt_head_next_tests;
 #[cfg(test)]
 mod failure_report_tests;
 #[cfg(test)]
@@ -39,6 +43,7 @@ mod snapshot_step_failure_tests;
 #[cfg(test)]
 mod with_moved_first_tests;
 
+pub(crate) use attempt_head_next::attempt_head_next;
 pub(crate) use exit_code::ExitCode;
 pub(crate) use failure_report::failure_report;
 pub(crate) use head_refusal::head_refusal;
