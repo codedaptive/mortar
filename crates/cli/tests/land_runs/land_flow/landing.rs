@@ -64,13 +64,17 @@ fn another_squash_is_busy_with_the_in_flight_change_and_a_change_id_is_usage_not
 }
 
 #[test]
-fn live_land_lock_prevents_all_four_verbs_and_identifies_its_real_holder() {
+fn live_land_lock_prevents_all_five_verbs_and_identifies_its_real_holder() {
     let s = Landing::new(true);
     let holder = LockRecord { pid: std::process::id(), host: oplog::host_name().unwrap(), key: "land-flow-held-land".into(), since: 1700000000 };
     let lock = oplog::acquire_lock(&s.f.common, &LockName::Land, &holder, &KillPidProbe).unwrap();
     let before = s.observe();
-    for verb in ["land", "would-merge", "back-out", "publish"] {
-        let word = matches!(verb, "land" | "would-merge").then_some(s.squash.commit.as_str());
+    for verb in ["land", "would-merge", "back-out", "publish", "withdraw"] {
+        let word = match verb {
+            "land" | "would-merge" => Some(s.squash.commit.as_str()),
+            "withdraw" => Some("core"),
+            _ => None,
+        };
         let r = s.run(verb, word, 3, "busy");
         assert_eq!(r.number("holder_pid"), u64::from(holder.pid)); assert_eq!(r.text("holder_host"), holder.host);
         assert_eq!(r.text("holder_key"), holder.key); assert_eq!(r.number("since"), holder.since);

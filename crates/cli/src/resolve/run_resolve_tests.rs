@@ -86,7 +86,7 @@ fn an_argument_is_resolves_usage() {
             verb: "resolve".to_string(),
             exit: ExitCode::Usage,
             outcome: "usage".to_string(),
-            lines: vec!["resolve takes no arguments".to_string(), "verbs: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, help, init, install, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, uninstall, would-merge".to_string()],
+            lines: vec!["resolve takes no arguments".to_string(), "verbs: after-publish, back-out, backup, bisect, disk, folder, guard, guard-hook, help, init, install, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, uninstall, withdraw, would-merge".to_string()],
             owner: None,
             next: "mr resolve [--key <operation key>] [--json]".to_string(),
             fields: Vec::new(),

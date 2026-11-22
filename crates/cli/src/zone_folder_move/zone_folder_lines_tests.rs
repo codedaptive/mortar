@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use gitio::Oid;
 
 use super::zone_folder_lines;
-use crate::after_publish::{FolderRefusal, ZoneFolderOutcome};
+use crate::zone_folder_move::{FolderRefusal, ZoneFolderOutcome};
 
 const TIP: &str = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
 const NOT_BROUGHT: &str =

@@ -49,6 +49,7 @@ fn each_group_lists_its_verbs_in_the_spec_order() {
             vec!["init", "folder", "snapshot", "overlap", "disk", "sweep", "log", "restore"],
             vec![
                 "squash",
+                "withdraw",
                 "would-merge",
                 "rereview",
                 "land",
@@ -84,8 +85,8 @@ fn folder_has_its_subcommands_as_term() {
         entry("folder"),
         &HelpEntry {
             name: "folder",
-            term: "folder zone|request|remove|attempts|keep|drop",
-            line: "make and remove zone, request and attempt folders",
+            term: "folder zone|request|remove|attempts|keep|drop|refresh",
+            line: "make, refresh and remove zone, request and attempt folders",
         }
     );
 }

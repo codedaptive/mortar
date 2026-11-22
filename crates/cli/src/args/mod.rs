@@ -22,6 +22,7 @@ mod usage_report;
 mod verb_kind;
 mod verb_spec;
 mod verbs;
+mod withdraw_spec;
 
 #[cfg(test)]
 mod find_verb_tests;
@@ -58,3 +59,4 @@ pub(crate) use usage_report::usage_report;
 pub(crate) use verb_kind::VerbKind;
 pub(crate) use verb_spec::VerbSpec;
 pub(crate) use verbs::VERBS;
+pub(crate) use withdraw_spec::WITHDRAW_SPEC;

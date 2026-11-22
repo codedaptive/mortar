@@ -4,15 +4,15 @@ use std::path::PathBuf;
 
 use super::FolderCommand;
 
-/// The first word is the sub-verb: zone, request, remove, attempts, keep or drop; each takes exactly its positional
-/// words. `--start <commit>` or `--start=<commit>` is zone's only flag, at most once. `--paths` is required for
-/// request, once, after its three positional words, and takes every word after it (at least one). n and k are
-/// whole numbers from 1 to u32::MAX written without sign or leading zero. An empty word, any other dashed word (a
-/// path or a --start value starting with "-" included) or a word too many is refused; the Err is the reason and
+/// The first word is the sub-verb: zone, request, remove, refresh, attempts, keep or drop; each takes exactly its
+/// positional words. `--start <commit>` or `--start=<commit>` is zone's only flag, at most once. `--paths` is
+/// required for request, once, after its three positional words, and takes every word after it (at least one). n and
+/// k are whole numbers from 1 to u32::MAX written without sign or leading zero. An empty word, any other dashed word
+/// (a path or a --start value starting with "-" included) or a word too many is refused; the Err is the reason and
 /// names the word.
 pub fn parse_folder_args(rest: &[String]) -> Result<FolderCommand, String> {
     let Some((sub, words)) = rest.split_first() else {
-        return Err("folder needs a sub-verb: zone, request, remove, attempts, keep or drop".to_string());
+        return Err("folder needs a sub-verb: zone, request, remove, refresh, attempts, keep or drop".to_string());
     };
     match sub.as_str() {
         "zone" => zone(words),
@@ -20,6 +20,10 @@ pub fn parse_folder_args(rest: &[String]) -> Result<FolderCommand, String> {
         "remove" => {
             let [path] = positional("remove", ["<path>"], words)?;
             Ok(FolderCommand::Remove { path: PathBuf::from(path) })
+        }
+        "refresh" => {
+            let [path] = positional("refresh", ["<path>"], words)?;
+            Ok(FolderCommand::Refresh { path: PathBuf::from(path) })
         }
         "attempts" => {
             let [n, dir] = positional("attempts", ["<n>", "<dir>"], words)?;

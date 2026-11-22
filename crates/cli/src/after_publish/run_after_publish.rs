@@ -6,7 +6,7 @@
 //! zones' folders and open requests. A refused or failed folder never stops the other zones; a repeat answers
 //! Current for each zone that Moved and brings the folders left behind.
 //! No sibling test: it takes a real lock and runs git, the op log and land; parse_after_publish_args_tests,
-//! find_zone_old_tests, zone_values_tests, zone_move_lines_tests, zone_folder_lines_tests,
+//! zone_folder_move's find_zone_old_tests, zone_values_tests and zone_folder_lines_tests, zone_move_lines_tests,
 //! after_publish_report_tests and after_publish_error_report_tests cover its decisions.
 //! The integration tests crates/cli/tests/across_kits/after_publish/{moves,refusals,requests,guards}.rs cover, with
 //! the mortar binary: zone b's folder made before r3 joined ends with r3's change; a folder several joins behind
@@ -24,8 +24,7 @@ use land::{ZoneMove, ZoneRequests};
 use oplog::{read_op_log, KillPidProbe, LockName};
 
 use super::{
-    after_publish_error_report, after_publish_failure, after_publish_report, bring_zone_folder, parse_after_publish_args,
-    read_named_zones, ZoneFolderOutcome,
+    after_publish_error_report, after_publish_failure, after_publish_report, parse_after_publish_args, read_named_zones,
 };
 use crate::args::{usage_report, UsageError};
 use crate::guard::guard_refs_for;
@@ -33,6 +32,7 @@ use crate::lock::locked_act;
 use crate::opkey::op_key;
 use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
+use crate::zone_folder_move::{bring_zone_folder, ZoneFolderOutcome};
 
 const VERB: &str = "after-publish";
 

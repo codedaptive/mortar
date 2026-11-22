@@ -142,20 +142,20 @@ fn a_missing_remote_branch_is_refused_naming_remote_and_branch() {
 }
 
 #[test]
-fn a_push_intent_in_the_log_names_its_op_id_and_phase() {
-    let cases = [(OpPhase::Intent, "open"), (OpPhase::Done, "done"), (OpPhase::Failed, "failed")];
-    for (phase, words) in cases {
+fn a_push_intent_names_its_op_id_and_says_open_or_already_done() {
+    let open = refused(
+        &["the push intent op-3 for this move is still open: a publish stopped between its steps, so nothing was \
+           pushed or changed"],
+        "the op log",
+        "mr publish --actor <name>: a plain publish reads the remote and closes the intent",
+    );
+    let done = refused(
+        &["the push intent op-3 for this move was already done when publish opened it, so nothing was pushed"],
+        "the op log",
+        "check upstream's main, then mr publish --actor <name>",
+    );
+    for (phase, expected) in [(OpPhase::Intent, open), (OpPhase::Done, done)] {
         let error = PublishError::PushIntent { op_id: "op-3".to_string(), phase };
-        assert_eq!(
-            publish_error_report(&error, &refs()),
-            refused(
-                &[&format!(
-                    "the push intent op-3 for this move is already in the op log ({words}); nothing was pushed"
-                )],
-                "the op log",
-                "mr publish --actor <name>; a repeat settles the open intent",
-            ),
-            "{phase:?}"
-        );
+        assert_eq!(publish_error_report(&error, &refs()), expected, "{phase:?}");
     }
 }

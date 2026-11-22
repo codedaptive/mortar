@@ -1,7 +1,10 @@
-//! The report of an `mr publish` that land's publish answered.
+//! The report of an `mr publish` that land's publish_with_push answered, with `pushed` on every answer (land's: true
+//! only when this publish's push intent closed done, so the published commit is on the remote by this publish's push
+//! or an earlier one of this landing's).
 
 use std::path::Path;
 
+use gitio::Oid;
 use land::{LandRefs, PublishAnswer};
 
 use crate::integration_folder::integration_folder_line;
@@ -9,53 +12,53 @@ use crate::report::{ExitCode, OutValue, Report};
 
 const VERB: &str = "publish";
 
-/// - Published: exit 0 "published", the remote's and the local origin branch at `origin`, the landing state and the
-///   zone's squash ref removed; field origin.
-/// - OriginMoved: exit 1 "origin-moved", someone else moved the remote's origin branch to `found`; the local origin
-///   branch and integration are on it, the squash kept, and `folder` (the integration folder moved onto `found`,
-///   if any) is named. Owned by whoever pushed `found`; next lands the squash again onto `found` with `mr land
-///   <commit>`, then publishes. Fields found, integration
-///   (also `found`) and folder (its path, or null).
-/// - NothingToPublish: exit 0 "nothing-to-publish", no landing waiting; no fields.
-pub fn publish_report(answer: &PublishAnswer, refs: &LandRefs, folder: Option<&Path>) -> Report {
+/// `pushed` is land's PublishOutcome's; `push` is false for `mr publish --no-push`. Every answer carries the field
+/// pushed (a boolean).
+/// - Published: exit 0 "published", the landing state and the zone's squash ref removed; field origin. When pushed,
+///   its line says the remote's and the local origin branch are at `origin`; otherwise it names only the local origin
+///   branch and says this publish pushed nothing to the remote.
+/// - OriginMoved: exit 1 "origin-moved", nothing published; the local origin branch and integration are on `found`,
+///   the squash kept, and `folder` (the integration folder moved onto `found`, if any) is named. Push on: someone
+///   else moved the remote's origin branch to `found`, owned by whoever pushed it. Push off: someone else moved the
+///   local origin branch to `found`, nothing was fetched, owned by whoever moved it. Next lands the squash again onto
+///   `found` with `mr land <commit>`, then publishes with the same setting. Fields found, integration (also
+///   `found`) and folder (its path, or null).
+/// - NothingToPublish: exit 0 "nothing-to-publish", no landing waiting.
+pub fn publish_report(
+    answer: &PublishAnswer,
+    pushed: bool,
+    push: bool,
+    refs: &LandRefs,
+    folder: Option<&Path>,
+) -> Report {
     let remote = &refs.remote;
     let origin_branch = &refs.origin_branch;
+    let pushed_field = ("pushed".to_string(), OutValue::Bool(pushed));
     match answer {
         PublishAnswer::Published { origin } => Report {
             verb: VERB.to_string(),
             exit: ExitCode::Done,
             outcome: "published".to_string(),
             lines: vec![
-                format!("published {origin}: {remote}'s {origin_branch} and the local {origin_branch} are at it"),
+                if pushed {
+                    format!("published {origin}: {remote}'s {origin_branch} and the local {origin_branch} are at it")
+                } else {
+                    format!(
+                        "published {origin}: the local {origin_branch} is at it; this publish pushed nothing to \
+                         {remote}"
+                    )
+                },
                 "the landing state and the zone's squash ref are removed".to_string(),
             ],
             owner: None,
             next: "nothing more for this landing; the next landing can start".to_string(),
-            fields: vec![("origin".to_string(), OutValue::Text(origin.to_string()))],
+            fields: vec![("origin".to_string(), OutValue::Text(origin.to_string())), pushed_field],
         },
-        PublishAnswer::OriginMoved { found } => Report {
-            verb: VERB.to_string(),
-            exit: ExitCode::Refused,
-            outcome: "origin-moved".to_string(),
-            lines: vec![
-                format!("someone else moved {remote}'s {origin_branch} to {found}; nothing was published"),
-                format!("the local {origin_branch} and integration are on {found}; the squash and its ref are kept"),
-                integration_folder_line(folder, found),
-            ],
-            owner: Some(format!("whoever pushed {found} to {remote}")),
-            next: format!(
-                "land the change's squash again onto {found}: mr land <commit> --actor <name>, then mr \
-                 publish --actor <name>"
-            ),
-            fields: vec![
-                ("found".to_string(), OutValue::Text(found.to_string())),
-                ("integration".to_string(), OutValue::Text(found.to_string())),
-                (
-                    "folder".to_string(),
-                    folder.map_or(OutValue::Null, |path| OutValue::Text(path.display().to_string())),
-                ),
-            ],
-        },
+        PublishAnswer::OriginMoved { found } => {
+            let mut report = origin_moved(found, push, refs, folder);
+            report.fields.push(pushed_field);
+            report
+        }
         PublishAnswer::NothingToPublish => Report {
             verb: VERB.to_string(),
             exit: ExitCode::Done,
@@ -63,7 +66,46 @@ pub fn publish_report(answer: &PublishAnswer, refs: &LandRefs, folder: Option<&P
             lines: vec!["no landing is waiting to be published".to_string()],
             owner: None,
             next: "nothing to do".to_string(),
-            fields: Vec::new(),
+            fields: vec![pushed_field],
         },
+    }
+}
+
+/// OriginMoved's report without the pushed field: push on names the remote's origin branch, push off the local one.
+fn origin_moved(found: &Oid, push: bool, refs: &LandRefs, folder: Option<&Path>) -> Report {
+    let remote = &refs.remote;
+    let origin_branch = &refs.origin_branch;
+    let (moved, owner, repeat) = if push {
+        (
+            format!("someone else moved {remote}'s {origin_branch} to {found}; nothing was published"),
+            format!("whoever pushed {found} to {remote}"),
+            "mr publish --actor <name>",
+        )
+    } else {
+        (
+            format!(
+                "someone else moved the local {origin_branch} to {found}; nothing was published and nothing was \
+                 fetched"
+            ),
+            format!("whoever moved the local {origin_branch} to {found}"),
+            "mr publish --no-push --actor <name>",
+        )
+    };
+    Report {
+        verb: VERB.to_string(),
+        exit: ExitCode::Refused,
+        outcome: "origin-moved".to_string(),
+        lines: vec![
+            moved,
+            format!("the local {origin_branch} and integration are on {found}; the squash and its ref are kept"),
+            integration_folder_line(folder, found),
+        ],
+        owner: Some(owner),
+        next: format!("land the change's squash again onto {found}: mr land <commit> --actor <name>, then {repeat}"),
+        fields: vec![
+            ("found".to_string(), OutValue::Text(found.to_string())),
+            ("integration".to_string(), OutValue::Text(found.to_string())),
+            ("folder".to_string(), folder.map_or(OutValue::Null, |path| OutValue::Text(path.display().to_string()))),
+        ],
     }
 }
