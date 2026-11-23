@@ -3,7 +3,9 @@
 //! open_push_intent_refuses_push_off_then_push_on_finishes (Open, then Done) and
 //! push_off_killed_after_origin_move_finishes_push_on_without_push (Absent); publishing.rs
 //! publish_moves_the_remote_then_the_local_origin_and_cleans_up (Done) and the open-intent cases through
-//! settle_push_intent.
+//! settle_push_intent; and read_landing_status's, by status.rs
+//! killed_inside_the_push_the_landing_status_names_the_open_intent (Open, from a real kill) and
+//! with_no_publish_in_progress_the_landing_status_carries_no_intent (Absent).
 
 use crate::landing::{publish_push_op, LandingState, PublishError, PushIntentState};
 use crate::squash::LandRefs;
