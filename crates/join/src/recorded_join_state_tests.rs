@@ -44,6 +44,7 @@ fn expected() -> JoinState {
         rebased_to: None,
         folder_tree: None,
         base: None,
+        base_before: None,
     }
 }
 

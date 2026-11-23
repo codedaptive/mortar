@@ -35,6 +35,7 @@ fn state(files_written: bool, rebased_to: Option<&str>) -> JoinState {
         rebased_to: rebased_to.map(oid),
         folder_tree: None,
         base: None,
+        base_before: None,
     }
 }
 

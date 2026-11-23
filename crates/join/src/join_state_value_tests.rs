@@ -30,6 +30,7 @@ fn rebased() -> JoinState {
         rebased_to: Some(oid('8')),
         folder_tree: Some(oid('9')),
         base: None,
+        base_before: None,
     }
 }
 
