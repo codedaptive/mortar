@@ -2,6 +2,7 @@
 //! Every parent owns a disposable repository.
 #[path = "../support/mod.rs"]
 mod support;
+mod commit_paths_cases;
 mod lifecycle;
 mod sparse_excludes;
 mod caps;
