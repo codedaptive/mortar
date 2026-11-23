@@ -118,9 +118,10 @@ fn resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_local_wo
     assert_eq!(f.observe(), before_read, "reading the valued log must not write or move anything");
     let valued = oplog::read_valued_log(&f.common).unwrap();
     let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
-    // Pin both complete values in order on the intent and done records.
+    // Pin both complete values in order on the intent and done records, then accept the base_before/base_after
+    // that WO-join-base-in-ops (totppouw) appends; G10 (WO-cli-g10-join-boundary) tightens this to the four-value form only.
     for record in valued.records.iter().filter(|v| v.record.kind == "join-rebase") {
-        assert_eq!(record.values, vec![folder_value.clone(), ("join_state".to_string(), state_before.clone())]);
+        assert_values_then_bases(&record.values, &[folder_value.clone(), ("join_state".to_string(), state_before.clone())]);
     }
 
     // Follow the refusal's actual next step, leaving the chosen resolution intact.

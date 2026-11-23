@@ -46,8 +46,9 @@ exec "$MORTAR_VALIDATION_REAL_GIT" "$@"
     let valued = oplog::read_valued_log(&f.common).unwrap();
     let done = valued.records.iter().find(|v| v.record.kind == "join-rebase" && v.record.phase == OpPhase::Done).unwrap();
     let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
-    // Pin both complete values in order, including the pre-resolve state text.
-    assert_eq!(done.values, vec![folder_value, ("join_state".to_string(), state_before)]);
+    // Pin both complete values in order, including the pre-resolve state text, then accept the base_before/base_after
+    // that WO-join-base-in-ops (totppouw) appends; G10 (WO-cli-g10-join-boundary) tightens this to the four-value form only.
+    assert_values_then_bases(&done.values, &[folder_value, ("join_state".to_string(), state_before)]);
     assert_eq!(oplog::open_intent(&f.common, &done.record.op_id).unwrap(), None);
     let snap = f.git.read_ref(SNAP).unwrap().unwrap();
     assert_eq!(f.blob(&snap, "src/file"), b"chosen resolution\n");
