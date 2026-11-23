@@ -7,6 +7,8 @@ mod attempt_snapshot_failure;
 mod attempts_dir;
 mod attempts_made_report;
 mod attempts_saved;
+mod build_output_json;
+mod build_output_lines;
 mod default_zone_start;
 mod dropped_report;
 mod folder_command;
@@ -34,6 +36,7 @@ mod run_folder_remove;
 mod run_folder_request;
 mod run_folder_zone;
 mod unknown_zone_report;
+mod zone_folder_of;
 mod zone_folder_paths;
 
 #[cfg(test)]
@@ -44,6 +47,10 @@ mod attempt_snapshot_failure_tests;
 mod attempts_dir_tests;
 #[cfg(test)]
 mod attempts_made_report_tests;
+#[cfg(test)]
+mod build_output_json_tests;
+#[cfg(test)]
+mod build_output_lines_tests;
 #[cfg(test)]
 mod default_zone_start_tests;
 #[cfg(test)]
@@ -84,6 +91,8 @@ pub(crate) use attempt_snapshot_failure::attempt_snapshot_failure;
 pub(crate) use attempts_dir::attempts_dir;
 pub(crate) use attempts_made_report::attempts_made_report;
 pub(crate) use attempts_saved::attempts_saved;
+pub(crate) use build_output_json::build_output_json;
+pub(crate) use build_output_lines::build_output_lines;
 pub(crate) use default_zone_start::default_zone_start;
 pub(crate) use dropped_report::dropped_report;
 pub(crate) use folder_command::FolderCommand;
@@ -111,4 +120,5 @@ pub(crate) use run_folder_remove::run_folder_remove;
 pub(crate) use run_folder_request::run_folder_request;
 pub(crate) use run_folder_zone::run_folder_zone;
 pub(crate) use unknown_zone_report::unknown_zone_report;
+pub(crate) use zone_folder_of::zone_folder_of;
 pub(crate) use zone_folder_paths::zone_folder_paths;
