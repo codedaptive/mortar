@@ -24,8 +24,8 @@ pub const VERBS: &[VerbSpec] = &[
         lock: LockNeed::Join,
         needs_config: true,
         usage: "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
-                <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <path>) --actor <name> \
-                [--key <operation key>] [--json]",
+                <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <zone folder path>) \
+                --actor <name> [--key <operation key>] [--json]",
     },
     VerbSpec {
         name: "guard",
@@ -142,6 +142,7 @@ pub const VERBS: &[VerbSpec] = &[
         kind: VerbKind::Harness,
         lock: LockNeed::Land,
         needs_config: true,
-        usage: "mr would-merge <commit or change ID> --actor <name> [--key <operation key>] [--json]",
+        usage: "mr would-merge <commit or change ID> [--with <commit or change ID>]... --actor <name> \
+                [--key <operation key>] [--json]",
     },
 ];

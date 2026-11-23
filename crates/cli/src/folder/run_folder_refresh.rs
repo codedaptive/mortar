@@ -1,5 +1,6 @@
-//! run_folder_refresh: `mr folder refresh <zone folder path>`, a zone folder's sparse paths set to the config's
-//! current zone paths, then the folder brought to its zone branch's tip by zone_folder_move's bring_zone_folder.
+//! run_folder_refresh: `mr folder refresh <zone folder path>`, a zone folder's sparse paths set to its zone's paths
+//! and the root files in the config, then the folder brought to its zone branch's tip by zone_folder_move's
+//! bring_zone_folder.
 //! No sibling test: it takes a real lock and runs git, the op log and folders; refresh_report_tests,
 //! refresh_folder_refusal_tests, unknown_zone_report_tests and zone_folder_paths_tests cover its decisions. The
 //! integration test crates/cli/tests/folder_runs/run_folder_refresh_tests.rs covers it through the binary: a zone

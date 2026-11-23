@@ -123,7 +123,8 @@ fn would_merge_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
     assert!(would_merge.needs_config);
     assert_eq!(
         would_merge.usage,
-        "mr would-merge <commit or change ID> --actor <name> [--key <operation key>] [--json]"
+        "mr would-merge <commit or change ID> [--with <commit or change ID>]... --actor <name> [--key <operation \
+         key>] [--json]"
     );
 }
 
@@ -184,8 +185,8 @@ fn folder_is_a_harness_verb_under_the_join_lock_that_needs_the_config() {
     assert_eq!(
         folder.usage,
         "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths <path>... | \
-         remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <path>) --actor <name> [--key <operation \
-         key>] [--json]"
+         remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <zone folder path>) --actor <name> [--key \
+         <operation key>] [--json]"
     );
 }
 

@@ -3,7 +3,8 @@
 /// folder's refresh: what it does to a zone folder's paths (the zone's and the root files) and tip, and why (a
 /// zone's tests between publishes). squash's --message: the text leads the message and carries no trailers, and the
 /// two message shapes land's read_squash reads back wrong (squash_message_requests' known limit). publish's
-/// --no-push: what push off leaves alone and the JSON pushed it gives. Every other verb has none.
+/// --no-push: what push off leaves alone and the JSON pushed it gives. would-merge's --with: each further squash
+/// merged onto the one before, in order, as successive lands would. Every other verb has none.
 pub fn verb_notes(name: &str) -> &'static [&'static str] {
     match name {
         "folder" => &[
@@ -19,6 +20,11 @@ pub fn verb_notes(name: &str) -> &'static [&'static str] {
         "publish" => &[
             "--no-push: the local origin branch only; nothing is pushed, the remote is not read and nothing is \
              fetched; JSON pushed is true only when an earlier publish of this landing already pushed it",
+        ],
+        "would-merge" => &[
+            "--with <commit or change ID>: each further squash, in the order given, merges onto the result of the \
+             one before, as successive lands would; a conflict names its step (1 is the first squash) and its files; \
+             no ref moves",
         ],
         _ => &[],
     }
