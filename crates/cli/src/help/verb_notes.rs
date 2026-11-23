@@ -4,7 +4,9 @@
 /// zone's tests between publishes). squash's --message: the text leads the message and carries no trailers, and the
 /// two message shapes land's read_squash reads back wrong (squash_message_requests' known limit). publish's
 /// --no-push: what push off leaves alone and the JSON pushed it gives. would-merge's --with: each further squash
-/// merged onto the one before, in order, as successive lands would. Every other verb has none.
+/// merged onto the one before, in order, as successive lands would. commit-files: the folders it commits in, the
+/// branch and lock in each, its refusal while a zone folder's index holds staged changes, and the folders that refuse
+/// it; its --message, the message without one, and the folder's other changes left alone. Every other verb has none.
 pub fn verb_notes(name: &str) -> &'static [&'static str] {
     match name {
         "folder" => &[
@@ -25,6 +27,14 @@ pub fn verb_notes(name: &str) -> &'static [&'static str] {
             "--with <commit or change ID>: each further squash, in the order given, merges onto the result of the \
              one before, as successive lands would; a conflict names its step (1 is the first squash) and its files; \
              no ref moves",
+        ],
+        "commit-files" => &[
+            "in a zone folder at its zone's tip: one commit of the named paths on zone/<zone>, under join-<zone>, \
+             refused while the folder's index holds staged changes (unstaged edits are left alone); in the \
+             integration folder after mr land: one commit on integration inside the landing, under land; refused in \
+             a request or attempt folder (mr save)",
+            "--message <text>: the commit's message; without it, the message names the paths; the folder's other \
+             changes are left as they are",
         ],
         _ => &[],
     }

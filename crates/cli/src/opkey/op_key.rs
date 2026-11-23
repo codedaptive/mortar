@@ -4,7 +4,8 @@
 //! Shell API: `mr folder` (run_folder's runners), `mr join` and `mr resolve` (through request_run_for),
 //! `mr save` and `mr undo` (through save_run_for), `mr need` (run_need), `mr guard`
 //! (run_guard_install, run_guard_status), `mr squash` (run_squash), `mr withdraw` (run_withdraw),
-//! `mr rereview` (run_rereview), `mr back-out` (run_back_out), `mr publish` (run_publish),
+//! `mr rereview` (run_rereview), `mr commit-files` (run_commit_files_zone, run_commit_files_integration),
+//! `mr back-out` (run_back_out), `mr publish` (run_publish),
 //! `mr would-merge` (run_would_merge), `mr bisect` (run_bisect), `mr backup` (run_backup),
 //! `mr restore-backup` (run_restore_backup), `mr land` (run_land), `mr after-publish`
 //! (run_after_publish), `mr snapshot` (run_snapshot) and `mr sweep` (run_sweep) call it, and so will each

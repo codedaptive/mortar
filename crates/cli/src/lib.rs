@@ -7,6 +7,7 @@ mod args;
 mod back_out;
 mod backup;
 mod bisect;
+mod commit_files;
 mod config;
 mod context;
 mod disk;

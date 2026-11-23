@@ -1,6 +1,7 @@
 //! verb_help_lines: a verb's usage, then its row's line, then its notes (squash's and publish's are checked by token
-//! in verb_notes_tests; folder's and would-merge's are pinned here in full), then its tokens saved baseline if it has
-//! one. would-merge has both a note and a baseline, so its help pins their order: the note, then the baseline.
+//! in verb_notes_tests; folder's, would-merge's and commit-files's are pinned here in full), then its tokens saved
+//! baseline if it has one. would-merge has both a note and a baseline, so its help pins their order: the note, then
+//! the baseline.
 //! Unit test: the help groups, find_help_entry, usage_forms, verb_notes and the verb table are pure and used directly.
 
 use super::{find_help_entry, verb_help_lines, verb_notes};
@@ -88,6 +89,23 @@ fn squash_is_its_usage_its_line_then_its_notes_and_no_baseline() {
         ]
     );
     assert_eq!(lines[2..], *verb_notes("squash"));
+}
+
+#[test]
+fn commit_files_is_its_usage_its_line_then_its_two_notes() {
+    assert_eq!(
+        help_of("commit-files"),
+        vec![
+            "mr commit-files <path>... [--message <text>] --actor <name> [--key <operation key>] [--json]",
+            "commit named files onto the zone, or onto integration inside a landing",
+            "in a zone folder at its zone's tip: one commit of the named paths on zone/<zone>, under join-<zone>, \
+             refused while the folder's index holds staged changes (unstaged edits are left alone); in the \
+             integration folder after mr land: one commit on integration inside the landing, under land; refused in \
+             a request or attempt folder (mr save)",
+            "--message <text>: the commit's message; without it, the message names the paths; the folder's other \
+             changes are left as they are",
+        ]
+    );
 }
 
 #[test]

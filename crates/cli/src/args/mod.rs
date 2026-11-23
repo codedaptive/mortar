@@ -3,6 +3,7 @@
 mod after_publish_spec;
 mod backup_spec;
 mod bisect_spec;
+mod commit_files_spec;
 mod disk_spec;
 mod find_verb;
 mod help_spec;
@@ -40,6 +41,7 @@ mod verbs_tests;
 pub(crate) use after_publish_spec::AFTER_PUBLISH_SPEC;
 pub(crate) use backup_spec::BACKUP_SPEC;
 pub(crate) use bisect_spec::BISECT_SPEC;
+pub(crate) use commit_files_spec::COMMIT_FILES_SPEC;
 pub(crate) use disk_spec::DISK_SPEC;
 pub(crate) use find_verb::find_verb;
 pub(crate) use help_spec::HELP_SPEC;

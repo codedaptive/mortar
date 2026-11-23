@@ -53,6 +53,7 @@ fn each_group_lists_its_verbs_in_the_spec_order() {
                 "would-merge",
                 "rereview",
                 "land",
+                "commit-files",
                 "back-out",
                 "publish",
                 "after-publish",

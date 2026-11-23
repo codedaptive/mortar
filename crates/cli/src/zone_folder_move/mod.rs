@@ -1,5 +1,6 @@
 //! The zone-folder move: a zone folder brought from the commit it stands on to its zone branch's tip, its outcome in
-//! the cli's words and the next parts that clear it; shared by `mr after-publish` and `mr folder refresh`.
+//! the cli's words and the next parts that clear it; shared by `mr after-publish` and `mr folder refresh`
+//! (`mr commit-files` uses find_zone_old and zone_values).
 
 mod bring_zone_folder;
 mod find_zone_old;

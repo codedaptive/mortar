@@ -16,6 +16,7 @@ fn built_verbs_are_listed_alphabetically() {
             "back-out",
             "backup",
             "bisect",
+            "commit-files",
             "disk",
             "folder",
             "guard",
@@ -303,6 +304,18 @@ fn bisect_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
         bisect.usage,
         "mr bisect <last pass> <failed> --timeout <seconds> --actor <name> [--key <operation key>] [--json] -- \
          <command>..."
+    );
+}
+
+#[test]
+fn commit_files_is_a_harness_verb_whose_lock_comes_from_its_folder_that_needs_the_config() {
+    let commit_files = verb("commit-files");
+    assert_eq!(commit_files.kind, VerbKind::Harness);
+    assert_eq!(commit_files.lock, LockNeed::FromFolder);
+    assert!(commit_files.needs_config);
+    assert_eq!(
+        commit_files.usage,
+        "mr commit-files <path>... [--message <text>] --actor <name> [--key <operation key>] [--json]"
     );
 }
 
