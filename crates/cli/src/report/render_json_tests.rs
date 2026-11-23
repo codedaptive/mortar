@@ -64,12 +64,19 @@ fn fields_follow_owner_in_order_with_each_value_kind() {
         ("fresh".to_string(), OutValue::Bool(true)),
         ("key".to_string(), OutValue::Null),
         ("paths".to_string(), OutValue::Texts(vec!["a".to_string(), "b".to_string()])),
+        (
+            "step".to_string(),
+            OutValue::Object(vec![
+                ("number".to_string(), OutValue::Number(2)),
+                ("commit".to_string(), OutValue::Text("c\"1".to_string())),
+            ]),
+        ),
     ];
     assert_eq!(
         render_json(&busy),
         "{\"verb\":\"\",\"ok\":false,\"outcome\":\"busy\",\"exit\":3,\"next\":\"mr init\",\"lines\":[],\
          \"owner\":null,\"holder_host\":\"h\\n1\",\"holder_pid\":42,\"stale\":false,\"fresh\":true,\
-         \"key\":null,\"paths\":[\"a\",\"b\"]}\n"
+         \"key\":null,\"paths\":[\"a\",\"b\"],\"step\":{\"number\":2,\"commit\":\"c\\\"1\"}}\n"
     );
 }
 

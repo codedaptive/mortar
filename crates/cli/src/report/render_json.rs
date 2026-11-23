@@ -8,7 +8,8 @@ use crate::savings::{answer_chars, write_saved_json};
 
 /// One JSON object on one line, then "\n". Keys in this order: verb, ok (exit is Done), outcome, exit (the
 /// process code), next, lines, owner (a string or null), then the report's fields in their order. A Raw field's
-/// values go in unchanged, so the line is JSON only when each of them is. A Saved field is its savings object, whose
+/// values go in unchanged, so the line is JSON only when each of them is. An Object field is `{"name":value,...}`, its
+/// members in their order, each value written as a field's is. A Saved field is its savings object, whose
 /// outputChars is the characters of the report's plain body without the savings line (answer_chars).
 pub fn render_json(report: &Report) -> String {
     let mut out = String::from("{\"verb\":");
@@ -45,6 +46,18 @@ fn write_value(out: &mut String, value: &OutValue, report: &Report) {
             out.push('[');
             out.push_str(&values.join(","));
             out.push(']');
+        }
+        OutValue::Object(members) => {
+            out.push('{');
+            for (index, (name, member)) in members.iter().enumerate() {
+                if index > 0 {
+                    out.push(',');
+                }
+                write_json_string(out, name);
+                out.push(':');
+                write_value(out, member, report);
+            }
+            out.push('}');
         }
         OutValue::Saved(savings) => write_saved_json(out, savings, answer_chars(report)),
     }

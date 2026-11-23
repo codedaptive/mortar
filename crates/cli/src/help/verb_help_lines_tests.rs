@@ -1,6 +1,6 @@
 //! verb_help_lines: a verb's usage, then its row's line, then its notes (squash's and publish's are checked by token
-//! in verb_notes_tests; folder's is pinned here in full), then its tokens saved baseline if it has one. No verb has
-//! both notes and a baseline, so their order is not reachable here.
+//! in verb_notes_tests; folder's and would-merge's are pinned here in full), then its tokens saved baseline if it has
+//! one. would-merge has both a note and a baseline, so its help pins their order: the note, then the baseline.
 //! Unit test: the help groups, find_help_entry, usage_forms, verb_notes and the verb table are pure and used directly.
 
 use super::{find_help_entry, verb_help_lines, verb_notes};
@@ -23,10 +23,9 @@ fn status_is_its_usage_its_line_and_its_baseline() {
 }
 
 #[test]
-fn rereview_would_merge_and_overlap_name_their_baseline() {
+fn rereview_and_overlap_name_their_baseline() {
     for (verb, words) in [
         ("rereview", "git diff <reviewed> <new>"),
-        ("would-merge", "git log -p <base>..<commit>"),
         ("overlap", "git log -p of each request's range"),
     ] {
         let expected = format!("tokens saved is counted against: {words}");
@@ -54,10 +53,26 @@ fn folder_is_its_forms_its_line_then_its_note() {
             "mr folder attempts <n> <dir> --actor <name> [--key <operation key>] [--json]",
             "mr folder keep <k> --actor <name> [--key <operation key>] [--json]",
             "mr folder drop --actor <name> [--key <operation key>] [--json]",
-            "mr folder refresh <path> --actor <name> [--key <operation key>] [--json]",
+            "mr folder refresh <zone folder path> --actor <name> [--key <operation key>] [--json]",
             "make, refresh and remove zone, request and attempt folders",
             "refresh <zone folder path>: sets the zone folder's paths to the zone's paths and root files in the \
              config and brings the folder to the zone branch's tip, so a zone's tests can run between publishes",
+        ]
+    );
+}
+
+#[test]
+fn would_merge_is_its_usage_its_line_its_note_then_its_baseline() {
+    assert_eq!(
+        help_of("would-merge"),
+        vec![
+            "mr would-merge <commit or change ID> [--with <commit or change ID>]... --actor <name> [--key <operation \
+             key>] [--json]",
+            "say whether it would merge into integration",
+            "--with <commit or change ID>: each further squash, in the order given, merges onto the result of the \
+             one before, as successive lands would; a conflict names its step (1 is the first squash) and its files; \
+             no ref moves",
+            "tokens saved is counted against: git log -p <base>..<commit>",
         ]
     );
 }

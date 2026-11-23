@@ -1,5 +1,5 @@
 //! CHANGE_CONFLICT_NEXT: the next step when a change's squash conflicts with integration, shared by would-merge's
-//! No and land's Conflicted.
+//! No, would-merge --with's Conflicted and land's Conflicted.
 //! Its sibling change_conflict_next_tests pins its text.
 
 /// Fix the conflict in the change's zone through a request, then make the zone's squash again.

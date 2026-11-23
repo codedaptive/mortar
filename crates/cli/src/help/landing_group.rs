@@ -15,7 +15,7 @@ pub const LANDING_GROUP: HelpGroup = HelpGroup {
         HelpEntry { name: "withdraw", term: "withdraw <zone>", line: "withdraw a zone's squash before it lands" },
         HelpEntry {
             name: "would-merge",
-            term: "would-merge <commit or change ID>",
+            term: "would-merge <commit or change ID> [--with ...]...",
             line: "say whether it would merge into integration",
         },
         HelpEntry {

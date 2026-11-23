@@ -16,7 +16,7 @@ fn folder_has_seven_forms() {
             "mr folder attempts <n> <dir> --actor <name> [--key <operation key>] [--json]",
             "mr folder keep <k> --actor <name> [--key <operation key>] [--json]",
             "mr folder drop --actor <name> [--key <operation key>] [--json]",
-            "mr folder refresh <path> --actor <name> [--key <operation key>] [--json]",
+            "mr folder refresh <zone folder path> --actor <name> [--key <operation key>] [--json]",
         ]
     );
 }
