@@ -13,6 +13,7 @@ use crate::args::{parse_args, usage_report, ParsedArgs, VerbKind};
 use crate::back_out::run_back_out;
 use crate::backup::{run_backup, run_restore_backup};
 use crate::bisect::run_bisect;
+use crate::commit_files::run_commit_files;
 use crate::config::protected_refs;
 use crate::context::{actor_for, context_report, repository_error, repository_report, ContextError, FolderContext};
 use crate::disk::run_disk;
@@ -89,6 +90,7 @@ fn dispatch(context: &ShellContext, cwd: &Path) -> Report {
         "back-out" => run_back_out(context, cwd),
         "backup" => run_backup(context, cwd),
         "bisect" => run_bisect(context, cwd),
+        "commit-files" => run_commit_files(context, cwd),
         "disk" => run_disk(context, cwd),
         "folder" => run_folder(context, cwd),
         "guard" => run_guard(context, cwd),

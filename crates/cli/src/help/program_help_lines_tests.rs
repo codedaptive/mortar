@@ -20,7 +20,7 @@ fn the_first_line_is_the_usage() {
 #[test]
 fn the_headings_follow_an_empty_line_in_order() {
     let lines = program_help_lines();
-    let headings = lines[..38]
+    let headings = lines[..39]
         .windows(2)
         .filter(|pair| pair[0].is_empty())
         .map(|pair| pair[1].as_str())
@@ -60,19 +60,19 @@ fn backup_and_restore_backup_share_one_row() {
 }
 
 #[test]
-fn there_are_twenty_nine_rows_and_no_trailing_spaces() {
-    // 6 agent rows, 8 folder, 12 landing (backup shares one), 3 setup (install shares one): 29. With the usage line
-    // and an empty line and a heading per group, 38 lines; then the 8 lines about tokens saved: 46.
+fn there_are_thirty_rows_and_no_trailing_spaces() {
+    // 6 agent rows, 8 folder, 13 landing (backup shares one), 3 setup (install shares one): 30. With the usage line
+    // and an empty line and a heading per group, 39 lines; then the 8 lines about tokens saved: 47.
     let lines = program_help_lines();
-    assert_eq!(lines.iter().filter(|line| line.starts_with("  ")).count(), 29);
-    assert_eq!(lines.len(), 46);
+    assert_eq!(lines.iter().filter(|line| line.starts_with("  ")).count(), 30);
+    assert_eq!(lines.len(), 47);
     assert!(lines.iter().all(|line| !line.ends_with(' ')), "{lines:#?}");
 }
 
 #[test]
 fn the_tokens_saved_lines_follow_the_groups() {
     assert_eq!(
-        program_help_lines()[38..],
+        program_help_lines()[39..],
         [
             "",
             "Tokens saved: an answer that replaces reading git output opens with a \"[mr] tokens saved\" line,",

@@ -28,8 +28,8 @@ fn the_program_help_lists_every_verb_in_its_json() {
         panic!("one Raw field: {:?}", report.fields);
     };
     assert_eq!(key, "verbs");
-    // 6 agent, 8 folder, 13 landing and 4 setup entries.
-    assert_eq!(verbs.len(), 31);
+    // 6 agent, 8 folder, 14 landing and 4 setup entries.
+    assert_eq!(verbs.len(), 32);
     let actual: Vec<_> = verbs
         .iter()
         .map(|verb| {

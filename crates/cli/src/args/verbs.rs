@@ -1,8 +1,9 @@
 //! The verbs the binary knows: only those that are built.
 
 use super::{
-    LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, DISK_SPEC, HELP_SPEC, INSTALL_SPEC,
-    OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC, UNINSTALL_SPEC, WITHDRAW_SPEC,
+    LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, COMMIT_FILES_SPEC, DISK_SPEC, HELP_SPEC,
+    INSTALL_SPEC, OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC, UNINSTALL_SPEC,
+    WITHDRAW_SPEC,
 };
 
 /// In the order the usage error lists them.
@@ -17,6 +18,7 @@ pub const VERBS: &[VerbSpec] = &[
     },
     BACKUP_SPEC,
     BISECT_SPEC,
+    COMMIT_FILES_SPEC,
     DISK_SPEC,
     VerbSpec {
         name: "folder",

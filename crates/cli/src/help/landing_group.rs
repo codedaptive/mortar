@@ -24,6 +24,11 @@ pub const LANDING_GROUP: HelpGroup = HelpGroup {
             line: "the diff since a reviewed squash",
         },
         HelpEntry { name: "land", term: "land <commit>", line: "land a squash on integration" },
+        HelpEntry {
+            name: "commit-files",
+            term: "commit-files <path>... [--message <text>]",
+            line: "commit named files onto the zone, or onto integration inside a landing",
+        },
         HelpEntry { name: "back-out", term: "back-out", line: "put integration back on origin" },
         HelpEntry {
             name: "publish",
