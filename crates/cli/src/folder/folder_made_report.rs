@@ -9,7 +9,8 @@ use crate::report::{ExitCode, OutValue, Report};
 /// Exit 0, outcome "made". Lines: the folder's kind, zone and request and its path; its base (full commit id); its
 /// cone (the work order's paths, then the needed paths). Fields: path, kind ("zone", "request" or "attempt"), zone,
 /// request (null for a zone folder), base, paths. Next for `sub` "zone": make request folders with mr folder
-/// request in that zone; for any other sub: start the request's agent in `path`.
+/// request in that zone; for any other sub: start the request's agent in `path`. `mr folder request` adds to this
+/// report: build_output_lines' lines after these, and a last field build_output (see run_folder_request).
 pub fn folder_made_report(sub: &str, path: &Path, record: &FolderRecord) -> Report {
     let (zone, request) = (&record.zone, record.request.as_deref());
     let (kind, what) = match (record.kind, request) {
