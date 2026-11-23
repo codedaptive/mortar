@@ -1,5 +1,6 @@
 //! commit_paths: one commit of a parent's tree with some named paths set as the folder has them, and the folder's
-//! index set for those paths. It is for land (the integration folder) and cli (the zone folder); neither calls it yet.
+//! index set for those paths. Called by land's commit_files (the integration folder) and cli's
+//! `mr commit-files` (a zone folder).
 //! No unit test: it runs git and reads the file system; outside_path is its pure decision and has its tests. The
 //! integration tests in tests/snapshot/commit_paths_cases.rs cover it, in a throwaway repository:
 //! - an added, a changed and a deleted path, a path under target/ and a file over the default size cap in one commit
