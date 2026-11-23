@@ -9,12 +9,12 @@
 //! killed_after_the_op_recovers_done_and_the_repeat_is_landed_with_no_new_record.
 
 use crate::landing::{
-    decide_landing, integration_op, landing_applied, make_landing_target, read_landing_state, write_landing_state,
+    decide_landing, integration_op, landing_applied, landing_target_for, read_landing_state, write_landing_state,
     LandAnswer, LandError, LandingState, LandingStep, LandingTarget,
 };
 use crate::squash::{read_tip, LandRefs, Squash};
 use gitio::{Git, Oid};
-use oplog::{apply, new_op_id, read_mortar_trailers, unix_now};
+use oplog::{apply, new_op_id, unix_now};
 use std::path::Path;
 
 /// Reads the origin and integration tips and the landing state, then: this squash already landed at integration
@@ -53,15 +53,10 @@ pub fn land(git: &Git, refs: &LandRefs, squash: &Squash, actor: &str) -> Result<
     Ok(LandAnswer::Landed { integration: target })
 }
 
-/// The target of a fresh landing onto `origin` (where integration stands). A Commit target has its landing state
-/// written under `common` before it is returned; a Conflicted one writes nothing.
+/// The target of a fresh landing onto `origin` (where integration stands), from landing_target_for. A Commit target
+/// has its landing state written under `common` before it is returned; a Conflicted one writes no state.
 fn fresh_target(git: &Git, common: &Path, origin: &Oid, squash: &Squash) -> Result<LandingTarget, LandError> {
-    let info = git.commit_info(&squash.commit).map_err(LandError::Git)?;
-    let zone = read_mortar_trailers(git, &info.message)
-        .map_err(LandError::Trailers)?
-        .zone
-        .ok_or_else(|| LandError::NoZone { commit: squash.commit.clone() })?;
-    let target = make_landing_target(git, origin, squash, &info.parents, &zone)?;
+    let (target, zone) = landing_target_for(git, origin, squash)?;
     if let LandingTarget::Commit(commit) = &target {
         let state = LandingState {
             change_id: squash.change_id.clone(),
