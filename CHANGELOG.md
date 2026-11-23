@@ -13,7 +13,7 @@ All notable changes to Mortar are recorded here, in terms of what the program do
 ### Folders
 
 - **A new request folder gets its zone folder's build output as copy-on-write clones** (clonefile(2), never a byte copy): each configured build dir in the zone folder is cloned into the request folder, with the same files. The answer names each build dir not shared and why: the zone folder has none, the request folder already has it (a repeat, which keeps the request's own changes), or the clone was refused, as for a build dir that is a symlink or sits under one, or when no zone folder of the zone is found. A dir not shared never fails `mr folder request`. `--json` adds `build_output`, one `{dir, outcome, why}` per build dir. Zone and attempt folders are made as before.
-- **`mr folder refresh <zone folder path>`** sets a zone folder's paths to the zone's paths in the config and brings the folder to the zone branch's tip, so a zone's tests can run between publishes. A repeat changes nothing. It refuses a request or attempt folder (step: `mr join`), an edit that the move would overwrite (the edit is kept), and a zone the config no longer names (step: `mr init --replace`).
+- **`mr folder refresh <zone folder path>`** sets a zone folder's paths to the zone's paths and root files in the config and brings the folder to the zone branch's tip, so a zone's tests can run between publishes. A repeat changes nothing. It refuses a request or attempt folder (step: `mr join`), an edit that the move would overwrite (the edit is kept), and a zone the config no longer names (step: `mr init --replace`).
 
 ## 0.2.0
 

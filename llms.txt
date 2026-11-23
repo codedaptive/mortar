@@ -49,7 +49,7 @@ Set-up and folder verbs, run by a harness or a person, with `--actor <name>`:
 - `mr init --origin <branch> --integration <branch> --remote <name> [--zone <zone>=<path>[,<path>...]]...`
 - `mr guard install`, `mr guard status`
 - `mr folder zone <zone> <path> [--start <commit>]`
-- `mr folder refresh <zone folder path>`: set a zone folder's paths to the config's zone paths and bring it to the zone tip; refused on a request or attempt folder (next `mr join`)
+- `mr folder refresh <zone folder path>`: set a zone folder's paths to the config's zone paths and root files and bring it to the zone tip; refused on a request or attempt folder (next `mr join`)
 - `mr folder request <zone> <request> <path> --paths <path>...`: make a request folder from the zone branch; clones the zone folder's build dirs into it (copy-on-write); JSON `build_output` lists each dir's outcome (shared, absent, kept, refused, with why on refused); a dir not shared never fails the verb
 - `mr folder remove <path>`
 - `mr folder attempts <n> <dir>`, `mr folder keep <k>`, `mr folder drop`

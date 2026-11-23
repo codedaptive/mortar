@@ -150,7 +150,7 @@ More folder verbs:
 | Verb | What it does |
 |---|---|
 | `mr folder zone <zone> <path> [--start <commit>]` | Makes or refills a zone's folder. A zone with no branch yet starts at the origin branch's tip, or at `--start` |
-| `mr folder refresh <zone folder path>` | Sets a zone folder's paths to the zone's paths in the config and brings it to the zone branch's tip, so a zone's tests can run between publishes. Refused on a request or attempt folder, whose step is `mr join` |
+| `mr folder refresh <zone folder path>` | Sets a zone folder's paths to the zone's paths and root files in the config and brings it to the zone branch's tip, so a zone's tests can run between publishes. Refused on a request or attempt folder, whose step is `mr join` |
 | `mr folder request <zone> <request> <path> --paths <path>...` | Makes a request's folder, cut from the zone's branch, and shares the zone folder's build dirs into it as copy-on-write clones (clonefile(2), never a byte copy). The answer names each build dir not shared and why; `--json` adds `build_output`, one `{dir, outcome, why}` per build dir, the outcome `shared`, `absent`, `kept` or `refused` |
 | `mr folder remove <path>` | Removes a joined and saved request folder, with its branch and its snapshot ref |
 | `mr folder attempts <n> <dir>` | Run in a request folder: makes `n` attempt folders of the request under `<dir>`, to try the same work several ways |
