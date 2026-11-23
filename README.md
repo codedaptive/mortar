@@ -101,7 +101,7 @@ Run inside a request folder Mortar made. They take no folder, zone or request ar
 
 | Verb | What it does |
 |---|---|
-| `mr status` | Where the folder is, what has changed, whether the zone has moved, any conflict. It reads only |
+| `mr status` | Where the folder is, what has changed, whether the zone has moved, any conflict. It reads only. `--json` in a request folder also carries `base` (the commit the request's own commits stand on), `partners` (`{zone, tip}` each, empty for a plain request) and `partner_moved` |
 | `mr save "<sentence>"` | Keeps the work as a commit, with the one-line sentence as its subject. No staging and no branch names |
 | `mr join` | Joins the request to its zone, saving any unsaved work first. If the zone has moved, it rebases the request onto the zone and stops there, so the tests can run again; the next `mr join` joins |
 | `mr resolve` | Puts the conflicted files in the folder; run it again once they are fixed |
@@ -151,7 +151,7 @@ More folder verbs:
 |---|---|
 | `mr folder zone <zone> <path> [--start <commit>]` | Makes or refills a zone's folder. A zone with no branch yet starts at the origin branch's tip, or at `--start` |
 | `mr folder refresh <zone folder path>` | Sets a zone folder's paths to the zone's paths and root files in the config and brings it to the zone branch's tip, so a zone's tests can run between publishes. Refused on a request or attempt folder, whose step is `mr join` |
-| `mr folder request <zone> <request> <path> --paths <path>...` | Makes a request's folder, cut from the zone's branch, and shares the zone folder's build dirs into it as copy-on-write clones (clonefile(2), never a byte copy). The answer names each build dir not shared and why; `--json` adds `build_output`, one `{dir, outcome, why}` per build dir, the outcome `shared`, `absent`, `kept` or `refused` |
+| `mr folder request <zone> <request> <path> --paths <path>... [--with <zone>]...` | Makes a request's folder, cut from the zone's branch, and shares the zone folder's build dirs into it as copy-on-write clones (clonefile(2), never a byte copy). With `--with`, the folder is cut on a merge of the zone's tip with each partner zone's tip, in the order given. A merge that conflicts is refused, naming the partner and the files, and nothing is made. A partner already in the zone is named and not recorded. The answer names each build dir not shared and why; `--json` adds `partners` (`{zone, tip}` each, with `--with`), `partners_in_zone` (when one was dropped) and `build_output`, one `{dir, outcome, why}` per build dir, the outcome `shared`, `absent`, `kept` or `refused` |
 | `mr folder remove <path>` | Removes a joined and saved request folder, with its branch and its snapshot ref |
 | `mr folder attempts <n> <dir>` | Run in a request folder: makes `n` attempt folders of the request under `<dir>`, to try the same work several ways |
 | `mr folder keep <k>` | Run in a request folder: keeps attempt `k`, moves the request to it and removes every attempt folder |
@@ -165,14 +165,15 @@ One landing at a time. The origin branch only ever moves forward, and a reviewed
 |---|---|
 | `mr squash <zone> [--message <text>]` | The zone's joined work as one commit on the current origin. With `--message`, your subject and body lead the commit message; the text carries no trailers |
 | `mr withdraw <zone>` | Takes back a zone's squash before it lands. Exit 0 when there is nothing to withdraw; refused once the squash is landing or published |
-| `mr would-merge <commit or change ID>` | Whether a squash would merge onto integration, without merging |
+| `mr would-merge <commit or change ID> [--with <commit or change ID>]...` | Whether a squash would merge onto integration, without merging; with --with, whether it and each further squash merge in order, each onto the one before (a conflict names its step) |
+| `mr commit-files <path>... [--message <text>] --actor <name>` | Commit the named files, as the folder has them, as one commit: in a zone folder at its tip onto `zone/<zone>`; in the integration folder after `mr land` onto integration, inside the landing (`mr publish` pushes it, `mr back-out` drops it). Unchanged files: `same`, nothing moved; if a stopped run left the paths staged, `same` names them and gives next `git restore --staged -- <paths>`. Refused in a request or attempt folder (`mr save`), and while a zone folder's index holds staged changes other than its own stopped run's. `--json`: outcome, commit, ref, moved, paths, and staged when the paths are still staged |
 | `mr rereview <reviewed commit> <new commit>` | Only what changed since a reviewed squash; says when the new squash carries the same patch |
 | `mr land <commit>` | Moves integration to the squash, or, when integration has moved on since the squash was made, to a merge commit of integration and the squash |
 | `mr back-out` | Puts integration back on origin after a failed test |
 | `mr publish [--no-push]` | Pushes integration to the remote's origin, then moves the local origin. If someone else moved the remote's origin meanwhile and it does not hold this landing, it fetches that, puts integration back on it and reports it; the squash then lands again. With `--no-push` it moves the local origin only: no push, and nothing is fetched. `--json` says `pushed`, true only when this publish's push is confirmed |
 | `mr after-publish <zone> [--move <zone>]...` | Brings the published zone, and each zone named with `--move`, onto the new origin |
 
-A zone's squash keeps one change ID through every re-squash until it is in origin, so a reviewer can follow one change across several commits. `mr would-merge` takes that change ID or the commit; `mr land` takes the reviewed commit only.
+A zone's squash keeps one change ID through every re-squash until it is in origin, so a reviewer can follow one change across several commits. `mr would-merge` takes that change ID or the commit, for the squash and for each `--with`; `mr land` takes the reviewed commit only.
 
 ## Other verbs
 
@@ -247,7 +248,7 @@ Mortar needs neither and calls neither. It holds no opinion about the code it mo
 
 ## Status
 
-Version 0.3.0. See [`CHANGELOG.md`](CHANGELOG.md).
+Version 0.4.0. See [`CHANGELOG.md`](CHANGELOG.md).
 
 - Mortar is built from source. The crates are not published to crates.io.
 - It runs on Unix systems only.
