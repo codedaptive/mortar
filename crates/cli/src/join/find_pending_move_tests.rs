@@ -2,7 +2,9 @@
 //! pending folder move carrying the folder_tree that op recorded, if any (cause Rebase); a done undo of a join-rebase
 //! op, last mover with the branch at its new tip, is one too, from the rebased tip back (cause Undo, no tree).
 //! An undo whose reversed op's Done record carries join_state (a resolve step) is none; one whose reversed op
-//! carries folder_tree only, has no Done record in the log, or only failed, is the move back.
+//! carries folder_tree only, has no Done record in the log, or only failed, is the move back. A done
+//! join-zone-request, last mover of the request ref with the branch at its request move's new tip, is the move of
+//! that request move (cause Rebase, no tree); its zone move is not read.
 //! Unit tests: undo_reason's reversed_op, done_record and is_resolve_step are pure and used directly.
 
 use gitio::Oid;
@@ -249,4 +251,31 @@ fn an_undo_whose_reversed_resolve_step_only_failed_is_the_move_back() {
     );
     let records = [rebase_5(), failed, undo(UNDO_OF_REBASE, Some(NEW))];
     assert_eq!(find_pending_move(&records, REQUEST, Some(&oid(OLD))), Some(undone()));
+}
+
+const ZONE: &str = "refs/heads/zone/core";
+const ZONE_FROM: &str = "6666666666666666666666666666666666666666";
+
+/// join_on_base's joined partner request: one op moving the zone from ZONE_FROM to NEW, then the request from OLD to
+/// NEW, carrying a folder_tree value that is never read.
+fn joined() -> ValuedRecord {
+    let mut valued = with_values(
+        record("op-joined", "join-zone-request", OpPhase::Done, REQUEST, Some(OLD), NEW),
+        &[("folder_tree", TREE)],
+    );
+    let zone_move = RefMove { refname: ZONE.to_string(), old: Some(oid(ZONE_FROM)), new: oid(NEW) };
+    valued.record.moves.insert(0, zone_move);
+    valued
+}
+
+#[test]
+fn a_join_zone_request_moves_the_folder_by_its_request_move() {
+    let moved = PendingMove { op_id: "op-joined".to_string(), ..pending() };
+    let cases: [(&str, &str, Option<PendingMove>); 2] = [
+        ("the branch at the request move's new tip", NEW, Some(moved)),
+        ("the branch elsewhere", LATER, None),
+    ];
+    for (case, branch_at, expected) in cases {
+        assert_eq!(find_pending_move(&[joined()], REQUEST, Some(&oid(branch_at))), expected, "{case}");
+    }
 }

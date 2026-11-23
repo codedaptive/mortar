@@ -1,5 +1,5 @@
 //! The lines and --json fields of a join report that say what was saved and the pending folder move (the last
-//! rebase's or an undo's), finished or found already done.
+//! rebase's, a joined partner request's or an undo's), finished or found already done.
 
 use snapshot::SaveOutcome;
 

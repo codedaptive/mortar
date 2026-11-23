@@ -9,6 +9,7 @@ mod attempts_made_report;
 mod attempts_saved;
 mod build_output_json;
 mod build_output_lines;
+mod cut_on_partners;
 mod default_zone_start;
 mod dropped_report;
 mod folder_command;
@@ -21,6 +22,9 @@ mod folder_removed_report;
 mod folder_setup_for;
 mod kept_report;
 mod parse_folder_args;
+mod partner_conflict_report;
+mod partners_json;
+mod partners_line;
 mod pending_keep_move;
 mod read_folder_at;
 mod refresh_folder_refusal;
@@ -72,6 +76,12 @@ mod kept_report_tests;
 #[cfg(test)]
 mod parse_folder_args_tests;
 #[cfg(test)]
+mod partner_conflict_report_tests;
+#[cfg(test)]
+mod partners_json_tests;
+#[cfg(test)]
+mod partners_line_tests;
+#[cfg(test)]
 mod pending_keep_move_tests;
 #[cfg(test)]
 mod refresh_folder_refusal_tests;
@@ -93,6 +103,7 @@ pub(crate) use attempts_made_report::attempts_made_report;
 pub(crate) use attempts_saved::attempts_saved;
 pub(crate) use build_output_json::build_output_json;
 pub(crate) use build_output_lines::build_output_lines;
+pub(crate) use cut_on_partners::cut_on_partners;
 pub(crate) use default_zone_start::default_zone_start;
 pub(crate) use dropped_report::dropped_report;
 pub(crate) use folder_command::FolderCommand;
@@ -105,6 +116,9 @@ pub(crate) use folder_removed_report::folder_removed_report;
 pub(crate) use folder_setup_for::folder_setup_for;
 pub(crate) use kept_report::kept_report;
 pub(crate) use parse_folder_args::parse_folder_args;
+pub(crate) use partner_conflict_report::partner_conflict_report;
+pub(crate) use partners_json::partners_json;
+pub(crate) use partners_line::partners_line;
 pub(crate) use pending_keep_move::pending_keep_move;
 pub(crate) use read_folder_at::read_folder_at;
 pub(crate) use refresh_folder_refusal::refresh_folder_refusal;

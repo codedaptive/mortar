@@ -1,17 +1,24 @@
 //! The report of an `mr join` that ran to an answer.
 
-use super::{answer_part, moved_before, save_part, JoinOutcome};
+use ::join::BaseJoinAnswer;
+
+use super::{base_answer_part, moved_before, save_part, JoinOutcome};
 use crate::report::{failure_report, OutValue, Report};
 
 const VERB: &str = "join";
 
-/// Lines: save_part's, then answer_part's, told by moved_before what the save (the request branch) and the snapshot
-/// (its ref) moved before the join. Fields: request_ref, save_part's, then answer_part's. Exit, outcome and next are
-/// answer_part's. FilesWritten, which only resolve gives, is failure_report.
+/// Lines: save_part's, then base_answer_part's, told by moved_before what the save (the request branch) and the
+/// snapshot (its ref) moved before the join. Fields: request_ref, save_part's, then base_answer_part's. Exit, outcome
+/// and next are base_answer_part's. FilesWritten, which only resolve gives, and PartnersConflicted, which run_join
+/// reports through partners_conflicted_report, are failure_report.
 pub fn join_report(outcome: &JoinOutcome) -> Report {
     let moved = moved_before(outcome.save.written, outcome.snapshot_written, &outcome.request_ref);
-    let Some(answer) = answer_part(&outcome.answer, &outcome.request_ref, moved.as_deref()) else {
-        return failure_report(VERB, "join answered files-written, which only resolve gives");
+    let Some(answer) = base_answer_part(&outcome.answer, &outcome.request_ref, moved.as_deref()) else {
+        let what = match outcome.answer {
+            BaseJoinAnswer::PartnersConflicted { .. } => "join answered partners-conflicted, which is a refusal",
+            _ => "join answered files-written, which only resolve gives",
+        };
+        return failure_report(VERB, what);
     };
     let (mut lines, saved) = save_part(&outcome.save, outcome.finished_move.as_ref());
     lines.extend(answer.lines);

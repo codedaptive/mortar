@@ -185,9 +185,9 @@ fn folder_is_a_harness_verb_under_the_join_lock_that_needs_the_config() {
     assert!(folder.needs_config);
     assert_eq!(
         folder.usage,
-        "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths <path>... | \
-         remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <zone folder path>) --actor <name> [--key \
-         <operation key>] [--json]"
+        "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths <path>... \
+         [--with <zone>]... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <zone folder path>) \
+         --actor <name> [--key <operation key>] [--json]"
     );
 }
 

@@ -5,10 +5,12 @@
 //! its decisions. The integration tests
 //! crates/cli/tests/folder_runs/run_folder_{zone,request,remove,refresh,attempts,keep,drop}_tests.rs cover it through
 //! the binary: usage errors (no --paths, n = 0, refresh with no path) exit 4 with folder's usage line; a zone not in
-//! the config exit 1, nothing made, next naming `mr init --replace` with `--zone <zone>=`.
+//! the config exit 1, nothing made, next naming `mr init --replace` with `--zone <zone>=`. partner_cut_tests.rs
+//! covers a --with partner not in the config: exit 1, nothing made.
 //! Integration tests to write (not written here): run outside any git repository it is refused exit 1
 //! (the shell's repository_report); without a config, exit 1, next mr init.
 
+use std::iter::once;
 use std::path::Path;
 
 use super::{
@@ -23,9 +25,10 @@ use crate::shell::ShellContext;
 const VERB: &str = "folder";
 
 /// The words after the verb read by parse_folder_args (an Err is folder's usage report, exit 4, before the verb runs
-/// git). zone and request name a zone that must be in the config (else exit 1 "refused", nothing made); zone's paths
-/// are zone_folder_paths', request's its --paths then the root files (request_folder_paths); refresh reads its zone
-/// from the folder's record. Then the sub-verb's runner.
+/// git). zone and request name a zone that must be in the config (else exit 1 "refused", nothing made), and so must
+/// each of request's --with partners, checked after the zone in the order given; zone's paths are
+/// zone_folder_paths', request's its --paths then the root files (request_folder_paths); refresh reads its zone from
+/// the folder's record. Then the sub-verb's runner.
 pub fn run_folder(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let command = match parse_folder_args(&args.rest) {
@@ -42,12 +45,12 @@ pub fn run_folder(context: &ShellContext, cwd: &Path) -> Report {
             Some(paths) => run_folder_zone(context, config, cwd, &zone, &path, start.as_deref(), &paths),
             None => unknown_zone_report(&zone, config),
         },
-        FolderCommand::Request { zone, request, path, paths } => {
-            if !config.zones.contains_key(&zone) {
-                return unknown_zone_report(&zone, config);
+        FolderCommand::Request { zone, request, path, paths, partners } => {
+            if let Some(unknown) = once(&zone).chain(&partners).find(|zone| !config.zones.contains_key(*zone)) {
+                return unknown_zone_report(unknown, config);
             }
             let paths = request_folder_paths(&paths, config);
-            run_folder_request(context, config, cwd, &zone, &request, &path, &paths)
+            run_folder_request(context, config, cwd, &zone, &request, &path, &paths, &partners)
         }
         FolderCommand::Remove { path } => run_folder_remove(context, config, cwd, &path),
         FolderCommand::Refresh { path } => run_folder_refresh(context, config, cwd, &path),

@@ -1,4 +1,5 @@
-//! read_status: everything `mr status` reports about a request or attempt folder, read without changing anything.
+//! read_status: what `mr status` reports about a request or attempt folder, read without changing anything; a
+//! request folder's base and partners are read beside it by read_base_status.
 //! An attempt folder's progress is read from its own try branch and snapshot by read_progress; its
 //! overlaps stay the request's.
 //! Shell API: run_status calls it.
@@ -29,7 +30,8 @@ use crate::report::{failure_report, Report};
 /// excludes and cap as save snapshots it (`settings`), saved when the folder's tree equals the branch tip's,
 /// zone_moved, joined when the branch tip is in the zone, the branch has commits of its own and the folder is
 /// saved, no_work_yet, the paused join and the stalled folder move); then the changed, untracked and conflicted paths; the overlaps (read_overlaps, against
-/// each request's fork point from the zone tip read_progress read); the record's gaps. A save error is
+/// each request's fork point: its recorded base when cut with partners, else its merge base with the zone tip
+/// read_progress read); the record's gaps. A save error is
 /// read_branch_reads' (saved_state_report) for `verb`; every other failure is failure_report. Reads only: no lock, no
 /// recover, no ref move.
 pub fn read_status(

@@ -1,6 +1,7 @@
-//! `mr resolve`: finishes a folder move a kill or a refused move left (a rebase's or an undo's),
-//! snapshots the folder, resolves the join paused in it and moves the folder after the rebase that completes it, all
-//! under the zone's join lock after recover; in an attempt folder it runs nothing.
+//! `mr resolve`: finishes a folder move a kill or a refused move left (a rebase's, a joined partner request's or an undo's),
+//! snapshots the folder, resolves the join paused in it, rewrites the folder record to the base the paused join kept
+//! and moves the folder after the rebase that completes it, all under the zone's join lock after recover; in an
+//! attempt folder it runs nothing.
 //! No unit test: it runs git and the op log, and takes a real lock; the unit tests in src
 //! (request_run_for_tests, resolve_report_tests, resolve_refusal_report_tests, resolve_move_refusal_report_tests and
 //! run_resolve_tests, which covers an attempt folder and an argument, both returning before any lock or git run) cover
@@ -13,18 +14,22 @@
 //! conflicted again on a later commit is exit 2 listing the files; an edit on a path the zone changed is exit 1 naming
 //! the paths and the snapshot ref; a kill after join's final op and before the folder move is finished by the next
 //! resolve or join (from the op's folder_tree); a held lock is exit 3; an attempt folder is exit 1 with nothing run;
-//! any argument is exit 4.
+//! any argument is exit 4. crates/cli/tests/save_join_runs/partner_join_tests.rs covers a request cut on a merge with a
+//! partner whose join paused on the unchanged zone: the resolve that completes it is Rebased, says the request left
+//! its set's merge with left_partners naming the partner and next "mr join", and the record names the zone tip with
+//! no partners.
 
-use folders::move_folder;
 use folders::plan::snap_ref;
+use folders::{move_folder, rewrite_request_base};
 use oplog::KillPidProbe;
 use snapshot::snapshot;
 
-use super::{resolve_move_refusal_report, resolve_refusal_report, resolve_report, ResolveOutcome};
+use super::{left_set_report, resolve_move_refusal_report, resolve_refusal_report, resolve_report, ResolveOutcome};
+use crate::folder::folder_error_why;
 use crate::join::{finish_pending_move, moved_before, request_run_for, RequestRun};
 use crate::lock::locked_act;
-use crate::report::{failure_report, Report};
-use crate::report::snapshot_step_failure;
+use crate::report::{failure_report, snapshot_step_failure, with_moved_first, Report};
+use crate::request_base::{read_request_base, recorded_base_of};
 use crate::shell::ShellContext;
 
 const VERB: &str = "resolve";
@@ -47,8 +52,14 @@ pub fn run_resolve(context: &ShellContext) -> Report {
     }
 }
 
-/// Finish a pending folder move, snapshot the folder (no formatter: the files may hold markers), resolve with the
-/// snapshot's tree, and move the folder after a rebase: saved from that snapshot, from the answer's folder_tree.
+/// Read the record's base and partners (read_request_base), finish a pending folder move, snapshot the folder (no formatter: the files
+/// may hold markers), resolve with the snapshot's tree, and after a rebase rewrite the record to the base the paused
+/// join kept (when it kept one) and move the folder: saved from that snapshot, from the answer's folder_tree. A
+/// rebase onto the zone tip with no partners, for a request whose record named partners, is left_set_report: the
+/// request stands without them now (S-233). A failed read of the record is failure_report with nothing moved; a
+/// failed rewrite is failure_report naming the rebase and moved_before's line, the folder not moved. A kill or a
+/// failed write between resolve's final op and the rewrite leaves the record naming the base and partners from before
+/// the resolve; recovering it needs join to record the base in its op.
 /// The snapshot runs every time, so the first run keeps the folder's files before resolve writes over them. A
 /// refusal from resolve and a refused folder move after the rebase name the snapshot ref when either snapshot (the
 /// pending move's or this one) wrote a commit (moved_before's line). A failure of this snapshot names the snapshot
@@ -57,6 +68,7 @@ pub fn run_resolve(context: &ShellContext) -> Report {
 /// When the finished move changes no folder file, this snapshot sees the same tree as finish's and writes nothing, so
 /// finish's flag is then the only source of that fact.
 fn act(run: &RequestRun, snapshot_ref: &str) -> Result<Report, Report> {
+    let recorded = read_request_base(run.folder).map_err(|why| failure_report(VERB, &why))?;
     let (finished_move, finish_written) =
         finish_pending_move(run, VERB, &|error| snapshot_step_failure(VERB, &error, None))?;
     let (folder, actor) = (&run.folder.toplevel, &run.target.actor);
@@ -66,20 +78,33 @@ fn act(run: &RequestRun, snapshot_ref: &str) -> Result<Report, Report> {
         })?;
     let snapshot_written = finish_written || taken.written;
     let moved = moved_before(false, snapshot_written, &run.request_ref);
-    let answer = ::join::resolve(&run.git, folder, &taken.tree, actor)
+    let (answer, base) = ::join::resolve_on_base(&run.git, folder, &taken.tree, actor)
         .map_err(|error| resolve_refusal_report(&error, moved.as_deref()))?;
     if let ::join::JoinAnswer::Rebased { from, to, folder_tree, .. } = &answer {
+        let done = format!("rebased: {} moved from {from} to {to}", run.request_ref);
+        if let Some(base) = &base {
+            rewrite_request_base(&run.git, folder, &recorded_base_of(base)).map_err(|error| {
+                let why = folder_error_why(&error).join("; ");
+                let what = format!("{done}; the folder record was not rewritten and the folder did not move: {why}");
+                let report = failure_report(VERB, &what);
+                Report { lines: with_moved_first(moved.as_deref(), report.lines), ..report }
+            })?;
+        }
         move_folder(&run.git, folder, from, to, true, actor, folder_tree.as_ref()).map_err(|error| {
-            let done = format!("rebased: {} moved from {from} to {to}", run.request_ref);
             resolve_move_refusal_report(&error, snapshot_ref, &taken.commit, vec![done], moved.as_deref())
         })?;
     }
-    Ok(resolve_report(&ResolveOutcome {
+    let report = resolve_report(&ResolveOutcome {
         request_ref: run.request_ref.clone(),
         finished_move,
         snapshot_ref: snapshot_ref.to_string(),
         snapshot_written,
         snapshot_commit: taken.commit,
         answer,
-    }))
+    });
+    let left: Vec<String> = match &base {
+        Some(base) if base.partners.is_empty() => recorded.partners.into_iter().map(|partner| partner.zone).collect(),
+        _ => Vec::new(),
+    };
+    Ok(if left.is_empty() { report } else { left_set_report(report, &left) })
 }

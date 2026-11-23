@@ -1,4 +1,4 @@
-//! The report of a resolve that join::resolve refused.
+//! The report of a resolve that resolve_on_base refused.
 //! resolve_refusal_report_tests covers no paused join, markers left and the refusals that carry join's own text
 //! (through join_refusal_report and join's exported, pure Display, so a unit test may use it).
 

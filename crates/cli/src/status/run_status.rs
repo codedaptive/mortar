@@ -14,6 +14,9 @@
 //!   carries savings, so the binary's edge (entry/main_entry, through record_savings) appends one line to the
 //!   user's savings.jsonl, outside the repository.
 //!
+//! crates/cli/tests/status_need_runs/status_partners_tests.rs covers a request folder's base, partners and
+//! partner_moved members, after gaps and before savings, for a request cut with and without `--with`.
+//!
 //! crates/cli/tests/status_need_runs/savings.rs covers the "[mr] tokens saved" line first in the plain answer, its
 //! baseline equal to git status plus git diff HEAD over the folder, the --json "savings" object, the switch that drops
 //! the line, and the savings.jsonl line.
@@ -21,16 +24,21 @@
 use folders::FolderKind;
 use gitio::Git;
 
-use super::{attempt_status_report, progress_branch, read_status, status_queries, status_report, StatusState};
+use super::{
+    attempt_status_report, progress_branch, read_base_status, read_status, status_queries, status_report,
+    with_base_status, StatusState,
+};
 use crate::args::no_arguments_report;
 use crate::config::snapshot_settings_for;
+use crate::context::FolderContext;
 use crate::report::{failure_report, Report};
 use crate::savings::with_counted_savings;
 use crate::shell::ShellContext;
 
 /// Any argument is no_arguments_report's usage report. The shell gives an agent verb its folder (actor_for refuses a
 /// zone folder) and a verb that needs the config its config; a missing one is a failure here. Then read_status with
-/// the config's snapshot settings, reported by status_report; in attempt folder k it reports attempt k's own branch
+/// the config's snapshot settings, reported by status_report, which in a request folder gains what the folder stands
+/// on (report_for); in attempt folder k it reports attempt k's own branch
 /// and snapshot by attempt_status_report, whose next is mr save or the wait for the harness, never join. A Done
 /// report gets its savings by with_counted_savings, after its own fields: two more git reads of the whole folder
 /// (status_queries: git status and git diff HEAD), their output characters summed by Git::output_chars, whose
@@ -51,20 +59,27 @@ pub fn run_status(context: &ShellContext) -> Report {
         Err(refusal) => refusal,
         Ok(state) => {
             let git = Git::new(&folder.toplevel);
-            with_counted_savings(report_for(folder.record.kind, &state), &status_queries(), &|query| {
+            with_counted_savings(report_for(&git, folder, &state), &status_queries(), &|query| {
                 git.output_chars(&folder.toplevel, query)
             })
         }
     }
 }
 
-/// attempt_status_report on attempt k's branch (progress_branch) for an attempt folder, else status_report.
-fn report_for(kind: FolderKind, state: &StatusState) -> Report {
-    let FolderKind::Attempt(k) = kind else {
-        return status_report(state);
-    };
-    progress_branch(&state.zone, &state.request, kind).map_or_else(
-        |error| failure_report("status", &error.reason),
-        |branch| attempt_status_report(k, &branch, state),
-    )
+/// attempt_status_report on attempt k's branch (progress_branch) for an attempt folder. For a request folder,
+/// status_report with what it stands on (read_base_status, then with_base_status), whose base, partners and
+/// partner_moved members follow the report's own fields, so they sit before the savings; a read that fails is
+/// failure_report. Any other folder: status_report.
+fn report_for(git: &Git, folder: &FolderContext, state: &StatusState) -> Report {
+    match folder.record.kind {
+        FolderKind::Attempt(k) => progress_branch(&state.zone, &state.request, folder.record.kind).map_or_else(
+            |error| failure_report("status", &error.reason),
+            |branch| attempt_status_report(k, &branch, state),
+        ),
+        FolderKind::Request => read_base_status(git, folder).map_or_else(
+            |error| failure_report("status", &error),
+            |status| with_base_status(status_report(state), &status),
+        ),
+        FolderKind::Zone => status_report(state),
+    }
 }

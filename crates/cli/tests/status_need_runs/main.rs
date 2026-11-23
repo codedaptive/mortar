@@ -9,6 +9,7 @@ mod support;
 mod savings;
 mod savings_baseline;
 mod status;
+mod status_partners_tests;
 mod need;
 mod handoff;
 mod status_joined_tests;

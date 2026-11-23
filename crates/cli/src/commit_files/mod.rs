@@ -16,7 +16,9 @@ mod read_pending_commit;
 mod run_commit_files;
 mod run_commit_files_integration;
 mod run_commit_files_zone;
+mod same_staged_report;
 mod stopped_run_refusal;
+mod tip_for_commit;
 mod write_pending_commit;
 mod zone_commit_op;
 mod zone_off_tip_refusal;
@@ -40,6 +42,8 @@ mod parse_pending_commit_tests;
 #[cfg(test)]
 mod pending_commit_text_tests;
 #[cfg(test)]
+mod same_staged_report_tests;
+#[cfg(test)]
 mod stopped_run_refusal_tests;
 #[cfg(test)]
 mod zone_commit_op_tests;
@@ -57,6 +61,7 @@ pub(crate) use parse_pending_commit::parse_pending_commit;
 pub(crate) use pending_commit::PendingCommit;
 pub(crate) use pending_commit_text::pending_commit_text;
 pub(crate) use run_commit_files::run_commit_files;
+pub(crate) use same_staged_report::same_staged_report;
 pub(crate) use stopped_run_refusal::stopped_run_refusal;
 pub(crate) use zone_commit_op::zone_commit_op;
 pub(crate) use zone_off_tip_refusal::zone_off_tip_refusal;

@@ -22,8 +22,8 @@ use testkit::TestRepo;
 
 const ACTOR: &str = "harness";
 const USAGE: &str = "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
-                     <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <zone folder path>) --actor \
-                     <name> [--key <operation key>] [--json]";
+                     <path>... [--with <zone>]... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <zone \
+                     folder path>) --actor <name> [--key <operation key>] [--json]";
 
 struct Fixture {
     repo: TestRepo,

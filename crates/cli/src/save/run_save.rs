@@ -39,9 +39,9 @@ use crate::shell::ShellContext;
 
 /// Checks the sentence before any lock, formatter or git; then reads the run (save_run_for: the folder's own
 /// branch, its snapshot target, the config's settings, the lock from the verb table's LockNeed and the key). Under
-/// `join-<zone>` with recover run first, it first finishes the folder's pending move, a join rebase's
-/// or an undo's (finish_pending_move, as join does; a refused move is that report and nothing is saved), then saves
-/// with the config's excludes and cap. With a formatter configured it runs snapshot_formatted then
+/// `join-<zone>` with recover run first, it first finishes the folder's pending move, a join rebase's, a
+/// joined partner request's or an undo's (finish_pending_move, as join does; a refused move is that report and nothing
+/// is saved), then saves with the config's excludes and cap. With a formatter configured it runs snapshot_formatted then
 /// save_from_snapshot through join's save_from_formatted, so the folder is snapshotted once; without one it commits
 /// with snapshot::save_with_snapshot, which takes its own snapshot. Every error of the pending move's snapshot and of
 /// the save's steps goes through save_step_failure, with moved_before's line for the snapshot ref when a step before

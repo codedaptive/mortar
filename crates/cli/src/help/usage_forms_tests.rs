@@ -10,8 +10,8 @@ fn folder_has_seven_forms() {
         usage_forms("folder"),
         vec![
             "mr folder zone <zone> <path> [--start <commit>] --actor <name> [--key <operation key>] [--json]",
-            "mr folder request <zone> <request> <path> --paths <path>... --actor <name> [--key <operation key>] \
-             [--json]",
+            "mr folder request <zone> <request> <path> --paths <path>... [--with <zone>]... --actor <name> [--key \
+             <operation key>] [--json]",
             "mr folder remove <path> --actor <name> [--key <operation key>] [--json]",
             "mr folder attempts <n> <dir> --actor <name> [--key <operation key>] [--json]",
             "mr folder keep <k> --actor <name> [--key <operation key>] [--json]",

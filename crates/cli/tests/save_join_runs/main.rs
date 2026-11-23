@@ -8,5 +8,6 @@ mod json;
 mod support;
 mod saves;
 mod joins;
+mod partner_join_tests;
 mod recovery;
 mod processes;

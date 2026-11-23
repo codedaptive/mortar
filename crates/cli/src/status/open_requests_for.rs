@@ -7,10 +7,10 @@ use gitio::Oid;
 /// For each folder as (its record, its request branch's tip, its snapshot ref's commit), in the order given: a
 /// Request folder of `zone` naming a request whose branch exists is open. Its tip is the snapshot commit when it
 /// has one, else the branch tip (each one's tip, or its last snapshot when it has one); its base is
-/// `fork_point(name, &tip)`, the commit it shares with the zone, never the record's base, which is the cut
-/// commit and goes stale when the request is rebased. Zone and attempt folders, other zones' folders and requests
-/// whose branch is gone are skipped, and fork_point is called for none of them. The first error from fork_point is
-/// returned.
+/// `fork_point(name, &tip)`, the fork point the caller chooses (read_overlaps and read_named_zones: the recorded
+/// base of a request cut with partners while it is an ancestor of the tip, else the merge base with the zone). Zone
+/// and attempt folders, other zones' folders and requests whose branch is gone are skipped, and fork_point is called for none of
+/// them. The first error from fork_point is returned.
 pub fn open_requests_for<E>(
     zone: &str,
     folders: &[(FolderRecord, Option<Oid>, Option<Oid>)],

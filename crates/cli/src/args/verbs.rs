@@ -1,9 +1,9 @@
 //! The verbs the binary knows: only those that are built.
 
 use super::{
-    LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, COMMIT_FILES_SPEC, DISK_SPEC, HELP_SPEC,
-    INSTALL_SPEC, OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC, UNINSTALL_SPEC,
-    WITHDRAW_SPEC,
+    LockNeed, VerbKind, VerbSpec, AFTER_PUBLISH_SPEC, BACKUP_SPEC, BISECT_SPEC, COMMIT_FILES_SPEC, DISK_SPEC,
+    FOLDER_SPEC, HELP_SPEC, INSTALL_SPEC, OVERLAP_SPEC, RESTORE_BACKUP_SPEC, SNAPSHOT_SPEC, SWEEP_SPEC, UNDO_SPEC,
+    UNINSTALL_SPEC, WITHDRAW_SPEC,
 };
 
 /// In the order the usage error lists them.
@@ -20,15 +20,7 @@ pub const VERBS: &[VerbSpec] = &[
     BISECT_SPEC,
     COMMIT_FILES_SPEC,
     DISK_SPEC,
-    VerbSpec {
-        name: "folder",
-        kind: VerbKind::Harness,
-        lock: LockNeed::Join,
-        needs_config: true,
-        usage: "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
-                <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <zone folder path>) \
-                --actor <name> [--key <operation key>] [--json]",
-    },
+    FOLDER_SPEC,
     VerbSpec {
         name: "guard",
         kind: VerbKind::Harness,

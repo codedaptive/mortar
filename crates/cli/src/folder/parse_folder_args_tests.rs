@@ -57,8 +57,71 @@ fn request_takes_its_names_path_and_every_word_after_paths() {
             request: "fix-1".to_string(),
             path: PathBuf::from("/w/fix"),
             paths: vec!["src/a".to_string(), "docs".to_string()],
+            partners: Vec::new(),
         })
     );
+}
+
+fn request(paths: &[&str], partners: &[&str]) -> FolderCommand {
+    FolderCommand::Request {
+        zone: "core".to_string(),
+        request: "fix-1".to_string(),
+        path: PathBuf::from("/w/fix"),
+        paths: paths.iter().map(ToString::to_string).collect(),
+        partners: partners.iter().map(ToString::to_string).collect(),
+    }
+}
+
+#[test]
+fn request_takes_with_partners_in_order_before_or_after_paths() {
+    let rows: Vec<(&[&str], Result<FolderCommand, String>)> = vec![
+        (
+            &["request", "core", "fix-1", "/w/fix", "--paths", "src/a", "--with", "web"],
+            Ok(request(&["src/a"], &["web"])),
+        ),
+        (
+            &["request", "core", "fix-1", "/w/fix", "--with=web", "--paths", "src/a", "docs"],
+            Ok(request(&["src/a", "docs"], &["web"])),
+        ),
+        (
+            &["request", "core", "fix-1", "/w/fix", "--with", "web", "--paths", "src/a", "--with=ui", "--with", "db"],
+            Ok(request(&["src/a"], &["web", "ui", "db"])),
+        ),
+    ];
+    for (words, expected) in rows {
+        assert_eq!(parse(words), expected, "{words:?}");
+    }
+}
+
+#[test]
+fn request_refuses_a_with_missing_empty_dashed_repeated_or_its_own_zone() {
+    let rows: Vec<(&[&str], &str)> = vec![
+        (&["request", "core", "fix-1", "/w/fix", "--paths", "a", "--with"], "--with needs a zone"),
+        (&["request", "core", "fix-1", "/w/fix", "--paths", "a", "--with="], "--with needs a zone"),
+        (&["request", "core", "fix-1", "/w/fix", "--paths", "a", "--with", ""], "--with needs a zone"),
+        (&["request", "core", "fix-1", "/w/fix", "--with", "--paths", "a"], "--with needs a zone"),
+        (&["request", "core", "fix-1", "/w/fix", "--paths", "a", "--with", "-x"], "--with needs a zone, not \"-x\""),
+        (
+            &["request", "core", "fix-1", "/w/fix", "--paths", "a", "--with", "web", "--with=web"],
+            "partner web is given twice",
+        ),
+        (
+            &["request", "core", "fix-1", "/w/fix", "--paths", "a", "--with", "core"],
+            "zone core cannot be its own partner",
+        ),
+        (&["request", "core", "fix-1", "/w/fix", "--paths", "--with", "web"], "--paths needs at least one path"),
+        (
+            &["request", "core", "fix-1", "/w/fix", "--paths", "a", "--with", "web", "b"],
+            "unexpected word \"b\" in folder request",
+        ),
+        (
+            &["request", "core", "--with", "web", "fix-1", "/w/fix", "--paths", "a"],
+            "unknown folder request argument \"--with\"",
+        ),
+    ];
+    for (words, expected) in rows {
+        assert_eq!(parse(words), Err(expected.to_string()), "{words:?}");
+    }
 }
 
 #[test]
