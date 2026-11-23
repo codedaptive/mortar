@@ -1,5 +1,6 @@
 //! verb_notes: squash's two notes name --message's place and its missing trailers, then the two shapes read back
-//! wrong; publish's note names --no-push and pushed; every other verb has none.
+//! wrong; publish's note names --no-push and pushed; folder's note is pinned in full by verb_help_lines_tests; every
+//! other verb has none.
 //! Unit test: verb_notes and the verb table are pure.
 
 use super::verb_notes;
@@ -28,7 +29,7 @@ fn publish_note_names_no_push_and_when_pushed_is_true() {
 
 #[test]
 fn every_other_verb_has_no_notes() {
-    let noted = ["squash", "publish"];
+    let noted = ["folder", "squash", "publish"];
     for verb in VERBS.iter().map(|verb| verb.name).chain(["--version"]).filter(|name| !noted.contains(name)) {
         assert!(verb_notes(verb).is_empty(), "{verb}");
     }
