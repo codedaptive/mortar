@@ -1,14 +1,19 @@
-//! join: replays a request's commits onto its zone, joins the request, pauses a conflicted join for `resolve`,
-//! restores a paused join after an undo, and lists the paths open requests both change (overlap).
+//! join: replays a request's commits onto its zone, joins the request, makes a partner merge and joins a request on
+//! that base, pauses a conflicted join for `resolve`, restores a paused join after an undo, and lists the paths open
+//! requests both change (overlap).
 
 mod accumulate_paths;
 mod after_replay;
 mod after_replay_step;
+mod base_join_answer;
+mod base_join_decision;
+mod base_join_read;
 mod check_onto;
 mod check_restore_join_state;
 mod classify_conflicted;
 mod conflicted_entry;
 mod continue_replay;
+mod decide_base_join;
 mod decide_join;
 mod decide_resolve;
 mod decide_restore;
@@ -28,6 +33,7 @@ mod join_error;
 mod join_error_display;
 mod join_error_error;
 mod join_error_from_git;
+mod join_on_base;
 mod join_read;
 mod join_run_error;
 mod join_run_error_display;
@@ -35,6 +41,7 @@ mod join_state;
 mod join_state_name;
 mod join_state_path;
 mod join_state_value;
+mod make_partner_merge;
 mod map_steps;
 mod mapped_commit;
 mod mapped_replay;
@@ -47,6 +54,8 @@ mod overlap_for;
 mod overlap_pair;
 mod pair_overlaps;
 mod pair_overlaps_for;
+mod partner;
+mod partner_merge;
 mod pause;
 mod paused_join;
 mod paused_join_type;
@@ -65,7 +74,9 @@ mod replay_in;
 mod replay_mapped;
 mod replay_mapped_in;
 mod replay_result;
+mod request_base;
 mod resolve;
+mod resolve_on_base;
 mod resolve_step;
 mod restore_join_state;
 mod restore_refusal;
@@ -79,14 +90,18 @@ mod step;
 mod tree_refusal;
 mod write_conflicted_files;
 mod write_join_state;
+mod zone_request_op;
 
+pub use base_join_answer::BaseJoinAnswer;
 pub use check_restore_join_state::check_restore_join_state;
 pub use folder_tree_name::FOLDER_TREE;
 pub use join::join;
 pub use join_answer::JoinAnswer;
 pub use join_error::JoinError;
+pub use join_on_base::join_on_base;
 pub use join_run_error::JoinRunError;
 pub use join_state_name::JOIN_STATE;
+pub use make_partner_merge::make_partner_merge;
 pub use mapped_commit::MappedCommit;
 pub use mapped_replay::MappedReplay;
 pub use marked_file::MarkedFile;
@@ -94,12 +109,16 @@ pub use open_request::OpenRequest;
 pub use overlap::overlap;
 pub use overlap_for::overlap_for;
 pub use overlap_pair::OverlapPair;
+pub use partner::Partner;
+pub use partner_merge::PartnerMerge;
 pub use paused_join::paused_join;
 pub use paused_join_type::PausedJoin;
 pub use replay::replay;
 pub use replay_mapped::replay_mapped;
 pub use replay_result::ReplayResult;
+pub use request_base::RequestBase;
 pub use resolve::resolve;
+pub use resolve_on_base::resolve_on_base;
 pub use restore_join_state::restore_join_state;
 pub use restored_join::RestoredJoin;
 

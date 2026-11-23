@@ -9,6 +9,8 @@ mod after_replay_tests;
 mod check_onto_tests;
 #[path = "classify_conflicted_tests.rs"]
 mod classify_conflicted_tests;
+#[path = "decide_base_join_tests.rs"]
+mod decide_base_join_tests;
 #[path = "decide_join_tests.rs"]
 mod decide_join_tests;
 #[path = "decide_resolve_tests.rs"]
@@ -75,3 +77,5 @@ mod restore_refusal_tests;
 mod restore_state_step_tests;
 #[path = "tree_refusal_tests.rs"]
 mod tree_refusal_tests;
+#[path = "zone_request_op_tests.rs"]
+mod zone_request_op_tests;

@@ -1,7 +1,7 @@
 //! finish_resolve: a resolve's final step: the one op that moves the request ref, then the state's removal.
 //! No unit test: it applies an op and removes a real file; rebase_op_tests, op_applied_tests,
-//! folder_tree_values_tests and join_state_value_tests cover its parts. resolve.rs's header lists the integration
-//! cases.
+//! folder_tree_values_tests and join_state_value_tests cover its parts. resolve_on_base.rs's header lists the
+//! integration cases.
 
 use crate::folder_tree_values::folder_tree_values;
 use crate::join_state::JoinState;

@@ -54,7 +54,7 @@ pub fn join(git: &Git, folder: &Path, zone: &str, request_ref: &str, actor: &str
         }
         JoinDecision::Replay { base, onto } => {
             let result = replay(git, &base, request_ref, &onto).map_err(JoinRunError::Replay)?;
-            match after_replay(request_ref, &read.request_tip, &onto, &[], result) {
+            match after_replay(request_ref, &read.request_tip, &onto, &[], None, result) {
                 AfterReplayStep::Rebase { from, to } => {
                     let op = rebase_op(request_ref, &from, &to, &onto, new_op_id(), actor, unix_now());
                     op_applied(apply(git, &common, &op))?;

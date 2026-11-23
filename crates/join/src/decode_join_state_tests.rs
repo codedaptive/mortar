@@ -1,10 +1,15 @@
 //! decode_join_state: a hand-written text read into the expected state, all_files differing from files and a
 //! folder tree included; JSON escapes encode_join_state never writes read as JSON; an unreadable string refused saying
 //! why; and refusal of keys out of order, a missing key (all_files and folder_tree included), a bad id or flag,
-//! trailing junk, spaces, bad arrays, empty text.
+//! trailing junk, spaces, bad arrays, empty text. The base keys: a text without them (as a plain join writes it)
+//! reads with no base; a base with two partners and with none read back; a truncated or misordered base key refused
+//! naming its byte; and encode_join_state's output read back to the state it encoded.
 
 use crate::decode_join_state::decode_join_state;
+use crate::encode_join_state::encode_join_state;
 use crate::join_state::JoinState;
+use crate::partner::Partner;
+use crate::request_base::RequestBase;
 use gitio::Oid;
 use std::path::PathBuf;
 
@@ -53,6 +58,7 @@ fn base() -> JoinState {
         files_written: false,
         rebased_to: None,
         folder_tree: None,
+        base: None,
     }
 }
 
@@ -205,4 +211,95 @@ fn a_string_that_cannot_be_read_is_refused_saying_why() {
         ended,
         "the state file's text could not be read: it ends inside the string starting at byte 15"
     );
+}
+
+/// A valid 12-key text with `tail` written between folder_tree's value and the closing brace.
+fn with_tail(tail: &str) -> String {
+    let old = text("[]", "[]", "false", "null");
+    format!("{}{tail}}}\n", old.strip_suffix("}\n").unwrap())
+}
+
+fn partner(zone: &str, tip: &str) -> Partner {
+    Partner { zone: zone.to_string(), tip: oid(tip) }
+}
+
+#[test]
+fn the_base_keys_read_into_the_base_and_their_absence_into_none() {
+    let old = "{\"request_ref\":\"refs/heads/request/r1\",\
+        \"request_tip\":\"1111111111111111111111111111111111111111\",\
+        \"onto\":\"2222222222222222222222222222222222222222\",\
+        \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
+        \"commit\":\"4444444444444444444444444444444444444444\",\
+        \"tree\":\"5555555555555555555555555555555555555555\",\
+        \"remaining\":[],\"files\":[],\"all_files\":[],\"files_written\":false,\"rebased_to\":null,\
+        \"folder_tree\":null}\n";
+    let two = with_tail(
+        ",\"base\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"partners\":[\
+         {\"zone\":\"docs\",\"tip\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\
+         {\"zone\":\"we\\\"ird\",\"tip\":\"cccccccccccccccccccccccccccccccccccccccc\"}]",
+    );
+    let none = with_tail(",\"base\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"partners\":[]");
+    let rows = [
+        (old.to_string(), None),
+        (
+            two,
+            Some(RequestBase {
+                base: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+                partners: vec![
+                    partner("docs", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+                    partner("we\"ird", "cccccccccccccccccccccccccccccccccccccccc"),
+                ],
+            }),
+        ),
+        (none, Some(RequestBase { base: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), partners: Vec::new() })),
+    ];
+    for (input, expected) in rows {
+        assert_eq!(decode_join_state(&input), Ok(JoinState { base: expected, ..base() }), "{input}");
+    }
+}
+
+#[test]
+fn a_truncated_or_misordered_base_key_is_refused_naming_its_byte() {
+    // The byte where folder_tree's value ends and the base keys would start.
+    let start = text("[]", "[]", "false", "null").len() - 2;
+    let base_hex = "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"";
+    let rows = [
+        (",\"bas".to_string(), start),
+        (format!(",\"partners\":[],\"base\":{base_hex}"), start),
+        (format!(",\"base\":{base_hex},\"partners\":[{{\"tip\":{base_hex},\"zone\":\"docs\"}}]"), start + 63),
+        (format!(",\"base\":{base_hex},\"partners\":[{{\"zone\":\"docs\"}}]"), start + 77),
+        (format!(",\"base\":{base_hex},\"partners\":[],\"extra\":1"), start + 64),
+    ];
+    for (tail, byte) in rows {
+        let refused = decode_join_state(&with_tail(&tail)).unwrap_err();
+        assert!(refused.ends_with(&format!(" at byte {byte}")), "{tail}: {refused}");
+    }
+}
+
+#[test]
+fn encode_join_state_output_reads_back_to_the_state() {
+    let bases = [
+        None,
+        Some(RequestBase { base: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), partners: Vec::new() }),
+        Some(RequestBase {
+            base: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+            partners: vec![
+                partner("docs", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+                partner("z\u{1}\\", "cccccccccccccccccccccccccccccccccccccccc"),
+            ],
+        }),
+    ];
+    for request_base in bases {
+        let state = JoinState {
+            remaining: vec![oid("6666666666666666666666666666666666666666")],
+            files: vec![PathBuf::from("src/a.rs")],
+            all_files: vec![PathBuf::from("old.md"), PathBuf::from("src/a.rs")],
+            files_written: true,
+            rebased_to: Some(oid("8888888888888888888888888888888888888888")),
+            folder_tree: Some(oid("9999999999999999999999999999999999999999")),
+            base: request_base,
+            ..base()
+        };
+        assert_eq!(decode_join_state(&encode_join_state(&state).unwrap()), Ok(state.clone()));
+    }
 }

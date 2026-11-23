@@ -1,18 +1,21 @@
 //! decode_join_state: reads the text of mortar-join.json back into a JoinState. decode_join_state_tests covers a
-//! hand-written text, an escape encode_join_state never writes, and each refusal, a text missing all_files or
-//! folder_tree included.
+//! hand-written text, an escape encode_join_state never writes, a text with and without the base keys, a round trip
+//! through encode_join_state, and each refusal, a text missing all_files or folder_tree included.
 //! Why a strict reader of one layout, not a general JSON parser: only encode_join_state writes this file, so text
 //! in any other layout is not a state join wrote, and resolve must not act on it. Strings are read by oplog's
 //! parse_json_string, which takes every JSON escape.
 
 use crate::join_state::JoinState;
+use crate::partner::Partner;
+use crate::request_base::RequestBase;
 use gitio::Oid;
 use oplog::{parse_json_string, JsonError};
 use std::path::PathBuf;
 
 /// Reads exactly the layout encode_join_state writes: one JSON object with no whitespace, its 12 keys in
-/// encode_join_state's order, and at most one trailing newline. Strings may hold any JSON escape; ids must be valid
-/// object ids. Anything else is refused with the reason and the byte it was found at.
+/// encode_join_state's order, then the base and partners keys or none (a plain join's state), and at most one trailing
+/// newline. Strings may hold any JSON escape; ids must be valid object ids. Anything else is refused with the
+/// reason and the byte it was found at.
 pub(crate) fn decode_join_state(text: &str) -> Result<JoinState, String> {
     let body = text.strip_suffix('\n').unwrap_or(text);
     let (request_ref, at) = string(body, literal(body, 0, "{\"request_ref\":")?)?;
@@ -27,6 +30,7 @@ pub(crate) fn decode_join_state(text: &str) -> Result<JoinState, String> {
     let (files_written, at) = flag(body, key(body, at, "files_written")?)?;
     let (rebased_to, at) = optional_id(body, key(body, at, "rebased_to")?)?;
     let (folder_tree, at) = optional_id(body, key(body, at, "folder_tree")?)?;
+    let (base, at) = request_base(body, at)?;
     if body.get(at..) != Some("}") {
         return Err(format!("expected the closing brace and the end of the text at byte {at}"));
     }
@@ -43,7 +47,25 @@ pub(crate) fn decode_join_state(text: &str) -> Result<JoinState, String> {
         files_written,
         rebased_to,
         folder_tree,
+        base,
     })
+}
+
+/// None when the closing brace comes next; else `,"base":"<hex>","partners":[...]`.
+fn request_base(body: &str, at: usize) -> Result<(Option<RequestBase>, usize), String> {
+    if body.get(at..) == Some("}") {
+        return Ok((None, at));
+    }
+    let (base, at) = id(body, key(body, at, "base")?)?;
+    let (partners, at) = array(body, key(body, at, "partners")?, partner)?;
+    Ok((Some(RequestBase { base, partners }), at))
+}
+
+/// Exactly `{"zone":<string>,"tip":"<hex>"}`.
+fn partner(body: &str, at: usize) -> Result<(Partner, usize), String> {
+    let (zone, at) = string(body, literal(body, at, "{\"zone\":")?)?;
+    let (tip, at) = id(body, key(body, at, "tip")?)?;
+    Ok((Partner { zone, tip }, literal(body, at, "}")?))
 }
 
 /// The index after `lit`, which must start at byte `at`.
@@ -84,11 +106,7 @@ fn path(body: &str, at: usize) -> Result<(PathBuf, usize), String> {
 type ItemReader<T> = fn(&str, usize) -> Result<(T, usize), String>;
 
 /// `[]`, or `[` then items separated by `,` then `]`, each item read by `item`.
-fn array<T>(
-    body: &str,
-    at: usize,
-    item: ItemReader<T>,
-) -> Result<(Vec<T>, usize), String> {
+fn array<T>(body: &str, at: usize, item: ItemReader<T>) -> Result<(Vec<T>, usize), String> {
     let mut at = literal(body, at, "[")?;
     let mut items = Vec::new();
     if let Ok(end) = literal(body, at, "]") {

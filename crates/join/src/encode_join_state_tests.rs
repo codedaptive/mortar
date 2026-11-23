@@ -1,8 +1,11 @@
 //! encode_join_state: literal expected text written by hand, empty arrays, both flag values, a rebased tip and
-//! folder tree, all_files differing from files, escapes, and a non-UTF-8 path in files and in all_files.
+//! folder tree, all_files differing from files, escapes, a non-UTF-8 path in files and in all_files, and a base with
+//! two partners and with none written after folder_tree.
 
 use crate::encode_join_state::encode_join_state;
 use crate::join_state::JoinState;
+use crate::partner::Partner;
+use crate::request_base::RequestBase;
 use gitio::Oid;
 use std::ffi::OsStr;
 use std::os::unix::ffi::OsStrExt;
@@ -26,6 +29,7 @@ fn state(remaining: Vec<Oid>, files: Vec<PathBuf>) -> JoinState {
         files_written: false,
         rebased_to: None,
         folder_tree: None,
+        base: None,
     }
 }
 
@@ -124,4 +128,35 @@ fn a_non_utf8_path_only_in_all_files_is_refused_naming_it() {
         ..state(Vec::new(), vec![PathBuf::from("ok.txt")])
     };
     assert_eq!(encode_join_state(&s), Err(PathBuf::from(OsStr::from_bytes(b"earlier\xffround"))));
+}
+
+#[test]
+fn a_base_and_its_partners_follow_folder_tree_in_order() {
+    let partners = vec![
+        Partner { zone: "docs".to_string(), tip: oid("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") },
+        Partner { zone: "we\"ird".to_string(), tip: oid("cccccccccccccccccccccccccccccccccccccccc") },
+    ];
+    let cases = [
+        (
+            partners,
+            "\"partners\":[{\"zone\":\"docs\",\"tip\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\
+             {\"zone\":\"we\\\"ird\",\"tip\":\"cccccccccccccccccccccccccccccccccccccccc\"}]}\n",
+        ),
+        (Vec::new(), "\"partners\":[]}\n"),
+    ];
+    for (partners, tail) in cases {
+        let base = RequestBase { base: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), partners };
+        let s = JoinState { base: Some(base), ..state(Vec::new(), Vec::new()) };
+        let expected = format!(
+            "{{\"request_ref\":\"refs/heads/request/r1\",\
+             \"request_tip\":\"1111111111111111111111111111111111111111\",\
+             \"onto\":\"2222222222222222222222222222222222222222\",\
+             \"replayed_tip\":\"3333333333333333333333333333333333333333\",\
+             \"commit\":\"4444444444444444444444444444444444444444\",\
+             \"tree\":\"5555555555555555555555555555555555555555\",\
+             \"remaining\":[],\"files\":[],\"all_files\":[],\"files_written\":false,\"rebased_to\":null,\
+             \"folder_tree\":null,\"base\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",{tail}"
+        );
+        assert_eq!(encode_join_state(&s), Ok(expected), "{tail}");
+    }
 }
