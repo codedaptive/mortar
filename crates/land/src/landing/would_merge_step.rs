@@ -1,7 +1,6 @@
 //! would_merge_step: one step of would_merge_with, from land's target for that step's squash.
 
-use crate::landing::LandingTarget;
-use crate::squash::WouldMergeWith;
+use crate::landing::{LandingTarget, WouldMergeWith};
 use gitio::Oid;
 use std::ops::ControlFlow;
 

@@ -14,12 +14,14 @@
 //! no_push::push_off_repeat_after_origin_advanced_only_cleans_up,
 //! no_push::push_off_moved_local_origin_backs_out_without_fetching, no_push::push_on_published_reports_pushed and
 //! no_push::push_on_moved_remote_reports_not_pushed, repeats::open_push_intent_refuses_push_off_then_push_on_finishes
-//! and repeats::push_off_killed_after_origin_move_finishes_push_on_without_push.
+//! and repeats::push_off_killed_after_origin_move_finishes_push_on_without_push; a commit_files commit by the
+//! commit_files_zit tests committing::named_commit_is_published_without_the_unnamed_edit and
+//! kills::killed_after_update_ref_recovers_done_repeats_same_and_publishes (a pending commit integration reached).
 
 use crate::landing::{
     advance_origin, back_out_onto, decide_publish, fetch_origin, finish_publish, push_landing, read_landing_state,
-    push_landed, read_push_intent, remote_origin, settle_push_intent, LandingState, PublishAnswer, PublishError,
-    PublishOutcome, PublishStep, PushIntentState, PushResult,
+    push_landed, read_push_intent, remote_origin, resolve_landing_state, settle_push_intent, LandingState,
+    PublishAnswer, PublishError, PublishOutcome, PublishStep, PushIntentState, PushResult,
 };
 use crate::squash::{read_tip, LandRefs};
 use gitio::{Git, Oid};
@@ -27,7 +29,8 @@ use oplog::OpPhase;
 use std::path::Path;
 
 /// With no landing state: NothingToPublish, the remote not contacted. Otherwise, with expected = the state's
-/// origin_at_start and new = its integration, the local origin tip decides (decide_publish).
+/// origin_at_start and new = its integration (resolve_landing_state against integration's tip, read only when the
+/// state has a pending commit), the local origin tip decides (decide_publish).
 ///
 /// Push on: the remote is read only when the local origin is at expected. A remote at or past new (push_landed: new
 /// is its ancestor, so our push landed and someone pushed on top) counts as at new. Once read, a push intent for
@@ -53,6 +56,12 @@ pub fn publish_with_push(git: &Git, refs: &LandRefs, actor: &str, push: bool) ->
     let common = git.common_dir().map_err(PublishError::Git)?;
     let Some(state) = read_landing_state(&common).map_err(PublishError::State)? else {
         return Ok(PublishOutcome { answer: PublishAnswer::NothingToPublish, pushed: false });
+    };
+    let state = if state.pending.is_some() {
+        let integration_ref = format!("refs/heads/{}", refs.integration_branch);
+        resolve_landing_state(state, &read_tip(git, &integration_ref).map_err(PublishError::Squash)?)
+    } else {
+        state
     };
     let local = read_tip(git, &format!("refs/heads/{}", refs.origin_branch)).map_err(PublishError::Squash)?;
     let intent = read_push_intent(&common, refs, &state)?;

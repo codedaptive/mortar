@@ -1,4 +1,5 @@
-//! LandError: why land, back_out or one of publish's ops was refused; publish wraps it as PublishError::Land. A bare
+//! LandError: why land, back_out, commit_files or one of publish's ops was refused; publish wraps it as
+//! PublishError::Land and commit_files as CommitFilesError::Land. A bare
 //! type; land_error_display_tests exercises the OpFailed, OpRepeated, NoZone, NoLandingState,
 //! IntegrationElsewhere and State texts, land_error_source_tests its source,
 //! landing_applied_tests the op variants.
@@ -8,7 +9,7 @@ use crate::squash::SquashError;
 use gitio::{GitError, Oid};
 use oplog::{MortarTrailerError, OpRecord, OplogError};
 
-/// A land, back_out or publish op refusal. Debug only: SquashError, OplogError, MortarTrailerError and
+/// A land, back_out, commit_files or publish op refusal. Debug only: SquashError, OplogError, MortarTrailerError and
 /// LandingStateError are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum LandError {

@@ -4,8 +4,8 @@
 //! tests/squash_zit/would_merge_with_cases.rs covers it, in a throwaway repository: ordered_squashes_merge_cleanly,
 //! second_squash_conflicts_with_first_result and preview_leaves_refs_and_reachable_objects_unchanged.
 
-use crate::landing::{landing_target_for, LandError};
-use crate::squash::{read_tip, would_merge_step, LandRefs, Squash, WouldMergeWith};
+use crate::landing::{landing_target_for, would_merge_step, LandError, WouldMergeWith};
+use crate::squash::{read_tip, LandRefs, Squash};
 use gitio::Git;
 use std::ops::ControlFlow;
 
