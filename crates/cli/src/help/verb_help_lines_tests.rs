@@ -48,8 +48,8 @@ fn folder_is_its_forms_its_line_then_its_note() {
         help_of("folder"),
         vec![
             "mr folder zone <zone> <path> [--start <commit>] --actor <name> [--key <operation key>] [--json]",
-            "mr folder request <zone> <request> <path> --paths <path>... --actor <name> [--key <operation key>] \
-             [--json]",
+            "mr folder request <zone> <request> <path> --paths <path>... [--with <zone>]... --actor <name> [--key \
+             <operation key>] [--json]",
             "mr folder remove <path> --actor <name> [--key <operation key>] [--json]",
             "mr folder attempts <n> <dir> --actor <name> [--key <operation key>] [--json]",
             "mr folder keep <k> --actor <name> [--key <operation key>] [--json]",
@@ -58,6 +58,9 @@ fn folder_is_its_forms_its_line_then_its_note() {
             "make, refresh and remove zone, request and attempt folders",
             "refresh <zone folder path>: sets the zone folder's paths to the zone's paths and root files in the \
              config and brings the folder to the zone branch's tip, so a zone's tests can run between publishes",
+            "request --with <zone>: cuts the request on a merge of its zone's tip with each partner zone's tip, \
+             in the order given; a merge that conflicts is refused, naming the partner and the files; mr join then \
+             gives the zone only the request's own commits",
         ]
     );
 }

@@ -9,6 +9,7 @@ mod json;
 mod support;
 mod run_folder_zone_tests;
 mod run_folder_request_tests;
+mod partner_cut_tests;
 mod run_folder_remove_tests;
 mod run_folder_attempts_tests;
 mod run_folder_keep_tests;

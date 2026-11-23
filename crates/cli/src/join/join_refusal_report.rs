@@ -1,4 +1,4 @@
-//! The report of a join that join::join refused.
+//! The report of a join that join_on_base refused.
 
 use ::join::{JoinError, JoinRunError};
 

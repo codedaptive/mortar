@@ -31,6 +31,7 @@ mod overlap;
 mod path;
 mod publish;
 mod report;
+mod request_base;
 mod rereview;
 mod resolve;
 mod restore;

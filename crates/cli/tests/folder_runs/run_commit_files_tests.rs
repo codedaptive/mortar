@@ -101,7 +101,7 @@ fn commit_files_zone_repeat_after_a_stopped_run_commits_once() {
 }
 
 #[test]
-fn commit_files_zone_repeat_after_a_stopped_run_and_a_revert_stays_same() {
+fn commit_files_zone_repeat_after_a_stopped_run_and_a_revert_names_staged_paths_until_restored() {
     let f = Fixture::new();
     let tip = f.git.read_ref(ZONE).unwrap().unwrap();
     let zone_git = Git { repo: f.zone.clone(), ..f.git.clone() };
@@ -118,8 +118,21 @@ fn commit_files_zone_repeat_after_a_stopped_run_and_a_revert_stays_same() {
         assert_eq!(output.status.code(), Some(0), "attempt {attempt}: {output:?}");
         let r = check(output, "commit-files", 0, "same");
         assert!(!r.flag("moved"));
+        assert_eq!(r.text("next"), "git restore --staged -- src/file");
+        assert_eq!(r.strings("staged"), ["src/file"]);
+        assert!(r.lines().contains("src/file"));
+        assert!(marker.exists());
         assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(tip.clone()));
     }
+    raw(&zone_git, &["restore", "--staged", "--", "src/file"]);
+    let output = f.command(&f.zone, &["--json", "--actor", "zone-owner", "commit-files", "src/file"])
+        .output().unwrap();
+    assert!(!String::from_utf8_lossy(&output.stdout).contains("\"staged\":"));
+    let r = check(output, "commit-files", 0, "same");
+    assert!(!r.flag("moved"));
+    assert_eq!(r.text("next"), "mr squash core --actor <name> carries it in the zone's next squash");
+    assert!(!marker.exists());
+    assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(tip));
 }
 
 #[test]

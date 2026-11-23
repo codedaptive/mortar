@@ -3,7 +3,7 @@
 
 use std::path::PathBuf;
 
-use ::join::JoinAnswer;
+use ::join::{BaseJoinAnswer, JoinAnswer};
 use gitio::Oid;
 use snapshot::SaveOutcome;
 
@@ -27,7 +27,7 @@ fn outcome(answer: JoinAnswer) -> JoinOutcome {
         snapshot_written: false,
         finished_move: None,
         save: SaveOutcome { commit: oid(HEAD), tree: oid(TREE), written: false, change_id: None, refused: Vec::new() },
-        answer,
+        answer: BaseJoinAnswer::Plain(answer),
     }
 }
 

@@ -1,5 +1,5 @@
 //! The lines, fields, exit, outcome and next step a join answer gives its report.
-//! Shell API: join_report and resolve_report call it.
+//! Shell API: base_answer_part and resolve_report call it.
 
 use ::join::JoinAnswer;
 

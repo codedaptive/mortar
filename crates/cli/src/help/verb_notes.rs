@@ -1,7 +1,8 @@
 //! verb_notes: the lines a verb's help adds after its row's line, for what its usage cannot say.
 
 /// folder's refresh: what it does to a zone folder's paths (the zone's and the root files) and tip, and why (a
-/// zone's tests between publishes). squash's --message: the text leads the message and carries no trailers, and the
+/// zone's tests between publishes); folder's request --with: the merge it cuts on, its refusal on a conflict, and
+/// what mr join then gives the zone. squash's --message: the text leads the message and carries no trailers, and the
 /// two message shapes land's read_squash reads back wrong (squash_message_requests' known limit). publish's
 /// --no-push: what push off leaves alone and the JSON pushed it gives. would-merge's --with: each further squash
 /// merged onto the one before, in order, as successive lands would. commit-files: the folders it commits in, the
@@ -12,6 +13,9 @@ pub fn verb_notes(name: &str) -> &'static [&'static str] {
         "folder" => &[
             "refresh <zone folder path>: sets the zone folder's paths to the zone's paths and root files in the \
              config and brings the folder to the zone branch's tip, so a zone's tests can run between publishes",
+            "request --with <zone>: cuts the request on a merge of its zone's tip with each partner zone's tip, \
+             in the order given; a merge that conflicts is refused, naming the partner and the files; mr join then \
+             gives the zone only the request's own commits",
         ],
         "squash" => &[
             "--message <text>: your subject and body lead the squash's message; Mortar adds its request lines and \

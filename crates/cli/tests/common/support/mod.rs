@@ -1,5 +1,6 @@
 use crate::json::{check, Report};
 mod fixture_config;
+pub mod fixture_partners;
 mod fixture_formatter;
 mod fixture_plain;
 mod fixture_zone;

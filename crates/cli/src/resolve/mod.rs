@@ -1,11 +1,14 @@
 //! `mr resolve`: what one run did, its reports, its refusals and the runner.
 
+mod left_set_report;
 mod resolve_move_refusal_report;
 mod resolve_outcome;
 mod resolve_refusal_report;
 mod resolve_report;
 mod run_resolve;
 
+#[cfg(test)]
+mod left_set_report_tests;
 #[cfg(test)]
 mod resolve_move_refusal_report_tests;
 #[cfg(test)]
@@ -15,6 +18,7 @@ mod resolve_report_tests;
 #[cfg(test)]
 mod run_resolve_tests;
 
+pub(crate) use left_set_report::left_set_report;
 pub(crate) use resolve_move_refusal_report::resolve_move_refusal_report;
 pub(crate) use resolve_outcome::ResolveOutcome;
 pub(crate) use resolve_refusal_report::resolve_refusal_report;

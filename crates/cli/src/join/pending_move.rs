@@ -7,10 +7,11 @@ use gitio::Oid;
 use super::MoveCause;
 
 /// `request_ref` is the full ref name; `old` and `new` are the tips of the move of op `op_id`: for cause Rebase the
-/// join-rebase op's old and new, for cause Undo the undo op's (the rebased tip back to the tip before the rebase).
+/// join-rebase or join-zone-request op's old and new (the request ref's), for cause Undo the undo op's (the rebased
+/// tip back to the tip before the rebase).
 /// `folder_tree` is the tree a join-rebase op recorded under "folder_tree": after a resolve, the tree
 /// holding the resolution that the folder moves from. None when the op carries none, as a plain join's rebase
-/// does, and always None for an undo's move.
+/// and a join-zone-request do, and always None for an undo's move.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PendingMove {
     pub request_ref: String,

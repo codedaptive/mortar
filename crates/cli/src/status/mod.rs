@@ -3,6 +3,7 @@
 
 mod attempt_next;
 mod attempt_status_report;
+mod base_status;
 mod branch_reads;
 mod branchless_request_line;
 mod is_joined;
@@ -13,7 +14,9 @@ mod move_stalled;
 mod no_work_yet;
 mod open_requests_for;
 mod overlaps_with;
+mod partner_moved;
 mod progress_branch;
+mod read_base_status;
 mod read_branch_reads;
 mod read_branch_tips;
 mod read_overlaps;
@@ -23,6 +26,7 @@ mod read_status;
 mod read_tips;
 mod recovered_records;
 mod saved_state_report;
+mod set_fork_point;
 mod run_status;
 mod status_fields;
 mod status_lines;
@@ -33,6 +37,7 @@ mod status_phase_from_status_state;
 mod status_queries;
 mod status_report;
 mod status_state;
+mod with_base_status;
 
 #[cfg(test)]
 mod attempt_next_tests;
@@ -57,6 +62,8 @@ mod open_requests_for_tests;
 #[cfg(test)]
 mod overlaps_with_tests;
 #[cfg(test)]
+mod partner_moved_tests;
+#[cfg(test)]
 mod progress_branch_tests;
 #[cfg(test)]
 mod recovered_records_tests;
@@ -76,9 +83,12 @@ mod status_phase_from_status_state_tests;
 mod status_queries_tests;
 #[cfg(test)]
 mod status_report_tests;
+#[cfg(test)]
+mod with_base_status_tests;
 
 pub(crate) use attempt_next::attempt_next;
 pub(crate) use attempt_status_report::attempt_status_report;
+pub(crate) use base_status::BaseStatus;
 pub(crate) use branch_reads::BranchReads;
 pub(crate) use branchless_request_line::branchless_request_line;
 pub(crate) use is_joined::is_joined;
@@ -89,7 +99,9 @@ pub(crate) use move_stalled::move_stalled;
 pub(crate) use no_work_yet::no_work_yet;
 pub(crate) use open_requests_for::open_requests_for;
 pub(crate) use overlaps_with::overlaps_with;
+pub(crate) use partner_moved::partner_moved;
 pub(crate) use progress_branch::progress_branch;
+pub(crate) use read_base_status::read_base_status;
 pub(crate) use read_branch_reads::read_branch_reads;
 pub(crate) use read_branch_tips::read_branch_tips;
 pub(crate) use read_overlaps::read_overlaps;
@@ -99,6 +111,7 @@ pub(crate) use read_status::read_status;
 pub(crate) use read_tips::read_tips;
 pub(crate) use recovered_records::recovered_records;
 pub(crate) use saved_state_report::saved_state_report;
+pub(crate) use set_fork_point::set_fork_point;
 pub(crate) use run_status::run_status;
 pub(crate) use status_fields::status_fields;
 pub(crate) use status_lines::status_lines;
@@ -108,3 +121,4 @@ pub(crate) use status_phase::StatusPhase;
 pub(crate) use status_queries::status_queries;
 pub(crate) use status_report::status_report;
 pub(crate) use status_state::StatusState;
+pub(crate) use with_base_status::with_base_status;

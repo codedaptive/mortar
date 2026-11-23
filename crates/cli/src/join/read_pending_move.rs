@@ -1,8 +1,10 @@
 //! Reads the op log with each record's values and the request branch, and asks find_pending_move whether a folder
-//! move is pending, a join rebase's or an undo's of a plain join rebase (an undo of a resolve step is
-//! none), and from which recorded folder_tree.
+//! move is pending, a join rebase's, a joined partner request's or an undo's of a plain join rebase (an undo of a
+//! resolve step is none), and from which recorded folder_tree; and asks joined_zone_base, from the same read, the
+//! zone tip a joined partner request stands on.
 //! finish_pending_move (join, resolve, save, undo) calls it, after recover has settled open intents.
-//! No unit test: it reads the op log file and runs git; find_pending_move_tests covers the decision.
+//! No unit test: it reads the op log file and runs git; find_pending_move_tests and joined_zone_base_tests cover the
+//! decisions.
 //! The integration tests crates/cli/tests/save_join_runs/{recovery,processes}.rs, resolve_runs/resolve_pending.rs and
 //! across_kits/undo_save_join_resolve/{rebases,resolve_undo}.rs cover, in a throwaway repository with a request
 //! folder: a join-rebase op
@@ -16,21 +18,23 @@
 
 use std::path::Path;
 
-use gitio::Git;
+use gitio::{Git, Oid};
 use oplog::read_valued_log;
 
-use super::{find_pending_move, PendingMove};
+use super::{find_pending_move, joined_zone_base, PendingMove};
 use crate::report::{failure_report, Report};
 
-/// The pending move of `request_ref`, read from the op log under `common` and the ref's value through `git`.
+/// The pending move of `request_ref`, read from the op log under `common` and the ref's value through `git`, with
+/// joined_zone_base's answer from the same records (Some only when that move is a joined partner request's).
 /// Either read failing is failure_report for `verb`.
 pub fn read_pending_move(
     git: &Git,
     common: &Path,
     request_ref: &str,
     verb: &str,
-) -> Result<Option<PendingMove>, Report> {
+) -> Result<Option<(PendingMove, Option<Oid>)>, Report> {
     let log = read_valued_log(common).map_err(|error| failure_report(verb, &error.to_string()))?;
     let branch_at = git.read_ref(request_ref).map_err(|error| failure_report(verb, &error.to_string()))?;
-    Ok(find_pending_move(&log.records, request_ref, branch_at.as_ref()))
+    Ok(find_pending_move(&log.records, request_ref, branch_at.as_ref())
+        .map(|pending| (pending, joined_zone_base(&log.records, request_ref, branch_at.as_ref()))))
 }
