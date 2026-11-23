@@ -2,6 +2,19 @@
 
 All notable changes to Mortar are recorded here, in terms of what the program does for the people and agents who use it. Versions are the workspace's version in `Cargo.toml`.
 
+## 0.4.0
+
+### Landing
+
+- **`mr would-merge <squash> --with <squash>...`** tries the squashes in order, each merged onto the one before, without merging anything. Exit 0 when every step merges; exit 2 names the step that conflicts and its files, and `--json` adds that step. Plain `mr would-merge` answers as before.
+- **`mr commit-files <path>... [--message <text>] --actor <name>`** commits the named files, as the folder has them, as one commit. In a zone folder at its tip it moves `zone/<zone>` onto that commit; in the integration folder after `mr land` it moves integration, inside the landing, so `mr publish` pushes it and `mr back-out` drops it. Files that have not changed answer `same` and move nothing; if a stopped run left them staged, `same` names them with next `git restore --staged -- <paths>`. It is refused in a request or attempt folder (step: `mr save`), in a zone folder off its tip (step: `mr folder refresh`), and while a zone folder's index holds other staged changes. A repeat after a stop is safe. `--json`: outcome, commit, ref, moved, paths, and staged when the paths are still staged.
+
+### Folders
+
+- **`mr folder request ... --with <zone>...`** cuts a request folder on a merge of the zone's tip with each partner zone's tip, in the order given, so a request can build on work that has not landed yet. A merge that conflicts is refused, naming the partner and the files, and nothing is made; a partner already in the zone is named and not recorded. `--json` adds `partners` and `partners_in_zone`. Without `--with`, the folder is made as before.
+- **`mr join` and `mr resolve` work from the request's recorded base**, so a request cut with partners replays only its own commits. When the zone has taken in the partners' work, the join answers as for any request; when a partner moved, the request is replayed onto the new merge and stops for its tests; a partner merge that now conflicts is refused, naming the partner and the files. Requests without partners join and resolve as before.
+- **`mr status --json` in a request folder carries `base`** (the commit the request's own commits stand on), **`partners`** (`{zone, tip}` each, empty for a plain request) **and `partner_moved`**. The plain lines are unchanged.
+
 ## 0.3.0
 
 ### Landing

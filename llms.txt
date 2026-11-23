@@ -37,7 +37,7 @@ When a document and the program disagree, the program is right.
 Agent verbs, run inside a request folder, with no folder argument and no
 `--actor`:
 
-- `mr status`
+- `mr status`: `--json` in a request folder carries `base`, `partners` (`{zone, tip}` each) and `partner_moved`
 - `mr save "<sentence>"`
 - `mr join`
 - `mr resolve`
@@ -50,7 +50,7 @@ Set-up and folder verbs, run by a harness or a person, with `--actor <name>`:
 - `mr guard install`, `mr guard status`
 - `mr folder zone <zone> <path> [--start <commit>]`
 - `mr folder refresh <zone folder path>`: set a zone folder's paths to the config's zone paths and root files and bring it to the zone tip; refused on a request or attempt folder (next `mr join`)
-- `mr folder request <zone> <request> <path> --paths <path>...`: make a request folder from the zone branch; clones the zone folder's build dirs into it (copy-on-write); JSON `build_output` lists each dir's outcome (shared, absent, kept, refused, with why on refused); a dir not shared never fails the verb
+- `mr folder request <zone> <request> <path> --paths <path>... [--with <zone>]...`: make a request folder from the zone branch, or with `--with` from a merge of the zone tip and each partner zone's tip in order (a conflicting merge is refused, naming the partner and files; JSON `partners`, `partners_in_zone`); clones the zone folder's build dirs into it (copy-on-write); JSON `build_output` lists each dir's outcome (shared, absent, kept, refused, with why on refused); a dir not shared never fails the verb
 - `mr folder remove <path>`
 - `mr folder attempts <n> <dir>`, `mr folder keep <k>`, `mr folder drop`
 - `mr snapshot`, `mr overlap <zone>`, `mr disk`, `mr sweep [--idle-days <n>] [--ref <full ref name>]...`
@@ -60,7 +60,8 @@ Landing verbs, with `--actor <name>`:
 
 - `mr squash <zone> [--message <text>]`: the caller's subject and body lead the squash message; the text carries no trailers
 - `mr withdraw <zone>`: withdraw a zone's squash before it lands; JSON `withdrawn`; exit 0 when there is nothing to withdraw, exit 1 when it is published or landing
-- `mr would-merge <commit or change ID>`
+- `mr would-merge <commit or change ID> [--with <commit or change ID>]...`: with `--with`, each squash merges in order onto the one before; exit 2 names the conflicting step
+- `mr commit-files <path>... [--message <text>]`: commit the named files as the folder has them, in a zone folder onto `zone/<zone>` at its tip, or in the integration folder onto integration inside the landing; `same` when unchanged (naming a stopped run's staged paths, next `git restore --staged -- <paths>`); refused in request and attempt folders (next `mr save`); JSON outcome, commit, ref, moved, paths, staged
 - `mr rereview <reviewed commit> <new commit>`
 - `mr land <commit>`
 - `mr back-out`
@@ -130,6 +131,6 @@ not for Windows.
 
 ## Version note
 
-This is version 0.3.0. Mortar is built from source.
+This is version 0.4.0. Mortar is built from source.
 The command line, the `--json` fields and the layout under `refs/mortar/` may
 still change before 1.0.

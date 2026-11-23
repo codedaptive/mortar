@@ -61,7 +61,7 @@ Do not tell a user that Mortar:
 - starts, schedules or messages agents;
 - replaces git, or hides the repository from git;
 - is safe against a hostile agent or a hostile user on the same machine;
-- has a stable interface yet: this is version 0.3.0.
+- has a stable interface yet: this is version 0.4.0.
 
 ## If you are an agent in a request folder
 
