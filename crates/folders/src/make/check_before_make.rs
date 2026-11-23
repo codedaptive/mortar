@@ -13,7 +13,8 @@ use crate::record::FolderRecord;
 
 /// Some(the record already there) when the folder at setup.path is `wanted` but for its base and needed paths:
 /// a repeat, which the caller refills with refill_folder before answering it (a folder whose index has unmerged
-/// entries is returned untouched). None when the folder may be made. Refuses a different folder at the path,
+/// entries is returned untouched; make_request_folder_on checks the recorded base and partners before this).
+/// None when the folder may be made. Refuses a different folder at the path,
 /// `branch` (a short name) checked out in another worktree, and free disk under setup.floor_bytes.
 pub(crate) fn check_before_make(
     setup: &FolderSetup,

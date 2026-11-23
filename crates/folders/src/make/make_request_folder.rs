@@ -50,6 +50,6 @@ pub fn make_request_folder(
             needed_paths: Vec::new(),
             parent: Some(zb.clone()),
         };
-        make_or_refill(setup, &common, wanted, &rb, &tip, &cone)
+        make_or_refill(setup, &common, wanted, &[], &rb, &tip, &cone)
     })
 }

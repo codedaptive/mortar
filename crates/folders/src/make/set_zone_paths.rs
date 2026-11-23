@@ -58,7 +58,7 @@ pub fn set_zone_paths(
             });
         }
         if record != existing {
-            write_folder_record(&git_dir, &record)?;
+            write_folder_record(&git_dir, &record, &[])?;
         }
         git.sparse_set(folder, &git_cone(git, folder, &record.base, &record.work_order_paths)?)
             .map_err(FolderError::Git)?;
