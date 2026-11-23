@@ -1,6 +1,6 @@
 //! What clone_build_dirs did with one build dir.
-//! A bare type; build_dir_outcome_tests.rs covers each case and tests/folders/build_output.rs covers it through
-//! clone_build_dirs.
+//! A bare type; build_dir_outcome_tests.rs and ancestor_refusal_tests.rs cover each case and
+//! tests/folders/build_output.rs covers it through clone_build_dirs.
 
 /// One build dir's outcome, named by `dir` as the caller gave it (relative to both folders).
 #[derive(Debug, Clone, PartialEq, Eq)]
