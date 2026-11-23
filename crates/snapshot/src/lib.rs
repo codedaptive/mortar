@@ -1,5 +1,5 @@
-//! snapshot: saves a folder's tree to a hidden snapshot ref under refs/mortar/, and saves a folder's work as a
-//! commit on its branch.
+//! snapshot: saves a folder's tree to a hidden snapshot ref under refs/mortar/, saves a folder's work as a commit on
+//! its branch, and commits named paths of a folder onto a parent commit without moving any ref.
 //! The crate's bridge file: module declarations and re-exports only, one line per public symbol, so it grows past
 //! the 150-line ceiling by design; it is not split.
 
@@ -10,6 +10,10 @@ mod cap_mismatch;
 mod cap_refusals;
 mod capped_excludes;
 mod child_exit;
+mod commit_paths;
+mod commit_paths_error;
+mod commit_paths_error_display;
+mod commit_paths_outcome;
 mod decide_formatter_end;
 mod decide_formatter_result;
 mod decide_formatter_wait;
@@ -34,6 +38,7 @@ mod kept_bytes;
 mod kill_process_group;
 mod leader_state;
 mod literal_exclude;
+mod outside_path;
 mod peek_exit_call;
 mod previous_snapshot;
 mod read_capped;
@@ -60,6 +65,7 @@ mod saved_state_type;
 mod saved_with_snapshot;
 mod saved_with_snapshot_from;
 mod sentence_refusal;
+mod set_index_paths;
 mod snapshot;
 mod snapshot_decision;
 mod snapshot_error;
@@ -73,8 +79,12 @@ mod snapshot_parents;
 mod snapshot_ref_name;
 mod snapshot_target;
 mod snapshot_trailers;
+mod symlinked_ancestor;
 mod waitid_args;
 
+pub use commit_paths::commit_paths;
+pub use commit_paths_error::CommitPathsError;
+pub use commit_paths_outcome::CommitPathsOutcome;
 pub use default_size_cap::DEFAULT_SIZE_CAP;
 pub use formatter::Formatter;
 pub use formatter_result::FormatterResult;
@@ -108,6 +118,8 @@ mod cap_refusals_tests;
 #[cfg(test)]
 mod capped_excludes_tests;
 #[cfg(test)]
+mod commit_paths_error_display_tests;
+#[cfg(test)]
 mod decide_formatter_end_tests;
 #[cfg(test)]
 mod decide_formatter_result_tests;
@@ -131,6 +143,8 @@ mod group_kill_target_tests;
 mod kept_bytes_tests;
 #[cfg(test)]
 mod literal_exclude_tests;
+#[cfg(test)]
+mod outside_path_tests;
 #[cfg(test)]
 mod peek_exit_call_tests;
 #[cfg(test)]
