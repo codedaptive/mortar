@@ -11,6 +11,7 @@ mod locks;
 mod marked_lines;
 mod open_marked_intents;
 mod protection;
+mod protected_values;
 mod takeover_guards;
 mod with_lock;
 mod undo_restore;

@@ -15,8 +15,8 @@ use crate::store::{oid_is_zero, read_ref_value, OplogError, RefMove};
 /// creation or no move. Only moves whose ref is in `protected` are read; the merge base is asked only for a
 /// present ref moved to another, non-zero value.
 ///
-/// apply_protected runs check_ref_moves first, so names here are full refs/ names; git check-ref-format runs
-/// later, in apply. Nothing is written here.
+/// apply_protected and apply_protected_with_values run check_ref_moves first, so names here are full refs/
+/// names; git check-ref-format runs later, in apply or apply_with_values. Nothing is written here.
 pub(crate) fn check_protected_moves(
     git: &Git,
     moves: &[RefMove],

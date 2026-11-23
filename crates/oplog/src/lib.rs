@@ -34,7 +34,7 @@ pub use trailers::{
     mortar_trailer_pairs, pick_mortar_trailers, read_mortar_trailers, write_mortar_trailers, MortarTrailerError,
     MortarTrailers, MORTAR_CHANGE_ID_KEY, MORTAR_SQUASH_OF_KEY, MORTAR_ZONE_KEY,
 };
-pub use protect::{apply_protected, ProtectedRef};
+pub use protect::{apply_protected, apply_protected_with_values, ProtectedRef};
 pub use undo::{
     check_restore_ref_names, find_undo_target, plan_restore, restore, undo, OpCaller,
 };
