@@ -1,5 +1,6 @@
-//! verb_help_lines: a verb's usage, then its row's line, then its notes (their text is verb_notes_tests'), then its
-//! tokens saved baseline if it has one. No verb has both notes and a baseline, so their order is not reachable here.
+//! verb_help_lines: a verb's usage, then its row's line, then its notes (squash's and publish's are checked by token
+//! in verb_notes_tests; folder's is pinned here in full), then its tokens saved baseline if it has one. No verb has
+//! both notes and a baseline, so their order is not reachable here.
 //! Unit test: the help groups, find_help_entry, usage_forms, verb_notes and the verb table are pure and used directly.
 
 use super::{find_help_entry, verb_help_lines, verb_notes};
@@ -38,6 +39,26 @@ fn log_has_no_baseline_line() {
     assert_eq!(
         help_of("log"),
         vec!["mr log [--ref <full ref name>] [--actor <name>] [--key <operation key>] [--json]", "the operation log"]
+    );
+}
+
+#[test]
+fn folder_is_its_forms_its_line_then_its_note() {
+    assert_eq!(
+        help_of("folder"),
+        vec![
+            "mr folder zone <zone> <path> [--start <commit>] --actor <name> [--key <operation key>] [--json]",
+            "mr folder request <zone> <request> <path> --paths <path>... --actor <name> [--key <operation key>] \
+             [--json]",
+            "mr folder remove <path> --actor <name> [--key <operation key>] [--json]",
+            "mr folder attempts <n> <dir> --actor <name> [--key <operation key>] [--json]",
+            "mr folder keep <k> --actor <name> [--key <operation key>] [--json]",
+            "mr folder drop --actor <name> [--key <operation key>] [--json]",
+            "mr folder refresh <path> --actor <name> [--key <operation key>] [--json]",
+            "make, refresh and remove zone, request and attempt folders",
+            "refresh <zone folder path>: sets the zone folder's paths to the zone's paths and root files in the \
+             config and brings the folder to the zone branch's tip, so a zone's tests can run between publishes",
+        ]
     );
 }
 
