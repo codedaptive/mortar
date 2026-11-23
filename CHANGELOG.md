@@ -2,6 +2,19 @@
 
 All notable changes to Mortar are recorded here, in terms of what the program does for the people and agents who use it. Versions are the workspace's version in `Cargo.toml`.
 
+## 0.3.0
+
+### Landing
+
+- **`mr squash <zone> --message <text>`** puts your text first in the squash's commit message, before the list of requests and Mortar's trailers, and Mortar still reads the squash back. A re-squash with a message keeps the squash's change ID; the same message again is already squashed. An empty or blank message is a usage error and writes nothing. Without `--message` the squash is made as before.
+- **`mr withdraw <zone>`** takes back a zone's squash before it lands: it deletes the squash ref and names the commit and change ID it withdrew (`--json`: `withdrawn`). A repeat has nothing to withdraw and exits 0. A squash already in the origin branch is refused, as is the landing in flight, whose step is `mr back-out` first. The next squash draws a new change ID.
+- **`mr publish --no-push`** moves only the local origin branch to integration and removes the squash ref: no push, and nothing is fetched. If the local origin moved meanwhile, the landing is put back onto it to land again. While an earlier publish's push is still open, `--no-push` is refused and a plain `mr publish` finishes it. `--json` on either form carries `pushed`, true only when this publish's push was confirmed.
+
+### Folders
+
+- **A new request folder gets its zone folder's build output as copy-on-write clones** (clonefile(2), never a byte copy): each configured build dir in the zone folder is cloned into the request folder, with the same files. The answer names each build dir not shared and why: the zone folder has none, the request folder already has it (a repeat, which keeps the request's own changes), or the clone was refused, as for a build dir that is a symlink or sits under one, or when no zone folder of the zone is found. A dir not shared never fails `mr folder request`. `--json` adds `build_output`, one `{dir, outcome, why}` per build dir. Zone and attempt folders are made as before.
+- **`mr folder refresh <zone folder path>`** sets a zone folder's paths to the zone's paths in the config and brings the folder to the zone branch's tip, so a zone's tests can run between publishes. A repeat changes nothing. It refuses a request or attempt folder (step: `mr join`), an edit that the move would overwrite (the edit is kept), and a zone the config no longer names (step: `mr init --replace`).
+
 ## 0.2.0
 
 ### Landing

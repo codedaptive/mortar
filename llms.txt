@@ -49,7 +49,8 @@ Set-up and folder verbs, run by a harness or a person, with `--actor <name>`:
 - `mr init --origin <branch> --integration <branch> --remote <name> [--zone <zone>=<path>[,<path>...]]...`
 - `mr guard install`, `mr guard status`
 - `mr folder zone <zone> <path> [--start <commit>]`
-- `mr folder request <zone> <request> <path> --paths <path>...`
+- `mr folder refresh <zone folder path>`: set a zone folder's paths to the config's zone paths and bring it to the zone tip; refused on a request or attempt folder (next `mr join`)
+- `mr folder request <zone> <request> <path> --paths <path>...`: make a request folder from the zone branch; clones the zone folder's build dirs into it (copy-on-write); JSON `build_output` lists each dir's outcome (shared, absent, kept, refused, with why on refused); a dir not shared never fails the verb
 - `mr folder remove <path>`
 - `mr folder attempts <n> <dir>`, `mr folder keep <k>`, `mr folder drop`
 - `mr snapshot`, `mr overlap <zone>`, `mr disk`, `mr sweep [--idle-days <n>] [--ref <full ref name>]...`
@@ -57,12 +58,13 @@ Set-up and folder verbs, run by a harness or a person, with `--actor <name>`:
 
 Landing verbs, with `--actor <name>`:
 
-- `mr squash <zone>`
+- `mr squash <zone> [--message <text>]`: the caller's subject and body lead the squash message; the text carries no trailers
+- `mr withdraw <zone>`: withdraw a zone's squash before it lands; JSON `withdrawn`; exit 0 when there is nothing to withdraw, exit 1 when it is published or landing
 - `mr would-merge <commit or change ID>`
 - `mr rereview <reviewed commit> <new commit>`
 - `mr land <commit>`
 - `mr back-out`
-- `mr publish`
+- `mr publish [--no-push]`: with `--no-push`, move the local origin branch only (no push, nothing fetched); JSON `pushed` is true only when this publish's push intent closed done
 - `mr after-publish <zone> [--move <zone>]...`
 - `mr backup`, `mr restore-backup <host>`
 - `mr bisect <last pass> <failed> --timeout <seconds> -- <command>...`
@@ -128,6 +130,6 @@ not for Windows.
 
 ## Version note
 
-This is version 0.2.0. Mortar is built from source.
+This is version 0.3.0. Mortar is built from source.
 The command line, the `--json` fields and the layout under `refs/mortar/` may
 still change before 1.0.
