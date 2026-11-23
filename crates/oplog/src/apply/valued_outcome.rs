@@ -1,4 +1,4 @@
-//! What apply_with_values did with an op, with the values of the record that settles it.
+//! What apply_with_values or apply_protected_with_values did with an op, with the values of the record that settles it.
 //! A bare type; no unit test. The zone tests crates/oplog/tests/oplog/values.rs and values_recover.rs exercise it.
 
 use super::ApplyOutcome;
