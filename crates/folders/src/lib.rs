@@ -17,10 +17,13 @@ mod test_ref_pairs;
 pub use attempts::{drop_attempts, keep, make_attempts, remake_orphans};
 pub use build_output::{clone_build_dirs, BuildDirClone};
 pub use disk::{disk, folder_unsaved, DiskReport, FolderDisk, UnsavedCounts};
-pub use make::{make_request_folder, make_zone_folder, set_zone_paths, FolderError, FolderSetup};
+pub use make::{
+    make_request_folder, make_request_folder_on, make_zone_folder, read_recorded_base, rewrite_request_base,
+    set_zone_paths, FolderError, FolderSetup,
+};
 pub use moves::move_folder;
 pub use need::{gaps, need};
 pub use plan::{DfFreeDisk, FreeDisk, SweepEstimate, DEFAULT_FLOOR_BYTES};
-pub use record::{FolderKind, FolderRecord};
+pub use record::{FolderKind, FolderRecord, RecordedBase, RequestPartner};
 pub use remove::remove;
 pub use sweep::{sweep_build, sweep_refs, SweepBuildOutcome, DEFAULT_BUILD_DIR};

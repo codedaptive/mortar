@@ -5,9 +5,9 @@ use oplog::write_json_string;
 use super::{FolderKind, FolderRecord};
 
 /// One line of JSON, no trailing newline, keys in the order kind, zone, request, base, work_order_paths,
-/// needed_paths, parent; an absent request or parent is null. An attempt record has the key "attempt" right after
-/// kind, its number as a decimal string; zone and request records have no such key. Every string is escaped, so
-/// any record encodes.
+/// needed_paths, parent; an absent request or parent is null; encode_record_and_partners appends "partners" after
+/// parent. An attempt record has the key "attempt" right after kind, its number as a decimal string; zone and
+/// request records have no such key. Every string is escaped, so any record encodes.
 pub fn encode_folder_record(record: &FolderRecord) -> String {
     let mut out = String::from("{\"kind\":");
     write_json_string(&mut out, kind_name(record.kind));

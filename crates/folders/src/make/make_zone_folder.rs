@@ -66,7 +66,7 @@ pub fn make_zone_folder(
         }
         git.worktree_add(&setup.path, &base, None).map_err(FolderError::Git)?;
         attach_head(git, &setup.path, &zb)?;
-        fill_folder(git, &setup.path, &wanted, &cone)?;
+        fill_folder(git, &setup.path, &wanted, &[], &cone)?;
         Ok(wanted)
     })
 }

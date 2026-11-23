@@ -51,7 +51,7 @@ pub fn make_attempts(
                     pids: setup.pids,
                     actor: setup.actor.clone(),
                 };
-                make_or_refill(&attempt, &common, planned.record, &planned.branch, &tip, &cone)
+                make_or_refill(&attempt, &common, planned.record, &[], &planned.branch, &tip, &cone)
             })
             .collect()
     })

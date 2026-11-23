@@ -8,6 +8,7 @@
 //! Real gitio worktrees, oplog transactions/locks and OS disk queries in disposable TestRepo fixtures.
 #[path = "../support/mod.rs"]
 mod support;
+mod partner_base;
 mod make;
 mod build_output;
 mod repeat;

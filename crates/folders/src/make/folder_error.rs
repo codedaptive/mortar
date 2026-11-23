@@ -1,4 +1,5 @@
-//! Every way making a folder, making attempt folders with make_attempts, keeping one with keep, dropping them with
+//! Every way making a folder, reading or rewriting what a request folder stands on with read_recorded_base or
+//! rewrite_request_base, making attempt folders with make_attempts, keeping one with keep, dropping them with
 //! drop_attempts, remaking orphan attempt folders with remake_orphans, widening one with need, setting a zone
 //! folder's paths with set_zone_paths, moving one with move_folder, removing one with remove, or measuring, counting
 //! unsaved work or sweeping with disk, folder_unsaved, sweep_build or sweep_refs can be refused.
@@ -12,12 +13,13 @@ use oplog::{LockError, OplogError};
 use crate::plan::{BelowFloor, PlanError};
 use crate::record::{FolderRecord, RecordError};
 
-/// A refusal from make_zone_folder, make_request_folder, make_attempts, keep, drop_attempts, remake_orphans, need,
-/// set_zone_paths, move_folder, remove, disk, folder_unsaved, sweep_build or sweep_refs. Debug only: io::Error,
+/// A refusal from make_zone_folder, make_request_folder, make_request_folder_on, read_recorded_base,
+/// rewrite_request_base, make_attempts, keep, drop_attempts, remake_orphans, need, set_zone_paths, move_folder,
+/// remove, disk, folder_unsaved, sweep_build or sweep_refs. Debug only: io::Error,
 /// OplogError and LockError are neither Clone nor Eq.
 #[derive(Debug)]
 pub enum FolderError {
-    /// A zone or request name, a sparse path, or an attempt count of 0, the plan refused.
+    /// A zone, partner zone or request name, a sparse path, or an attempt count of 0, the plan refused.
     Plan(PlanError),
     /// The folder record at `path` is not one mortar writes.
     Record { path: PathBuf, error: RecordError },
@@ -32,14 +34,18 @@ pub enum FolderError {
     /// Free disk at `path` could not be read.
     DiskProbe { path: PathBuf, reason: String },
     /// `path` is already a folder, and its record differs from the one asked for in more than its base and needed
-    /// paths.
+    /// paths; or make_request_folder_on found it the same folder at the same base but recording other partners
+    /// (a no-partner call at the zone tip on a folder whose record holds no partners refills as
+    /// make_request_folder does).
     DifferentFolder { path: PathBuf, existing: FolderRecord },
     /// `path` is in the way and is not a folder mortar made.
     NotAFolder { path: PathBuf, reason: String },
     /// The folder's branch is checked out in the worktree at `path`.
     BranchCheckedOut { branch: String, path: PathBuf },
     /// The folder's branch already exists at another commit, or was not made by mortar at this one, so it
-    /// could not be made.
+    /// could not be made; or make_request_folder_on was asked for another base than the folder at its path records
+    /// (a no-partner call at the zone tip on a folder whose record holds no partners refills as make_request_folder
+    /// does).
     BranchExists { branch: String },
     /// The zone branch a folder is cut from does not exist.
     ZoneBranchMissing { branch: String },
@@ -63,7 +69,8 @@ pub enum FolderError {
     /// keep refused: request branch `branch` has commits the kept attempt's branch `attempt` does not hold, so
     /// moving it would drop them; nothing was touched.
     RequestMovedOn { branch: String, attempt: String },
-    /// remove refused the folder at `path`: it is attempt `k`'s folder, and keep removes attempt folders.
+    /// remove refused the folder at `path`: it is attempt `k`'s folder, and keep removes attempt folders; or
+    /// rewrite_request_base refused it, since it rewrites request folders only.
     AttemptFolder { path: PathBuf, k: u32 },
     /// The folder at `path` holds work that is not saved; for set_zone_paths, its index has unmerged entries;
     /// nothing ran.
@@ -91,7 +98,8 @@ pub enum FolderError {
         branch: String,
         zone_branch: String,
     },
-    /// remove refused the folder at `path`: it is `zone`'s standing folder, and remove takes request folders only.
+    /// remove or rewrite_request_base refused the folder at `path`: it is `zone`'s standing folder, and each takes
+    /// request folders only.
     ZoneFolder { path: PathBuf, zone: String },
     /// The ref `refname` was not where it was read when sweep_refs' delete op ran, so the op log deleted nothing;
     /// `at` is where it is now (None when absent). keep and drop_attempts return AttemptRefsLeft for this case, and
