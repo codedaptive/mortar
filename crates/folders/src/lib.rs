@@ -1,6 +1,7 @@
 //! folders: see the Mortar mission (Layout).
 
 pub mod attempts;
+pub mod build_output;
 pub mod disk;
 pub mod make;
 pub mod moves;
@@ -14,6 +15,7 @@ pub mod sweep;
 mod test_ref_pairs;
 
 pub use attempts::{drop_attempts, keep, make_attempts, remake_orphans};
+pub use build_output::{clone_build_dirs, BuildDirClone};
 pub use disk::{disk, folder_unsaved, DiskReport, FolderDisk, UnsavedCounts};
 pub use make::{make_request_folder, make_zone_folder, set_zone_paths, FolderError, FolderSetup};
 pub use moves::move_folder;

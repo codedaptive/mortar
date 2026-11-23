@@ -1,5 +1,6 @@
 //! The folders zone's integration tests.
 //! index_tree_moves: move_folder with an index tree.
+//! build_output: copy-on-write build output in request folders.
 //! attempts_make, attempts_keep, attempts_drop, attempts_remove, attempts_sweep (fixtures in attempt_support):
 //! the attempt folder lifecycle; attempts_remake, attempts_remake_refusals and the orphan cases: remaking attempts.
 //! root_files: top-level files given as folder paths.
@@ -8,6 +9,7 @@
 #[path = "../support/mod.rs"]
 mod support;
 mod make;
+mod build_output;
 mod repeat;
 mod need;
 mod guards;
