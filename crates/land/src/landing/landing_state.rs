@@ -7,7 +7,8 @@ use oplog::ChangeId;
 /// The squash being landed (its change ID, zone and commit), the origin tip when the landing started, and the
 /// commit the landing moves integration to (the squash itself for a fast-forward, else the merge commit). Written
 /// before the op that moves integration; read by land (a repeat after a kill finds it), back_out, publish and
-/// commit_files, each through resolve_landing_state.
+/// commit_files, each through resolve_landing_state (publish through read_resolved_landing_state), and by
+/// read_landing_status.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct LandingState {
     pub change_id: ChangeId,
