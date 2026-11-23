@@ -150,7 +150,8 @@ More folder verbs:
 | Verb | What it does |
 |---|---|
 | `mr folder zone <zone> <path> [--start <commit>]` | Makes or refills a zone's folder. A zone with no branch yet starts at the origin branch's tip, or at `--start` |
-| `mr folder request <zone> <request> <path> --paths <path>...` | Makes a request's folder, cut from the zone's branch |
+| `mr folder refresh <zone folder path>` | Sets a zone folder's paths to the zone's paths in the config and brings it to the zone branch's tip, so a zone's tests can run between publishes. Refused on a request or attempt folder, whose step is `mr join` |
+| `mr folder request <zone> <request> <path> --paths <path>...` | Makes a request's folder, cut from the zone's branch, and shares the zone folder's build dirs into it as copy-on-write clones (clonefile(2), never a byte copy). The answer names each build dir not shared and why; `--json` adds `build_output`, one `{dir, outcome, why}` per build dir, the outcome `shared`, `absent`, `kept` or `refused` |
 | `mr folder remove <path>` | Removes a joined and saved request folder, with its branch and its snapshot ref |
 | `mr folder attempts <n> <dir>` | Run in a request folder: makes `n` attempt folders of the request under `<dir>`, to try the same work several ways |
 | `mr folder keep <k>` | Run in a request folder: keeps attempt `k`, moves the request to it and removes every attempt folder |
@@ -162,12 +163,13 @@ One landing at a time. The origin branch only ever moves forward, and a reviewed
 
 | Verb | What it does |
 |---|---|
-| `mr squash <zone>` | The zone's joined work as one commit on the current origin |
+| `mr squash <zone> [--message <text>]` | The zone's joined work as one commit on the current origin. With `--message`, your subject and body lead the commit message; the text carries no trailers |
+| `mr withdraw <zone>` | Takes back a zone's squash before it lands. Exit 0 when there is nothing to withdraw; refused once the squash is landing or published |
 | `mr would-merge <commit or change ID>` | Whether a squash would merge onto integration, without merging |
 | `mr rereview <reviewed commit> <new commit>` | Only what changed since a reviewed squash; says when the new squash carries the same patch |
 | `mr land <commit>` | Moves integration to the squash, or, when integration has moved on since the squash was made, to a merge commit of integration and the squash |
 | `mr back-out` | Puts integration back on origin after a failed test |
-| `mr publish` | Pushes integration to the remote's origin, then moves the local origin. If someone else moved the remote's origin meanwhile and it does not hold this landing, it fetches that, puts integration back on it and reports it; the squash then lands again |
+| `mr publish [--no-push]` | Pushes integration to the remote's origin, then moves the local origin. If someone else moved the remote's origin meanwhile and it does not hold this landing, it fetches that, puts integration back on it and reports it; the squash then lands again. With `--no-push` it moves the local origin only: no push, and nothing is fetched. `--json` says `pushed`, true only when this publish's push is confirmed |
 | `mr after-publish <zone> [--move <zone>]...` | Brings the published zone, and each zone named with `--move`, onto the new origin |
 
 A zone's squash keeps one change ID through every re-squash until it is in origin, so a reviewer can follow one change across several commits. `mr would-merge` takes that change ID or the commit; `mr land` takes the reviewed commit only.
@@ -245,7 +247,7 @@ Mortar needs neither and calls neither. It holds no opinion about the code it mo
 
 ## Status
 
-Version 0.2.0. See [`CHANGELOG.md`](CHANGELOG.md).
+Version 0.3.0. See [`CHANGELOG.md`](CHANGELOG.md).
 
 - Mortar is built from source. The crates are not published to crates.io.
 - It runs on Unix systems only.
