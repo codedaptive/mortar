@@ -1,6 +1,6 @@
 //! read_tip: the commit a ref land reads stands at.
-//! No unit test: it runs git. tests/squash_zit.rs covers it, in a throwaway repository: every squash and
-//! would_merge case reads its tips here.
+//! No unit test: it runs git. tests/squash_zit.rs covers it, in a throwaway repository: every squash, would_merge
+//! and would_merge_with case reads its tips here.
 
 use crate::squash::SquashError;
 use gitio::{Git, Oid};
