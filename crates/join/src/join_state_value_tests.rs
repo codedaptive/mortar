@@ -29,6 +29,7 @@ fn rebased() -> JoinState {
         files_written: true,
         rebased_to: Some(oid('8')),
         folder_tree: Some(oid('9')),
+        base: None,
     }
 }
 

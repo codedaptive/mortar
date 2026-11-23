@@ -33,6 +33,7 @@ fn state() -> JoinState {
         files_written: true,
         rebased_to: None,
         folder_tree: None,
+        base: None,
     }
 }
 
