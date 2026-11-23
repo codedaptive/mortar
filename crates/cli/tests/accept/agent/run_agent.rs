@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 
 use super::{
     agent_conflict_check, agent_git_check, agent_log_check, agent_not_run, agent_session, agent_verbs_check,
-    agent_zone_check, write_agent_bin, AgentFiles,
+    agent_zone_check, copy_agent_logs, write_agent_bin, AgentFiles,
 };
 use crate::report::{report_path, Checks};
 use crate::stage::{read_reply, stage_new, stage_request};
@@ -13,9 +13,11 @@ use crate::world::World;
 
 /// The set-up (stage_new), then request folders r1 (the agent's) and rc (the drive's conflicting change) in zone a,
 /// each on its own line; then the wrappers (write_agent_bin) and the agent, `sh -c "$ACCEPT_AGENT"` in r1
-/// (agent_session), its transcript beside the report, named in a log line, and its exit on a line. Then the
-/// conflict line and checks 1-4 in order, after one `mr log --json`. A set-up that failed writes all five as not
-/// run, saying why.
+/// (agent_session), its transcript beside the report, named in a log line; then the wrappers' git and mr logs
+/// copied beside it (copy_agent_logs), each named on a log line or a log line saying why it was not, before any
+/// check, so they are kept whether the checks pass or fail; then its exit on a line. Then the conflict line and
+/// checks 1-4 in order, after one `mr log --json`. A set-up that failed writes all five as not run, saying why,
+/// and runs no agent, writes no transcript and copies no log.
 pub fn run_agent(world: &World, checks: &mut Checks) {
     if stage_new(world, checks).is_none() {
         return agent_not_run(checks, "the set-up failed");
@@ -37,6 +39,7 @@ pub fn run_agent(world: &World, checks: &mut Checks) {
     let transcript = transcript_path();
     let ran = agent_session(world, &r1, &env, &command, &transcript);
     checks.log(&format!("the agent's transcript: {}", transcript.display()));
+    copy_agent_logs(checks, &files, &transcript);
     let did = "ran the agent: sh -c \"$ACCEPT_AGENT\" in <root>/r1, the brief on stdin";
     checks.check(did, ran.code == Some(0), &ran.seen());
     let log = read_reply(&world.mortar(&world.work, &["log", "--json"]));

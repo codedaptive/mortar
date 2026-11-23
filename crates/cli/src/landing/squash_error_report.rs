@@ -15,7 +15,8 @@ use crate::report::{failure_report, Report};
 ///   squash ref, or to make the squash again.
 /// - TrailerMalformed: refused, naming the commit, the trailer and its value; the next step is to make the squash
 ///   again.
-/// - RequestsMalformed: refused, naming the commit; the next step is to make the squash again.
+/// - RequestsMalformed: refused, naming the commit and how squash reads a message's request lines (a squash with
+///   or without a caller's message); the next step is to make the squash again.
 ///
 /// Every refusal is exit 1, outcome "refused", with no fields.
 pub fn squash_error_report(verb: &str, error: &SquashError) -> Report {
@@ -74,8 +75,8 @@ pub fn squash_error_report(verb: &str, error: &SquashError) -> Report {
         ),
         SquashError::RequestsMalformed { commit } => refused(
             format!(
-                "commit {commit}'s request lines do not match the request count in its subject, so it is not a \
-                 squash Mortar wrote"
+                "commit {commit}'s message does not list its requests as squash reads them: one \"- <request>: ...\" \
+                 line each in the paragraph before the trailers, as many as a \"<zone>: <n> requests\" subject counts"
             ),
             &format!("the commit {commit}"),
             "make the squash again: mr squash <zone> --actor <name>".to_string(),

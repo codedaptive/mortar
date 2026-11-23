@@ -1,23 +1,25 @@
-//! run_publish: `mr publish`, the landing on integration pushed to the remote's origin branch under the land lock
-//! (land publish; exit 1 when origin moved, saying land again). On OriginMoved the integration
-//! folder moves with integration onto the fetched origin, as back-out moves it. --key names the lock holder
-//! only, never passed to the op log; repeat safety comes from land's answers (a repeat settles a push intent)
-//! and from the stopped-move finish: before land's call, finish_stopped_move moves an integration folder a
-//! stopped run left on the old commit onto integration's tip, so a plain repeat after a kill finishes the
-//! move even when land answers NothingToPublish. A refused folder move is finished by a repeat when the folder was
-//! cleared as the refusal says (paths moved out or put back to the index copy, the index left as it is); a clear that
-//! resets the index to HEAD (the folder's HEAD is already the branch's new commit) leaves no stall for the repeat to
-//! see, and the folder's files are then their owner's to bring to HEAD, unreported.
-//! No sibling test: it takes a real lock and runs git, the op log and land; publish_report_tests,
-//! note_finished_move_tests and landing's publish_error_report_tests cover its decisions. The integration test
-//! crates/cli/tests/land_runs/run_publish_tests.rs covers it through the binary;
-//! crates/cli/tests/land_runs/land_flow/landing.rs covers the land lock held by a live pid (exit 3),
-//! land_flow/killed.rs the stopped-move finish (a kill after land's op and before the folder move, then a plain
-//! repeat moves the folder from the op's old value to the tip and the report's first line says so) and
+//! run_publish: `mr publish [--no-push]`, the landing on integration put on the local origin branch under the land
+//! lock, pushed to the remote's origin branch first unless --no-push (land publish_with_push; exit 1 when origin
+//! moved, saying land again). With --no-push the remote is never read and nothing is fetched; origin moved means the
+//! local origin branch moved. On OriginMoved the integration folder moves with integration onto the found origin, as
+//! back-out moves it. --key names the lock holder only, never passed to the op log; repeat safety comes from land's
+//! answers (a push-on repeat settles a push intent) and from the stopped-move finish: before land's call,
+//! finish_stopped_move moves an integration folder a stopped run left on the old commit onto integration's tip, so a
+//! plain repeat after a kill finishes the move even when land answers NothingToPublish. A refused folder move is
+//! finished by a repeat when the folder was cleared as the refusal says (paths moved out or put back to the index
+//! copy, the index left as it is); a clear that resets the index to HEAD (the folder's HEAD is already the branch's
+//! new commit) leaves no stall for the repeat to see, and the folder's files are then their owner's to bring to HEAD,
+//! unreported. The repeat a refused move names keeps --no-push when it was given.
+//! No sibling test: it takes a real lock and runs git, the op log and land; parse_publish_args_tests,
+//! publish_report_tests, note_finished_move_tests and landing's publish_error_report_tests cover its decisions. The
+//! integration tests crates/cli/tests/land_runs/run_publish_tests.rs and run_publish_no_push_tests.rs cover it
+//! through the binary; crates/cli/tests/land_runs/land_flow/landing.rs covers the land lock held by a live pid
+//! (exit 3), land_flow/killed.rs the stopped-move finish (a kill after land's op and before the folder move, then a
+//! plain repeat moves the folder from the op's old value to the tip and the report's first line says so) and
 //! land_flow/stopped.rs a staged edit in the integration folder (no move, the verb goes on).
 //! Integration tests to write (not written here): without a config, exit 1, next mr init (land_flow/landing.rs
 //! covers it for land and would-merge only); the PublishError texts through a real remote (PushRefused by a
-//! remote hook, RemoteMissing, a PushIntent left open); the acceptance checks of publish (with mr land).
+//! remote hook, RemoteMissing, a PushIntent already done).
 
 use std::path::Path;
 
@@ -25,8 +27,8 @@ use gitio::Git;
 use land::{LandRefs, PublishAnswer};
 use oplog::{KillPidProbe, LockName};
 
-use super::publish_report;
-use crate::args::no_arguments_report;
+use super::{parse_publish_args, publish_report};
+use crate::args::{usage_report, UsageError};
 use crate::guard::guard_refs_for;
 use crate::integration_folder::{finish_stopped_move, move_integration_folder, note_finished_move};
 use crate::landing::publish_error_report;
@@ -36,20 +38,24 @@ use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
 const VERB: &str = "publish";
-/// The same command run again, which a refused integration folder move's next ends with.
+/// The same command run again, which a refused integration folder move's next ends with: push on.
 const REPEAT: &str = "mr publish --actor <name>";
+/// The same under --no-push.
+const REPEAT_NO_PUSH: &str = "mr publish --no-push --actor <name>";
 
-/// Any argument is publish's usage report, exit 4, before the verb runs git. Then, under the land lock after recover
-/// (locked_act), keyed by --key or op_key("publish", the common dir): first a stopped integration folder move is
-/// finished (finish_stopped_move), then integration's tip read, land's publish as the context's actor, reported by
-/// publish_report or, when refused, publish_error_report. On OriginMoved the integration folder is moved from that
-/// tip onto the found origin first; a refused move is its own report. A finished stopped move is the first line of
-/// every report after it, refusals included (note_finished_move).
+/// Words parse_publish_args refuses are publish's usage report, exit 4, before the verb runs git. Then, under the land
+/// lock after recover (locked_act), keyed by --key or op_key("publish", the common dir): first a stopped integration
+/// folder move is finished (finish_stopped_move), then integration's tip read, land's publish_with_push as the
+/// context's actor with push off under --no-push, reported by publish_report or, when refused,
+/// publish_error_report. On OriginMoved the integration folder is moved from that tip onto the found origin first; a
+/// refused move is its own report. A finished stopped move is the first line of every report after it, refusals
+/// included (note_finished_move).
 pub fn run_publish(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
-    if let Some(report) = no_arguments_report(VERB, &args.rest, args.json) {
-        return report;
-    }
+    let push = match parse_publish_args(&args.rest) {
+        Ok(push) => push,
+        Err(reason) => return usage_report(&UsageError { verb: Some(VERB.to_string()), reason, json: args.json }),
+    };
     let Some(config) = &context.config else {
         return failure_report(VERB, "no config for a verb that needs it; the shell loads it before publish runs");
     };
@@ -60,30 +66,36 @@ pub fn run_publish(context: &ShellContext, cwd: &Path) -> Report {
     };
     let refs = guard_refs_for(config);
     let key = op_key(args.key.as_deref(), VERB, &common, &[]);
+    let repeat = if push { REPEAT } else { REPEAT_NO_PUSH };
     locked_act(&git, &common, &LockName::Land, &key, &KillPidProbe, VERB, || {
-        let finished = finish_stopped_move(&git, &common, VERB, &config.integration_branch, &context.actor, REPEAT)?;
-        publish(&git, &refs, &context.actor)
+        let finished = finish_stopped_move(&git, &common, VERB, &config.integration_branch, &context.actor, repeat)?;
+        publish(&git, &refs, &context.actor, push, repeat)
             .map(|report| note_finished_move(report, finished.as_ref()))
             .map_err(|report| note_finished_move(report, finished.as_ref()))
     })
     .unwrap_or_else(|report| report)
 }
 
-/// integration's tip read, land's publish, and on OriginMoved the folder moved with integration onto `found`.
-fn publish(git: &Git, refs: &LandRefs, actor: &str) -> Result<Report, Report> {
+/// integration's tip read, land's publish_with_push, and on OriginMoved the folder moved with integration onto
+/// `found`, its done line naming the remote's origin branch under push on and the local one under push off.
+fn publish(git: &Git, refs: &LandRefs, actor: &str, push: bool, repeat: &str) -> Result<Report, Report> {
     let integration = &refs.integration_branch;
     let Ok(Some(before)) = git.read_ref(&format!("refs/heads/{integration}")) else {
         return Err(failure_report(VERB, &format!("git could not read the integration branch {integration}")));
     };
-    let answer = land::publish(git, refs, actor).map_err(|error| publish_error_report(&error, refs))?;
-    let found = match &answer {
+    let outcome = land::publish_with_push(git, refs, actor, push).map_err(|error| publish_error_report(&error, refs))?;
+    let found = match &outcome.answer {
         PublishAnswer::OriginMoved { found } => found,
         PublishAnswer::Published { .. } | PublishAnswer::NothingToPublish => {
-            return Ok(publish_report(&answer, refs, None));
+            return Ok(publish_report(&outcome.answer, outcome.pushed, push, refs, None));
         }
     };
-    let done =
-        format!("someone else moved {}'s {} to {found}; integration is back on it", refs.remote, refs.origin_branch);
-    let folder = move_integration_folder(git, VERB, integration, &before, found, actor, &done, REPEAT)?;
-    Ok(publish_report(&answer, refs, folder.as_deref()))
+    let origin_branch = &refs.origin_branch;
+    let done = if push {
+        format!("someone else moved {}'s {origin_branch} to {found}; integration is back on it", refs.remote)
+    } else {
+        format!("the local {origin_branch} was moved to {found}; integration is back on it")
+    };
+    let folder = move_integration_folder(git, VERB, integration, &before, found, actor, &done, repeat)?;
+    Ok(publish_report(&outcome.answer, outcome.pushed, push, refs, folder.as_deref()))
 }

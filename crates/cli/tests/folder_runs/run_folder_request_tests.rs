@@ -1,11 +1,5 @@
-//! `mortar folder request`: a sparse request folder holding only its --paths plus the root files (acceptance step 1), a
-//! missing --paths, and a zone with no branch yet.
-//! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
-//! Tests to write (not written here):
-//! - a request branch already at another commit (BranchExists) or checked out elsewhere: the cli's why and next,
-//!   never folders' FolderError Display text;
-//! - a folders lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks);
-//! - free disk under the floor: exit 1 with the cli's own facts, never folders' BelowFloor Display text.
+//! `mortar folder request`: sparse paths and root files, build output sharing and its report, missing --paths,
+//! and a zone with no branch. Drives the mortar binary against real git and throwaway repositories.
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -21,7 +15,7 @@ use testkit::TestRepo;
 
 const ACTOR: &str = "harness";
 const USAGE: &str = "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths \
-                     <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key \
+                     <path>... | remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <path>) --actor <name> [--key \
                      <operation key>] [--json]";
 const REQUEST: &str = "refs/heads/req/core/task";
 
@@ -35,8 +29,13 @@ struct Fixture {
 
 impl Fixture {
     /// A commit holding Cargo.toml, src/a/a.txt and src/b/b.txt; zone core owns src, Cargo.toml is the root file.
-    /// With `zone_branch`, zone/core exists at the commit.
+    /// With `zone_branch`, zone/core exists at the commit. No build dirs are passed, so mr init writes its
+    /// default ["target"].
     fn new(zone_branch: bool) -> Self {
+        Self::with_build_dirs(zone_branch, &[])
+    }
+
+    fn with_build_dirs(zone_branch: bool, build_dirs: &[&str]) -> Self {
         let repo = TestRepo::new().unwrap();
         let git = fixture_git(&repo.path);
         fs::create_dir_all(repo.path.join("src/a")).unwrap();
@@ -54,7 +53,8 @@ impl Fixture {
         write_fixture_config(&git.repo, &Config {
             origin_branch: "main".into(), integration_branch: "integration".into(), remote: "origin".into(),
             zones: BTreeMap::from([("core".into(), ZoneConfig { paths: vec!["src".into()] })]),
-            root_files: vec!["Cargo.toml".into()], build_dirs: vec![], cap_bytes: snapshot::DEFAULT_SIZE_CAP,
+            root_files: vec!["Cargo.toml".into()], build_dirs: build_dirs.iter().map(|dir| (*dir).into()).collect(),
+            cap_bytes: snapshot::DEFAULT_SIZE_CAP,
             floor_bytes: 0, formatter: None,
         }).unwrap();
         let path = repo.path.join("request-folder");
@@ -65,6 +65,17 @@ impl Fixture {
     fn folder(&self, words: &[&str]) -> Output {
         command(&self.repo.path, &self.repo.path, &self.git)
             .args(["--actor", ACTOR, "--json", "folder"]).args(words).output().unwrap()
+    }
+
+    fn zone_folder(&self) -> PathBuf {
+        let path = self.repo.path.join("zone-folder");
+        let made = self.folder(&["zone", "core", path.to_str().unwrap()]);
+        assert_eq!(made.status.code(), Some(0), "{}", text(&made));
+        path
+    }
+
+    fn request(&self) -> Output {
+        self.folder(&["request", "core", "task", self.path_arg(), "--paths", "src/a"])
     }
 
     fn path_arg(&self) -> &str {
@@ -140,6 +151,17 @@ fn files(dir: &Path) -> Vec<String> {
     found
 }
 
+fn assert_build_output(output: &Output, expected: &str) {
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.ends_with(&format!(",\"build_output\":{expected}}}\n")), "{stdout}");
+}
+
+fn built_target(zone: &Path) {
+    fs::create_dir_all(zone.join("target/nested")).unwrap();
+    fs::write(zone.join("target/object"), [0, 1, 255, 42]).unwrap();
+    fs::write(zone.join("target/nested/output"), b"built bytes\n").unwrap();
+}
+
 fn ops(common: &Path) -> Vec<OpRecord> {
     oplog::read_op_log(common).unwrap().records
 }
@@ -158,6 +180,14 @@ fn request_folder_holds_only_its_paths_and_the_root_files() {
     let out = text(&made);
     assert_eq!(made.status.code(), Some(0), "{out}");
     assert_eq!(member(&made, "outcome"), "made", "{out}");
+    let report = crate::json::check(made.clone(), "folder", 0, "made");
+    assert_eq!(report.strings("lines"), [
+        format!("the request folder of request task in zone core is at {}", fx.path.display()),
+        format!("base {}", fx.base.as_str()),
+        "cone Cargo.toml, src/a".to_string(),
+        "build dir target not shared: found no zone folder of zone core".to_string(),
+    ]);
+    assert_build_output(&made, r#"[{"dir":"target","outcome":"refused","why":"found no zone folder of zone core"}]"#);
     let next = member(&made, "next");
     assert!(next.starts_with("start the request's agent in "), "{out}");
     assert!(next.contains("request-folder"), "{out}");
@@ -179,6 +209,68 @@ fn request_folder_holds_only_its_paths_and_the_root_files() {
         "no folder-branch op made the request branch: {logged:?}\n{out}"
     );
     assert_ops_by_actor(logged, &out);
+}
+
+#[test]
+fn request_folder_build_output_shared() {
+    let fx = Fixture::with_build_dirs(true, &["target"]);
+    let zone = fx.zone_folder();
+    built_target(&zone);
+    let made = fx.request();
+    let report = crate::json::check(made.clone(), "folder", 0, "made");
+    assert_eq!(report.strings("lines").len(), 3);
+    assert_build_output(&made, r#"[{"dir":"target","outcome":"shared"}]"#);
+    let source = zone.join("target");
+    let dest = fx.path.join("target");
+    assert_eq!(files(&source), ["nested/output", "object"]);
+    assert_eq!(files(&dest), files(&source));
+    for file in files(&source) {
+        assert_eq!(fs::read(dest.join(&file)).unwrap(), fs::read(source.join(&file)).unwrap());
+    }
+}
+
+#[test]
+fn request_folder_build_output_absent() {
+    let fx = Fixture::with_build_dirs(true, &["target", "build"]);
+    let zone = fx.zone_folder();
+    built_target(&zone);
+    let made = fx.request();
+    let report = crate::json::check(made.clone(), "folder", 0, "made");
+    assert_eq!(&report.strings("lines")[3..], ["build dir build not shared: the zone folder has none"]);
+    assert_build_output(&made, r#"[{"dir":"target","outcome":"shared"},{"dir":"build","outcome":"absent"}]"#);
+    assert!(!fx.path.join("build").exists());
+}
+
+#[test]
+fn request_folder_build_output_kept_on_repeat() {
+    let fx = Fixture::with_build_dirs(true, &["target"]);
+    let zone = fx.zone_folder();
+    built_target(&zone);
+    let first = fx.request();
+    assert_eq!(first.status.code(), Some(0), "{}", text(&first));
+    assert!(fx.path.join("target/object").exists(), "first request did not share target");
+    fs::write(fx.path.join("target/object"), b"request changes").unwrap();
+    let made = fx.request();
+    let report = crate::json::check(made.clone(), "folder", 0, "made");
+    assert_eq!(&report.strings("lines")[3..], ["build dir target not shared: the folder already has it, kept as it is"]);
+    assert_build_output(&made, r#"[{"dir":"target","outcome":"kept"}]"#);
+    assert_eq!(fs::read(fx.path.join("target/object")).unwrap(), b"request changes");
+}
+
+#[test]
+fn request_folder_build_output_refused_without_failing() {
+    let fx = Fixture::with_build_dirs(true, &["target"]);
+    let zone = fx.zone_folder();
+    let elsewhere = fx.repo.path.join("elsewhere");
+    fs::create_dir(&elsewhere).unwrap();
+    std::os::unix::fs::symlink(&elsewhere, zone.join("target")).unwrap();
+    let made = fx.request();
+    let report = crate::json::check(made.clone(), "folder", 0, "made");
+    assert_eq!(&report.strings("lines")[3..], [
+        "build dir target not shared: the parent's build dir \"target\" is a symlink; a clone would point into the parent",
+    ]);
+    assert_build_output(&made, r#"[{"dir":"target","outcome":"refused","why":"the parent's build dir \"target\" is a symlink; a clone would point into the parent"}]"#);
+    assert!(!fx.path.join("target").exists());
 }
 
 #[test]

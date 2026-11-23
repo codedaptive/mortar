@@ -40,6 +40,7 @@ fn built_verbs_are_listed_alphabetically() {
             "sweep",
             "undo",
             "uninstall",
+            "withdraw",
             "would-merge"
         ]
     );
@@ -111,7 +112,7 @@ fn publish_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
     assert_eq!(publish.kind, VerbKind::Harness);
     assert_eq!(publish.lock, LockNeed::Land);
     assert!(publish.needs_config);
-    assert_eq!(publish.usage, "mr publish --actor <name> [--key <operation key>] [--json]");
+    assert_eq!(publish.usage, "mr publish [--no-push] --actor <name> [--key <operation key>] [--json]");
 }
 
 #[test]
@@ -153,7 +154,16 @@ fn squash_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
     assert_eq!(squash.kind, VerbKind::Harness);
     assert_eq!(squash.lock, LockNeed::Land);
     assert!(squash.needs_config);
-    assert_eq!(squash.usage, "mr squash <zone> --actor <name> [--key <operation key>] [--json]");
+    assert_eq!(squash.usage, "mr squash <zone> [--message <text>] --actor <name> [--key <operation key>] [--json]");
+}
+
+#[test]
+fn withdraw_is_a_harness_verb_under_the_land_lock_that_needs_the_config() {
+    let withdraw = verb("withdraw");
+    assert_eq!(withdraw.kind, VerbKind::Harness);
+    assert_eq!(withdraw.lock, LockNeed::Land);
+    assert!(withdraw.needs_config);
+    assert_eq!(withdraw.usage, "mr withdraw <zone> --actor <name> [--key <operation key>] [--json]");
 }
 
 #[test]
@@ -174,7 +184,8 @@ fn folder_is_a_harness_verb_under_the_join_lock_that_needs_the_config() {
     assert_eq!(
         folder.usage,
         "mr folder (zone <zone> <path> [--start <commit>] | request <zone> <request> <path> --paths <path>... | \
-         remove <path> | attempts <n> <dir> | keep <k> | drop) --actor <name> [--key <operation key>] [--json]"
+         remove <path> | attempts <n> <dir> | keep <k> | drop | refresh <path>) --actor <name> [--key <operation \
+         key>] [--json]"
     );
 }
 

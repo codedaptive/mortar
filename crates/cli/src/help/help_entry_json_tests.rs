@@ -28,6 +28,6 @@ fn a_quote_in_the_usage_is_escaped() {
 fn an_apostrophe_in_the_line_is_kept() {
     assert_eq!(
         json_of("squash"),
-        r#"{"name":"squash","group":"landing","line":"make a zone's squash","usage":["mr squash <zone> --actor <name> [--key <operation key>] [--json]"]}"#
+        r#"{"name":"squash","group":"landing","line":"make a zone's squash","usage":["mr squash <zone> [--message <text>] --actor <name> [--key <operation key>] [--json]"]}"#
     );
 }

@@ -18,7 +18,10 @@ const PUBLISH: &str = "mr publish --actor <name>";
 /// - PushRefused: refused, why the remote <refs.remote> refused the push and that its branch is still at the
 ///   landing's starting origin; the next step clears the refusal, then publishes again.
 /// - RemoteMissing: refused, nothing pushed; the next step creates the branch on the remote.
-/// - PushIntent: refused, naming the intent's op id and phase; a repeat of publish settles the open intent.
+/// - PushIntent, phase Intent (a publish stopped between its steps; push off is refused while it is open): refused,
+///   naming the op id, nothing pushed or changed; the next step is a plain publish, which reads the remote and
+///   closes the intent. Any other phase, as land reads it (already done when publish opened it): refused, naming
+///   the op id, nothing pushed; the next step checks the remote's origin branch, then publishes.
 ///
 /// Every refusal is exit 1, outcome "refused", with no fields.
 pub fn publish_error_report(error: &PublishError, refs: &LandRefs) -> Report {
@@ -45,14 +48,22 @@ pub fn publish_error_report(error: &PublishError, refs: &LandRefs) -> Report {
             &format!("the remote {remote}"),
             format!("create {refname} on {remote}, then {PUBLISH}"),
         ),
-        PublishError::PushIntent { op_id, phase } => landing_refusal(
+        PublishError::PushIntent { op_id, phase: OpPhase::Intent } => landing_refusal(
             VERB,
             vec![format!(
-                "the push intent {op_id} for this move is already in the op log ({}); nothing was pushed",
-                phase_words(*phase)
+                "the push intent {op_id} for this move is still open: a publish stopped between its steps, so nothing \
+                 was pushed or changed"
             )],
             "the op log",
-            format!("{PUBLISH}; a repeat settles the open intent"),
+            format!("{PUBLISH}: a plain publish reads the remote and closes the intent"),
+        ),
+        PublishError::PushIntent { op_id, .. } => landing_refusal(
+            VERB,
+            vec![format!(
+                "the push intent {op_id} for this move was already done when publish opened it, so nothing was pushed"
+            )],
+            "the op log",
+            format!("check {}'s {}, then {PUBLISH}", refs.remote, refs.origin_branch),
         ),
     }
 }
@@ -64,14 +75,5 @@ fn refusal_words(refusal: &PushRefusal) -> String {
         PushRefusal::NonFastForward => "it is not a fast-forward".to_string(),
         PushRefusal::Hook => "a hook on the remote declined it".to_string(),
         PushRefusal::Other(summary) => format!("git's summary was {summary}"),
-    }
-}
-
-/// An open intent is "open"; every other phase is its name in lower case.
-fn phase_words(phase: OpPhase) -> &'static str {
-    match phase {
-        OpPhase::Intent => "open",
-        OpPhase::Done => "done",
-        OpPhase::Failed => "failed",
     }
 }

@@ -6,21 +6,11 @@ use std::path::PathBuf;
 use gitio::Oid;
 use land::ZoneMove;
 
-use super::{repeat_command, zone_folder_lines, zone_move_lines, AfterPublishArgs, FolderRefusal, ZoneFolderOutcome};
+use super::{repeat_command, zone_move_lines, AfterPublishArgs};
 use crate::report::{ExitCode, OutValue, Report};
+use crate::zone_folder_move::{folder_part, zone_folder_lines, ZoneFolderOutcome, FOLDER_PARTS};
 
 const VERB: &str = "after-publish";
-
-/// The folder parts of next, in their fixed order: paths in the way, unmerged entries, an index matching no zone
-/// commit, a git failure. Each says how to clear the folder so that a repeat can finish it.
-const FOLDER_PARTS: [&str; 4] = [
-    "move each path listed as in the way out of its zone folder, or put it back to that folder's index copy, and \
-     leave the index as it is",
-    "finish or undo the merge in each zone folder whose index has unmerged entries, leaving no unmerged entry",
-    "take the staged changes out of each zone folder whose index matches no zone commit, without resetting its index \
-     to HEAD alone",
-    "clear what stopped git in each zone folder that failed",
-];
 
 /// Lines: per zone in order, zone_move_lines then zone_folder_lines at the zone's tip after land's answer. Exit
 /// Failure ("folder-failed") when any folder failed, else Refused ("folder-not-moved") when any was refused, else
@@ -130,16 +120,5 @@ fn folder_field(outcome: &ZoneFolderOutcome) -> Option<(usize, &PathBuf)> {
         ZoneFolderOutcome::Moved { folder } => Some((0, folder)),
         ZoneFolderOutcome::Refused { folder, .. } => Some((1, folder)),
         ZoneFolderOutcome::Failed { folder, .. } => Some((2, folder)),
-    }
-}
-
-/// The index in FOLDER_PARTS of the part a folder's outcome needs; None when it needs none.
-fn folder_part(outcome: &ZoneFolderOutcome) -> Option<usize> {
-    match outcome {
-        ZoneFolderOutcome::NoFolder | ZoneFolderOutcome::AtTip { .. } | ZoneFolderOutcome::Moved { .. } => None,
-        ZoneFolderOutcome::Refused { why: FolderRefusal::InTheWay(_), .. } => Some(0),
-        ZoneFolderOutcome::Refused { why: FolderRefusal::Unmerged(_), .. } => Some(1),
-        ZoneFolderOutcome::Refused { why: FolderRefusal::NoZoneCommit, .. } => Some(2),
-        ZoneFolderOutcome::Failed { .. } => Some(3),
     }
 }

@@ -8,8 +8,9 @@ use join::OpenRequest;
 use land::ZoneMove;
 
 use super::after_publish_report;
-use crate::after_publish::{AfterPublishArgs, FolderRefusal, ZoneFolderOutcome};
+use crate::after_publish::AfterPublishArgs;
 use crate::report::{ExitCode, OutValue, Report};
+use crate::zone_folder_move::{FolderRefusal, ZoneFolderOutcome};
 
 const OLD: &str = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 const NEW: &str = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";

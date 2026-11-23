@@ -32,6 +32,7 @@ pub enum SquashError {
     TrailerMissing { commit: Oid, trailer: String },
     /// The trailer's value is not a change ID or not a commit id.
     TrailerMalformed { commit: Oid, trailer: String, value: String },
-    /// The message's request lines do not match its `<zone>: <n> requests` subject.
+    /// The message's request lines do not read back: a Mortar subject's count that does not match them, or a
+    /// "- " request line without ": ".
     RequestsMalformed { commit: Oid },
 }

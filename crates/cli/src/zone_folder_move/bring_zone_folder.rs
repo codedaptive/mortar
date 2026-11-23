@@ -1,8 +1,8 @@
-//! bring_zone_folder: one named zone's folder brought from the commit it stands on to its zone branch's tip, after
-//! land's after_publish answered Ok, whether the zone Moved, was Current or Conflicted. Composed from
-//! gitio and the op log's records only: read_ref, index_tree, commit_info and folder_move (it moves the folder's
-//! files and index, never HEAD). No
-//! branch op is written, since the branch is already at the tip, and nothing is checked or saved before land's call.
+//! bring_zone_folder: one zone's folder brought from the commit it stands on to its zone branch's tip. Called by
+//! run_after_publish after land's after_publish answered Ok, whether the zone Moved, was Current or Conflicted, and
+//! by run_folder_refresh after it set the folder's paths. Composed from gitio and the op log's records only:
+//! read_ref, index_tree, commit_info and folder_move (it moves the folder's files and index, never HEAD). No branch
+//! op is written, since the branch is already at the tip, and nothing is checked or saved first.
 //! The folder stands on the first value, newest first, that zone/<zone> has held (zone_values) whose tree equals its
 //! index's tree (find_zone_old); it moves from that tree to the tip's, so git refuses an unstaged edit or untracked
 //! file in the way and nothing in the folder changes. An index matching no value holds staged changes, or stands
@@ -23,6 +23,10 @@
 //! - a folder already at the tip: nothing moves;
 //! - an unstaged edit in the way, and an unmerged index, each refuse that folder with nothing changed;
 //! - no branch op is written for a folder move.
+//!
+//! crates/cli/tests/folder_runs/run_folder_refresh_tests.rs covers it through mr folder refresh: a zone folder
+//! brought to the tip after its paths widen, and an unstaged edit in the way and a staged change matching no zone
+//! commit each refusing the folder with the work kept.
 
 use std::path::Path;
 
@@ -31,12 +35,12 @@ use oplog::OpRecord;
 
 use super::{find_zone_old, zone_values, FolderRefusal, ZoneFolderOutcome, ZoneOld};
 
-/// `folder`'s outcome: its index's tree is read (unmerged entries refuse it), then the tip of refs/heads/zone/<zone>
-/// and its tree. An index at the tip's tree is AtTip. Else find_zone_old over zone_values(`records`, the zone's ref,
-/// the tip), reading each value's tree with commit_info and passing over one it cannot read: NoMatch is refused
+/// `folder`'s outcome: the tip of refs/heads/zone/<zone> is read, then the folder's index's tree (unmerged entries
+/// refuse it), then the tip's tree. An index at the tip's tree is AtTip. Else find_zone_old over
+/// zone_values(`records`, the zone's ref, the tip), reading each value's tree with commit_info and passing over one it cannot read: NoMatch is refused
 /// (NoZoneCommit); From(a value) moves the folder from that value's tree, which is the index's tree, to the tip's
-/// tree, refused when git names paths in the way. Any git failure is Failed with its why in the cli's words; the
-/// caller goes on to the other zones whatever this answers.
+/// tree, refused when git names paths in the way. Any git failure is Failed with its why in the cli's words, an
+/// outcome like the others, so after-publish goes on to its other zones whatever this answers.
 pub fn bring_zone_folder(git: &Git, records: &[OpRecord], zone: &str, folder: &Path) -> ZoneFolderOutcome {
     let failed = |why: String| ZoneFolderOutcome::Failed { folder: folder.to_path_buf(), why };
     let refused = |why: FolderRefusal| ZoneFolderOutcome::Refused { folder: folder.to_path_buf(), why };

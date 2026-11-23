@@ -1,5 +1,5 @@
 //! Display for PublishError's own refusals (PushRefused, RemoteMissing, PushIntent), each as literal text naming what
-//! it carries and saying nothing was published or pushed; PushIntent's OpPhase is built as data and not printed. The
+//! it carries and saying nothing was published or pushed; PushIntent chooses its text by OpPhase. The
 //! Land and State arms prefix LandError's and LandingStateError's text with "publish: "; the Squash, Git and Oplog
 //! arms embed another error's text and have no case here.
 
@@ -43,11 +43,15 @@ fn remote_missing_names_the_remote_and_the_ref() {
 
 #[test]
 fn push_intent_names_the_record_and_says_what_to_do_whether_open_or_done() {
-    let text = "the push intent op-7 for this move was already open or already done when publish opened it, so \
-                nothing was pushed; next: check the remote's origin branch, then mr publish";
-    for phase in [OpPhase::Intent, OpPhase::Done] {
-        assert_eq!(PublishError::PushIntent { op_id: "op-7".to_string(), phase }.to_string(), text);
-    }
+    let rows = [
+        (OpPhase::Intent, "the push intent op-7 for this move is still open: a publish was interrupted between its steps, so nothing was pushed or changed; next: mr publish, which reads the remote and closes it"),
+        (OpPhase::Done, "the push intent op-7 for this move was already done when publish opened it, so nothing was pushed; next: check the remote's origin branch, then mr publish"),
+    ];
+    let failures: Vec<_> = rows.into_iter().filter_map(|(phase, text)| {
+        let actual = PublishError::PushIntent { op_id: "op-7".to_string(), phase }.to_string();
+        (actual != text).then(|| format!("{phase:?}: expected {text:?}, got {actual:?}"))
+    }).collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]

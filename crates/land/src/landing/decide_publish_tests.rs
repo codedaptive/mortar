@@ -1,7 +1,6 @@
-//! decide_publish: every branch with literal ids: Nothing, Cleanup, Advance, Push, FetchOrigin, RemoteMissing and
-//! BackOut.
+//! decide_publish: push-on and push-off decisions, including open and done push intents, using literal ids.
 
-use super::{decide_publish, LandingState, PublishStep};
+use super::{decide_publish, LandingState, PublishStep, PushIntentState};
 use gitio::Oid;
 use oplog::ChangeId;
 
@@ -25,40 +24,99 @@ fn state() -> LandingState {
 }
 
 #[test]
+fn push_off_decisions_ignore_the_remote() {
+    let landing = state();
+    let expected = oid(EXPECTED);
+    let new = oid(NEW);
+    let other = oid(OTHER);
+    let rows = [
+        ("no state", None, &expected, None, PublishStep::Nothing),
+        ("missing remote, expected local", None, &expected, Some(&landing), PublishStep::Advance),
+        ("missing remote, new local", None, &new, Some(&landing), PublishStep::Cleanup),
+        ("missing remote, other local", None, &other, Some(&landing), PublishStep::BackOut { onto: oid(OTHER) }),
+        ("expected remote, expected local", Some(&expected), &expected, Some(&landing), PublishStep::Advance),
+        ("expected remote, new local", Some(&expected), &new, Some(&landing), PublishStep::Cleanup),
+        ("expected remote, other local", Some(&expected), &other, Some(&landing), PublishStep::BackOut { onto: oid(OTHER) }),
+        ("new remote, expected local", Some(&new), &expected, Some(&landing), PublishStep::Advance),
+        ("new remote, new local", Some(&new), &new, Some(&landing), PublishStep::Cleanup),
+        ("new remote, other local", Some(&new), &other, Some(&landing), PublishStep::BackOut { onto: oid(OTHER) }),
+        ("other remote, expected local", Some(&other), &expected, Some(&landing), PublishStep::Advance),
+        ("other remote, new local", Some(&other), &new, Some(&landing), PublishStep::Cleanup),
+        ("other remote, other local", Some(&other), &other, Some(&landing), PublishStep::BackOut { onto: oid(OTHER) }),
+    ];
+    let failures: Vec<_> = rows.into_iter().filter_map(|(name, remote, local, state, answer)| {
+        let actual = decide_publish(false, &PushIntentState::Absent, remote, local, state);
+        (actual != answer).then(|| format!("{name}: expected {answer:?}, got {actual:?}"))
+    }).collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
+fn push_intent_decisions_finish_the_started_run() {
+    let landing = state();
+    let expected = oid(EXPECTED);
+    let new = oid(NEW);
+    let other = oid(OTHER);
+    let open = PushIntentState::Open { op_id: "op-1".to_string() };
+    let push_open = PublishStep::PushOpen { op_id: "op-1".to_string() };
+    let rows = [
+        ("no state, push off, open", false, &open, None, &expected, None, PublishStep::Nothing),
+        ("no state, push on, open", true, &open, Some(&expected), &new, None, PublishStep::Nothing),
+        ("open, off, expected, no remote", false, &open, None, &expected, Some(&landing), push_open.clone()),
+        ("open, off, new, no remote", false, &open, None, &new, Some(&landing), push_open.clone()),
+        ("open, off, other, no remote", false, &open, None, &other, Some(&landing), push_open.clone()),
+        ("open, off, expected, expected remote", false, &open, Some(&expected), &expected, Some(&landing), push_open.clone()),
+        ("open, off, new, expected remote", false, &open, Some(&expected), &new, Some(&landing), push_open.clone()),
+        ("open, off, other, expected remote", false, &open, Some(&expected), &other, Some(&landing), push_open),
+        ("done, off, expected", false, &PushIntentState::Done, None, &expected, Some(&landing), PublishStep::Advance),
+        ("done, off, new", false, &PushIntentState::Done, None, &new, Some(&landing), PublishStep::Cleanup),
+        ("open, on, new", true, &open, None, &new, Some(&landing), PublishStep::Cleanup),
+        ("open, on, expected", true, &open, Some(&expected), &expected, Some(&landing), PublishStep::Push),
+        ("done, on, new", true, &PushIntentState::Done, None, &new, Some(&landing), PublishStep::Cleanup),
+        ("done, on, expected", true, &PushIntentState::Done, Some(&expected), &expected, Some(&landing), PublishStep::Push),
+    ];
+    let failures: Vec<_> = rows.into_iter().filter_map(|(name, push, intent, remote, local, state, answer)| {
+        let actual = decide_publish(push, intent, remote, local, state);
+        (actual != answer).then(|| format!("{name}: expected {answer:?}, got {actual:?}"))
+    }).collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
 fn no_state_is_nothing_whatever_the_tips() {
-    assert_eq!(decide_publish(Some(&oid(EXPECTED)), &oid(EXPECTED), None), PublishStep::Nothing);
-    assert_eq!(decide_publish(None, &oid(NEW), None), PublishStep::Nothing);
+    assert_eq!(decide_publish(true, &PushIntentState::Absent, Some(&oid(EXPECTED)), &oid(EXPECTED), None), PublishStep::Nothing);
+    assert_eq!(decide_publish(true, &PushIntentState::Absent, None, &oid(NEW), None), PublishStep::Nothing);
 }
 
 #[test]
 fn local_at_new_is_cleanup_without_the_remote() {
-    assert_eq!(decide_publish(None, &oid(NEW), Some(&state())), PublishStep::Cleanup);
+    assert_eq!(decide_publish(true, &PushIntentState::Absent, None, &oid(NEW), Some(&state())), PublishStep::Cleanup);
 }
 
 #[test]
 fn local_at_expected_and_remote_at_new_is_advance() {
-    assert_eq!(decide_publish(Some(&oid(NEW)), &oid(EXPECTED), Some(&state())), PublishStep::Advance);
+    assert_eq!(decide_publish(true, &PushIntentState::Absent, Some(&oid(NEW)), &oid(EXPECTED), Some(&state())), PublishStep::Advance);
 }
 
 #[test]
 fn local_and_remote_at_expected_is_push() {
-    assert_eq!(decide_publish(Some(&oid(EXPECTED)), &oid(EXPECTED), Some(&state())), PublishStep::Push);
+    assert_eq!(decide_publish(true, &PushIntentState::Absent, Some(&oid(EXPECTED)), &oid(EXPECTED), Some(&state())), PublishStep::Push);
 }
 
 #[test]
 fn local_at_expected_and_remote_elsewhere_is_fetch_origin() {
-    assert_eq!(decide_publish(Some(&oid(OTHER)), &oid(EXPECTED), Some(&state())), PublishStep::FetchOrigin);
+    assert_eq!(decide_publish(true, &PushIntentState::Absent, Some(&oid(OTHER)), &oid(EXPECTED), Some(&state())), PublishStep::FetchOrigin);
 }
 
 #[test]
 fn local_at_expected_and_no_remote_branch_is_remote_missing() {
-    assert_eq!(decide_publish(None, &oid(EXPECTED), Some(&state())), PublishStep::RemoteMissing);
+    assert_eq!(decide_publish(true, &PushIntentState::Absent, None, &oid(EXPECTED), Some(&state())), PublishStep::RemoteMissing);
 }
 
 #[test]
 fn local_elsewhere_backs_out_onto_the_local_tip() {
     assert_eq!(
-        decide_publish(None, &oid(OTHER), Some(&state())),
+        decide_publish(true, &PushIntentState::Absent, None, &oid(OTHER), Some(&state())),
         PublishStep::BackOut { onto: oid("3333333333333333333333333333333333333333") }
     );
 }
