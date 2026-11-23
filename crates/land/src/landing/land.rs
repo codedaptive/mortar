@@ -9,15 +9,16 @@
 //! killed_after_the_op_recovers_done_and_the_repeat_is_landed_with_no_new_record.
 
 use crate::landing::{
-    decide_landing, integration_op, landing_applied, landing_target_for, read_landing_state, write_landing_state,
-    LandAnswer, LandError, LandingState, LandingStep, LandingTarget,
+    decide_landing, integration_op, landing_applied, landing_target_for, read_landing_state, resolve_landing_state,
+    write_landing_state, LandAnswer, LandError, LandingState, LandingStep, LandingTarget,
 };
 use crate::squash::{read_tip, LandRefs, Squash};
 use gitio::{Git, Oid};
 use oplog::{apply, new_op_id, unix_now};
 use std::path::Path;
 
-/// Reads the origin and integration tips and the landing state, then: this squash already landed at integration
+/// Reads the origin and integration tips and the landing state, resolved against the integration tip
+/// (resolve_landing_state), then: this squash already landed at integration
 /// answers Landed and moves nothing; integration off origin answers Busy with the landing state's change ID, or is
 /// refused as NoLandingState without one; a state for this squash written but never applied lands the commit it
 /// names. Otherwise the target is built (the squash for a fast-forward, else a merge commit named after the zone
@@ -28,7 +29,9 @@ pub fn land(git: &Git, refs: &LandRefs, squash: &Squash, actor: &str) -> Result<
     let integration_ref = format!("refs/heads/{}", refs.integration_branch);
     let integration = read_tip(git, &integration_ref).map_err(LandError::Squash)?;
     let common = git.common_dir().map_err(LandError::Git)?;
-    let state = read_landing_state(&common).map_err(LandError::State)?;
+    let state = read_landing_state(&common)
+        .map_err(LandError::State)?
+        .map(|state| resolve_landing_state(state, &integration));
     let target = match decide_landing(&origin, &integration, state.as_ref(), &squash.commit) {
         LandingStep::Landed(integration) => return Ok(LandAnswer::Landed { integration }),
         LandingStep::Busy(change_id) => return Ok(LandAnswer::Busy { change_id }),
@@ -64,6 +67,7 @@ fn fresh_target(git: &Git, common: &Path, origin: &Oid, squash: &Squash) -> Resu
             squash: squash.commit.clone(),
             origin_at_start: origin.clone(),
             integration: commit.clone(),
+            pending: None,
         };
         write_landing_state(common, &state).map_err(LandError::State)?;
     }

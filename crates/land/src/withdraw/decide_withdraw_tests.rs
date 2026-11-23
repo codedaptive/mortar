@@ -23,6 +23,7 @@ fn state(squash: &str) -> LandingState {
         squash: oid(squash),
         origin_at_start: oid(ORIGIN),
         integration: oid(squash),
+        pending: None,
     }
 }
 

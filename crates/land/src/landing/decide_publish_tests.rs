@@ -20,6 +20,7 @@ fn state() -> LandingState {
         squash: oid("4444444444444444444444444444444444444444"),
         origin_at_start: oid(EXPECTED),
         integration: oid(NEW),
+        pending: None,
     }
 }
 

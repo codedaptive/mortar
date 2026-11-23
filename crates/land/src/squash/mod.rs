@@ -1,7 +1,6 @@
 //! squash: a zone's changes squashed onto origin as one commit at `refs/mortar/squash/<zone>`, with its
-//! message, trailers, change-ID choice and repeat decision, whether that squash merges into integration, whether it
-//! and further squashes merge into integration in order (each onto the result of the one before), and a squash
-//! commit read back as a Squash.
+//! message, trailers, change-ID choice and repeat decision, whether that squash merges into integration, and a
+//! squash commit read back as a Squash.
 
 mod check_attr_source;
 mod choose_change_id;
@@ -36,9 +35,6 @@ mod squash_with_message;
 mod would_merge;
 mod would_merge_answer;
 mod would_merge_from;
-mod would_merge_step;
-mod would_merge_with;
-mod would_merge_with_answer;
 
 #[cfg(test)]
 mod choose_change_id_tests;
@@ -66,8 +62,6 @@ mod squash_ref_tests;
 mod squash_requests_tests;
 #[cfg(test)]
 mod would_merge_from_tests;
-#[cfg(test)]
-mod would_merge_step_tests;
 
 pub use land_refs::LandRefs;
 pub use read_squash::read_squash;
@@ -78,8 +72,6 @@ pub use squash_type::Squash;
 pub use squash_with_message::squash_with_message;
 pub use would_merge::would_merge;
 pub use would_merge_answer::WouldMerge;
-pub use would_merge_with::would_merge_with;
-pub use would_merge_with_answer::WouldMergeWith;
 
 pub(crate) use check_attr_source::check_attr_source;
 pub(crate) use choose_change_id::choose_change_id;
@@ -101,4 +93,3 @@ pub(crate) use squash_request::SquashRequest;
 pub(crate) use squash_requests::squash_requests;
 pub(crate) use squash_trailer_pairs::squash_trailer_pairs;
 pub(crate) use would_merge_from::would_merge_from;
-pub(crate) use would_merge_step::would_merge_step;

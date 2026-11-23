@@ -4,18 +4,20 @@
 //! No unit test: it runs git, reads and removes the landing state and writes the op log; decide_back_out_tests
 //! and landing_applied_tests cover its decisions. Covered by the landing_zit test
 //! back_out_restores_integration_then_has_nothing_to_back_out and the publish_zit test
-//! a_remote_moved_by_someone_else_is_fetched_backed_out_onto_and_lands_again (integration put on the fetched origin).
+//! a_remote_moved_by_someone_else_is_fetched_backed_out_onto_and_lands_again (integration put on the fetched origin);
+//! the commit_files_zit test committing::back_out_drops_the_landing_and_named_commit backs out a commit_files commit.
 
 use crate::landing::{
-    decide_back_out, integration_op, landing_applied, read_landing_state, remove_landing_state, BackOutAnswer,
-    BackOutStep, LandError,
+    decide_back_out, integration_op, landing_applied, read_landing_state, remove_landing_state,
+    resolve_landing_state, BackOutAnswer, BackOutStep, LandError,
 };
 use crate::squash::{read_tip, LandRefs};
 use gitio::{Git, Oid};
 use oplog::{apply, new_op_id, unix_now};
 
 /// The origin is `onto` when given (publish passes the local origin tip it fetched or found), else the local origin
-/// tip read here. Reads the integration tip and the landing state, then: integration at the origin removes any
+/// tip read here. Reads the integration tip and the landing state, resolved against that tip (resolve_landing_state,
+/// so the state's commit is a commit_files commit integration reached), then: integration at the origin removes any
 /// landing state (finishing a back-out killed after its op) and answers NothingToBackOut; integration off the origin
 /// with no state is refused as NoLandingState; integration at neither the origin nor the state's commit as
 /// IntegrationElsewhere. Otherwise one op moves integration from the state's commit to `onto`, or without it to the
@@ -33,7 +35,9 @@ pub(crate) fn back_out_onto(
     let integration_ref = format!("refs/heads/{}", refs.integration_branch);
     let integration = read_tip(git, &integration_ref).map_err(LandError::Squash)?;
     let common = git.common_dir().map_err(LandError::Git)?;
-    let state = read_landing_state(&common).map_err(LandError::State)?;
+    let state = read_landing_state(&common)
+        .map_err(LandError::State)?
+        .map(|state| resolve_landing_state(state, &integration));
     let landed = match decide_back_out(&origin, &integration, state.as_ref()) {
         BackOutStep::Nothing => {
             remove_landing_state(&common).map_err(LandError::State)?;
