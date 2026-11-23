@@ -1,5 +1,6 @@
 //! Partner-base joins through the public interface, with real Git and caller-held locks.
 mod support;
+mod recorded_base;
 use support::*;
 use join::{BaseJoinAnswer, JoinAnswer, PartnerMerge, RequestBase};
 use oplog::{OpPhase, RefMove};

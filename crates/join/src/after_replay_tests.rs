@@ -1,6 +1,6 @@
 //! after_replay: a clean replay rebases from the request tip, earlier paths or not; a conflicted one pauses with every
 //! field kept, all_files being the earlier rounds' paths then this round's new ones, no files written, no rebased tip
-//! and no folder tree; its base is None when none is given and a copy of the given base otherwise.
+//! and no folder tree; its base and base before are None when none is given and copies of the given ones otherwise.
 
 use crate::after_replay::after_replay;
 use crate::after_replay_step::AfterReplayStep;
@@ -33,7 +33,7 @@ fn conflicted() -> ReplayResult {
 fn clean_rebases_from_the_request_tip_to_the_new_tip() {
     let result = ReplayResult::Clean(oid("9999999999999999999999999999999999999999"));
     assert_eq!(
-        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[PathBuf::from("old.txt")], None, result),
+        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[PathBuf::from("old.txt")], None, None, result),
         AfterReplayStep::Rebase {
             from: oid("2222222222222222222222222222222222222222"),
             to: oid("9999999999999999999999999999999999999999"),
@@ -44,7 +44,7 @@ fn clean_rebases_from_the_request_tip_to_the_new_tip() {
 #[test]
 fn conflicted_pauses_with_every_field_carried_over() {
     let AfterReplayStep::Pause(state) =
-        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[], None, conflicted())
+        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[], None, None, conflicted())
     else {
         panic!("a conflicted replay must pause");
     };
@@ -67,6 +67,7 @@ fn conflicted_pauses_with_every_field_carried_over() {
             rebased_to: None,
             folder_tree: None,
             base: None,
+            base_before: None,
         }
     );
 }
@@ -75,7 +76,7 @@ fn conflicted_pauses_with_every_field_carried_over() {
 fn a_later_round_pause_keeps_the_earlier_paths_then_adds_its_new_ones_once() {
     let earlier = [PathBuf::from("old/c.md"), PathBuf::from("b.txt")];
     let AfterReplayStep::Pause(state) =
-        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &earlier, None, conflicted())
+        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &earlier, None, None, conflicted())
     else {
         panic!("a conflicted replay must pause");
     };
@@ -85,13 +86,14 @@ fn a_later_round_pause_keeps_the_earlier_paths_then_adds_its_new_ones_once() {
 }
 
 #[test]
-fn a_pause_given_a_base_keeps_that_base_and_a_clean_replay_still_rebases() {
+fn a_pause_given_a_base_and_a_base_before_keeps_both_and_a_clean_replay_still_rebases() {
     let base = RequestBase {
         base: oid("4444444444444444444444444444444444444444"),
         partners: vec![Partner { zone: "docs".to_string(), tip: oid("5555555555555555555555555555555555555555") }],
     };
+    let before = RequestBase { base: oid("6666666666666666666666666666666666666666"), partners: vec![] };
     let AfterReplayStep::Pause(state) =
-        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[], Some(&base), conflicted())
+        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[], Some(&base), Some(&before), conflicted())
     else {
         panic!("a conflicted replay must pause");
     };
@@ -105,9 +107,13 @@ fn a_pause_given_a_base_keeps_that_base_and_a_clean_replay_still_rebases() {
             }],
         })
     );
+    assert_eq!(
+        state.base_before,
+        Some(RequestBase { base: oid("6666666666666666666666666666666666666666"), partners: vec![] })
+    );
     let clean = ReplayResult::Clean(oid("9999999999999999999999999999999999999999"));
     assert_eq!(
-        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[], Some(&base), clean),
+        after_replay(REQUEST_REF, &oid(REQUEST_TIP), &oid(ONTO), &[], Some(&base), Some(&before), clean),
         AfterReplayStep::Rebase {
             from: oid("2222222222222222222222222222222222222222"),
             to: oid("9999999999999999999999999999999999999999"),

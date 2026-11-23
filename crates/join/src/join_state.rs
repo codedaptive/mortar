@@ -1,5 +1,5 @@
 //! JoinState: what a conflicted join leaves for resolve in mortar-join.json. A declaration only;
-//! after_replay_tests, encode_join_state_tests and decode_join_state_tests exercise it.
+//! after_replay_tests, encode_join_state_tests, decode_join_state_tests and state_base_after_tests exercise it.
 
 use crate::request_base::RequestBase;
 use gitio::Oid;
@@ -16,6 +16,8 @@ use std::path::PathBuf;
 /// whether that op was applied and answers the same folder_tree. `base` is the request's base and partners after
 /// this join: the zone tip replayed onto with no partners for a replay onto the unchanged zone, the new merge and
 /// its kept partners for a remerge, and None for a plain join; every later round of the same join keeps it.
+/// `base_before` is the base the request was replayed from, the base passed to join_on_base, which resolve's final op
+/// records as the base before; None for join and for states written before join kept it; every later round keeps it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct JoinState {
     pub(crate) request_ref: String,
@@ -31,4 +33,5 @@ pub(crate) struct JoinState {
     pub(crate) rebased_to: Option<Oid>,
     pub(crate) folder_tree: Option<Oid>,
     pub(crate) base: Option<RequestBase>,
+    pub(crate) base_before: Option<RequestBase>,
 }

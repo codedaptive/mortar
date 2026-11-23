@@ -5,6 +5,8 @@
 mod accumulate_paths_tests;
 #[path = "after_replay_tests.rs"]
 mod after_replay_tests;
+#[path = "base_values_tests.rs"]
+mod base_values_tests;
 #[path = "check_onto_tests.rs"]
 mod check_onto_tests;
 #[path = "classify_conflicted_tests.rs"]
@@ -19,8 +21,12 @@ mod decide_resolve_tests;
 mod decide_restore_tests;
 #[path = "decode_join_state_tests.rs"]
 mod decode_join_state_tests;
+#[path = "decode_request_base_tests.rs"]
+mod decode_request_base_tests;
 #[path = "encode_join_state_tests.rs"]
 mod encode_join_state_tests;
+#[path = "encode_request_base_tests.rs"]
+mod encode_request_base_tests;
 #[path = "fast_forward_op_tests.rs"]
 mod fast_forward_op_tests;
 #[path = "file_markers_tests.rs"]
@@ -55,6 +61,8 @@ mod pair_overlaps_for_tests;
 mod read_git_replay_tests;
 #[path = "rebase_op_tests.rs"]
 mod rebase_op_tests;
+#[path = "recorded_base_tests.rs"]
+mod recorded_base_tests;
 #[path = "recorded_join_state_tests.rs"]
 mod recorded_join_state_tests;
 #[path = "replay_commit_tests.rs"]
@@ -75,6 +83,8 @@ mod resolved_folder_tree_tests;
 mod restore_refusal_tests;
 #[path = "restore_state_step_tests.rs"]
 mod restore_state_step_tests;
+#[path = "state_base_after_tests.rs"]
+mod state_base_after_tests;
 #[path = "tree_refusal_tests.rs"]
 mod tree_refusal_tests;
 #[path = "zone_request_op_tests.rs"]

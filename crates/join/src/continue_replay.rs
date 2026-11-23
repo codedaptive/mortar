@@ -7,7 +7,7 @@
 //! - with no remaining commits, the step rebases the request ref from the request tip to the resolved commit;
 //! - clean remaining commits chain onto the resolved commit, the replay continuing from the paused state;
 //! - a remaining commit that conflicts pauses with a new state whose all_files are the earlier rounds' paths then the
-//!   new round's, and whose base is the state's base;
+//!   new round's, and whose base and base before are the state's;
 //! - a conflicted path that is a folder in the caller's tree is refused before any commit;
 //! - a missing onto (the `--attr-source` commit) is refused before any other call: before any replay or merge_tree.
 
@@ -28,9 +28,9 @@ use gitio::Oid;
 /// commits onto it, reading merge attributes from onto; a remaining commit that becomes empty is dropped
 /// (replay_commit). Clean: rebase the request ref from the state's request tip to the replay's tip (the resolved
 /// commit when every remaining commit dropped). Conflicted: pause with a new state for the commit that did not
-/// apply, the same request ref, request tip, onto and base, and all_files the state's all_files with the new round's
-/// paths added. A failure building the resolved tree is mapped by tree_refusal (a refused conflicted path, or Git); any
-/// other failure is Replay.
+/// apply, the same request ref, request tip, onto, base and base before, and all_files the state's all_files with the
+/// new round's paths added. A failure building the resolved tree is mapped by tree_refusal (a refused conflicted
+/// path, or Git); any other failure is Replay.
 /// Writes objects; moves no ref.
 pub(crate) fn continue_replay(
     git: &impl ReplayGit,
@@ -49,6 +49,7 @@ pub(crate) fn continue_replay(
         &state.onto,
         &state.all_files,
         state.base.as_ref(),
+        state.base_before.as_ref(),
         replayed.result,
     ))
 }

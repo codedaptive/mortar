@@ -3,7 +3,8 @@
 //! why; and refusal of keys out of order, a missing key (all_files and folder_tree included), a bad id or flag,
 //! trailing junk, spaces, bad arrays, empty text. The base keys: a text without them (as a plain join writes it)
 //! reads with no base; a base with two partners and with none read back; a truncated or misordered base key refused
-//! naming its byte; and encode_join_state's output read back to the state it encoded.
+//! naming its byte; the base before keys read after the base keys or alone, and refused before them; and
+//! encode_join_state's output read back to the state it encoded, with and without a base before.
 
 use crate::decode_join_state::decode_join_state;
 use crate::encode_join_state::encode_join_state;
@@ -59,6 +60,7 @@ fn base() -> JoinState {
         rebased_to: None,
         folder_tree: None,
         base: None,
+        base_before: None,
     }
 }
 
@@ -289,7 +291,10 @@ fn encode_join_state_output_reads_back_to_the_state() {
             ],
         }),
     ];
-    for request_base in bases {
+    let before = RequestBase { base: oid("dddddddddddddddddddddddddddddddddddddddd"), partners: Vec::new() };
+    let befores = [None, Some(before)];
+    let pairs = bases.into_iter().flat_map(|kept| befores.clone().map(|before| (kept.clone(), before)));
+    for (request_base, base_before) in pairs {
         let state = JoinState {
             remaining: vec![oid("6666666666666666666666666666666666666666")],
             files: vec![PathBuf::from("src/a.rs")],
@@ -298,8 +303,29 @@ fn encode_join_state_output_reads_back_to_the_state() {
             rebased_to: Some(oid("8888888888888888888888888888888888888888")),
             folder_tree: Some(oid("9999999999999999999999999999999999999999")),
             base: request_base,
+            base_before,
             ..base()
         };
         assert_eq!(decode_join_state(&encode_join_state(&state).unwrap()), Ok(state.clone()));
     }
+}
+
+#[test]
+fn the_base_before_keys_read_after_the_base_keys_or_alone_and_are_refused_before_them() {
+    let base_keys = ",\"base\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"partners\":[]";
+    let before_keys = ",\"base_before\":\"dddddddddddddddddddddddddddddddddddddddd\",\"partners_before\":[\
+        {\"zone\":\"docs\",\"tip\":\"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\"}]";
+    let after = RequestBase { base: oid("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), partners: Vec::new() };
+    let before = RequestBase {
+        base: oid("dddddddddddddddddddddddddddddddddddddddd"),
+        partners: vec![partner("docs", "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")],
+    };
+    let rows = [
+        (format!("{base_keys}{before_keys}"), Some(after), Some(before.clone())),
+        (before_keys.to_string(), None, Some(before)),
+    ];
+    for (tail, kept, base_before) in rows {
+        assert_eq!(decode_join_state(&with_tail(&tail)), Ok(JoinState { base: kept, base_before, ..base() }), "{tail}");
+    }
+    assert!(decode_join_state(&with_tail(&format!("{before_keys}{base_keys}"))).is_err());
 }
