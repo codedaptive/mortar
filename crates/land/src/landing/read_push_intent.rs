@@ -13,15 +13,15 @@ use oplog::{open_intents, read_marked_log, OpPhase, OpRecord};
 use std::path::Path;
 
 /// The push key is that of the op publish_push_op builds for the state's move (expected = origin_at_start, new =
-/// integration); the key holds no op id, actor or time, so placeholders stand in for them. Among the log's records
-/// with that key and a remote mark: the last open intent is Open { op_id }; else any done record is Done; else
+/// the newest member's integration); the key holds no op id, actor or time, so placeholders stand in for them. Among
+/// the log's records with that key and a remote mark: the last open intent is Open { op_id }; else any done record is Done; else
 /// Absent, a history of failed pushes only included. Reading the log failing is Oplog.
 pub(crate) fn read_push_intent(
     common: &Path,
     refs: &LandRefs,
     state: &LandingState,
 ) -> Result<PushIntentState, PublishError> {
-    let key = publish_push_op(refs, &state.origin_at_start, &state.integration, &state.change_id, String::new(), "", 0)
+    let key = publish_push_op(refs, &state.origin_at_start, &state.newest.integration, &state.newest.change_id, String::new(), "", 0)
         .key;
     let marked = read_marked_log(common).map_err(PublishError::Oplog)?.records;
     let records: Vec<OpRecord> =

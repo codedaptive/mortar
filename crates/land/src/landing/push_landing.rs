@@ -18,8 +18,8 @@ use gitio::{Git, Oid, PushLease, PushRef};
 use oplog::{close_intent, new_op_id, op_git, open_remote_intent, unix_now, RemoteIntentOutcome};
 use std::path::Path;
 
-/// Opens the intent publish_push_op builds from the state (expected = origin_at_start, new = integration) with
-/// oplog's open_remote_intent, marked with `refs.remote`, then pushes new onto the remote's
+/// Opens the intent publish_push_op builds from the state (expected = origin_at_start, new = the newest member's
+/// integration) with oplog's open_remote_intent, marked with `refs.remote`, then pushes new onto the remote's
 /// `refs/heads/<origin_branch>` leased at expected, with op_git's git. An intent for this move already open or done
 /// (publish settles open ones first, and a done push is followed by step 2, so neither is expected) is PushIntent
 /// naming that record, and nothing is pushed. Pushed or up to date: the answer is Pushed. Any refusal (push_refusal
@@ -38,9 +38,9 @@ pub(crate) fn push_landing(
     actor: &str,
 ) -> Result<PushResult, PublishError> {
     let expected = &state.origin_at_start;
-    let new = &state.integration;
+    let new = &state.newest.integration;
     let refname = format!("refs/heads/{}", refs.origin_branch);
-    let op = publish_push_op(refs, expected, new, &state.change_id, new_op_id(), actor, unix_now());
+    let op = publish_push_op(refs, expected, new, &state.newest.change_id, new_op_id(), actor, unix_now());
     match open_remote_intent(git, common, &op, &refs.remote).map_err(PublishError::Oplog)? {
         RemoteIntentOutcome::Opened(_) => {}
         RemoteIntentOutcome::AlreadyOpen(found) | RemoteIntentOutcome::Repeated(found) => {
@@ -71,7 +71,7 @@ fn refused(
     state: &LandingState,
     failure: PublishError,
 ) -> Result<Refused, PublishError> {
-    let (expected, new) = (&state.origin_at_start, &state.integration);
+    let (expected, new) = (&state.origin_at_start, &state.newest.integration);
     let remote = remote_origin(git, refs)?;
     let landed = push_landed(git, refs, remote.as_ref(), expected, new)?;
     let seen = if landed { Some(new) } else { remote.as_ref() };

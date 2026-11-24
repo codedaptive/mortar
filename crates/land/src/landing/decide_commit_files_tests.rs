@@ -2,7 +2,7 @@
 //! (resolved: the next commit goes on top of it); a stale pending commit with integration at the tip (dropped); the
 //! state naming another commit (integration at origin, and elsewhere); the folder off the tip and unborn.
 
-use super::{decide_commit_files, CommitFilesError, LandingState};
+use super::{decide_commit_files, CommitFilesError, LandingMember, LandingState};
 use gitio::Oid;
 use oplog::ChangeId;
 
@@ -19,11 +19,14 @@ fn oid(hex: &str) -> Oid {
 
 fn state(integration: &str, pending: Option<&str>) -> LandingState {
     LandingState {
-        change_id: ChangeId::parse("klmnopqrstuvwxyzklmnopqrstuvwxyz").unwrap(),
-        zone: "land".to_string(),
-        squash: oid("4444444444444444444444444444444444444444"),
         origin_at_start: oid(ORIGIN),
-        integration: oid(integration),
+        earlier: Vec::new(),
+        newest: LandingMember {
+            change_id: ChangeId::parse("klmnopqrstuvwxyzklmnopqrstuvwxyz").unwrap(),
+            zone: "land".to_string(),
+            squash: oid("4444444444444444444444444444444444444444"),
+            integration: oid(integration),
+        },
         pending: pending.map(oid),
     }
 }

@@ -3,8 +3,8 @@
 
 use oplog::ChangeId;
 
-/// BackedOut: integration was moved back to origin and the landing state removed; the landing had this change ID,
-/// which its squash keeps. NothingToBackOut: integration was already at origin.
+/// BackedOut: integration was moved back to origin and the landing state removed; the landing's newest member had
+/// this change ID, which its squash keeps. NothingToBackOut: integration was already at origin.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BackOutAnswer {
     BackedOut { change_id: ChangeId },

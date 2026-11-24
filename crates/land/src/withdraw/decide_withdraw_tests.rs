@@ -1,8 +1,9 @@
 //! decide_withdraw: every branch with literal ids: no state, a state naming another commit, the state naming this
-//! commit (Landing), the commit in origin (Published), and Published winning when both hold.
+//! commit (Landing), the commit in origin (Published), Published winning when both hold, and a batch of two whose
+//! newest or earlier member is this commit (Landing with that member's change ID) or neither (Ok).
 
 use super::{decide_withdraw, WithdrawError};
-use crate::landing::LandingState;
+use crate::landing::{LandingMember, LandingState};
 use gitio::Oid;
 use oplog::ChangeId;
 
@@ -18,11 +19,14 @@ fn oid(hex: &str) -> Oid {
 
 fn state(squash: &str) -> LandingState {
     LandingState {
-        change_id: ChangeId::parse(CHANGE).unwrap(),
-        zone: "land".to_string(),
-        squash: oid(squash),
         origin_at_start: oid(ORIGIN),
-        integration: oid(squash),
+        earlier: Vec::new(),
+        newest: LandingMember {
+            change_id: ChangeId::parse(CHANGE).unwrap(),
+            zone: "land".to_string(),
+            squash: oid(squash),
+            integration: oid(squash),
+        },
         pending: None,
     }
 }
@@ -66,6 +70,38 @@ fn decide_withdraw_refuses_a_published_squash_and_the_landing_in_flight() {
     ];
     for (name, in_origin, state, expected) in rows {
         let decision = decide_withdraw("land", &oid(COMMIT), &oid(ORIGIN), in_origin, state.as_ref());
+        assert_eq!(seen(decision), expected, "{name}");
+    }
+}
+
+const EARLIER_CHANGE: &str = "zyxwvutsrqponmlkzyxwvutsrqponmlk";
+
+/// A batch of two: an earlier member with squash `earlier` and change EARLIER_CHANGE, the newest with squash `newest`
+/// and change CHANGE.
+fn batch(earlier: &str, newest: &str) -> LandingState {
+    let member = LandingMember {
+        change_id: ChangeId::parse(EARLIER_CHANGE).unwrap(),
+        zone: "other".to_string(),
+        squash: oid(earlier),
+        integration: oid(earlier),
+    };
+    LandingState { earlier: vec![member], ..state(newest) }
+}
+
+#[test]
+fn decide_withdraw_refuses_any_member_of_the_batch() {
+    let landing = |change: &str| Seen::Landing {
+        zone: "land".to_string(),
+        commit: oid("1111111111111111111111111111111111111111"),
+        change_id: ChangeId::parse(change).unwrap(),
+    };
+    let rows = [
+        ("newest member", batch(OTHER, COMMIT), landing("klmnopqrstuvwxyzklmnopqrstuvwxyz")),
+        ("earlier member", batch(COMMIT, OTHER), landing("zyxwvutsrqponmlkzyxwvutsrqponmlk")),
+        ("other squashes only", batch(OTHER, ORIGIN), Seen::Ok),
+    ];
+    for (name, state, expected) in rows {
+        let decision = decide_withdraw("land", &oid(COMMIT), &oid(ORIGIN), false, Some(&state));
         assert_eq!(seen(decision), expected, "{name}");
     }
 }

@@ -16,7 +16,10 @@
 //! no_push::push_on_moved_remote_reports_not_pushed, repeats::open_push_intent_refuses_push_off_then_push_on_finishes
 //! and repeats::push_off_killed_after_origin_move_finishes_push_on_without_push; a commit_files commit by the
 //! commit_files_zit tests committing::named_commit_is_published_without_the_unnamed_edit and
-//! kills::killed_after_update_ref_recovers_done_repeats_same_and_publishes (a pending commit integration reached).
+//! kills::killed_after_update_ref_recovers_done_repeats_same_and_publishes (a pending commit integration reached);
+//! a batch of two by the publish_zit tests batch::publish_batch_pushes_once_and_deletes_both_squashes_in_order,
+//! batch::resquashed_member_is_kept_and_other_member_is_deleted and
+//! batch::repeat_after_first_squash_cleanup_deletes_the_second_once.
 
 use crate::landing::{
     advance_origin, back_out_onto, decide_publish, fetch_origin, finish_publish, push_landed, push_landing,
@@ -29,17 +32,18 @@ use oplog::OpPhase;
 use std::path::Path;
 
 /// With no landing state: NothingToPublish, the remote not contacted. Otherwise, with expected = the state's
-/// origin_at_start and new = its integration (the state comes resolved from read_resolved_landing_state), the local
-/// origin tip decides (decide_publish).
+/// origin_at_start and new = its newest member's integration (the state comes resolved from
+/// read_resolved_landing_state), the local origin tip decides (decide_publish).
 ///
 /// Push on: the remote is read only when the local origin is at expected. A remote at or past new (push_landed: new
 /// is its ancestor, so our push landed and someone pushed on top) counts as at new. Once read, a push intent for
 /// this move left open by an earlier run is closed from it first (settle_push_intent): done when the remote is at or
 /// past new, else failed. Cleanup and BackOut read no remote: a push-on run that moved the local origin had closed
 /// its push intent already, and a push-off run's repeat has none, so its clean-up finishes without a push. Then:
-/// push new leased at expected, move the local origin to new, delete the zone's squash ref and remove the state:
-/// Published { origin: new }. A remote already at or past new skips the push; a local origin already at new does
-/// only the clean-up. A remote someone else moved (seen before the push or after it was refused) is fetched, the
+/// push new leased at expected, move the local origin to new, delete each member's squash ref in landing order
+/// (finish_publish) and remove the state: Published { origin: new }. One push and one origin move serve the whole
+/// batch. A remote already at or past new skips the push; a local origin already at new
+/// does only the clean-up. A remote someone else moved (seen before the push or after it was refused) is fetched, the
 /// local origin fast-forwarded to it and the landing backed out onto it: OriginMoved { found }. A local origin at
 /// neither expected nor new (a publish killed after that fast-forward) finishes the back-out onto it. A remote with
 /// no origin branch is RemoteMissing.
@@ -69,7 +73,7 @@ pub fn publish_with_push(git: &Git, refs: &LandRefs, actor: &str, push: bool) ->
         PublishStep::Advance => advanced(git, &common, refs, &state, actor)?,
         PublishStep::Cleanup => {
             finish_publish(git, &common, &state, actor)?;
-            PublishAnswer::Published { origin: state.integration.clone() }
+            PublishAnswer::Published { origin: state.newest.integration.clone() }
         }
         PublishStep::FetchOrigin => origin_moved(git, &common, refs, &state, &local, actor)?,
         PublishStep::BackOut { onto } => backed_out_onto(git, refs, actor, onto)?,
@@ -90,9 +94,9 @@ pub fn publish_with_push(git: &Git, refs: &LandRefs, actor: &str, push: bool) ->
 /// the integration commit when the push landed (push_landed), else the remote as read.
 fn read_remote(git: &Git, common: &Path, refs: &LandRefs, state: &LandingState) -> Result<Option<Oid>, PublishError> {
     let remote = remote_origin(git, refs)?;
-    let landed = push_landed(git, refs, remote.as_ref(), &state.origin_at_start, &state.integration)?;
+    let landed = push_landed(git, refs, remote.as_ref(), &state.origin_at_start, &state.newest.integration)?;
     settle_push_intent(common, refs, state, remote.as_ref(), landed)?;
-    Ok(if landed { Some(state.integration.clone()) } else { remote })
+    Ok(if landed { Some(state.newest.integration.clone()) } else { remote })
 }
 
 /// Step 2 moves the local origin from expected to new, then the clean-up: Published { origin: new }. Push on, the
@@ -106,7 +110,7 @@ fn advanced(
 ) -> Result<PublishAnswer, PublishError> {
     advance_origin(git, common, refs, state, actor)?;
     finish_publish(git, common, state, actor)?;
-    Ok(PublishAnswer::Published { origin: state.integration.clone() })
+    Ok(PublishAnswer::Published { origin: state.newest.integration.clone() })
 }
 
 /// The remote moved: fetch it, fast-forward the local origin from `local` onto it, and back the landing out there.
@@ -118,7 +122,7 @@ fn origin_moved(
     local: &Oid,
     actor: &str,
 ) -> Result<PublishAnswer, PublishError> {
-    let found = fetch_origin(git, common, refs, local, &state.change_id, actor)?;
+    let found = fetch_origin(git, common, refs, local, &state.newest.change_id, actor)?;
     backed_out_onto(git, refs, actor, found)
 }
 

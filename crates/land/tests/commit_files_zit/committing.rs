@@ -1,5 +1,5 @@
 use crate::fixture::{refs, Fixture, ACTOR, ID, RECEIPT};
-use land::{back_out, commit_files, publish, BackOutAnswer, CommitFilesAnswer, PublishAnswer};
+use land::{back_out, commit_files, land_batch, publish, BackOutAnswer, BatchLandAnswer, CommitFilesAnswer, PublishAnswer, Squash};
 use oplog::{ChangeId, OpPhase};
 use std::path::PathBuf;
 
@@ -35,6 +35,26 @@ fn back_out_drops_the_landing_and_named_commit() {
     assert_eq!(back_out(&git, &refs(), ACTOR).unwrap(), BackOutAnswer::BackedOut { change_id: ChangeId::parse(ID).unwrap() });
     assert_eq!(fx.branch("integration"), fx.base);
     assert_eq!(fx.state(), None);
+}
+
+#[test]
+fn append_after_commit_files_uses_the_named_commit_as_parent() {
+    let (fx, first, git) = Fixture::landed();
+    fx.receipt();
+    let CommitFilesAnswer::Committed { commit } = commit_files(&git, &refs(), &[PathBuf::from(RECEIPT)], "receipt\n", ACTOR).unwrap() else {
+        panic!("named receipt must be committed");
+    };
+    let id = "zyxwvutsrqponmlkzyxwvutsrqponmlk";
+    let message = format!("other squash\n\nMortar-Change-Id: {id}\nMortar-Zone: other\nMortar-Request: r1\n");
+    let second = Squash {
+        commit: fx.git.commit_tree(&fx.git.commit_info(&first.commit).unwrap().tree, std::slice::from_ref(&fx.base), &message, None, None).unwrap(),
+        change_id: ChangeId::parse(id).unwrap(), source: fx.base.clone(), requests: vec!["r1".into()],
+    };
+    let answer = land_batch(&fx.git, &refs(), &second, ACTOR).unwrap();
+    assert!(matches!(answer, BatchLandAnswer::Landed { .. }), "{answer:?}");
+    let BatchLandAnswer::Landed { integration } = answer else { unreachable!() };
+    assert_eq!(fx.git.commit_info(&integration).unwrap().parents, vec![commit.clone(), second.commit.clone()]);
+    assert_eq!(fx.state(), Some(format!("{{\"origin_at_start\":\"{}\",\"landings\":[{{\"change_id\":\"{ID}\",\"zone\":\"land\",\"squash\":\"{}\",\"integration\":\"{commit}\"}},{{\"change_id\":\"{id}\",\"zone\":\"other\",\"squash\":\"{}\",\"integration\":\"{integration}\"}}]}}\n", fx.base, first.commit, second.commit)));
 }
 
 #[test]

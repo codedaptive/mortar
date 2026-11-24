@@ -6,9 +6,9 @@ use crate::landing::OpenPushIntent;
 use gitio::Oid;
 use oplog::ChangeId;
 
-/// The squash being landed (its change ID, zone and commit), the origin tip when the landing started, and the
-/// commit integration moves to, resolved: a pending commit_files commit folded in when integration reached it, else
-/// dropped. `open_push` is Some while this landing's publish push intent is open (a publish killed inside its push;
+/// The newest squash of the landing batch (its change ID, zone and commit), the origin tip when the batch started,
+/// and the commit integration moves to for that squash, resolved: a pending commit_files commit folded in when
+/// integration reached it, else dropped. `open_push` is Some while this landing's publish push intent is open (a publish killed inside its push;
 /// next: mr publish), else None.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LandingStatus {
