@@ -7,7 +7,8 @@
 //! or is refused as PartnersConflicted with nothing moved; a replay conflict pauses keeping the new base, which
 //! resolve_on_base hands back; a replay conflict onto the unchanged zone pauses keeping the zone tip with no
 //! partners, which resolve_on_base hands back; no partners answers join's own answer. tests/partner_base's
-//! recorded_base.rs covers the base before and after each op records, plain, remerged and onto the unchanged zone.
+//! recorded_base.rs covers the base before and after each op records, plain, remerged and onto the unchanged zone;
+//! racing_zone_move.rs a zone moved sideways since it was read, refused as Protected with nothing logged.
 
 use crate::after_replay::after_replay;
 use crate::after_replay_step::AfterReplayStep;
@@ -28,9 +29,8 @@ use std::path::Path;
 /// ZoneMissing naming its ref), and decides: a request tip already in the zone answers Plain(Joined) and moves
 /// nothing. Zone and partners where the base had them: the request's commits after the base are replayed onto the
 /// zone tip (never a fast-forward through the merge) and, clean, one op moves the zone ref and the request ref to
-/// the replayed tip: ZoneJoined. The zone move is a fast-forward by construction; when the op moves the zone ref (the
-/// replay left a commit of the request's own; the zone move is left out when `to` is the zone tip), its old value pins
-/// the zone ref at the tip read, so a zone moved since fails the op (OpFailed) with nothing moved (zone_joined).
+/// the replayed tip: ZoneJoined. The zone ref is protected by "join", so a zone moved since it was read is refused
+/// with nothing moved (zone_joined).
 /// Anything moved: the partner merge is made again from the zone tip and the partners' current tips (a conflict is
 /// PartnersConflicted, nothing moved, no state) and the request's commits after the base are replayed onto it;
 /// clean, one op moves the request ref: Rebased with the new base. A conflicted replay pauses as join does and
