@@ -89,6 +89,26 @@ fn the_squash_in_the_landing_state_is_refused_and_moves_nothing() {
 }
 
 #[test]
+fn an_earlier_batch_member_cannot_be_withdrawn() {
+    let fx = Fixture::new();
+    let first = fx.squashed();
+    let newest = fx.commit_on(&first.commit.to_string(), &[("n", "newest\n")], "newest", "r2");
+    let id = "zyxwvutsrqponmlkzyxwvutsrqponmlk";
+    fx.set_branch("integration", &newest);
+    let state = format!("{{\"origin_at_start\":\"{}\",\"landings\":[{{\"change_id\":\"{}\",\"zone\":\"land\",\"squash\":\"{}\",\"integration\":\"{}\"}},{{\"change_id\":\"{id}\",\"zone\":\"other\",\"squash\":\"{newest}\",\"integration\":\"{newest}\"}}]}}\n", fx.base, first.change_id, first.commit, first.commit);
+    let path = fx.repo.path.join(".git/mortar/landing.json");
+    std::fs::write(&path, &state).unwrap();
+    let refs_before = fx.ref_lines();
+    let log_before = fx.oplog();
+    let result = withdraw(&fx.land_git(), &refs(), ZONE, ACTOR);
+    assert!(matches!(&result, Err(WithdrawError::Landing { zone, commit, change_id })
+        if zone == "land" && *commit == first.commit && *change_id == first.change_id), "{result:?}");
+    assert_eq!(fx.ref_lines(), refs_before);
+    assert_eq!(fx.oplog(), log_before);
+    assert_eq!(std::fs::read_to_string(path).unwrap(), state);
+}
+
+#[test]
 fn squash_withdraw_squash_draws_a_new_change_id() {
     let fx = Fixture::new();
     let first = fx.squashed();

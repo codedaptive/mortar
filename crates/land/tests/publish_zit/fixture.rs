@@ -68,11 +68,11 @@ pub fn refs() -> LandRefs {
     }
 }
 
-/// landing.json as encode_landing_state lays it out, written by hand.
+/// The one-landing form for zone `land`, written out independently of the state writer.
 pub fn state_text(id: &str, squash: &Oid, origin: &Oid, integration: &Oid) -> String {
     format!(
-        "{{\"change_id\":\"{id}\",\"zone\":\"land\",\"squash\":\"{squash}\",\"origin_at_start\":\"{origin}\",\
-         \"integration\":\"{integration}\"}}\n"
+        "{{\"change_id\":\"{id}\",\"zone\":\"land\",\"squash\":\"{squash}\",\
+         \"origin_at_start\":\"{origin}\",\"integration\":\"{integration}\"}}\n"
     )
 }
 

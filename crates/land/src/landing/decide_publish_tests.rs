@@ -1,6 +1,7 @@
-//! decide_publish: push-on and push-off decisions, including open and done push intents, using literal ids.
+//! decide_publish: push-on and push-off decisions, including open and done push intents and a batch of two, using
+//! literal ids.
 
-use super::{decide_publish, LandingState, PublishStep, PushIntentState};
+use super::{decide_publish, LandingMember, LandingState, PublishStep, PushIntentState};
 use gitio::Oid;
 use oplog::ChangeId;
 
@@ -15,11 +16,14 @@ fn oid(hex: &str) -> Oid {
 
 fn state() -> LandingState {
     LandingState {
-        change_id: ChangeId::parse("klmnopqrstuvwxyzklmnopqrstuvwxyz").unwrap(),
-        zone: "land".to_string(),
-        squash: oid("4444444444444444444444444444444444444444"),
         origin_at_start: oid(EXPECTED),
-        integration: oid(NEW),
+        earlier: Vec::new(),
+        newest: LandingMember {
+            change_id: ChangeId::parse("klmnopqrstuvwxyzklmnopqrstuvwxyz").unwrap(),
+            zone: "land".to_string(),
+            squash: oid("4444444444444444444444444444444444444444"),
+            integration: oid(NEW),
+        },
         pending: None,
     }
 }
@@ -120,4 +124,32 @@ fn local_elsewhere_backs_out_onto_the_local_tip() {
         decide_publish(true, &PushIntentState::Absent, None, &oid(OTHER), Some(&state())),
         PublishStep::BackOut { onto: oid("3333333333333333333333333333333333333333") }
     );
+}
+
+/// A batch of two: the earlier member landed at FIRST, the newest at NEW, so new is the newest member's integration.
+fn batch_of_two() -> LandingState {
+    let earlier = LandingMember {
+        change_id: ChangeId::parse("zyxwvutsrqponmlkzyxwvutsrqponmlk").unwrap(),
+        zone: "other".to_string(),
+        squash: oid("5555555555555555555555555555555555555555"),
+        integration: oid("6666666666666666666666666666666666666666"),
+    };
+    LandingState { earlier: vec![earlier], ..state() }
+}
+
+#[test]
+fn batch_of_two_publishes_from_origin_at_start_to_the_newest_members_integration() {
+    let batch = batch_of_two();
+    let expected = oid(EXPECTED);
+    let new = oid(NEW);
+    let rows = [
+        ("local at new", None, &new, PublishStep::Cleanup),
+        ("local and remote at expected", Some(&expected), &expected, PublishStep::Push),
+        ("local at expected, remote at new", Some(&new), &expected, PublishStep::Advance),
+    ];
+    let failures: Vec<_> = rows.into_iter().filter_map(|(name, remote, local, answer)| {
+        let actual = decide_publish(true, &PushIntentState::Absent, remote, local, Some(&batch));
+        (actual != answer).then(|| format!("{name}: expected {answer:?}, got {actual:?}"))
+    }).collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

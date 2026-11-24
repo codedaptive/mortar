@@ -20,7 +20,8 @@ pub enum WithdrawError {
     State(LandingStateError),
     /// The squash commit is an ancestor of the origin tip `origin`: it was published.
     Published { zone: String, commit: Oid, origin: Oid },
-    /// The squash commit is the landing state's squash: it is the landing in flight, with that change ID.
+    /// The squash commit is a member of the batch in the landing state, newest or earlier: it is in the landing in
+    /// flight, with that member's change ID.
     Landing { zone: String, commit: Oid, change_id: ChangeId },
     /// The squash ref was not at the commit read, so the op moved nothing; its `failed` record.
     OpFailed(OpRecord),

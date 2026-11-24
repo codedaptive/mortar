@@ -10,8 +10,8 @@ use oplog::{apply_protected, new_op_id, unix_now, ProtectedRef};
 use std::path::Path;
 
 /// One `publish-origin` op, with the origin branch protected by `publish`, moves `refs/heads/<origin_branch>` from
-/// the state's origin_at_start to its integration commit: a fast-forward by construction, and anything else is
-/// refused (Land), as is an op that fails or was already done.
+/// the state's origin_at_start to its newest member's integration commit, with that member's change ID: a
+/// fast-forward by construction, and anything else is refused (Land), as is an op that fails or was already done.
 pub(crate) fn advance_origin(
     git: &Git,
     common: &Path,
@@ -24,8 +24,8 @@ pub(crate) fn advance_origin(
         "publish-origin",
         &origin_ref,
         &state.origin_at_start,
-        &state.integration,
-        &state.change_id,
+        &state.newest.integration,
+        &state.newest.change_id,
         new_op_id(),
         actor,
         unix_now(),

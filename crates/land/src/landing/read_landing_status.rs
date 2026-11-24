@@ -7,8 +7,9 @@ use crate::landing::{open_push_intent_of, read_push_intent, read_resolved_landin
 use crate::squash::LandRefs;
 use gitio::Git;
 
-/// No landing state is None. Otherwise the state as read_resolved_landing_state resolves it, with `open_push` the
-/// open push intent read_push_intent finds for its move. Read only: it takes no lock, writes nothing and never
+/// No landing state is None. Otherwise the state as read_resolved_landing_state resolves it: its newest member's
+/// change ID, zone, squash and integration and the batch's origin_at_start, with `open_push` the open push intent
+/// read_push_intent finds for its move. Read only: it takes no lock, writes nothing and never
 /// contacts the remote, so the caller needs no lock. Finding the common dir failing is Git; reading the state,
 /// integration's tip or the op log fails as State, Squash or Oplog.
 pub fn read_landing_status(git: &Git, refs: &LandRefs) -> Result<Option<LandingStatus>, PublishError> {
@@ -18,11 +19,11 @@ pub fn read_landing_status(git: &Git, refs: &LandRefs) -> Result<Option<LandingS
     };
     let open_push = open_push_intent_of(read_push_intent(&common, refs, &state)?);
     Ok(Some(LandingStatus {
-        change_id: state.change_id,
-        zone: state.zone,
-        squash: state.squash,
+        change_id: state.newest.change_id,
+        zone: state.newest.zone,
+        squash: state.newest.squash,
         origin_at_start: state.origin_at_start,
-        integration: state.integration,
+        integration: state.newest.integration,
         open_push,
     }))
 }

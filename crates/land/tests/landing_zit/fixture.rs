@@ -10,7 +10,7 @@ use testkit::TestRepo;
 
 /// The change ID of the first squash in every case.
 pub const ID_A: &str = "klmnopqrstuvwxyzklmnopqrstuvwxyz";
-/// The change ID of a second squash (the second landing answered Busy).
+/// The change ID of a second squash, in the cases that land or try to land two.
 pub const ID_B: &str = "zyxwvutsrqponmlkzyxwvutsrqponmlk";
 /// The committer date of the test's own Git.
 pub const DATE: &str = "2000-01-01T00:00:00+00:00";
@@ -57,11 +57,11 @@ pub fn refs() -> LandRefs {
     }
 }
 
-/// landing.json as encode_landing_state lays it out, written by hand.
+/// The one-landing form for zone `land`, written out independently of the state writer.
 pub fn state_text(id: &str, squash: &Oid, origin: &Oid, integration: &Oid) -> String {
     format!(
-        "{{\"change_id\":\"{id}\",\"zone\":\"land\",\"squash\":\"{squash}\",\"origin_at_start\":\"{origin}\",\
-         \"integration\":\"{integration}\"}}\n"
+        "{{\"change_id\":\"{id}\",\"zone\":\"land\",\"squash\":\"{squash}\",\
+         \"origin_at_start\":\"{origin}\",\"integration\":\"{integration}\"}}\n"
     )
 }
 

@@ -12,7 +12,7 @@
 
 use crate::landing::{
     decide_commit_files, integration_op, landing_applied, read_landing_state, write_landing_state, CommitFilesAnswer,
-    CommitFilesError, LandError, LandingState,
+    CommitFilesError, LandError, LandingMember, LandingState,
 };
 use crate::squash::{read_tip, LandRefs};
 use gitio::Git;
@@ -25,8 +25,9 @@ use std::path::PathBuf;
 /// integration is not at the commit the state names (NotLanded) or the folder's HEAD is not at the
 /// tip (FolderOffTip). Then snapshot's commit_paths writes one commit of the tip's tree with `paths` (relative to the
 /// folder) as the folder has them, its message `message`; its refusals are Paths. Same answers Same, with no op and
-/// nothing moved. Committed: the landing state names the commit as pending, one `land-commit-files` op moves
-/// integration from the tip to it, and the state then names it as the landing's integration: Committed { commit }.
+/// nothing moved. Committed: the landing state names the commit as pending, one `land-commit-files` op with the
+/// newest member's change ID moves integration from the tip to it, and the state then names it as the newest
+/// member's integration: Committed { commit }.
 /// A run killed before that last write leaves the pending commit, which land, back_out, publish and a repeat of
 /// commit_files take as integration only when the op moved integration to it (resolve_landing_state).
 pub fn commit_files(
@@ -54,13 +55,14 @@ pub fn commit_files(
         &integration_ref,
         &tip,
         &commit,
-        &resolved.change_id,
+        &resolved.newest.change_id,
         new_op_id(),
         actor,
         unix_now(),
     );
     landing_applied(apply(git, &common, &op)).map_err(CommitFilesError::Land)?;
-    write_landing_state(&common, &LandingState { integration: commit.clone(), pending: None, ..resolved })
+    let newest = LandingMember { integration: commit.clone(), ..resolved.newest };
+    write_landing_state(&common, &LandingState { newest, pending: None, ..resolved })
         .map_err(LandError::State)
         .map_err(CommitFilesError::Land)?;
     Ok(CommitFilesAnswer::Committed { commit })

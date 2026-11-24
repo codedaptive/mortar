@@ -27,8 +27,8 @@ pub enum LandError {
     NoZone { commit: Oid },
     /// Integration is not at origin and no landing state names a landing in flight.
     NoLandingState { origin: Oid, integration: Oid },
-    /// back_out (or publish backing out): integration is at neither origin nor the commit the landing state says it
-    /// landed.
+    /// back_out (or publish backing out): integration is at neither origin, nor the batch's tip, nor the point before
+    /// its newest member.
     IntegrationElsewhere { expected: Oid, actual: Oid },
     /// The ref (integration, the origin or the squash ref) was not at its expected value,
     /// so the op moved nothing; its `failed` record.

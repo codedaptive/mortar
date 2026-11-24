@@ -1,5 +1,6 @@
 //! Landing: a fast-forward landing, a merge landing after origin moved, a conflict that moves nothing, and a
-//! second landing answered Busy while the first one's repeat answers Landed without touching the op log.
+//! second squash of the same zone answered Busy, naming the first, while the first one's repeat answers Landed
+//! without touching the op log.
 
 use crate::fixture::{
     refs, state_text, tree, Fixture, ACTOR, ID_A, ID_B, MERGED_FILES, ORIGIN_FILES, SQUASH_FILES,
@@ -63,7 +64,7 @@ fn a_conflicting_squash_moves_nothing_and_writes_no_state() {
 }
 
 #[test]
-fn a_second_landing_is_busy_and_the_first_ones_repeat_is_landed_with_the_log_unchanged() {
+fn a_second_squash_of_the_same_zone_is_busy_and_the_first_ones_repeat_is_landed_with_the_log_unchanged() {
     let fx = Fixture::new();
     let first = fx.squash(&fx.base, &SQUASH_FILES, ID_A);
     let second = fx.squash(&fx.base, &[("a.txt", "base\n"), ("b.txt", "second\n")], ID_B);
