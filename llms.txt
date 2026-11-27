@@ -63,9 +63,9 @@ Landing verbs, with `--actor <name>`:
 - `mr would-merge <commit or change ID> [--with <commit or change ID>]...`: with `--with`, each squash merges in order onto the one before; exit 2 names the conflicting step
 - `mr commit-files <path>... [--message <text>]`: commit the named files as the folder has them, in a zone folder onto `zone/<zone>` at its tip, or in the integration folder onto integration inside the landing; `same` when unchanged (naming a stopped run's staged paths, next `git restore --staged -- <paths>`); refused in request and attempt folders (next `mr save`); JSON outcome, commit, ref, moved, paths, staged
 - `mr rereview <reviewed commit> <new commit>`
-- `mr land <commit>`
-- `mr back-out`
-- `mr publish [--no-push]`: with `--no-push`, move the local origin branch only (no push, nothing fetched); JSON `pushed` is true only when this publish's push intent closed done
+- `mr land <commit>`: each further `mr land` before `mr publish` joins the batch (`landed 2 of the batch`; JSON `batch`, change IDs in landing order); exit 1 zone already in the batch (publish or back out first), 2 conflict (integration and the batch unchanged), 3 integration neither at origin nor at the batch's tip
+- `mr back-out`: integration back where the batch found it; names every member backed out in landing order (JSON `backed_out`; `change_id` the newest member's); next: land the squashes that stand again, in the same order
+- `mr publish [--no-push]`: one push for the whole batch; next names `mr after-publish <zone> --actor <name>` for each zone in it; with `--no-push`, move the local origin branch only (no push, nothing fetched); JSON `pushed` is true only when this publish's push intent closed done
 - `mr after-publish <zone> [--move <zone>]...`
 - `mr backup`, `mr restore-backup <host>`
 - `mr bisect <last pass> <failed> --timeout <seconds> -- <command>...`
@@ -88,8 +88,9 @@ Program verbs:
 - 1: refused; the text says why, who owns the thing in the way, and what to do
 - 2: conflict; the files are listed
 - 3: busy; a lock is held, or a branch or snapshot ref moved while mr save
-  or mr snapshot ran (repeat later); or a landing is in flight (finish it
-  first with mr publish or mr back-out)
+  or mr snapshot ran (repeat later); or a landing is in flight that this squash cannot
+  join (integration neither at origin nor at the batch's tip): finish it
+  first with mr publish or mr back-out, then mr land
 - 4: usage
 - 5: failure; git or the disk failed. The report says what happened, and its
   next line says what to do: usually the same command again, sometimes a path
