@@ -9,7 +9,7 @@ use crate::report::{ExitCode, OutValue, Report};
 const NEXT_DONE: &str = "mr folder zone <zone> <path>";
 
 /// Write and Replace: done, "written" or "replaced", naming the path and for Replace the keys changed.
-/// AlreadyDone: done, "already-done", nothing changed. Refused: exit 1, naming the keys that differ, owned by the
+/// AlreadyDone: done, "already-done", nothing changed. Refused: exit 3, naming the keys that differ, owned by the
 /// existing config. Every arm carries the path as the --json field config_path.
 pub fn init_report(decision: &InitDecision, path: &Path) -> Report {
     let shown = path.display();

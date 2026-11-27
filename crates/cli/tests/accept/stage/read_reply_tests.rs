@@ -17,26 +17,26 @@ fn a_report_gives_its_outcome_next_and_lines() {
 
 #[test]
 fn a_run_that_did_not_exit_0_shows_the_first_line() {
-    let stdout = r#"{"verb":"join","outcome":"conflicted","exit":2,"next":"mr resolve","lines":["conflicted: commit c","  src/a/a.txt"]}"#;
-    let reply = read_reply(&ran(Some(2), stdout));
-    assert_eq!(reply.saw, "exit 2; outcome conflicted; conflicted: commit c");
+    let stdout = r#"{"verb":"join","outcome":"conflicted","exit":1,"next":"mr resolve","lines":["conflicted: commit c","  src/a/a.txt"]}"#;
+    let reply = read_reply(&ran(Some(1), stdout));
+    assert_eq!(reply.saw, "exit 1; outcome conflicted; conflicted: commit c");
     assert_eq!(reply.next, "mr resolve");
 }
 
 #[test]
 fn a_failing_report_with_no_lines_shows_the_outcome_only() {
-    let reply = read_reply(&ran(Some(1), r#"{"outcome":"refused","lines":[]}"#));
-    assert_eq!(reply.saw, "exit 1; outcome refused");
+    let reply = read_reply(&ran(Some(3), r#"{"outcome":"refused","lines":[]}"#));
+    assert_eq!(reply.saw, "exit 3; outcome refused");
 }
 
 #[test]
 fn stdout_that_is_not_json_gives_an_empty_reply_naming_the_error() {
-    let reply = read_reply(&ran(Some(4), "usage: mr join\n"));
+    let reply = read_reply(&ran(Some(2), "usage: mr join\n"));
     assert_eq!(reply.outcome, "");
     assert_eq!(reply.next, "");
     assert!(reply.lines.is_empty());
     assert_eq!(reply.report, JsonValue::Null);
-    assert_eq!(reply.saw, "exit 4; stdout is not JSON: expected a value at byte 0");
+    assert_eq!(reply.saw, "exit 2; stdout is not JSON: expected a value at byte 0");
 }
 
 #[test]

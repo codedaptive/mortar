@@ -5,7 +5,7 @@ use crate::report::{ExitCode, Report};
 
 const NOTHING_CHANGED: &str = "nothing was changed";
 
-/// Refused (exit 1), nothing changed, with a next an agent can follow: ZoneOwns, to the zone's coordinator, who can
+/// Refused (exit 3), nothing changed, with a next an agent can follow: ZoneOwns, to the zone's coordinator, who can
 /// back the join out; Resolved, the way forward in words, since a resolve recorded before mortar recorded the paused
 /// join leaves nothing to put back; NotAStep, naming the op and its kind, next mr status. None for Nothing, Step and
 /// AlreadyUndone.

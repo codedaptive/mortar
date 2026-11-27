@@ -9,8 +9,8 @@ use crate::lock::lock_report;
 use crate::report::{failure_report, ExitCode, Report};
 
 /// Plan (a path the plan refuses: empty, absolute, holding NUL or a line break, or with a ".", ".." or empty
-/// component) is exit 1 with the plan's reason, next a path inside the repository. NotAFolder (the folder has no
-/// Mortar record) is exit 1 naming the folder and why, next making the request folder again. Lock (the folders lock
+/// component) is exit 3 with the plan's reason, next a path inside the repository. NotAFolder (the folder has no
+/// Mortar record) is exit 3 naming the folder and why, next making the request folder again. Lock (the folders lock
 /// folders::need takes is held or cannot be taken) is lock_report. Every other error is failure_report.
 pub fn need_error_report(error: &FolderError) -> Report {
     match error {

@@ -8,10 +8,10 @@
 //! the mortar binary as a child process in folders made by the landing verbs in a throwaway repository:
 //! - snapshot in a sparse request folder writes the request's snap ref, exit 0, outcome snapshotted;
 //! - snapshot with nothing changed since the last one is exit 0, outcome unchanged, and moves no ref;
-//! - snapshot in a zone folder is refused, exit 1, naming the folder, and moves no ref;
+//! - snapshot in a zone folder is refused, exit 3, naming the folder, and moves no ref;
 //! - snapshot in an attempt folder moves its trysnap ref, not the request's snap ref;
-//! - any argument is exit 4; without a config, exit 1; run outside a Mortar folder, exit 1;
-//! - a join-<zone> lock held by a live pid is exit 3.
+//! - any argument is exit 2; without a config, exit 3; run outside a Mortar folder, exit 3;
+//! - a join-<zone> lock held by a live pid is exit 4.
 //!   the disk acceptance case: snapshot's run in a request folder after a small edit, reached through this verb.
 
 use std::path::Path;
@@ -33,7 +33,7 @@ const VERB: &str = "snapshot";
 
 /// Any argument is snapshot's usage report, before the verb runs git. Then the config, then the Mortar folder
 /// holding `cwd` (read_folder_context; context_report when it cannot be read). A zone folder has no snapshot ref:
-/// zone_folder_refusal, exit 1.
+/// zone_folder_refusal, exit 3.
 /// Under `join-<zone>` (from the verb table through lock_name_for) after recover (locked_act), keyed by
 /// --key or op_key("snapshot", the folder) as the lock's holder only (snapshot_formatted draws its own op id),
 /// snapshot_formatted with the config's excludes, cap and formatter; reported by snapshot_report, or by

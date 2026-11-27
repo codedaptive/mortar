@@ -32,7 +32,7 @@ pub fn flow_land(world: &World, checks: &mut Checks, state: &mut FlowState) -> b
     let conflict = conflict_commit(world, &state.r1_edited);
     let refused = harness_mr(world, &["would-merge", &conflict]);
     let files = refused.texts("files");
-    let ok = refused.exit == Some(2) && refused.outcome == "conflict" && files.iter().any(|file| file == "src/a/a.txt");
+    let ok = refused.exit == Some(1) && refused.outcome == "conflict" && files.iter().any(|file| file == "src/a/a.txt");
     let saw = format!("commit {conflict}; {}; files [{}]", refused.saw, files.join(", "));
     checks.check(CONFLICT_CHECK, ok, &saw);
     checks.log("the drive declares the integration test failed");

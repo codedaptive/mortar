@@ -4,7 +4,7 @@ use std::path::Path;
 
 use crate::report::{ExitCode, Report};
 
-/// Exit 1 "refused", naming the zone folder at `folder`; nothing ran. The next names the command in the folders
+/// Exit 3 "refused", naming the zone folder at `folder`; nothing ran. The next names the command in the folders
 /// that have a snapshot ref.
 pub fn zone_folder_refusal(folder: &Path) -> Report {
     Report {

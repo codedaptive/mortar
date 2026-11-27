@@ -15,7 +15,7 @@ fn a_file_where_the_state_folder_goes_is_refused_before_any_write() {
     let mut opts = options();
     opts.yes = true;
     let report = tree.install(&opts);
-    assert_report(&report, 1, "refused");
+    assert_report(&report, 3, "refused");
     assert!(report.lines.iter().any(|line| line.contains(state.to_str().unwrap())), "{report:?}");
     assert_eq!(snapshot(&tree.env.home), before);
 }
@@ -59,7 +59,7 @@ fn forcing_link_over_foreign_short_name_refuses_without_writes() {
     let before = snapshot(&tree.env.home);
     let mut opts = options();
     opts.short_name = true;
-    assert_report(&tree.install(&opts), 1, "refused");
+    assert_report(&tree.install(&opts), 3, "refused");
     assert_eq!(snapshot(&tree.env.home), before);
 }
 
@@ -68,7 +68,7 @@ fn foreign_binary_refuses_without_writes() {
     let tree = Tree::new();
     executable(&tree.env.home.join(".local/bin/mortar"), b"foreign mortar");
     let before = snapshot(&tree.env.home);
-    assert_report(&tree.install(&options()), 1, "refused");
+    assert_report(&tree.install(&options()), 3, "refused");
     assert_eq!(snapshot(&tree.env.home), before);
 }
 
@@ -81,6 +81,6 @@ fn foreign_skill_refuses_without_writes() {
     let before = snapshot(&tree.env.home);
     let mut opts = options();
     opts.yes = true;
-    assert_report(&tree.install(&opts), 1, "refused");
+    assert_report(&tree.install(&opts), 3, "refused");
     assert_eq!(snapshot(&tree.env.home), before);
 }

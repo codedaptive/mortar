@@ -8,7 +8,7 @@
 //! - saved with work of its own and not joined, status gives next mr join;
 //! - with the zone moved on, status says the zone has commits this request has not taken in and gives next mr join;
 //! - a missing request branch or a missing zone branch: status (and need) refuse with missing_branch_report's wording,
-//!   exit 1, nothing changed.
+//!   exit 3, nothing changed.
 
 use folders::plan::request_branch;
 use gitio::{Git, Oid};

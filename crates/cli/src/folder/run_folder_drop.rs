@@ -4,10 +4,10 @@
 //! request_folder_refusal_tests, attempt_saved_tests and dropped_report_tests cover its decisions. The integration test
 //! crates/cli/tests/folder_runs/run_folder_drop_tests.rs covers it through the binary: saved attempts dropped by an op of the actor
 //! with the request unmoved and their snapshots kept; a branch-only attempt whose trysnap tree equals its tip's tree
-//! dropped; one with no trysnap ref refused exit 1 naming its branch, nothing changed.
+//! dropped; one with no trysnap ref refused exit 3 naming its branch, nothing changed.
 //! Integration tests to write (not written here): a try branch moved under the op, the cli's why and
-//! next; an orphan attempt folder with no trysnap ref, exit 1 naming the folder; a join-<zone> lock held by a live pid,
-//! exit 3.
+//! next; an orphan attempt folder with no trysnap ref, exit 3 naming the folder; a join-<zone> lock held by a live pid,
+//! exit 4.
 
 use std::path::Path;
 
@@ -26,7 +26,7 @@ use crate::shell::ShellContext;
 const VERB: &str = "folder";
 
 /// `cwd` must be in a request folder (read_folder_context; a zone or attempt folder is request_folder_refusal's exit
-/// 1). Under join-<zone> after recover (locked_act), keyed by --key or op_key("folder-drop", the folder), as the actor:
+/// 3). Under join-<zone> after recover (locked_act), keyed by --key or op_key("folder-drop", the folder), as the actor:
 /// folders' remake_orphans, then attempts_saved, then folders' drop_attempts, in that order.
 pub fn run_folder_drop(context: &ShellContext, config: &Config, cwd: &Path) -> Report {
     let folder = match read_folder_context(cwd) {

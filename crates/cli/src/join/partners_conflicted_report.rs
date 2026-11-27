@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use crate::report::{with_moved_first, ExitCode, OutValue, Report};
 
-/// Exit 1 "refused", owned by the coordinators of both zones, since the conflict is between their tips and no
+/// Exit 3 "refused", owned by the coordinators of both zones, since the conflict is between their tips and no
 /// change in the request can settle it: the conflicted files, indented, after a line naming `zone` and `partner`,
 /// then that join moved nothing. `moved` (moved_before's line), when given, is the first line: it names the refs the
 /// save or snapshot before the join moved. Fields: partner, files.

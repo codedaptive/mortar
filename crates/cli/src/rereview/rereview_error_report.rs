@@ -14,10 +14,10 @@ const NEXT: &str = "name two squash commits of one change: mr rereview <reviewed
 
 /// - Git: failure_report, "git could not read a commit or produce the range-diff".
 /// - Trailers: failure_report, "a commit's Mortar trailers could not be read".
-/// - NotSameChange: exit 1 Refused, outcome "not-same-change", line "<reviewed> carries <change X | no
+/// - NotSameChange: exit 3 Refused, outcome "not-same-change", line "<reviewed> carries <change X | no
 ///   Mortar-Change-Id> and <new> carries <change Y | no Mortar-Change-Id>; they are not one change", owner "the two
 ///   squash commits", next NEXT. Fields: reviewed and new, each the commit id.
-/// - NoParent: exit 1 Refused, outcome "refused", line "<commit> is a root commit, so it has no parent to diff from",
+/// - NoParent: exit 3 Refused, outcome "refused", line "<commit> is a root commit, so it has no parent to diff from",
 ///   owner "the commit <commit>", next NEXT. Fields: none.
 pub fn rereview_error_report(error: &RereviewError) -> Report {
     match error {

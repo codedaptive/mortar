@@ -9,14 +9,14 @@
 //! tests crates/cli/tests/resolve_runs/{resolve_first_runs,resolve_finishes,resolve_unusual,resolve_refusals,
 //! resolve_catch_up,resolve_base_tests}.rs cover, with the mortar binary as a child process in a throwaway repository
 //! and a request folder: no paused join is exit 0 nothing-to-resolve; the first run writes the files and lists
-//! skipped and gitlinks, exit 2; a next run with markers is exit 2 naming files and lines; a next run resolved and clean is Rebased, exit 0,
+//! skipped and gitlinks, exit 1; a next run with markers is exit 1 naming files and lines; a next run resolved and clean is Rebased, exit 0,
 //! the folder's files and HEAD at the new tip with the resolved content and edits outside the resolved paths kept;
-//! conflicted again on a later commit is exit 2 listing the files; an edit on a path the zone changed is exit 1 naming
+//! conflicted again on a later commit is exit 1 listing the files; an edit on a path the zone changed is exit 3 naming
 //! the paths and the snapshot ref; a kill after join's final op and before the folder move is finished by the next
 //! resolve or join (from the op's folder_tree); a plain resolve records the zone tip as the record's base, and a kill
 //! after resolve's final op and before the record rewrite is finished by the next save, the record naming the zone tip;
-//! a held lock is exit 3; an attempt folder is exit 1 with nothing run;
-//! any argument is exit 4. crates/cli/tests/save_join_runs/partner_join_tests.rs covers a request cut on a merge with a
+//! a held lock is exit 4; an attempt folder is exit 3 with nothing run;
+//! any argument is exit 2. crates/cli/tests/save_join_runs/partner_join_tests.rs covers a request cut on a merge with a
 //! partner whose join paused on the unchanged zone: the resolve that completes it is Rebased, says the request left
 //! its set's merge with left_partners naming the partner and next "mr join", and the record names the zone tip with
 //! no partners.

@@ -1,11 +1,11 @@
 //! `mortar back-out`: after a fast-forward landing, integration goes back to main's tip, the integration worktree's
 //! files follow it and the squash ref stays; a repeat, and a repository where nothing landed, have nothing to back
-//! out; an extra word is a usage error (exit 4) with back-out's usage line as next and integration unmoved.
+//! out; an extra word is a usage error (exit 2) with back-out's usage line as next and integration unmoved.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
-//! The squash and the landing are made in setup through land::squash and land::land under the land lock.
+//! The squash and the landing are made in setup through land::squash and land::land_batch under the land lock.
 //! Tests to write (not written here):
-//! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
-//! - without a config: exit 1, next mortar init (the shell's load_config);
+//! - the land lock held by a live pid: exit 4 (cli with oplog's locks);
+//! - without a config: exit 3, next mortar init (the shell's load_config);
 //! - each LandError variant's text that needs git or the op log to fail;
 //! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones;
 //! - back-out with --key: the key names the lock holder only.
@@ -18,7 +18,7 @@ use std::process::{Command, Output, Stdio};
 use crate::support::{Config, ZoneConfig, write_fixture_config};
 use gitio::Git;
 use crate::json::check;
-use land::{LandAnswer, LandRefs, Squash, SquashAnswer};
+use land::{BatchLandAnswer, LandRefs, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName};
 use testkit::TestRepo;
 
@@ -89,7 +89,7 @@ fn integration_worktree(root: &Path, tmp: &TestRepo) -> PathBuf {
     folder
 }
 
-/// Zone a squashed through land::squash, then landed through land::land, both under the land lock after recover,
+/// Zone a squashed through land::squash, then landed through land::land_batch, both under the land lock after recover,
 /// as the cli does; the landing is asserted to have fast-forwarded integration to the squash.
 fn squash_and_land(root: &Path) -> Squash {
     let mut git = Git::new(root);
@@ -101,8 +101,8 @@ fn squash_and_land(root: &Path) -> Squash {
         let SquashAnswer::Made(squash) = land::squash(&git, &refs, "a", "back-out-setup").unwrap() else {
             panic!("setup squash was not made");
         };
-        let landed = land::land(&git, &refs, &squash, "back-out-setup").unwrap();
-        assert_eq!(landed, LandAnswer::Landed { integration: squash.commit.clone() });
+        let landed = land::land_batch(&git, &refs, &squash, "back-out-setup").unwrap();
+        assert_eq!(landed, BatchLandAnswer::Landed { integration: squash.commit.clone() });
         Ok::<_, std::io::Error>(squash)
     }).unwrap()
 }
@@ -161,7 +161,7 @@ fn back_out_with_nothing_landed_and_no_worktree_has_nothing_to_back_out() {
 fn back_out_with_an_extra_word_is_usage_and_leaves_integration() {
     let (_repo, root) = repo();
     let squash = squash_and_land(&root);
-    let report = check(mortar(&root, &["--actor", "accept", "--json", "back-out", "now"]), "back-out", 4, "usage");
+    let report = check(mortar(&root, &["--actor", "accept", "--json", "back-out", "now"]), "back-out", 2, "usage");
     assert_eq!(report.text("next"), USAGE);
     assert_eq!(tip(&root, "refs/heads/integration"), squash.commit.as_str());
 }

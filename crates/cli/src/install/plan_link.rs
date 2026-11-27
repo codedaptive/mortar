@@ -11,7 +11,7 @@ use crate::report::{ExitCode, Report};
 use super::{InstallFacts, InstallItem, InstallPaths, InstallStep, LinkAt, LinkPlan};
 
 /// The link's plan. `placed`: the binary is placed, so the target is `paths.mortar`; else the first `mortar` on PATH
-/// when it is Mortar, as PATH names it. `short_name`: link even behind a foreign first `mr`. Err the refusal (exit 1)
+/// when it is Mortar, as PATH names it. `short_name`: link even behind a foreign first `mr`. Err the refusal (exit 3)
 /// when install would make the link over a file that is neither Mortar nor a link to it.
 pub fn plan_link(facts: &InstallFacts, paths: &InstallPaths, placed: bool, short_name: bool) -> Result<LinkPlan, Report> {
     let skipped = |note: String, present: bool, next: Option<String>| LinkPlan {

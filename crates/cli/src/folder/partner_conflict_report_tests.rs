@@ -1,4 +1,4 @@
-//! partner_conflict_report: a conflicted partner merge is refused exit 1, naming the partner and each file, owned by
+//! partner_conflict_report: a conflicted partner merge is refused exit 3, naming the partner and each file, owned by
 //! both zones' coordinators.
 //! Unit test: the report is pure.
 

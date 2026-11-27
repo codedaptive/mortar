@@ -1,12 +1,12 @@
 //! `mortar guard install`: a fresh repository gets guard.json and both hooks, executable, each the guard's one-line
-//! script; a repeat says already-installed and changes no byte; a foreign pre-push is refused (exit 1) with nothing
-//! written; no --actor, no sub-verb and an unknown sub-verb are usage errors (exit 4) with guard's usage line as next;
+//! script; a repeat says already-installed and changes no byte; a foreign pre-push is refused (exit 3) with nothing
+//! written; no --actor, no sub-verb and an unknown sub-verb are usage errors (exit 2) with guard's usage line as next;
 //! from a linked worktree the hooks land in the main repository's hooks folder; a relative core.hooksPath is refused
-//! (exit 1) with nothing written.
+//! (exit 3) with nothing written.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
-//! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
-//! - without a config: exit 1, next mortar init (the shell's load_config);
+//! - the land lock held by a live pid: exit 4 (cli with oplog's locks);
+//! - without a config: exit 3, next mortar init (the shell's load_config);
 //! - GuardError::Git: the cli's own words, never gitio's Display text;
 //! - after `mortar guard install`, git update-ref, commit and push against integration and origin are refused
 //!   through the installed hook and Mortar's own moves pass (acceptance step 2's checks 1-9; land's guard_decide);
@@ -130,7 +130,7 @@ fn guard_install_refuses_a_foreign_pre_push_and_writes_nothing() {
     let foreign = root.join(".git/hooks/pre-push");
     fs::write(&foreign, FOREIGN).unwrap();
     fs::set_permissions(&foreign, fs::Permissions::from_mode(0o755)).unwrap();
-    let report = check(install(&root, &root), "guard", 1, "foreign-hook");
+    let report = check(install(&root, &root), "guard", 3, "foreign-hook");
     let path = shown(&foreign);
     assert!(report.strings("lines").contains(&format!(
         "{path} is a hook Mortar did not write; Mortar never overwrites one")), "{}", report.lines());
@@ -146,7 +146,7 @@ fn guard_install_refuses_a_foreign_pre_push_and_writes_nothing() {
 #[test]
 fn guard_install_without_actor_is_usage_naming_guards_usage() {
     let (_repo, root) = repo();
-    let report = check(mortar(&root, &root, &["--json", "guard", "install"]), "guard", 4, "usage");
+    let report = check(mortar(&root, &root, &["--json", "guard", "install"]), "guard", 2, "usage");
     assert_eq!(report.strings("lines")[0], "--actor <name> is required");
     assert_eq!(report.text("next"), USAGE);
     assert!(!root.join(".git/mortar/guard.json").exists());
@@ -156,7 +156,7 @@ fn guard_install_without_actor_is_usage_naming_guards_usage() {
 #[test]
 fn guard_install_with_no_sub_verb_is_usage_naming_guards_usage() {
     let (_repo, root) = repo();
-    let report = check(mortar(&root, &root, &["--actor", "harness", "--json", "guard"]), "guard", 4, "usage");
+    let report = check(mortar(&root, &root, &["--actor", "harness", "--json", "guard"]), "guard", 2, "usage");
     assert_eq!(report.strings("lines")[0], "guard needs a sub-verb: install or status");
     assert_eq!(report.text("next"), USAGE);
 }
@@ -165,7 +165,7 @@ fn guard_install_with_no_sub_verb_is_usage_naming_guards_usage() {
 fn guard_install_with_an_unknown_sub_verb_is_usage_naming_guards_usage() {
     let (_repo, root) = repo();
     let output = mortar(&root, &root, &["--actor", "harness", "--json", "guard", "frobnicate"]);
-    let report = check(output, "guard", 4, "usage");
+    let report = check(output, "guard", 2, "usage");
     assert_eq!(report.strings("lines")[0], "unknown guard sub-verb \"frobnicate\"");
     assert_eq!(report.text("next"), USAGE);
     assert!(!root.join(".git/hooks/pre-push").exists());
@@ -188,7 +188,7 @@ fn guard_install_from_a_linked_worktree_puts_the_hooks_in_the_main_repository() 
 fn guard_install_refuses_a_relative_core_hooks_path() {
     let (_repo, root) = repo();
     run_git(&root, &["config", "core.hooksPath", "myhooks"]);
-    let report = check(install(&root, &root), "guard", 1, "refused");
+    let report = check(install(&root, &root), "guard", 3, "refused");
     assert_eq!(
         report.strings("lines")[0],
         "core.hooksPath is \"myhooks\", not an absolute path: git resolves a relative hooks path in each folder, so \

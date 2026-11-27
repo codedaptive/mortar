@@ -6,7 +6,7 @@ use folders::{FolderKind, FolderRecord};
 
 use crate::report::{ExitCode, Report};
 
-/// Some for an attempt folder record: exit 1 "refused" naming k and the request, "nothing ran", owned by this
+/// Some for an attempt folder record: exit 3 "refused" naming k and the request, "nothing ran", owned by this
 /// request, next "keep or drop the attempts, then mr join in the request's folder". None for a request or zone
 /// folder, and for an attempt record naming no request (decode_folder_record never gives one).
 pub fn attempt_refusal(verb: &str, record: &FolderRecord) -> Option<Report> {

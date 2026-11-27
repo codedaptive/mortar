@@ -8,8 +8,8 @@ use crate::report::{failure_report, repeat_head_refusal, ExitCode, Report};
 
 const VERB: &str = "snapshot";
 
-/// Refused (exit 1): an unborn HEAD and a refused path that is not UTF-8 (both reached through snapshot_formatted),
-/// and a detached HEAD (save's arm: only save_head refuses one; refused all the same). Busy (exit 3): the snapshot
+/// Refused (exit 3): an unborn HEAD and a refused path that is not UTF-8 (both reached through snapshot_formatted),
+/// and a detached HEAD (save's arm: only save_head refuses one; refused all the same). Busy (exit 4): the snapshot
 /// ref moved, so nothing moved. Done (exit 0): the op was already done. Failure (exit 5): every other arm, naming
 /// what happened; BadSentence, ChangeIdMissing, Trailers, ChangeId, BranchMoved and IndexNotSet are save's arms,
 /// which snapshot_formatted does not return, worded all the same.

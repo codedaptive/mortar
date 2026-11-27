@@ -2,7 +2,7 @@
 
 use crate::report::{ExitCode, Report};
 
-/// Exit 1 under `verb`: the config names no zone, and an empty zone list would have a sweep delete every zone's
+/// Exit 3 under `verb`: the config names no zone, and an empty zone list would have a sweep delete every zone's
 /// replay records; nothing was read or deleted. The next mends the config with mr init, then repeats.
 pub fn no_zones_report(verb: &str) -> Report {
     Report {

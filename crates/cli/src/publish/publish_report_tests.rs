@@ -122,7 +122,7 @@ fn published_of_two_zones_or_none_names_after_publish_for_each_zone() {
 }
 
 #[test]
-fn origin_moved_exits_1_naming_who_moved_which_origin_and_the_folder() {
+fn origin_moved_exits_3_naming_who_moved_which_origin_and_the_folder() {
     let rows = [
         (
             true,

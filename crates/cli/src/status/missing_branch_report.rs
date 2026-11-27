@@ -2,7 +2,7 @@
 
 use crate::report::{ExitCode, Report};
 
-/// Exit 1 "refused", naming `refname`. A missing zone branch (`zone`) is the zone coordinator's to make; a missing
+/// Exit 3 "refused", naming `refname`. A missing zone branch (`zone`) is the zone coordinator's to make; a missing
 /// request branch is this request's, whose folder is made again. join_refusal_report words the same two cases
 /// the same way.
 pub fn missing_branch_report(verb: &str, refname: &str, zone: bool) -> Report {

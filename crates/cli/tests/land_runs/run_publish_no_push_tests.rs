@@ -7,7 +7,7 @@
 //! reports `pushed` true; a doubled flag or an extra word is a usage error naming the word.
 //! Drives the mr binary against real git and the crates below cli; the cli lane owns it.
 //! Each case's repository is support's Fixture (zone core over src and sub) with a bare `origin` holding main beside
-//! it; the squash and the landing are made in setup through land::squash and land::land under the land lock, the
+//! it; the squash and the landing are made in setup through land::squash and land::land_batch under the land lock, the
 //! push intent opened through oplog's open_remote_intent, as land's publish_zit fixture.rs (open_push_intent) opens
 //! it for repeats.rs, and closed done through oplog's close_intent, as publish's own push closes it.
 
@@ -16,7 +16,7 @@ use std::process::{Command, Output, Stdio};
 use crate::json::{check, Report};
 use crate::support::{raw, Fixture, ZONE};
 use gitio::{Git, Oid};
-use land::{LandAnswer, LandRefs, Squash, SquashAnswer};
+use land::{BatchLandAnswer, LandRefs, Squash, SquashAnswer};
 use oplog::{IntentClose, KillPidProbe, LockName, Op, RefMove, RemoteIntentOutcome};
 
 const SQUASH: &str = "refs/mortar/squash/core";
@@ -60,11 +60,11 @@ fn squashed() -> (Fixture, Squash) {
     (f, squash)
 }
 
-/// `squashed`, then the squash landed by land::land, asserted to fast-forward integration to it.
+/// `squashed`, then the squash landed by land::land_batch, asserted to fast-forward integration to it.
 fn landed() -> (Fixture, Squash) {
     let (f, squash) = squashed();
-    let answer = locked(&f, || land::land(&f.git, &refs(), &squash, SETUP_ACTOR).unwrap());
-    assert_eq!(answer, LandAnswer::Landed { integration: squash.commit.clone() });
+    let answer = locked(&f, || land::land_batch(&f.git, &refs(), &squash, SETUP_ACTOR).unwrap());
+    assert_eq!(answer, BatchLandAnswer::Landed { integration: squash.commit.clone() });
     (f, squash)
 }
 
@@ -141,7 +141,7 @@ fn no_push_after_the_local_origin_moved_is_origin_moved_onto_it_without_fetching
     let remote = f.commit(&f.base, &[("src/file", b"remote work\n")], "remote advanced\n");
     raw(&f.git, &["push", "-q", "origin", &format!("{remote}:refs/heads/main")]);
     let fetched = fetched_refs(&f);
-    let report = no_push(&f, 1, "origin-moved");
+    let report = no_push(&f, 3, "origin-moved");
     assert_eq!(report.text("found"), moved.as_str());
     assert_eq!(local(&f, MAIN), Some(moved.clone()));
     assert_eq!(local(&f, INTEGRATION), Some(moved));
@@ -156,7 +156,7 @@ fn no_push_after_the_local_origin_moved_is_origin_moved_onto_it_without_fetching
 fn no_push_while_the_push_intent_is_open_is_refused_then_a_plain_publish_finishes() {
     let (f, squash) = landed();
     open_push_intent(&f, &squash);
-    let report = no_push(&f, 1, "refused");
+    let report = no_push(&f, 3, "refused");
     let next = report.text("next");
     assert!(next.starts_with("mr publish"), "{next}");
     assert!(!next.contains("--no-push"), "{next}");
@@ -191,7 +191,7 @@ fn a_doubled_no_push_or_an_extra_word_is_usage_naming_the_word() {
         (&["publish", "now", "--actor", "a", "--json"], "now"),
     ];
     for (args, word) in rows {
-        let report = check(mr(&f, args), "publish", 4, "usage");
+        let report = check(mr(&f, args), "publish", 2, "usage");
         let reason = &report.strings("lines")[0];
         assert!(reason.contains(word), "{args:?}: {reason}");
         let next = report.text("next");

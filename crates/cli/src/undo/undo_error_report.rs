@@ -9,7 +9,7 @@ const VERB: &str = "undo";
 /// The snapshot is taken before oplog's undo, so a refusal keeps it.
 const KEPT: &str = "nothing was undone; the snapshot taken first is kept";
 
-/// Refused (exit 1): MovedSince, naming the op, the ref and the op and actor that moved it (or that it moved outside
+/// Refused (exit 3): MovedSince, naming the op, the ref and the op and actor that moved it (or that it moved outside
 /// mortar), to the zone's coordinator; Protected, to its protector; Mixed, an open op with its refs half moved,
 /// whose next asks the zone's coordinator in words to settle the op (a repeat meets the same refs). Every
 /// other arm is failure_report, naming what failed.

@@ -9,7 +9,7 @@
 //! - a first save writes a commit with the sentence as subject and prints next mr join, exit 0, outcome saved;
 //! - a save in attempt folder k moves refs/mortar/trysnap/<zone>/<request>/<k>, not the request's snapshot ref;
 //! - a repeat with nothing changed is exit 0, outcome unchanged, and writes no commit and moves no branch;
-//! - a blank or two-line sentence is exit 1 and nothing runs (no lock file, no snapshot ref move);
+//! - a blank or two-line sentence is exit 3 and nothing runs (no lock file, no snapshot ref move);
 //! - a new file over the config's cap_bytes is listed with its size and the cap, exit 0;
 //! - with a formatter configured the saved tree holds the formatted file;
 //! - a formatter that moves the request branch: the save's parent is the formatter's commit
@@ -18,15 +18,15 @@
 //!   request branch does not move
 //!   (saves.rs::detached_head_save_with_formatter_preserves_edit_in_snapshot_without_moving_request_branch);
 //! - a formatter past its timeout is listed and the save goes ahead;
-//! - a held join-<zone> lock is exit 3 naming the holder;
-//! - run in a zone folder it is refused, exit 1;
-//! - without a config it is refused, exit 1, next mr init;
+//! - a held join-<zone> lock is exit 4 naming the holder;
+//! - run in a zone folder it is refused, exit 3;
+//! - without a config it is refused, exit 3, next mr init;
 //! - --json gives one object with finished_move_from, finished_move_to, commit, change_id, written, refused and cap;
 //! - a kill after a join's rebase op and before its folder move, then mr save: the save finishes the move (the
 //!   folder at the rebased tip, its work kept in the request's snapshot ref), then saves, naming the finished move;
 //! - an undo of a join rebase whose folder move was refused (an edit in the way) leaves the move pending; once the
 //!   edit is moved aside, mr save finishes it (the folder back at the tip before the rebase), then saves;
-//! - a pending move refused again (the edit still in the way) is exit 1 listing the paths, and nothing is saved.
+//! - a pending move refused again (the edit still in the way) is exit 3 listing the paths, and nothing is saved.
 
 use oplog::KillPidProbe;
 use snapshot::save_with_snapshot;

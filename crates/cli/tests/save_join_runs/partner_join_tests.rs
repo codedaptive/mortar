@@ -206,7 +206,7 @@ fn partner_join_conflicting_remerge_refuses_without_movement() {
     f.advance("refs/heads/zone/web", &[("Cargo.toml", b"web\n")]);
     let zone = f.advance(ZONE, &[("Cargo.toml", b"core\n")]);
     let request = f.tip(REQUEST);
-    let report = json::check(f.app("join"), "join", 1, "refused");
+    let report = json::check(f.app("join"), "join", 3, "refused");
     assert_eq!(report.text("partner"), "web");
     assert!(report.strings("files").contains(&"Cargo.toml".to_string()));
     assert_eq!(f.zone(), zone); assert_eq!(f.tip(REQUEST), request);
@@ -219,8 +219,8 @@ fn partner_resolve_leaves_set_after_replay_conflict() {
     f.advance("refs/heads/zone/web", &[("Cargo.toml", b"web\n")]);
     f.set();
     f.commit_request("Cargo.toml", b"request\n");
-    json::check(f.app("join"), "join", 2, "conflicted");
-    assert_eq!(f.app("resolve").status.code(), Some(2));
+    json::check(f.app("join"), "join", 1, "conflicted");
+    assert_eq!(f.app("resolve").status.code(), Some(1));
     fs::write(f.request.join("Cargo.toml"), b"request\n").unwrap();
     let report = json::check(f.app("resolve"), "resolve", 0, "rebased");
     assert_eq!(report.strings("left_partners"), &["web"]);

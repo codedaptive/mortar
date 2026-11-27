@@ -4,7 +4,7 @@
 use crate::config::Config;
 use crate::report::{ExitCode, Report};
 
-/// Exit 1 "refused": the zone is not in the config's zones (those it has are named), nothing was made; the next step
+/// Exit 3 "refused": the zone is not in the config's zones (those it has are named), nothing was made; the next step
 /// is the harness's own: init's whole command with --replace, the zone added to what the config already holds.
 pub fn unknown_zone_report(zone: &str, config: &Config) -> Report {
     let known: Vec<&str> = config.zones.keys().map(String::as_str).collect();

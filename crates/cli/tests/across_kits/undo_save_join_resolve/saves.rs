@@ -54,7 +54,7 @@ fn attempt_unborn_head_undo_refuses_with_try_branch_next() {
     let snap = ref_at(&w, "refs/mortar/trysnap/core/task/1");
     assert!(branch.is_some());
     let undo_count = w.s.f.records().iter().filter(|r| r.kind == "undo").count();
-    let r = agent(&w, &attempt, &["undo"], 1, "refused");
+    let r = agent(&w, &attempt, &["undo"], 3, "refused");
     assert_eq!(r.text("owner"), "the folder's HEAD");
     assert_eq!(r.strings("lines"), &[format!("HEAD of the folder {} has no commit", attempt.display()), "nothing was snapshotted".into()]);
     assert_eq!(w.s.f.records().iter().filter(|r| r.kind == "undo").count(), undo_count);

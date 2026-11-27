@@ -8,9 +8,9 @@ use crate::lock::lock_report;
 use crate::report::{failure_report, ExitCode, Report};
 
 /// Lock is lock_report(verb). Git, Oplog and DiskProbe are failures (exit 5) led by "mr <verb>:", in the cli's
-/// words (DiskProbe names its path and reason). ExtraRefRefused is exit 1 naming the --ref to drop from the same
+/// words (DiskProbe names its path and reason). ExtraRefRefused is exit 3 naming the --ref to drop from the same
 /// command. Every other variant, named one by one so a new one breaks the build, is folder_error_why's lines
-/// with folder_refusal's exit and next: exit 1 "refused", or for Io exit 5 "failed".
+/// with folder_refusal's exit and next: exit 3 "refused", or for Io exit 5 "failed".
 pub fn folders_error_report(verb: &str, error: &FolderError) -> Report {
     let failed = |what: String| failure_report(verb, &format!("mr {verb}: {what}"));
     match error {
@@ -58,7 +58,7 @@ pub fn folders_error_report(verb: &str, error: &FolderError) -> Report {
     }
 }
 
-/// folder_error_why's lines under `verb` with `exit` and `next`; outcome "refused" for exit 1, else "failed".
+/// folder_error_why's lines under `verb` with `exit` and `next`; outcome "refused" for exit 3, else "failed".
 fn why_report(verb: &str, error: &FolderError, exit: ExitCode, next: String) -> Report {
     let outcome = if exit == ExitCode::Refused { "refused" } else { "failed" };
     Report {

@@ -57,7 +57,7 @@ fn refused_pre_replay_folder_is_found_in_done_op_history_on_a_current_repeat() {
     raw(&w.git(&w.b), &["read-tree", "-m", "-u", w.s.f.base.as_str(), old.as_str()]);
     crate::support::write(&w.b, "src/file", b"owner's obstruction\n");
     w.core(&[("src/file", b"published\n")]); let (_, origin) = w.publish(); let preserved = w.folder_state(&w.b);
-    let refused = w.after(1, "folder-not-moved"); let tip = w.tip("b");
+    let refused = w.after(3, "folder-not-moved"); let tip = w.tip("b");
     assert_eq!(refused.strings("moved"), &["core", "b"]); assert_eq!(w.folder_state(&w.b), preserved);
     assert_ne!(w.s.f.git.merge_base(&old, &tip).unwrap(), Some(old.clone()));
     assert!(w.s.f.records().iter().any(|record| record.phase == oplog::OpPhase::Done && record.moves.iter().any(|m| m.refname == "refs/heads/zone/b" && m.old.as_ref() == Some(&old) && m.new == tip)));
@@ -93,7 +93,7 @@ fn held_value_r1_revert(whole: bool) {
         let r = w.after(0, "after-published"); assert_eq!(r.strings("folders_moved"), &[w.s.f.zone.display().to_string()]);
         w.folder_at(&w.s.f.zone, &origin, &[("src/file", b"latest value\n"), ("src/later", b"later join\n")]);
     } else {
-        let r = w.after(1, "folder-not-moved"); assert!(r.strings("lines").contains(&format!("the zone folder {} was not brought to {origin}: its index matches no commit zone core has held", w.s.f.zone.display())));
+        let r = w.after(3, "folder-not-moved"); assert!(r.strings("lines").contains(&format!("the zone folder {} was not brought to {origin}: its index matches no commit zone core has held", w.s.f.zone.display())));
         assert_eq!(w.folder_state(&w.s.f.zone), folder);
     }
     assert_eq!(w.s.f.blob(&held, "src/file"), b"held value\n"); assert_eq!(w.store(), before); w.assert_origin(&origin);

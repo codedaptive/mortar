@@ -1,4 +1,4 @@
-//! guard_hook_report: Allow is exit 0 with nothing to say; Refuse gives why, owner and next (exit 1).
+//! guard_hook_report: Allow is exit 0 with nothing to say; Refuse gives why, owner and next (exit 3).
 
 use land::GuardVerdict;
 

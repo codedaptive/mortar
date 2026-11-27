@@ -3,7 +3,7 @@
 
 use crate::report::{ExitCode, Report};
 
-/// Exit 1 "folder-not-moved": `done` (what the verb did to integration) first, then `error`'s lines joined "; " and
+/// Exit 3 "folder-not-moved": `done` (what the verb did to integration) first, then `error`'s lines joined "; " and
 /// that the integration folder was not moved, then that `error`'s verb stopped. `error`'s verb, owner and fields
 /// stay; its next (each ends "repeat the same command") ends with `repeat`, which moves the folder.
 pub(crate) fn stopped_before_move(done: &str, error: Report, repeat: &str) -> Report {

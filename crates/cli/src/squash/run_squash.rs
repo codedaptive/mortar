@@ -5,7 +5,7 @@
 //! squash_report_tests and landing's squash_error_report_tests cover its decisions. The integration tests
 //! crates/cli/tests/land_runs/run_squash_tests.rs and run_squash_message_tests.rs cover it through the binary.
 //! Integration tests to write (not written here): the land lock held by a live pid,
-//! exit 3; without a config, exit 1, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
+//! exit 4; without a config, exit 3, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
 //! OpRepeated texts when git or the op log fails for real; the acceptance checks of squash.
 
 use std::path::Path;
@@ -24,7 +24,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "squash";
 
-/// The config's zone and the --message text read by parse_squash_args (an Err is squash's usage report, exit 4,
+/// The config's zone and the --message text read by parse_squash_args (an Err is squash's usage report, exit 2,
 /// before the verb runs git); then, under the land lock after recover (locked_act), keyed by --key or
 /// op_key("squash", the common dir), land's squash_with_message of that zone onto the config's origin branch as the
 /// context's actor with that text (none without --message), reported by squash_report or, when refused,

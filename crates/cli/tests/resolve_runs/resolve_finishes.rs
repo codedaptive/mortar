@@ -47,7 +47,7 @@ fn later_commit_repauses_then_both_rounds_resolutions_reach_the_final_folder() {
     let zone = f.commit(&base, &[("src/file", b"zone work\n"), ("sub/keep", b"zone second\n"), ("src/upstream", b"advanced zone work\n")], "zone moved\n");
     set_zone(&f, &zone); let r = Paused::start(f, &base, &first); r.first(); let f = &r.f;
     f.write("src/file", b"first chosen resolution\n");
-    let report = f.report(&["--json", "resolve"], "resolve", 2, "conflicted");
+    let report = f.report(&["--json", "resolve"], "resolve", 1, "conflicted");
     assert_eq!(report.text("commit"), old.as_str()); assert_eq!(report.strings("files"), &["sub/keep"]);
     assert_eq!(report.text("next"), "mr resolve"); assert_eq!(report.text("state"), r.state.to_str().unwrap());
     r.assert_unmoved(); assert!(rebase_records(f).is_empty());

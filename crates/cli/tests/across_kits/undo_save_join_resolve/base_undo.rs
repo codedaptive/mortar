@@ -13,7 +13,7 @@ fn base_undo_plain_join_and_rejoin() {
 #[test]
 fn base_undo_resolve_and_resolve_again() {
     let w = World::new(); let f = &w.s.f; f.save_topic(); let zone = f.advance_zone(true);
-    ours(&w, &["join"], 2, "conflicted"); ours(&w, &["resolve"], 2, "files-written");
+    ours(&w, &["join"], 1, "conflicted"); ours(&w, &["resolve"], 1, "files-written");
     f.write("src/file", b"chosen resolution\n");
     ours(&w, &["resolve"], 0, "rebased");
     assert_eq!(f.status().text("base"), zone.as_str());

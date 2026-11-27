@@ -16,7 +16,7 @@
 //! - no integration folder (no worktree on the integration branch): no move, the verb goes on;
 //! - integration never moved by an op (no Done record moving it): no move, the verb goes on;
 //! - an unmerged index in the integration folder: no move, the verb goes on;
-//! - files with local changes in the way in the integration folder at a stopped move: exit 1 "folder-not-moved"
+//! - files with local changes in the way in the integration folder at a stopped move: exit 3 "folder-not-moved"
 //!   listing the paths, integration not moved by that run, the folder unchanged; move them out (or put them back to
 //!   the index copy), repeat: the move finishes and the verb goes on;
 //! - the same after a verb's own move (land, back-out, publish OriginMoved) was refused: move them out, repeat: the

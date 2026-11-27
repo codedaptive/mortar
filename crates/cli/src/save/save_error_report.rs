@@ -15,10 +15,10 @@ const NEXT_SENTENCE: &str = "mr save \"<one line saying what changed>\"";
 /// The step after a HEAD save cannot use: save's own next for head_refusal, naming mr save rather than a repeat.
 const NEXT_HEAD: &str = "check out the request's branch in this folder, then mr save again";
 
-/// Refused (exit 1): a bad sentence, an unborn or detached HEAD (head_refusal, with snapshot's Display as its line
+/// Refused (exit 3): a bad sentence, an unborn or detached HEAD (head_refusal, with snapshot's Display as its line
 /// and NEXT_HEAD as its next), a HEAD of this request without a change ID
 /// (save will not make a second ID for the request), a refused path that is not UTF-8 (this snapshot wrote no
-/// commit). Busy (exit 3): the branch moved while save ran, in two lines: the branch that moved (named when the
+/// commit). Busy (exit 4): the branch moved while save ran, in two lines: the branch that moved (named when the
 /// failed record's result is Stale), then that this save did not move the branch and the snapshot ref may have
 /// moved; or the snapshot ref moved (one line, ending "this snapshot moved nothing"; what earlier steps moved is
 /// save_step_failure's line before it). Done (exit 0): the op was already done (a repeat of a finished command is 0).

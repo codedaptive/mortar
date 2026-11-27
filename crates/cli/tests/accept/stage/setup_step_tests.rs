@@ -15,10 +15,10 @@ fn the_outcome_asked_for_holds_and_lets_the_set_up_go_on() {
 #[test]
 fn another_outcome_or_exit_fails_the_line_and_names_it() {
     let mut checks = Checks::new();
-    let refused = read_reply(&test_ran(Some(1), r#"{"outcome":"refused","lines":["zone branch zone/a does not exist"]}"#));
+    let refused = read_reply(&test_ran(Some(3), r#"{"outcome":"refused","lines":["zone branch zone/a does not exist"]}"#));
     assert_eq!(
         setup_step(&mut checks, "set-up: mr folder zone a", &refused, "made"),
-        Err("set-up: mr folder zone a: exit 1; outcome refused; zone branch zone/a does not exist".to_string())
+        Err("set-up: mr folder zone a: exit 3; outcome refused; zone branch zone/a does not exist".to_string())
     );
     let wrong = read_reply(&test_ran(Some(0), r#"{"outcome":"unchanged","lines":[]}"#));
     assert!(setup_step(&mut checks, "set-up: mr save", &wrong, "saved").is_err());

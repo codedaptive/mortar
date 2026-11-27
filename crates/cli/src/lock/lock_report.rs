@@ -1,4 +1,4 @@
-//! The report of a verb whose lock could not be taken (busy is exit 3).
+//! The report of a verb whose lock could not be taken (busy is exit 4).
 //! Shell API: locked_act, folder_error_report, move_refusal_report and need_error_report call it.
 
 use oplog::{LockError, LockRecord};

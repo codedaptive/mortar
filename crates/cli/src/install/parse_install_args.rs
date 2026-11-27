@@ -2,7 +2,7 @@
 
 use super::{find_harness, HarnessSpec, InstallOptions, SkillLocation, HARNESSES};
 
-/// The options `rest` asks for, or the usage reason (exit 4 by the caller). Switches: `--no-place`,
+/// The options `rest` asks for, or the usage reason (exit 2 by the caller). Switches: `--no-place`,
 /// `--short-name`, `-y`/`--yes`. Valued flags, as `--flag <v>` or `--flag=<v>`: `--target` (a comma list of
 /// harnesses), `--mode` (skill only), `--location` (global or local). A flag given twice, a missing or empty value,
 /// or any other word is a usage error.

@@ -5,10 +5,10 @@
 //! crates/cli/tests/folder_runs/run_folder_remove_tests.rs covers it through the binary: a joined, saved request folder removed
 //! with its branch and snapshot ref by a folder-remove op of the actor; unsaved work, remaining attempts (next naming
 //! keep and drop), a zone folder and an attempt folder with an unborn HEAD (next checking out the try branch) each
-//! refused exit 1 with nothing removed.
+//! refused exit 3 with nothing removed.
 //! Integration tests to write (not written here): a file the snapshot cap refuses counts as unsaved,
 //! naming the file and the cap; a request not joined, and a snapshot ref moved under the op, the cli's why and
-//! next; a join-<zone> lock held by a live pid, exit 3.
+//! next; a join-<zone> lock held by a live pid, exit 4.
 
 use std::path::{Path, PathBuf};
 
@@ -30,7 +30,7 @@ use crate::shell::ShellContext;
 const VERB: &str = "folder";
 
 /// `path` is taken from `cwd` when relative; read_folder_at finds the top of its worktree and its record before any
-/// lock, git finding no worktree there, or a worktree with no Mortar record, being exit 1 "not-a-folder". Under join-<record's zone> after recover
+/// lock, git finding no worktree there, or a worktree with no Mortar record, being exit 3 "not-a-folder". Under join-<record's zone> after recover
 /// (locked_act), keyed by --key or op_key("folder-remove", the folder): a request or attempt folder's saved state is
 /// snapshot's saved_state against its own snapshot ref, with the config's excludes and cap, its cap-refused files
 /// passed as refused; then folders' remove with the cap, as the actor. A saved_state error is snapshot_failure's
@@ -69,7 +69,7 @@ pub fn run_folder_remove(context: &ShellContext, config: &Config, cwd: &Path, pa
     .unwrap_or_else(|report| report)
 }
 
-/// Exit 1 "not-a-folder": nothing at `path` is a folder Mortar made, for `reason`; nothing was removed.
+/// Exit 3 "not-a-folder": nothing at `path` is a folder Mortar made, for `reason`; nothing was removed.
 fn not_a_folder(path: &Path, reason: &str) -> Report {
     Report {
         verb: VERB.to_string(),

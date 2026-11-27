@@ -10,8 +10,8 @@
 //! The integration tests crates/cli/tests/across_kits/snapshot_overlap_disk_sweep/{sweep,guards}.rs cover: sweep with an
 //! extra ref deletes it in one folder-sweep-refs op with the actor; sweep keeps a configured zone's refs/mortar/replayed/
 //! record and deletes a removed zone's; sweep --idle-days 0 clears build dirs, without it none; a refused extra ref
-//! (refs/heads/...) deletes nothing, exit 1; sweep with a config of no zones refused, exit 1, nothing deleted; the
-//! folders lock held by a live pid, exit 3; without a config, exit 1.
+//! (refs/heads/...) deletes nothing, exit 3; sweep with a config of no zones refused, exit 3, nothing deleted; the
+//! folders lock held by a live pid, exit 4; without a config, exit 3.
 
 use std::path::Path;
 
@@ -28,8 +28,8 @@ use crate::upkeep::{config_zones, folders_error_report, no_zones_report};
 
 const VERB: &str = "sweep";
 
-/// The words read by parse_sweep_args (an Err is sweep's usage report, exit 4, before the verb runs git); the config's zones
-/// (config_zones; none is no_zones_report, exit 1). Then, under the folders lock after recover (locked_act), keyed
+/// The words read by parse_sweep_args (an Err is sweep's usage report, exit 2, before the verb runs git); the config's zones
+/// (config_zones; none is no_zones_report, exit 3). Then, under the folders lock after recover (locked_act), keyed
 /// by --key or op_key("sweep", the common dir): folders' sweep_refs as the context's actor over every zone, the
 /// extra refs and the protected refs (a refusal or failure is folders_error_report, nothing deleted); then, only
 /// with --idle-days, sweep_build (a failure is sweep_build_failure_report naming the refs already deleted);

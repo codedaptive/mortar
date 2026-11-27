@@ -1,6 +1,6 @@
 // The not-UTF-8 hook input case is in run_guard_hook_tests.rs.
 use crate::{cid::CID, guard_fixture::Guard, json::check, refs::refs};
-use land::{LandAnswer, PublishAnswer, Squash};
+use land::{BatchLandAnswer, PublishAnswer, Squash};
 use oplog::{KillPidProbe, LockName, Op, OpPhase, ProtectedRef, RefMove};
 use std::fs;
 
@@ -25,7 +25,7 @@ fn guard_allow_is_silent_in_plain_and_json_without_actor_or_folder() {
     }
     assert_eq!(g.branches(), before);
     let actor = check(g.hook(&["--json", "guard-hook", "--actor", "intruder", "reference-transaction", "prepared"], b""),
-        "guard-hook", 4, "usage");
+        "guard-hook", 2, "usage");
     assert!(actor.lines().contains("take no --actor"));
 }
 
@@ -117,7 +117,7 @@ fn guard_public_land_and_publish_push_pass_the_installed_cli_hooks() {
         source: g.new.clone(), requests: vec![] };
     oplog::with_lock(&g.f.git, &g.f.common, &LockName::Land, "guard-publish", &KillPidProbe, || {
         oplog::recover(&g.f.git, &g.f.common).unwrap();
-        assert_eq!(land::land(&g.f.git, &refs(), &squash, "guard-validation").unwrap(), LandAnswer::Landed { integration: g.new.clone() });
+        assert_eq!(land::land_batch(&g.f.git, &refs(), &squash, "guard-validation").unwrap(), BatchLandAnswer::Landed { integration: g.new.clone() });
         assert_eq!(land::publish(&g.f.git, &refs(), "guard-validation").unwrap(), PublishAnswer::Published { origin: g.new.clone() });
         Ok::<_, std::io::Error>(())
     }).unwrap();

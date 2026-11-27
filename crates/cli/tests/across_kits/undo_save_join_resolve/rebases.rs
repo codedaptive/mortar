@@ -51,7 +51,7 @@ fn refused_reverse_move_has_undo_status_next_then_clear_and_resolve_finishes() {
 fn refused_reverse_move_then_clear_and(finisher: &str) {
     let w = World::new(); let (old, new, zone) = rebase(&w); let target = done(&w, "join-rebase").pop().unwrap();
     w.s.f.write("src/upstream", b"owner obstruction must survive\n"); let folder = w.folder_state(&w.s.f.request);
-    let r = ours(&w, &["undo"], 1, "refused"); assert_eq!(r.text("owner"), "this request's folder");
+    let r = ours(&w, &["undo"], 3, "refused"); assert_eq!(r.text("owner"), "this request's folder");
     assert!(r.strings("lines").contains(&"  src/upstream".into()));
     let undo = assert_one_undo(&w, &target, &new, &old); assert_eq!(w.s.f.head(), old);
     assert_eq!(w.tip("core"), zone); assert_eq!(w.folder_state(&w.s.f.request), folder);
@@ -62,7 +62,7 @@ fn refused_reverse_move_then_clear_and(finisher: &str) {
     assert!(status.strings("lines").contains(&format!("an undo's folder move is stalled: the undo put {REQUEST} back at {old}, the folder at {new}")));
     assert_eq!(observe(&w), before);
     let saves = done(&w, "save").len();
-    let still = ours(&w, &["save", "Do not save a stale folder"], 1, "refused");
+    let still = ours(&w, &["save", "Do not save a stale folder"], 3, "refused");
     assert!(still.strings("lines").contains(&"  src/upstream".into()));
     assert_eq!(w.s.f.head(), old); assert_eq!(done(&w, "save").len(), saves); assert_eq!(w.folder_state(&w.s.f.request), folder);
     assert_eq!(done(&w, "undo").len(), 1);
@@ -118,7 +118,7 @@ fn undo_finishes_an_existing_rebase_move_before_it_snapshots_and_reverses_the_br
 fn an_obstructed_forward_pending_move_refuses_undo_before_the_undo_op_runs() {
     let w = World::new(); let (old, new, _) = w.s.f.pending_rebase();
     w.s.f.write("src/upstream", b"untracked obstruction\n"); let folder = w.folder_state(&w.s.f.request);
-    let r = ours(&w, &["undo"], 1, "refused");
+    let r = ours(&w, &["undo"], 3, "refused");
     // The pending move's snapshot wrote the obstruction (below), but undo names no moves: no moved line.
     assert_eq!(r.strings("lines"), &[
         "the folder could not move; these files stand in the way:", "  src/upstream",
@@ -137,7 +137,7 @@ fn join_saving_unsaved_work_then_rebasing_names_the_save_and_snapshot_moves_when
     let zone = f.commit(&f.base, &[("src/d/out", b"zone build output\n")], "zone adds build output\n");
     raw(&f.git, &["update-ref", ZONE, zone.as_str()]);
     f.write("src/file", b"unsaved join work\n"); f.write("src/d/out", b"local build output must survive\n");
-    let r = ours(&w, &["join"], 1, "refused");
+    let r = ours(&w, &["join"], 3, "refused");
     let rebase = done(&w, "join-rebase").pop().unwrap();
     let movement = rebase.moves.iter().find(|m| m.refname == REQUEST).unwrap();
     let (old, new) = (movement.old.clone().unwrap(), movement.new.clone());

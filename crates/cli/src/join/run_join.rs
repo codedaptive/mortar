@@ -11,12 +11,12 @@
 //! request folder: a request ahead of an unmoved zone fast-forwards it, exit 0 "joined", next "wait for the zone's
 //! tests", and a repeat answers joined with nothing moved; unsaved edits are saved first as "<request>: work saved at
 //! join" on the request branch and joined; a zone moved under the request rebases it, exit 0 "rebased", the folder's
-//! files and HEAD at the new tip, next "mr join"; a conflicting zone change is exit 2 listing the files, the join
+//! files and HEAD at the new tip, next "mr join"; a conflicting zone change is exit 1 listing the files, the join
 //! itself moving no ref (the save and snapshot before it may have moved the request branch and the snapshot ref, and
-//! the line names them), next "mr resolve"; a local edit in the way of the folder move is exit 1 listing the paths,
-//! and once moved aside the next join finishes the move; a missing zone branch is exit 1 owned by the zone's
-//! coordinator; any argument is exit 4 with join's usage; an attempt folder is exit 1 naming its number with nothing
-//! run; a held join lock is exit 3; a configured formatter runs over the changed files before the save.
+//! the line names them), next "mr resolve"; a local edit in the way of the folder move is exit 3 listing the paths,
+//! and once moved aside the next join finishes the move; a missing zone branch is exit 3 owned by the zone's
+//! coordinator; any argument is exit 2 with join's usage; an attempt folder is exit 3 naming its number with nothing
+//! run; a held join lock is exit 4; a configured formatter runs over the changed files before the save.
 
 use oplog::KillPidProbe;
 use snapshot::SaveOutcome;

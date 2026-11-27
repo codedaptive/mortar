@@ -1,5 +1,5 @@
 //! undo_refusal: a completed join, a resolve recorded without its paused join and an op that is not a step of this
-//! folder are refused (exit 1) with nothing changed and a next in words an agent can follow; nothing, a step and an
+//! folder are refused (exit 3) with nothing changed and a next in words an agent can follow; nothing, a step and an
 //! already-undone op are not refused.
 
 use super::{undo_refusal, UndoChoice, UndoStep};

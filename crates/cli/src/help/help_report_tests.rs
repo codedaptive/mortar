@@ -1,5 +1,5 @@
 //! help_report: the program help and a verb's help are exit 0, outcome "help", next "mr status", with the "verbs"
-//! member; an unknown verb or more than one is help's usage error, exit 4.
+//! member; an unknown verb or more than one is help's usage error, exit 2.
 //! Unit test: the help groups, the verb table, the usage report and the renderers are pure and used directly.
 
 use super::{find_help_entry, help_report, HelpRequest, HelpTopic, HELP_GROUPS};

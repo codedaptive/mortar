@@ -9,7 +9,7 @@ use crate::report::{ExitCode, Report};
 use super::{content_hash, HarnessSpec, InstallFacts, InstallItem, InstallStep, RecordItem, SkillAt};
 
 /// For each chosen harness, by what stands at its skill path: nothing, a write and "written"; a file holding `text`,
-/// "unchanged"; another file the record lists, a write and "replaced"; anything else, Err the refusal (exit 1).
+/// "unchanged"; another file the record lists, a write and "replaced"; anything else, Err the refusal (exit 3).
 /// Each line names the harness. `wiring_note` Some: then the line "wiring skipped: <note>".
 pub fn plan_skills(
     facts: &InstallFacts,

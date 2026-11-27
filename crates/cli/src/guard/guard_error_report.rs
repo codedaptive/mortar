@@ -12,10 +12,10 @@ const VERB: &str = "guard";
 const IO_REPEAT: &str = "what was already written is the guard's own and harmless; a repeat writes only what is \
                          missing or different";
 
-/// - ForeignHook { path }: exit 1 Refused, outcome "foreign-hook", lines "<path> is a hook Mortar did not write;
+/// - ForeignHook { path }: exit 3 Refused, outcome "foreign-hook", lines "<path> is a hook Mortar did not write;
 ///   Mortar never overwrites one" and "nothing was written", owner "the repository's own hooks", next moving `path`
 ///   aside, then `mr guard install --actor <name>` (foreign_hook_report). Fields: none.
-/// - BadConfig { path, why }: exit 1 Refused, outcome "refused", line "<path> is not a Mortar guard config: <why>",
+/// - BadConfig { path, why }: exit 3 Refused, outcome "refused", line "<path> is not a Mortar guard config: <why>",
 ///   owner "the Mortar guard", next `mr guard install --actor <name>` (install rewrites a guard.json whose bytes
 ///   differ from the config's). Fields: none.
 /// - Io { path, error }: failure_report (exit 5, "failed", next "repeat the same command"), lines "reading or writing

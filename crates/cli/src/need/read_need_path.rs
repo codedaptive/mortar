@@ -3,9 +3,9 @@
 //! it gives. The integration tests crates/cli/tests/status_need_runs/need.rs cover, with the mortar binary as a child
 //! process in a request folder made by the landing verbs in a throwaway repository (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
-//! - a path not at the folder's commit is exit 1, and nothing changed (record, cone, refs and op log);
-//! - a bad path ("../x", an absolute path) is exit 1;
-//! - a folder whose HEAD has no commit: need is refused with repeat_head_refusal, exit 1, nothing changed.
+//! - a path not at the folder's commit is exit 3, and nothing changed (record, cone, refs and op log);
+//! - a bad path ("../x", an absolute path) is exit 3;
+//! - a folder whose HEAD has no commit: need is refused with repeat_head_refusal, exit 3, nothing changed.
 
 use std::path::Path;
 

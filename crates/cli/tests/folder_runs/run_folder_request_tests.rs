@@ -279,7 +279,7 @@ fn without_paths_it_is_a_usage_error_and_makes_nothing() {
     let worktrees = fx.worktrees();
     let refused = fx.folder(&["request", "core", "task", fx.path_arg()]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(4), "{out}");
+    assert_eq!(refused.status.code(), Some(2), "{out}");
     assert_eq!(member(&refused, "outcome"), "usage", "{out}");
     assert_eq!(member(&refused, "next"), USAGE, "{out}");
     assert!(!fx.path.exists(), "{out}");
@@ -294,7 +294,7 @@ fn a_zone_with_no_branch_is_refused_and_makes_nothing() {
     let worktrees = fx.worktrees();
     let refused = fx.folder(&["request", "core", "task", fx.path_arg(), "--paths", "src/a"]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
     assert!(next.contains("mr folder zone"), "{out}");

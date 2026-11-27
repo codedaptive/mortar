@@ -46,7 +46,7 @@ fn blank_or_two_line_save_sentence_refuses_without_lock_snapshot_commit_or_log_c
     for sentence in ["   ", "one\ntwo"] {
         let f = Fixture::new(); f.write("src/file", b"must remain unsaved\n");
         let before = f.observe();
-        let report = f.report(&["--json", "save", sentence], "save", 1, "refused");
+        let report = f.report(&["--json", "save", sentence], "save", 3, "refused");
         assert!(report.lines().contains("nothing ran")); assert!(report.text("next").contains("mr save"));
         assert_eq!(f.observe(), before); assert_eq!(f.git.read_ref(SNAP).unwrap(), None); assert!(!f.lock_path().exists());
     }
@@ -55,10 +55,10 @@ fn blank_or_two_line_save_sentence_refuses_without_lock_snapshot_commit_or_log_c
 #[test]
 fn zone_save_and_missing_config_refuse_before_any_work() {
     let f = Fixture::new(); let before = f.observe();
-    let zone = check(f.command(&f.zone, &["--json", "save", "Do not save zone"]).output().unwrap(), "save", 1, "refused");
+    let zone = check(f.command(&f.zone, &["--json", "save", "Do not save zone"]).output().unwrap(), "save", 3, "refused");
     assert!(zone.lines().contains("zone folder")); assert_eq!(f.observe(), before);
     fs::remove_file(f.common.join("mortar/config.json")).unwrap();
-    let missing = f.report(&["--json", "save", "Needs config"], "save", 1, "no-config");
+    let missing = f.report(&["--json", "save", "Needs config"], "save", 3, "no-config");
     assert_eq!(missing.text("next"), "mr init"); assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
 }
 
@@ -129,7 +129,7 @@ fn detached_head_save_with_formatter_preserves_edit_in_snapshot_without_moving_r
     f.write("src/file", b"unsaved detached work\n");
     raw(&f.local(), &["checkout", "--detach"]);
 
-    let report = f.report(&["--json", "save", "Save detached work"], "save", 1, "refused");
+    let report = f.report(&["--json", "save", "Save detached work"], "save", 3, "refused");
     assert_eq!(report.strings("lines"), &[
         "the snapshot ref moved as the work was saved first",
         &format!("HEAD of the folder {} names no branch", f.request.display()),

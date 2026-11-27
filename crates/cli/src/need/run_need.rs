@@ -11,7 +11,7 @@
 //! - need adds a path to the folder's cone and its record, exit 0;
 //! - a repeat answers already-done;
 //! - a path outside the work order says it is recorded as a gap;
-//! - a held join lock is exit 3;
+//! - a held join lock is exit 4;
 //! - next is the one status gives;
 //! - an attempt folder is refused.
 

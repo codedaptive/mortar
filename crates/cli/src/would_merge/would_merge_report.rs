@@ -9,7 +9,7 @@ const VERB: &str = "would-merge";
 const NOTHING_MOVED: &str = "no ref moved and no commit was written";
 
 /// - Yes: exit 0 "merges"; next lands the squash's commit. Fields change_id and commit.
-/// - No: exit 2 "conflict", each conflicting file on its own line, owner the change's zone; next is
+/// - No: exit 1 "conflict", each conflicting file on its own line, owner the change's zone; next is
 ///   CHANGE_CONFLICT_NEXT. Fields change_id, commit and files.
 ///
 /// Both say no ref moved and no commit was written (git's trial merge writes tree objects nothing keeps).

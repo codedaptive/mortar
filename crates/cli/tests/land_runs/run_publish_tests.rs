@@ -1,14 +1,14 @@
 //! `mortar publish`: a landing is put on the remote's main and then local main, `pushed` true, and the squash ref
 //! removed; with no landing there is nothing to publish and the remote is untouched; a remote main someone else moved
-//! exits 1 origin-moved, with local main and integration on the commit found, the integration worktree's files at it
-//! and the squash ref kept; an extra word is a usage error (exit 4) with publish's usage line as next. --no-push is
+//! exits 3 origin-moved, with local main and integration on the commit found, the integration worktree's files at it
+//! and the squash ref kept; an extra word is a usage error (exit 2) with publish's usage line as next. --no-push is
 //! run_publish_no_push_tests'.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! A bare repository in a second throwaway directory is the remote; the squash and the landing are made in
-//! setup through land::squash and land::land under the land lock.
+//! setup through land::squash and land::land_batch under the land lock.
 //! Tests to write (not written here; the land lock held by a live pid is land_flow/landing.rs', an open push intent
 //! run_publish_no_push_tests', and acceptance step 1's checks 7, 9, 11 and 12 are tests/accept's):
-//! - without a config: exit 1, next mortar init (the shell's load_config);
+//! - without a config: exit 3, next mortar init (the shell's load_config);
 //! - each land error variant's text that needs git or the op log to fail: PublishError PushRefused, RemoteMissing
 //!   and a PushIntent already done, and LandError's;
 //! - publish with --key: the key names the lock holder only.
@@ -21,7 +21,7 @@ use std::process::{Command, Output, Stdio};
 use crate::support::{Config, ZoneConfig, write_fixture_config};
 use gitio::Git;
 use crate::json::check;
-use land::{LandAnswer, LandRefs, Squash, SquashAnswer};
+use land::{BatchLandAnswer, LandRefs, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName};
 use testkit::TestRepo;
 
@@ -107,7 +107,7 @@ fn exists(repo: &Path, refname: &str) -> bool {
         .envs(GIT_ENV).env("PATH", std::env::var_os("PATH").unwrap()).output().unwrap().status.success()
 }
 
-/// Zone a squashed through land::squash, then landed through land::land, both under the land lock after recover,
+/// Zone a squashed through land::squash, then landed through land::land_batch, both under the land lock after recover,
 /// as the cli does; the landing is asserted to have fast-forwarded integration to the squash.
 fn squash_and_land(root: &Path) -> Squash {
     let mut git = Git::new(root);
@@ -119,8 +119,8 @@ fn squash_and_land(root: &Path) -> Squash {
         let SquashAnswer::Made(squash) = land::squash(&git, &refs, "a", "publish-setup").unwrap() else {
             panic!("setup squash was not made");
         };
-        let landed = land::land(&git, &refs, &squash, "publish-setup").unwrap();
-        assert_eq!(landed, LandAnswer::Landed { integration: squash.commit.clone() });
+        let landed = land::land_batch(&git, &refs, &squash, "publish-setup").unwrap();
+        assert_eq!(landed, BatchLandAnswer::Landed { integration: squash.commit.clone() });
         Ok::<_, std::io::Error>(squash)
     }).unwrap()
 }
@@ -173,7 +173,7 @@ fn publish_after_someone_else_moved_the_remote_is_origin_moved_onto_their_commit
     git(&other, &["commit", "-qm", "another clone's work"]);
     git(&other, &["push", "-q", "origin", "main"]);
     let found = tip(&other, "HEAD");
-    let report = check(publish(&s.root), "publish", 1, "origin-moved");
+    let report = check(publish(&s.root), "publish", 3, "origin-moved");
     assert_eq!(report.text("found"), found);
     assert_eq!(report.text("integration"), found);
     assert_eq!(report.text("folder"), folder.to_str().unwrap());
@@ -191,7 +191,7 @@ fn publish_with_an_extra_word_is_usage_naming_publishs_usage() {
     let s = setup();
     let squash = squash_and_land(&s.root);
     let remote = tip(&s.bare, "refs/heads/main");
-    let report = check(mortar(&s.root, &["--actor", "accept", "--json", "publish", "now"]), "publish", 4, "usage");
+    let report = check(mortar(&s.root, &["--actor", "accept", "--json", "publish", "now"]), "publish", 2, "usage");
     assert_eq!(report.text("next"), USAGE);
     assert_eq!(tip(&s.bare, "refs/heads/main"), remote);
     assert_ne!(remote, squash.commit.as_str());

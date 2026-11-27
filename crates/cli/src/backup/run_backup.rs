@@ -4,7 +4,7 @@
 //! backup_error_report_tests cover its decisions.
 //! The integration tests in crates/cli/tests/across_kits/bisect_backup/ cover it through the binary: backup.rs backup
 //! then restore-backup round trip into a fresh clone; a second backup updates nothing; a remote hook refusing
-//! refs/mortar-backup/ (Refused); guards.rs the land lock held by a live pid, exit 3, and without a config, exit 1.
+//! refs/mortar-backup/ (Refused); guards.rs the land lock held by a live pid, exit 4, and without a config, exit 3.
 
 use std::path::Path;
 

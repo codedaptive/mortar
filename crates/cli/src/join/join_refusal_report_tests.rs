@@ -1,4 +1,4 @@
-//! join_refusal_report: each refusal the caller can act on is exit 1 with its owner and next step; the rest are
+//! join_refusal_report: each refusal the caller can act on is exit 3 with its owner and next step; the rest are
 //! failures. The expected lines are join's own refusal texts.
 //! Unit tests: the errors are built as data; their lines come from join's exported, pure Display impls,
 //! and report::failure_report is used directly.
@@ -32,6 +32,27 @@ fn replay(error: JoinError) -> JoinRunError {
 
 fn oid() -> Oid {
     Oid::parse(COMMIT).unwrap()
+}
+
+#[test]
+fn a_protected_zone_move_is_the_zone_coordinators() {
+    let error = JoinRunError::Oplog(oplog::OplogError::Protected {
+        refname: "refs/heads/zone/core".to_string(),
+        current: Some(oid()),
+        new: Oid::parse("2222222222222222222222222222222222222222").unwrap(),
+        by: "join".to_string(),
+    });
+    assert_eq!(
+        join_refusal_report(&error, None),
+        refused(
+            "join op log: ref refs/heads/zone/core is protected by join: moving it from \
+             1111111111111111111111111111111111111111 to 2222222222222222222222222222222222222222 is not a \
+             fast-forward; nothing was changed; move it only to a commit that has \
+             1111111111111111111111111111111111111111 as an ancestor, or ask join",
+            "the zone's coordinator",
+            "ask the zone's coordinator why refs/heads/zone/core moved, then mr join",
+        )
+    );
 }
 
 #[test]

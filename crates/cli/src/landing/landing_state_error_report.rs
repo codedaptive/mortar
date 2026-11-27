@@ -6,7 +6,7 @@ use land::LandingStateError;
 use super::landing_refusal;
 use crate::report::{failure_report, Report};
 
-/// Read, Write and Remove: failure_report (exit 5) naming the path that failed. Corrupt: refused (exit 1, no
+/// Read, Write and Remove: failure_report (exit 5) naming the path that failed. Corrupt: refused (exit 3, no
 /// fields), owner "the landing in flight", next to mend or remove the file by hand, then repeat.
 pub fn landing_state_error_report(verb: &str, error: &LandingStateError) -> Report {
     match error {

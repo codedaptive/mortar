@@ -7,7 +7,7 @@ use folders::FolderKind;
 
 use crate::report::{ExitCode, Report};
 
-/// None for a zone folder. A request folder or attempt folder n is exit 1 "refused", no owner and no fields: a line
+/// None for a zone folder. A request folder or attempt folder n is exit 3 "refused", no owner and no fields: a line
 /// naming the folder and its kind, then that nothing was written; next says mr save and mr join carry such a
 /// folder's work to its zone.
 pub fn commit_files_folder_refusal(folder: &Path, kind: &FolderKind) -> Option<Report> {

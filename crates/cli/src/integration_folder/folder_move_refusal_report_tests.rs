@@ -1,4 +1,4 @@
-//! folder_move_refusal_report: exit 1 "folder-not-moved" naming the folder, both tips, what blocks the move (the
+//! folder_move_refusal_report: exit 3 "folder-not-moved" naming the folder, both tips, what blocks the move (the
 //! paths in the way, or another reason) and the owner's step in words: clear it, then repeat the same command.
 
 use std::path::{Path, PathBuf};

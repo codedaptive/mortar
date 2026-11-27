@@ -1,7 +1,7 @@
 //! Real-object setup shared by the land_flow tests; never used against an existing repository.
 use crate::{json::{check, Report}, support::{raw, write, Fixture, ZONE}};
 use gitio::{Git, Oid};
-use land::{LandAnswer, LandRefs, Squash, SquashAnswer};
+use land::{BatchLandAnswer, LandRefs, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName};
 use std::{fs, path::PathBuf, process::{Command, Output}};
 
@@ -57,11 +57,11 @@ impl Landing {
     }
     pub fn locked<T>(&self, act: impl FnOnce() -> T) -> T { locked(&self.f, act) }
     pub fn kit_land(&self) {
-        assert_eq!(self.locked(|| land::land(&self.f.git, &self.refs, &self.squash, "land-flow-setup").unwrap()),
-            LandAnswer::Landed { integration: self.squash.commit.clone() });
+        assert_eq!(self.locked(|| land::land_batch(&self.f.git, &self.refs, &self.squash, "land-flow-setup").unwrap()),
+            BatchLandAnswer::Landed { integration: self.squash.commit.clone() });
     }
     pub fn kit_append(&self, squash: &Squash) {
-        assert!(matches!(self.locked(|| land::land_batch(&self.f.git, &self.refs, squash, "land-flow-setup").unwrap()), land::BatchLandAnswer::Landed { .. }));
+        assert!(matches!(self.locked(|| land::land_batch(&self.f.git, &self.refs, squash, "land-flow-setup").unwrap()), BatchLandAnswer::Landed { .. }));
     }
     pub fn kit_back_out(&self) {
         assert!(matches!(self.locked(|| land::back_out(&self.f.git, &self.refs, "land-flow-setup").unwrap()), land::BackOutAnswer::BackedOut { .. }));

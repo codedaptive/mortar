@@ -48,7 +48,7 @@ fn status_reports_zone_moves_by_ancestry_not_the_original_cut() {
 fn status_reads_a_real_paused_join_commit_and_files_without_resolving_it() {
     // Actual mortar join -> durable Join pause -> actual mortar status, not fabricated PausedJoin data.
     let f = Fixture::new(); let bad = f.save_topic(); f.advance_zone(true);
-    let paused = f.report(&["--json", "join"], "join", 2, "conflicted");
+    let paused = f.report(&["--json", "join"], "join", 1, "conflicted");
     assert_eq!(paused.text("commit"), bad.as_str());
     let report = status(&f, "paused");
     assert_eq!(report.text("paused_commit"), bad.as_str()); assert_eq!(report.strings("paused_files"), &["src/file"]);
@@ -62,7 +62,7 @@ fn status_missing_request_or_zone_ref_refuses_without_mutation() {
     for missing in [REQUEST, ZONE] {
         let f = Fixture::new(); f.save_topic(); raw(&f.git, &["update-ref", "-d", missing]);
         let old = before(&f, &f.request);
-        let report = check(f.app(&["--json", "status"]), "status", 1, "refused");
+        let report = check(f.app(&["--json", "status"]), "status", 3, "refused");
         assert_eq!(report.lines(), format!("the branch {missing} does not exist"));
         assert_eq!(report.text("owner"), if missing == ZONE { "the zone's coordinator" } else { "this request" });
         assert_eq!(before(&f, &f.request), old);
@@ -115,9 +115,9 @@ fn status_rejects_arguments_and_zone_folders_and_reads_attempt_folders_before_mu
     // Actual shell/actor/attempt decisions with real folder records, not status_report unit-test data; a fresh attempt
     // (its try branch at its base, its tree the tip's) reads as saved with no work yet.
     let f = Fixture::new(); let old = before(&f, &f.request);
-    check(f.app(&["--json", "status", "unexpected"]), "status", 4, "usage");
+    check(f.app(&["--json", "status", "unexpected"]), "status", 2, "usage");
     assert_eq!(before(&f, &f.request), old);
-    check(f.command(&f.zone, &["--json", "status"]).output().unwrap(), "status", 1, "refused");
+    check(f.command(&f.zone, &["--json", "status"]).output().unwrap(), "status", 3, "refused");
     assert_eq!(before(&f, &f.request), old);
     let attempts = f.root.join("attempts");
     oplog::recover(&f.git, &f.common).unwrap();

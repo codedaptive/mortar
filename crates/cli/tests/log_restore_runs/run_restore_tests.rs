@@ -1,4 +1,4 @@
-//! run_restore: a full ref name git refuses (refs/heads/req/core/a..b) is oplog's BadMove, exit 1, before any ref is
+//! run_restore: a full ref name git refuses (refs/heads/req/core/a..b) is oplog's BadMove, exit 3, before any ref is
 //! read: no ref is written and the op log gains no record.
 //! `mr --json --actor harness-1 restore` runs as a child of the mortar binary in a throwaway
 //! repository (testkit's TestRepo) with one commit, one done op and the config `mr init` writes first; the setup git
@@ -59,7 +59,7 @@ fn a_ref_name_git_refuses_is_oplogs_bad_move_with_nothing_written() {
     let output =
         mortar(&repo.path, &["--json", "--actor", "harness-1", "restore", &op.op_id, "refs/heads/req/core/a..b"]);
 
-    let report = check(output, "restore", 1, "refused");
+    let report = check(output, "restore", 3, "refused");
     assert_eq!(
         report.strings("lines")[0],
         "op cannot be applied: ref \"refs/heads/req/core/a..b\" is not a valid ref name (git check-ref-format \

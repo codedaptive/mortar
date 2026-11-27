@@ -19,7 +19,7 @@ const ONE_PARENT_NEXT: &str =
 
 /// Git and Join's Git and TipNotReplayed are failures (exit 5) naming what failed, then SECOND; Squash and Land are
 /// worded as the landing verbs word them, Land with `integration_branch`, with SECOND added after their lines;
-/// every other arm is a refusal (exit 1) naming what stopped the zone, SECOND, its owner and a
+/// every other arm is a refusal (exit 3) naming what stopped the zone, SECOND, its owner and a
 /// next step.
 pub fn after_publish_error_report(error: &AfterPublishError, integration_branch: &str) -> Report {
     match error {
@@ -82,7 +82,7 @@ fn join_error_report(error: &JoinError) -> Report {
     }
 }
 
-/// A refusal (exit 1): `line`, then SECOND, with its owner and next step.
+/// A refusal (exit 3): `line`, then SECOND, with its owner and next step.
 fn refused(line: String, owner: &str, next: String) -> Report {
     landing_refusal(VERB, vec![line, SECOND.to_string()], owner, next)
 }

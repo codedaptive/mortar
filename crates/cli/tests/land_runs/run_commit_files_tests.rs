@@ -56,7 +56,7 @@ fn commit_files_without_a_landing_is_refused_with_land_next() {
     let old = s.f.git.read_ref(INTEGRATION).unwrap().unwrap();
     write(&s.folder, "src/receipt", b"integration receipt\n");
     let r = check(s.f.command(&s.folder, &["--json", "--actor", "integrator", "commit-files", "src/receipt"])
-        .output().unwrap(), "commit-files", 1, "refused");
+        .output().unwrap(), "commit-files", 3, "refused");
     assert!(r.text("next").contains("mr land"));
     assert_eq!(s.f.git.read_ref(INTEGRATION).unwrap(), Some(old));
 }

@@ -5,7 +5,7 @@ use folders::{FolderKind, FolderRecord};
 
 use crate::report::{ExitCode, Report};
 
-/// None for a Request record. A Zone or Attempt(k) record is exit 1 "refused": a line naming the folder's kind and
+/// None for a Request record. A Zone or Attempt(k) record is exit 3 "refused": a line naming the folder's kind and
 /// zone (for an attempt, also k and its request), then "nothing ran"; owner "the harness that makes Mortar
 /// folders"; next "run mr <verb_line> --actor <name> in the request's own folder". `verb_line` is the verb and
 /// sub-verb, e.g. "folder keep".

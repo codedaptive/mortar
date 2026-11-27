@@ -31,7 +31,7 @@ fn refusal_shows_owner_and_is_not_ok() {
     refused.owner = Some("the existing config".to_string());
     assert_eq!(
         render_json(&refused),
-        "{\"verb\":\"init\",\"ok\":false,\"outcome\":\"refused\",\"exit\":1,\"next\":\"mr init\",\
+        "{\"verb\":\"init\",\"ok\":false,\"outcome\":\"refused\",\"exit\":3,\"next\":\"mr init\",\
          \"lines\":[],\"owner\":\"the existing config\"}\n"
     );
 }
@@ -40,10 +40,10 @@ fn refusal_shows_owner_and_is_not_ok() {
 fn every_exit_code_is_its_number() {
     let codes = [
         (ExitCode::Done, "0"),
-        (ExitCode::Refused, "1"),
-        (ExitCode::Conflict, "2"),
-        (ExitCode::Busy, "3"),
-        (ExitCode::Usage, "4"),
+        (ExitCode::Conflict, "1"),
+        (ExitCode::Usage, "2"),
+        (ExitCode::Refused, "3"),
+        (ExitCode::Busy, "4"),
         (ExitCode::Failure, "5"),
     ];
     for (code, number) in codes {
@@ -74,7 +74,7 @@ fn fields_follow_owner_in_order_with_each_value_kind() {
     ];
     assert_eq!(
         render_json(&busy),
-        "{\"verb\":\"\",\"ok\":false,\"outcome\":\"busy\",\"exit\":3,\"next\":\"mr init\",\"lines\":[],\
+        "{\"verb\":\"\",\"ok\":false,\"outcome\":\"busy\",\"exit\":4,\"next\":\"mr init\",\"lines\":[],\
          \"owner\":null,\"holder_host\":\"h\\n1\",\"holder_pid\":42,\"stale\":false,\"fresh\":true,\
          \"key\":null,\"paths\":[\"a\",\"b\"],\"step\":{\"number\":2,\"commit\":\"c\\\"1\"}}\n"
     );

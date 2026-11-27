@@ -8,7 +8,7 @@ use super::{BinaryAt, InstallFacts, InstallItem, InstallPaths, InstallStep};
 
 /// `skip` Some: no step, the line "skipped <mortar>: <reason>". Else by what stands at `paths.mortar`: nothing, a
 /// step and "placed"; another Mortar build, a step and "replaced"; this binary, no step and "unchanged"; a foreign
-/// program, Err the refusal (exit 1). The step copies `facts.this` to `paths.mortar`.
+/// program, Err the refusal (exit 3). The step copies `facts.this` to `paths.mortar`.
 pub fn plan_placement(
     facts: &InstallFacts,
     paths: &InstallPaths,

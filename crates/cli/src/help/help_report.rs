@@ -6,7 +6,7 @@ use crate::report::{ExitCode, OutValue, Report};
 
 /// The program help or one verb's: exit Done, outcome "help", next "mr status", and the `--json` member "verbs"
 /// holding every verb's entry in group order, or the one verb's. An unknown verb or more than one is a usage
-/// error of `mr help` (exit 4, the verbs listed, next help's usage).
+/// error of `mr help` (exit 2, the verbs listed, next help's usage).
 pub fn help_report(request: &HelpRequest) -> Report {
     let reason = match &request.topic {
         HelpTopic::Program => {

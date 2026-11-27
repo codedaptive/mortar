@@ -23,7 +23,7 @@ use super::{
     write_record, InstallEnv, InstallFacts, InstallOptions, InstallPaths, InstallPlan, RecordItem,
 };
 
-/// The report: a refusal (exit 1) or usage report (exit 4) before anything is written, a failure (exit 5) when the
+/// The report: a refusal (exit 3) or usage report (exit 2) before anything is written, a failure (exit 5) when the
 /// disk fails, or install's report. `ask` asks the picker's question; it is called only on a terminal with neither
 /// --target nor -y. Placement is skipped when this binary's canonical path is under a prefix as canonicalized (a
 /// prefix that cannot be canonicalized is taken as given), so a prefix reached through a symlink still counts.

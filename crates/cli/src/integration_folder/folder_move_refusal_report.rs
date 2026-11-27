@@ -8,7 +8,7 @@ use gitio::Oid;
 use super::MoveBlock;
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Exit 1 "folder-not-moved": `done` (what the verb did, given by the caller), then that the integration folder at
+/// Exit 3 "folder-not-moved": `done` (what the verb did, given by the caller), then that the integration folder at
 /// `folder` could not move from `old` to `new`, what blocked it, and that `verb` stopped. For
 /// MoveBlock::Paths the paths in the way follow one per line, and the next is to move each out or put it back to
 /// the folder's index copy, leaving the index as it is; for MoveBlock::Other it is to clear what stops the folder,

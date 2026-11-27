@@ -8,7 +8,7 @@ use crate::report::{failure_report, ExitCode, Report};
 
 const VERB: &str = "guard";
 
-/// - Relative { value }: exit 1 Refused, outcome "refused", lines "core.hooksPath is \"<value>\", not an absolute
+/// - Relative { value }: exit 3 Refused, outcome "refused", lines "core.hooksPath is \"<value>\", not an absolute
 ///   path: ..." (git resolves a relative hooks path in each folder, so one install cannot guard them all) and
 ///   "nothing was written", owner "the repository's git config", next unsetting core.hooksPath or setting it to an
 ///   absolute path, then `mr guard install --actor <name>`. Fields: none.

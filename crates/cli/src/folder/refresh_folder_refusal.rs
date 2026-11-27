@@ -8,7 +8,7 @@ use folders::{FolderKind, FolderRecord};
 use super::folder_kind_text;
 use crate::report::{ExitCode, Report};
 
-/// None for a Zone record. A Request or Attempt record is exit 1 "refused": a line naming `path` and what the folder
+/// None for a Zone record. A Request or Attempt record is exit 3 "refused": a line naming `path` and what the folder
 /// is (folder_kind_text) and that mr folder refresh runs on a zone folder, then "nothing changed"; owner "the harness
 /// that makes Mortar folders"; next "run mr join in <path> to bring it up to its zone".
 pub fn refresh_folder_refusal(path: &Path, record: &FolderRecord) -> Option<Report> {

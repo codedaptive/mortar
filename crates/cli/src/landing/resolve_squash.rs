@@ -3,8 +3,8 @@
 //! No sibling test: it runs git and land's read_squash for real; pick_squash_ref_tests,
 //! squash_pick_report_tests and squash_error_report_tests cover its decisions.
 //! The integration tests in crates/cli/tests/land_runs/land_flow/would_merge.rs cover it through the binary:
-//! would-merge yes and no, by change ID and by commit; a change ID no squash ref carries, exit 1; two squash refs
-//! carrying one change ID, exit 1 naming both; a commit read_squash refuses (no Mortar trailers), exit 1; a squash
+//! would-merge yes and no, by change ID and by commit; a change ID no squash ref carries, exit 3; two squash refs
+//! carrying one change ID, exit 3 naming both; a commit read_squash refuses (no Mortar trailers), exit 3; a squash
 //! ref holding such a commit beside the one carrying the change ID is passed over.
 
 use gitio::{Git, Oid};

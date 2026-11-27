@@ -15,7 +15,7 @@
 //! The integration tests crates/cli/tests/across_kits/after_publish/moves.rs and refusals.rs cover, with the mortar
 //! binary:
 //! - the staged-edit loss run: a staged edit at a path the tip changes refuses that folder,
-//!   "matches no commit", the edit kept in its index and files, exit 1;
+//!   "matches no commit", the edit kept in its index and files, exit 3;
 //! - zone b's folder, made before r3 joined, ends with r3's change;
 //! - a folder several joins behind is brought to the tip from the commit it stands on;
 //! - a folder left on a pre-replay tip by a refused repeat is found through the op log and brought to the tip;

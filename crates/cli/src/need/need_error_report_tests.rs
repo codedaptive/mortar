@@ -1,4 +1,4 @@
-//! need_error_report's Plan and NotAFolder arms: each is exit 1 "refused", owned by this request, with its own line
+//! need_error_report's Plan and NotAFolder arms: each is exit 3 "refused", owned by this request, with its own line
 //! and next step. The Lock and fallback arms are pure and can also be covered by unit tests (need_error_report.rs names them).
 
 use std::path::PathBuf;

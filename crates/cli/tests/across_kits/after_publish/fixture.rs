@@ -1,7 +1,7 @@
 //! Owned real CLI/Folders/Join/Land/Oplog setup. Reuses the existing isolated Git/process fixture, never a team repo.
 use crate::{json::{check, Report}, bisect_backup::fixture::Harness, support::{raw, write}};
 use gitio::{Git, Oid};
-use land::{LandAnswer, PublishAnswer, Squash, ZoneRequests};
+use land::{BatchLandAnswer, PublishAnswer, Squash, ZoneRequests};
 use std::{fs, path::{Path, PathBuf}};
 
 pub struct World { pub s: Harness, pub b: PathBuf }
@@ -34,7 +34,7 @@ impl World {
     }
     pub fn publish_squash(&self, squash: &Squash) -> Oid {
         self.s.locked(|| {
-            let LandAnswer::Landed { integration } = land::land(&self.s.f.git, &self.s.refs(), squash, "after-publish-setup").unwrap() else { panic!("not landed") };
+            let BatchLandAnswer::Landed { integration } = land::land_batch(&self.s.f.git, &self.s.refs(), squash, "after-publish-setup").unwrap() else { panic!("not landed") };
             assert_eq!(land::publish(&self.s.f.git, &self.s.refs(), "after-publish-setup").unwrap(), PublishAnswer::Published { origin: integration.clone() });
             integration
         })

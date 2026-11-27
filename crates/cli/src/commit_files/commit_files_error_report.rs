@@ -16,7 +16,7 @@ const VERB: &str = "commit-files";
 ///   last moved integration.
 /// - Paths: commit_paths_error_report; Land: land_error_report.
 ///
-/// Each NotLanding, NotLanded and FolderOffTip refusal is exit 1, outcome "refused", owner
+/// Each NotLanding, NotLanded and FolderOffTip refusal is exit 3, outcome "refused", owner
 /// refs/heads/<integration_branch>, no fields, its last line "nothing was written and no ref moved".
 pub fn commit_files_error_report(error: &CommitFilesError, integration_branch: &str) -> Report {
     let integration_ref = format!("refs/heads/{integration_branch}");

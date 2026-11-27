@@ -7,9 +7,9 @@
 //! folder given relative to the cwd widened to the config's new paths and brought to the tip, then a repeat
 //! already-refreshed with nothing changed; a request folder and an attempt folder refused, next mr join, nothing
 //! changed; an unstaged edit in the way and a staged change matching no zone commit each refuse the move, the work
-//! kept, the unstaged edit's next ending with the repeat; a plain directory and a plain git worktree each exit 1
-//! not-a-folder; a zone folder whose zone the config no longer names exit 1 refused, next mr init --replace with the
-//! zone; the join-<zone> lock held by a live pid exit 3 busy; each with the folder unchanged.
+//! kept, the unstaged edit's next ending with the repeat; a plain directory and a plain git worktree each exit 3
+//! not-a-folder; a zone folder whose zone the config no longer names exit 3 refused, next mr init --replace with the
+//! zone; the join-<zone> lock held by a live pid exit 4 busy; each with the folder unchanged.
 
 use std::path::Path;
 
@@ -31,7 +31,7 @@ use crate::zone_folder_move::bring_zone_folder;
 const VERB: &str = "folder";
 
 /// `path` is taken from `cwd` when relative and read as the top of its worktree, the path the report and its repeat
-/// name. Before any lock: its folder record by read_folder_at (none, or git finding no worktree there, is exit 1
+/// name. Before any lock: its folder record by read_folder_at (none, or git finding no worktree there, is exit 3
 /// "not-a-folder"); a request or attempt folder is refresh_folder_refusal's; a zone the config does not name is
 /// unknown_zone_report.
 /// Under join-<zone> after recover (locked_act), keyed by --key or op_key("folder-refresh", the folder): folders'
@@ -80,7 +80,7 @@ pub fn run_folder_refresh(context: &ShellContext, config: &Config, cwd: &Path, p
     .unwrap_or_else(|report| report)
 }
 
-/// Exit 1 "not-a-folder": nothing at `path` is a folder Mortar made, for `reason`; nothing changed. mr folder zone
+/// Exit 3 "not-a-folder": nothing at `path` is a folder Mortar made, for `reason`; nothing changed. mr folder zone
 /// makes a zone folder.
 fn not_a_folder(path: &Path, reason: &str) -> Report {
     Report {

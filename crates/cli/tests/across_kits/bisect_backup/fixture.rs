@@ -2,7 +2,7 @@
 //! boundary.
 use crate::{json::{check, Report}, support::{raw, Fixture, ZONE}};
 use gitio::{Git, Oid};
-use land::{LandAnswer, LandRefs, Squash, SquashAnswer};
+use land::{BatchLandAnswer, LandRefs, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName};
 use std::{fs, path::{Path, PathBuf}, process::Command};
 
@@ -54,7 +54,7 @@ impl Harness {
             raw(&self.f.git, &["push", "-q", "origin", "refs/heads/main:refs/heads/main"]);
         }
         let landed = self.locked(|| {
-            let LandAnswer::Landed { integration } = land::land(&self.f.git, &self.refs(), &squash, "bisect-backup-setup").unwrap() else { panic!("expected landing") };
+            let BatchLandAnswer::Landed { integration } = land::land_batch(&self.f.git, &self.refs(), &squash, "bisect-backup-setup").unwrap() else { panic!("expected landing") };
             assert_eq!(land::publish(&self.f.git, &self.refs(), "bisect-backup-setup").unwrap(), land::PublishAnswer::Published { origin: integration.clone() });
             integration
         });

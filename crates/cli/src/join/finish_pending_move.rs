@@ -18,7 +18,7 @@
 //! child process in a throwaway repository and a request folder: a kill after
 //! join's rebase op and before the folder move (the branch ahead of the folder) is finished by the next join before
 //! it saves, with the finished move in its report and the folder's work in the request's snapshot ref; a local edit
-//! in the way of the pending move is exit 1 listing the paths, and once moved aside the next join finishes it; with
+//! in the way of the pending move is exit 3 listing the paths, and once moved aside the next join finishes it; with
 //! no move pending it moves nothing; a resolve whose folder move is refused (an edit on a path the zone changed), the
 //! files put back to the folder's version, then mr join finishes the move from the op's folder_tree; a kill
 //! after resolve's final op, or after a partner request's join-zone-request op

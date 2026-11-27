@@ -12,10 +12,10 @@
 //! the mortar binary: zone b's folder made before r3 joined ends with r3's change; a folder several joins behind
 //! brought to the tip from the commit it stands on; Current and Conflicted zones' folders brought to the tip; a folder left on a pre-replay tip by a refused
 //! repeat found through the op log; no folder; already at the tip; an unstaged edit in the way and an unmerged index
-//! each refuse that folder, the others still moved, exit 1, and clearing it as the next says then repeating
+//! each refuse that folder, the others still moved, exit 3, and clearing it as the next says then repeating
 //! finishes; the staged-edit loss run (a staged edit at a path the tip changes: that folder refused, "matches no
-//! commit", the edit kept, exit 1); open requests listed to rebase; SquashOfNotInZone refused naming the zone and the source;
-//! no branch op written for a folder move; the land lock held by a live pid, exit 3; without a config, exit 1.
+//! commit", the edit kept, exit 3); open requests listed to rebase; SquashOfNotInZone refused naming the zone and the source;
+//! no branch op written for a folder move; the land lock held by a live pid, exit 4; without a config, exit 3.
 
 use std::path::Path;
 
@@ -36,7 +36,7 @@ use crate::zone_folder_move::{bring_zone_folder, ZoneFolderOutcome};
 
 const VERB: &str = "after-publish";
 
-/// The config, then the words read by parse_after_publish_args (an Err is after-publish's usage report, exit 4,
+/// The config, then the words read by parse_after_publish_args (an Err is after-publish's usage report, exit 2,
 /// before the verb runs git). Then, under the land lock after recover (locked_act), keyed by --key or
 /// op_key("after-publish", the common dir): the named zones' folders and open requests (read_named_zones); land's
 /// after_publish as the context's actor, the published zone first (a refusal is after_publish_error_report); the op

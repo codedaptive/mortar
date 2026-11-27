@@ -3,7 +3,7 @@
 //! parse_install_args cannot read are a usage report; then HOME unset or empty is a refusal. Only then does it
 //! read PATH, the project (its one git call), this binary's path and the terminal, and hand them to install_in.
 //! No sibling test: it reads the process's environment and stdin. Its cases are integration tests through the binary
-//! to write (not written here): `mr install -y` with HOME a temporary folder, `--key` and `--mode mcp` exit 4, the
+//! to write (not written here): `mr install -y` with HOME a temporary folder, `--key` and `--mode mcp` exit 2, the
 //! picker on a terminal.
 
 use std::io::{self, BufRead, IsTerminal, Write};
@@ -17,7 +17,7 @@ use crate::shell::ShellContext;
 
 use super::{home_unset_refusal, install_in, parse_install_args, InstallEnv, PACKAGE_PREFIXES};
 
-/// Install's report, or a usage report (exit 4) or the HOME refusal (exit 1) before install_in. The project is the
+/// Install's report, or a usage report (exit 2) or the HOME refusal (exit 3) before install_in. The project is the
 /// git toplevel holding `cwd`, else `cwd`. The picker's question goes to stderr and its answer is one line of stdin
 /// (end of input: no answer).
 pub fn run_install(context: &ShellContext, cwd: &Path) -> Report {

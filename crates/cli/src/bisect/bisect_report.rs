@@ -13,7 +13,7 @@ const VERB: &str = "bisect";
 /// - Culprit: exit 0 "culprit", naming the first failing landing and what its squash trailers carry; next fixes the
 ///   break through a request in the culprit's zone (a placeholder zone when no Mortar-Zone trailer names it), then
 ///   squashes that zone. Fields commit, change_id and zone (Null when absent), probes.
-/// - NotFound: exit 1 "not-found", owned by the test command: FailedPasses asks to check that the command fails at
+/// - NotFound: exit 3 "not-found", owned by the test command: FailedPasses asks to check that the command fails at
 ///   `failed`; LastPassFails asks for an earlier passing commit. Fields last_pass, failed, probes.
 pub fn bisect_report(report: &BisectReport, last_pass: &Oid, failed: &Oid) -> Report {
     let probes: Vec<String> = report.probes.iter().map(probe_line).collect();

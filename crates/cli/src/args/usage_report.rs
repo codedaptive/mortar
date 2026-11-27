@@ -1,4 +1,4 @@
-//! The report of a command line that cannot be read (exit 4).
+//! The report of a command line that cannot be read (exit 2).
 
 use super::{find_verb, UsageError, VERBS};
 use crate::report::{ExitCode, Report};

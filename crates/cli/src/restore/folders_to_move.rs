@@ -5,9 +5,9 @@
 //! No unit test: it runs git and snapshot's saved_state; ref_moved_on_tests cover the moved-on decision,
 //! snapshot_value_to_check_tests the snapshot value a check compares against, restore_refusal_tests the refusal
 //! decided from its answer, run_restore_tests restore's usage refusals, before any lock, and the integration test
-//! crates/cli/tests/log_restore_runs/run_restore_repeat_tests.rs an unsaved request folder refusing exit 1 with nothing
+//! crates/cli/tests/log_restore_runs/run_restore_repeat_tests.rs an unsaved request folder refusing exit 3 with nothing
 //! moved, a kill between oplog::restore and the folder move finished by a plain repeat (Repeated, then the move),
-//! such a repeat with work added after the kill refusing exit 1 with nothing moved, and a repeat after a later
+//! such a repeat with work added after the kill refusing exit 3 with nothing moved, and a repeat after a later
 //! restore leaving the folder and its ref.
 
 use std::path::PathBuf;

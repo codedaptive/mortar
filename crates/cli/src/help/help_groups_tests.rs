@@ -96,7 +96,11 @@ fn folder_has_its_subcommands_as_term() {
 fn guard_hook_is_run_by_git() {
     assert_eq!(
         entry("guard-hook"),
-        &HelpEntry { name: "guard-hook", term: "guard-hook <name>", line: "run by git's hooks, not by hand" }
+        &HelpEntry {
+            name: "guard-hook",
+            term: "guard-hook <name>",
+            line: "run by git's hooks, not by hand; a refusal is exit 3, and git stops the push or the ref update it was preparing",
+        }
     );
 }
 

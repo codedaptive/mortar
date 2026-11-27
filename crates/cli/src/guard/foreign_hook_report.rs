@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use crate::report::{ExitCode, Report};
 
-/// Exit 1 Refused, outcome "foreign-hook". Lines: one per path in `foreign`, "<path> is a hook Mortar did not
+/// Exit 3 Refused, outcome "foreign-hook". Lines: one per path in `foreign`, "<path> is a hook Mortar did not
 /// write; Mortar never overwrites one". Owner: "the repository's own hooks". Next: move the first path aside or fold
 /// it into your own hook by hand, then `mr guard install --actor <name>`. Fields: none. `foreign` is never
 /// empty (its callers pass at least the hook found foreign); were it empty, the next would name no path.

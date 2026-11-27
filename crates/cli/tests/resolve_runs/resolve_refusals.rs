@@ -8,7 +8,7 @@ fn resolve_live_join_lock_is_exit_three_with_exact_holder_and_no_snapshot_or_sta
     let holder = LockRecord { pid: std::process::id(), host: oplog::host_name().unwrap(), key: "resolve-live-holder".into(), since: 321 };
     let held = oplog::acquire_lock(&f.common, &LockName::Join("core".into()), &holder, &KillPidProbe).unwrap();
     let bytes = fs::read(f.lock_path()).unwrap(); let before = f.observe(); let state = r.state_bytes();
-    let report = f.report(&["--json", "resolve"], "resolve", 3, "busy");
+    let report = f.report(&["--json", "resolve"], "resolve", 4, "busy");
     assert_eq!(report.number("holder_pid"), u64::from(holder.pid)); assert_eq!(report.text("holder_host"), holder.host);
     assert_eq!(report.text("holder_key"), "resolve-live-holder"); assert_eq!(report.number("since"), 321);
     assert!(report.lines().contains("nothing ran")); assert_eq!(f.observe(), before); assert_eq!(r.state_bytes(), state);
@@ -26,7 +26,7 @@ fn unborn_head_resolve_is_refused_without_moving_any_refs() {
     raw(&f.local(), &["checkout", "--orphan", "unborn-test"]);
     f.write("src/file", b"unsaved unborn work\n");
 
-    let report = f.report(&["--json", "resolve"], "resolve", 1, "refused");
+    let report = f.report(&["--json", "resolve"], "resolve", 3, "refused");
     assert_eq!(report.text("owner"), "the folder's HEAD");
     assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
     assert_eq!(report.strings("lines"), &[
@@ -43,7 +43,7 @@ fn unborn_head_resolve_is_refused_without_moving_any_refs() {
 #[test]
 fn resolve_argument_is_exit_four_with_full_usage_and_no_lock_or_work() {
     let r = Paused::new(false); let f = &r.f; let before = f.observe(); let state = r.state_bytes();
-    let report = f.report(&["--json", "resolve", "unexpected"], "resolve", 4, "usage");
+    let report = f.report(&["--json", "resolve", "unexpected"], "resolve", 2, "usage");
     assert!(report.lines().contains("resolve takes no arguments"));
     assert_eq!(report.text("next"), "mr resolve [--key <operation key>] [--json]");
     assert_eq!(f.observe(), before); assert_eq!(r.state_bytes(), state); r.assert_unmoved();
@@ -66,7 +66,7 @@ fn real_attempt_folders_refuse_join_and_resolve_before_held_lock_recovery_or_sna
         let index = raw(&local, &["ls-files", "--stage", "-z"]); let before = f.observe();
         assert_eq!(folders::make::read_folder_record(&dir).unwrap().unwrap().kind, folders::FolderKind::Attempt(k));
         for verb in ["join", "resolve"] {
-            let report = check(f.command(&path.join("src"), &["--json", verb]).output().unwrap(), verb, 1, "refused");
+            let report = check(f.command(&path.join("src"), &["--json", verb]).output().unwrap(), verb, 3, "refused");
             assert_eq!(report.text("owner"), "this request");
             assert!(report.lines().contains(&format!("this is attempt folder {k} of request task: mr {verb} runs in the request's own folder")));
             assert!(report.lines().contains("nothing ran"));
@@ -87,7 +87,7 @@ fn resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_local_wo
     f.write("src/file", b"chosen resolution\n"); f.write("sub/keep", b"local obstruction must survive\n");
     let state_before = fs::read_to_string(&r.state).unwrap();
     let state_before = state_before.strip_suffix('\n').expect("state file's trailing newline").to_string();
-    let report = f.report(&["--json", "resolve"], "resolve", 1, "refused"); let new = f.head();
+    let report = f.report(&["--json", "resolve"], "resolve", 3, "refused"); let new = f.head();
     assert_ne!(new, r.old); assert_eq!(report.text("owner"), "this request's folder");
     let snap = f.git.read_ref(SNAP).unwrap().unwrap();
     // The snapshot before resolve wrote the local edits, so the refused move names that move first; then the rebase

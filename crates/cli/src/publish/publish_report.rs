@@ -20,7 +20,7 @@ const VERB: &str = "publish";
 ///   pushed, its line says the remote's and the local origin branch are at `origin`; otherwise it names only the local
 ///   origin branch and says this publish pushed nothing to the remote. Next names `mr after-publish` for each zone
 ///   (after_publish_next).
-/// - OriginMoved: exit 1 "origin-moved", nothing published; the local origin branch and integration are on `found`,
+/// - OriginMoved: exit 3 "origin-moved", nothing published; the local origin branch and integration are on `found`,
 ///   the squash kept, and `folder` (the integration folder moved onto `found`, if any) is named. Push on: someone
 ///   else moved the remote's origin branch to `found`, owned by whoever pushed it. Push off: someone else moved the
 ///   local origin branch to `found`, nothing was fetched, owned by whoever moved it. Next lands the squash again onto

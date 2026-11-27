@@ -8,7 +8,7 @@ use std::fs;
 fn a_completed_join_is_refused_to_the_zone_owner_without_snapshot_or_folder_changes() {
     let w = World::new(); w.core(&[("src/file", b"joined work\n")]);
     let target = done(&w, "join-fast-forward").pop().unwrap(); let before = observe(&w);
-    let r = ours(&w, &["undo"], 1, "refused");
+    let r = ours(&w, &["undo"], 3, "refused");
     assert_eq!(r.strings("lines"), &[format!("op {} is a completed join: the zone owns it now", target.op_id), "nothing was changed".into()]);
     assert_eq!(r.text("owner"), "the zone's coordinator");
     assert_eq!(r.text("next"), format!("ask the zone's coordinator to back out op {}", target.op_id));
@@ -27,7 +27,7 @@ fn a_later_real_logged_actor_move_is_named_without_undoing_that_actors_work() {
         Ok::<(), std::io::Error>(())
     }).unwrap();
     let folder = w.folder_state(&w.s.f.request); let zone = w.tip("core"); let remote = w.s.remote_refs();
-    let r = ours(&w, &["undo"], 1, "refused");
+    let r = ours(&w, &["undo"], 3, "refused");
     assert_eq!(r.strings("lines"), &[format!("op {} cannot be undone: {REQUEST} moved since, by op foreign-move of peer/owner", target.op_id), "nothing was undone; the snapshot taken first is kept".into()]);
     assert_eq!(r.text("owner"), "peer/owner"); assert_eq!(r.text("next"), format!("ask the zone's coordinator about {REQUEST}"));
     assert_eq!(w.s.f.head(), foreign); assert_eq!(w.tip("core"), zone); assert_eq!(w.s.remote_refs(), remote);
@@ -40,14 +40,14 @@ fn resolve_undo_finishes_its_real_pending_folder_move_first_and_a_refused_move_u
     let w = World::new(); w.s.f.save_topic();
     let zone = w.s.f.commit(&w.s.f.base, &[("src/file", b"zone conflict\n"), ("sub/keep", b"zone changed keep\n")], "zone conflict\n");
     raw(&w.s.f.git, &["update-ref", ZONE, zone.as_str()]);
-    ours(&w, &["join"], 2, "conflicted"); ours(&w, &["resolve"], 2, "files-written");
+    ours(&w, &["join"], 1, "conflicted"); ours(&w, &["resolve"], 1, "files-written");
     w.s.f.write("src/file", b"chosen resolution\n"); w.s.f.write("sub/keep", b"owner obstruction\n");
-    ours(&w, &["resolve"], 1, "refused"); let target = done(&w, "join-rebase").pop().unwrap();
+    ours(&w, &["resolve"], 3, "refused"); let target = done(&w, "join-rebase").pop().unwrap();
     assert!(!w.s.f.local().git_dir(&w.s.f.request).unwrap().join("mortar-join.json").exists());
     let pending = w.s.f.status(); assert_eq!(pending.text("stalled_to"), w.s.f.head().as_str());
     assert!(w.s.f.last_move().values.iter().any(|(key, _)| key == "folder_tree"));
     // Undo finishes the resolve's pending folder move before oplog undo; sub/keep stands in its way.
-    let (snap_before, before) = (ref_at(&w, SNAP), observe(&w)); let r = ours(&w, &["undo"], 1, "refused");
+    let (snap_before, before) = (ref_at(&w, SNAP), observe(&w)); let r = ours(&w, &["undo"], 3, "refused");
     assert_eq!(r.strings("lines"), &["the folder could not move; these files stand in the way:", "  sub/keep", "the request branch already stands at the new tip; the next mr join, mr resolve, mr save or mr undo finishes the move first"]);
     assert_eq!(r.text("owner"), "this request's folder"); assert_eq!(r.text("next"), "move those files out of the way, then mr join");
     assert!(done(&w, "undo").is_empty()); let new_tip = &target.moves.iter().find(|m| m.refname == REQUEST).unwrap().new;

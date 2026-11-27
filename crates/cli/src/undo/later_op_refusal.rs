@@ -7,7 +7,7 @@ use super::undo_error_report;
 use crate::report::{is_zero_oid, Report};
 
 /// None when find_undo_target over `records` and `scope` (the refs `records[index]` moved) answers `index`. Else the
-/// later done op that moved a ref in `scope` is named: undo_error_report's MovedSince refusal (exit 1) for the
+/// later done op that moved a ref in `scope` is named: undo_error_report's MovedSince refusal (exit 3) for the
 /// first ref in scope it moved, by that op's id and actor, with the value the chosen op left (None for a delete) and
 /// the one the later op set.
 pub fn later_op_refusal(records: &[OpRecord], index: usize, scope: &[String]) -> Option<Report> {

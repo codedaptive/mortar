@@ -4,11 +4,11 @@
 //! parse_folder_args_tests, zone_folder_paths_tests, request_folder_paths_tests and unknown_zone_report_tests cover
 //! its decisions. The integration tests
 //! crates/cli/tests/folder_runs/run_folder_{zone,request,remove,refresh,attempts,keep,drop}_tests.rs cover it through
-//! the binary: usage errors (no --paths, n = 0, refresh with no path) exit 4 with folder's usage line; a zone not in
-//! the config exit 1, nothing made, next naming `mr init --replace` with `--zone <zone>=`. partner_cut_tests.rs
-//! covers a --with partner not in the config: exit 1, nothing made.
-//! Integration tests to write (not written here): run outside any git repository it is refused exit 1
-//! (the shell's repository_report); without a config, exit 1, next mr init.
+//! the binary: usage errors (no --paths, n = 0, refresh with no path) exit 2 with folder's usage line; a zone not in
+//! the config exit 3, nothing made, next naming `mr init --replace` with `--zone <zone>=`. partner_cut_tests.rs
+//! covers a --with partner not in the config: exit 3, nothing made.
+//! Integration tests to write (not written here): run outside any git repository it is refused exit 3
+//! (the shell's repository_report); without a config, exit 3, next mr init.
 
 use std::iter::once;
 use std::path::Path;
@@ -24,8 +24,8 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "folder";
 
-/// The words after the verb read by parse_folder_args (an Err is folder's usage report, exit 4, before the verb runs
-/// git). zone and request name a zone that must be in the config (else exit 1 "refused", nothing made), and so must
+/// The words after the verb read by parse_folder_args (an Err is folder's usage report, exit 2, before the verb runs
+/// git). zone and request name a zone that must be in the config (else exit 3 "refused", nothing made), and so must
 /// each of request's --with partners, checked after the zone in the order given; zone's paths are
 /// zone_folder_paths', request's its --paths then the root files (request_folder_paths); refresh reads its zone from
 /// the folder's record. Then the sub-verb's runner.

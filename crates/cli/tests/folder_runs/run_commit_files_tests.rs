@@ -58,7 +58,7 @@ fn commit_files_zone_off_tip_is_refused_with_refresh_next() {
     check(f.command(&f.request, &["--json", "join"]).output().unwrap(), "join", 0, "joined");
     let tip = f.git.read_ref(ZONE).unwrap().unwrap();
     assert_ne!(tip, f.base);
-    let r = commit_files(&f, &f.zone, 1, "refused");
+    let r = commit_files(&f, &f.zone, 3, "refused");
     assert!(r.text("next").contains("mr folder refresh"));
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(tip));
 }
@@ -67,7 +67,7 @@ fn commit_files_zone_off_tip_is_refused_with_refresh_next() {
 fn commit_files_request_is_refused_with_save_next_and_no_refs_moved() {
     let f = Fixture::new();
     let before = raw(&f.git, &["for-each-ref", "--format=%(refname) %(objectname)"]);
-    let r = commit_files(&f, &f.request, 1, "refused");
+    let r = commit_files(&f, &f.request, 3, "refused");
     assert!(r.text("next").contains("mr save"));
     assert_eq!(raw(&f.git, &["for-each-ref", "--format=%(refname) %(objectname)"]), before);
 }
@@ -147,7 +147,7 @@ fn commit_files_zone_lagging_with_a_staged_named_path_is_refused() {
     let zone_git = Git { repo: f.zone.clone(), ..f.git.clone() };
     raw(&zone_git, &["add", "src/file"]);
     let r = check(f.command(&f.zone, &["--json", "--actor", "zone-owner", "commit-files", "src/file"])
-        .output().unwrap(), "commit-files", 1, "refused");
+        .output().unwrap(), "commit-files", 3, "refused");
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(tip.clone()));
     assert_eq!(f.blob(&tip, "src/file"), b"joined edit\n");
     assert!(!r.text("next").contains("mr folder refresh"), "{}", r.text("next"));

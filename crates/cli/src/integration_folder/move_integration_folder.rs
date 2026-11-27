@@ -4,10 +4,10 @@
 //! and crates/cli/tests/land_runs/run_publish_tests.rs cover it through the binary; folder_move_refusal_report_tests
 //! covers the refusal's text. The integration tests crates/cli/tests/land_runs/land_flow/stopped.rs cover:
 //! - files with local changes in the way in the integration folder when land, back-out or publish (OriginMoved)
-//!   moves the integration branch: exit 1 "folder-not-moved" listing the paths, the folder unchanged; move them
+//!   moves the integration branch: exit 3 "folder-not-moved" listing the paths, the folder unchanged; move them
 //!   out (or put them back to the index copy), then repeat the same command: the repeat's finish moves the folder
 //!   and the verb goes on;
-//! - the same files in the way at a finish of a stopped move: exit 1 "folder-not-moved" listing the paths,
+//! - the same files in the way at a finish of a stopped move: exit 3 "folder-not-moved" listing the paths,
 //!   integration not moved by that run, the folder unchanged; move them out (or put them back to the index copy),
 //!   repeat: the move finishes and the verb goes on.
 //!
@@ -26,7 +26,7 @@ use crate::report::{ExitCode, Report};
 /// `done` is the caller's line saying what already happened (such as "integration is back at <oid>"); `repeat` is
 /// the same command run again (the verb, its words and --actor), which every refusal's next ends with. `old` equal
 /// to `new` is None with no git run. Else the folder on `integration_branch` (integration_folder): none is None; a
-/// worktree list git cannot give is exit 1 "folder-not-moved", owned by the repository's worktrees: `done`, the
+/// worktree list git cannot give is exit 3 "folder-not-moved", owned by the repository's worktrees: `done`, the
 /// reason the folder was not found and not moved, and that `verb` stopped; next: check that git can list the
 /// worktrees, then repeat. A found folder is moved from `old` to `new` by folders::move_folder with `saved` true,
 /// since the integration folder is not an agent's folder; move_folder's plain move still refuses over local

@@ -10,7 +10,7 @@
 //! timed-out probe counted as a fail and shown "timed out"; a last passing commit off the failed one's first-parent
 //! line refused naming both; a failed commit off origin refused; a command that cannot start stops the search naming
 //! the commit; `--actor` after `--` reaches the command as one of its words; no worktree or bisect state left after
-//! a run; guards.rs the land lock held by a live pid, exit 3, and without a config, exit 1, next mr init.
+//! a run; guards.rs the land lock held by a live pid, exit 4, and without a config, exit 3, next mr init.
 
 use std::path::Path;
 
@@ -28,7 +28,7 @@ use crate::shell::ShellContext;
 const VERB: &str = "bisect";
 
 /// The words read by parse_bisect_args from the line's rest and its `--` mark (an Err is bisect's usage report,
-/// exit 4, before the verb runs git). Then, under the land lock after recover (locked_act), keyed by --key or
+/// exit 2, before the verb runs git). Then, under the land lock after recover (locked_act), keyed by --key or
 /// op_key("bisect", the common dir), land's bisect over the config's origin branch, reported by bisect_report or,
 /// when refused or failed, bisect_error_report.
 pub fn run_bisect(context: &ShellContext, cwd: &Path) -> Report {

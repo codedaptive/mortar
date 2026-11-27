@@ -1,5 +1,5 @@
 //! would_merge_with_report: Clean merges (exit 0, a line per step, next lands each commit in order) and Conflicted
-//! (exit 2, naming the step and, past step 1, the one before it, each file on its own line, owned by the change's
+//! (exit 1, naming the step and, past step 1, the one before it, each file on its own line, owned by the change's
 //! zone, with a step object), each saying no ref moved and any merge commit the trial wrote is reached by nothing.
 
 use std::path::PathBuf;

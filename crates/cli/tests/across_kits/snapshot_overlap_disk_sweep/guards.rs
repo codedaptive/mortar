@@ -13,7 +13,7 @@ fn snapshot_and_sweep_respect_the_actual_join_and_folders_locks_with_exact_holde
         let holder = LockRecord { pid: std::process::id(), host: oplog::host_name().unwrap(), key: format!("snapshot-overlap-disk-sweep-held-{verb}"), since: 1700000000 };
         let lock = oplog::acquire_lock(&w.s.f.common, &name, &holder, &KillPidProbe).unwrap(); let before = observe(&w);
         let words = if verb == "snapshot" { vec![verb] } else { vec![verb, "--ref", "refs/t3/eligible", "--idle-days", "0"] };
-        let r = run(&w, &w.s.f.request, &words, 3, "busy");
+        let r = run(&w, &w.s.f.request, &words, 4, "busy");
         assert_eq!(r.number("holder_pid"), u64::from(holder.pid)); assert_eq!(r.text("holder_host"), holder.host);
         assert_eq!(r.text("holder_key"), holder.key); assert_eq!(r.number("since"), 1700000000);
         assert_eq!(r.text("owner"), format!("pid {} on {}", holder.pid, holder.host));
@@ -34,7 +34,7 @@ fn all_four_verbs_without_config_refuse_before_any_work_and_name_init() {
     let config = w.s.f.common.join("mortar/config.json"); fs::rename(&config, config.with_extension("held")).unwrap();
     let before = observe(&w);
     for words in [vec!["snapshot"], vec!["overlap", "core"], vec!["disk"], vec!["sweep", "--ref", "refs/t3/eligible"]] {
-        let r = run(&w, &w.s.f.request, &words, 1, "no-config");
+        let r = run(&w, &w.s.f.request, &words, 3, "no-config");
         assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
         assert_eq!(r.text("next"), "mr init"); assert_eq!(observe(&w), before);
     }
@@ -48,7 +48,7 @@ fn disk_and_sweep_with_no_configured_zones_refuse_before_reading_corrupt_folders
     let dir = w.s.f.git.git_dir(&w.b).unwrap(); fs::write(folders::record::record_path(&dir), b"corrupt record\n").unwrap();
     let mut config = w.s.f.init_args.clone(); config.zones.clear(); w.s.f.configure(&config); let before = observe(&w);
     for words in [vec!["disk"], vec!["sweep", "--ref", "refs/t3/eligible", "--idle-days", "0"]] {
-        let r = app(&w, &words, 1, "refused");
+        let r = app(&w, &words, 3, "refused");
         assert_eq!(r.strings("lines"), &["the config names no zone", "with no zone listed, a sweep would delete every zone's replay records (refs/mortar/replayed/); nothing was read or deleted"]);
         assert_eq!(r.text("owner"), "the repository's mortar config");
         assert_eq!(r.text("next"), "mr init --replace with every value the config holds and at least one --zone <zone>=<path> --actor <name>, then repeat the same command");
@@ -67,7 +67,7 @@ fn invalid_words_are_exact_usage_errors_without_snapshot_overlap_measurement_or_
         (vec!["overlap", "core", "extra"], "unexpected word \"extra\" after the zone", "mr overlap <zone> --actor <name> [--json]"),
         (vec!["sweep", "--idle-days", "-1"], "--idle-days needs a whole number of days, not \"-1\"", "mr sweep [--idle-days <n>] [--ref <full ref name>]... --actor <name> [--key <operation key>] [--json]"),
     ] {
-        let r = app(&w, &words, 4, "usage"); assert_eq!(r.strings("lines")[0], why); assert_eq!(r.text("next"), next);
+        let r = app(&w, &words, 2, "usage"); assert_eq!(r.strings("lines")[0], why); assert_eq!(r.text("next"), next);
         assert_eq!(observe(&w), before);
     }
 }

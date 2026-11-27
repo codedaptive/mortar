@@ -5,7 +5,7 @@ use std::path::Path;
 use crate::config::ConfigError;
 use crate::report::{ExitCode, Report};
 
-/// Refused (exit 1): `error`'s reason, which names the file, then that nothing changed; the next step is to fix
+/// Refused (exit 3): `error`'s reason, which names the file, then that nothing changed; the next step is to fix
 /// or remove the file at `path`.
 pub(crate) fn config_refusal(verb: &str, error: &ConfigError, path: &Path) -> Report {
     Report {

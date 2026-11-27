@@ -9,7 +9,7 @@ use gitio::{GitError, Version};
 use crate::report::{failure_report, ExitCode, Report};
 
 /// A refusal from the version check itself (no args and no exit code: a git below the floor, or `git version`
-/// output it cannot read) is Refused (exit 1), outcome "refused", with gitio's refusal text as the one line (for a
+/// output it cannot read) is Refused (exit 3), outcome "refused", with gitio's refusal text as the one line (for a
 /// git below the floor it names the git found and the floor; for unreadable output it names only the output text);
 /// the next step is to install git at gitio's floor (`Version::FLOOR`, as major.minor) or newer. Anything else (git
 /// could not be started, or `git version` failed) is a failure report of the error.

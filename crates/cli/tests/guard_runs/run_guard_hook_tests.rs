@@ -1,4 +1,4 @@
-//! run_guard_hook: hook input that is not UTF-8 is refused (exit 1) by run_guard_hook's read of its input, before
+//! run_guard_hook: hook input that is not UTF-8 is refused (exit 3) by run_guard_hook's read of its input, before
 //! land::guard_decide, with no ref moved. With MORTAR_OP set and the op log unreadable (its path a directory), a
 //! reference-transaction committed or aborted is let through (exit 0, nothing printed) without reading the op log,
 //! and a prepared one, guarded line or not, fails on the op log (exit 5), with no ref moved.
@@ -15,7 +15,7 @@ use crate::json::check;
 fn guard_invalid_utf8_input_refuses_without_moving_any_ref() {
     let g = Guard::new(); let before = g.branches();
     let report = check(g.hook(&["--json", "guard-hook", "reference-transaction", "prepared"], b"\xff"),
-        "guard-hook", 1, "refused");
+        "guard-hook", 3, "refused");
     assert!(report.lines().contains("the guard cannot read the hook's input"));
     assert!(report.lines().contains("it is not UTF-8")); assert_eq!(report.text("owner"), "the harness that installs the guard");
     assert_eq!(g.branches(), before);

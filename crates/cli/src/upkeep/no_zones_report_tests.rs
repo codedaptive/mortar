@@ -1,4 +1,4 @@
-//! no_zones_report: a config with no zone is refused before the verb runs git (exit 1), naming the danger of an empty
+//! no_zones_report: a config with no zone is refused before the verb runs git (exit 3), naming the danger of an empty
 //! zone list and the init step that mends the config.
 
 use super::no_zones_report;
@@ -35,5 +35,5 @@ fn disk_with_no_zones_is_refused_under_its_own_verb() {
 
 #[test]
 fn the_refusal_is_exit_one() {
-    assert_eq!(no_zones_report("sweep").exit as i32, 1);
+    assert_eq!(no_zones_report("sweep").exit as i32, 3);
 }

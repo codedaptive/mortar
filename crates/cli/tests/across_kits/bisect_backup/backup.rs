@@ -88,7 +88,7 @@ fn a_real_remote_hook_refuses_backup_with_cli_words_and_no_remote_or_local_ref_m
     let s = Harness::new(); inventory(&s);
     script(&s.bare.join("hooks/pre-receive"), b"#!/bin/sh\nwhile read old new ref; do\ncase \"$ref\" in refs/mortar-backup/*) printf 'backup rejected\\n' >\"$(git rev-parse --git-dir)/bisect-backup-hook-ran\"; exit 1;; esac\ndone\n");
     let remote_before = s.remote_refs(); let local_before = refs(&s);
-    let r = s.app(&["backup"], 1, "refused");
+    let r = s.app(&["backup"], 3, "refused");
     assert_eq!(r.text("owner"), "the remote origin");
     assert_eq!(r.text("next"), "clear what the remote origin refuses for refs/mortar-backup/, then repeat the same command");
     assert_eq!(r.strings("lines").len(), 1);

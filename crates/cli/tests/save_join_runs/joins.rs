@@ -46,7 +46,7 @@ fn join_rebases_diverged_zone_moves_real_folder_and_reports_pending_move_even_wh
 #[test]
 fn conflicting_join_lists_files_and_real_state_with_no_branch_or_folder_movement() {
     let f = Fixture::new(); let old = f.save_topic(); let zone = f.advance_zone(true); let log = f.log();
-    let report = f.report(&["--json", "join"], "join", 2, "conflicted");
+    let report = f.report(&["--json", "join"], "join", 1, "conflicted");
     assert_eq!(report.text("next"), "mr resolve"); assert_eq!(report.text("commit"), old.as_str());
     assert_eq!(report.strings("files"), &["src/file"]); assert_eq!(f.head(), old);
     assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(zone)); assert_eq!(f.log(), log);
@@ -59,11 +59,11 @@ fn conflicting_join_lists_files_and_real_state_with_no_branch_or_folder_movement
 #[test]
 fn join_arguments_are_usage_without_work_and_missing_zone_is_owned_refusal_with_lock_released() {
     let f = Fixture::new(); let before = f.observe();
-    let usage = f.report(&["--json", "join", "unexpected"], "join", 4, "usage");
+    let usage = f.report(&["--json", "join", "unexpected"], "join", 2, "usage");
     assert!(usage.lines().contains("join takes no arguments")); assert_eq!(usage.text("next"), "mr join [--key <operation key>] [--json]");
     assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
     raw(&f.git, &["update-ref", "-d", ZONE]);
-    let refused = f.report(&["--json", "join"], "join", 1, "refused");
+    let refused = f.report(&["--json", "join"], "join", 3, "refused");
     assert_eq!(refused.text("owner"), "the zone's coordinator"); assert!(refused.lines().contains("zone/core"));
     assert_eq!(f.head(), f.base); assert!(!f.lock_path().exists());
 }
@@ -72,7 +72,7 @@ fn join_arguments_are_usage_without_work_and_missing_zone_is_owned_refusal_with_
 fn pending_folder_move_refuses_over_local_work_then_finishes_after_work_is_moved_aside() {
     let f = Fixture::new(); let (old, new, _) = f.pending_rebase();
     f.write("src/upstream", b"local obstruction must survive\n");
-    let refused = f.report(&["--json", "join"], "join", 1, "refused");
+    let refused = f.report(&["--json", "join"], "join", 3, "refused");
     // The pending move's snapshot wrote the obstruction before the move was refused, so the refusal names that move.
     assert_eq!(refused.strings("lines"), &[
         "the snapshot ref moved as the work was saved first",
@@ -129,7 +129,7 @@ fn unborn_head_join_is_refused_without_moving_any_refs() {
     raw(&f.local(), &["checkout", "--orphan", "unborn-test"]);
     f.write("src/file", b"unsaved unborn work\n");
 
-    let report = f.report(&["--json", "join"], "join", 1, "refused");
+    let report = f.report(&["--json", "join"], "join", 3, "refused");
     assert_eq!(report.text("owner"), "the folder's HEAD");
     assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
     assert_eq!(report.strings("lines"), &[
@@ -152,7 +152,7 @@ fn detached_head_join_preserves_edit_in_snapshot_without_moving_branches() {
     f.write("src/file", b"unsaved detached work\n");
     raw(&f.local(), &["checkout", "--detach"]);
 
-    let report = f.report(&["--json", "join"], "join", 1, "refused");
+    let report = f.report(&["--json", "join"], "join", 3, "refused");
     assert_eq!(report.text("owner"), "the folder's HEAD");
     assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
     assert_eq!(report.strings("lines"), &[

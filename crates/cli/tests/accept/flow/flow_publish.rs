@@ -7,7 +7,7 @@ use crate::stage::{git_out, harness_mr, remote_git, stage_edit};
 use crate::world::World;
 
 /// Check 12: land the second squash again; the second clone commits other.txt and pushes it to origin's `main`
-/// itself; `mr publish`: exit 1 "origin-moved" (OriginMoved), found = that commit, next saying land
+/// itself; `mr publish`: exit 3 "origin-moved" (OriginMoved), found = that commit, next saying land
 /// again; origin's `main` is that commit on the base and nothing more; integration and main are on it; the squash
 /// ref still holds the second squash. Check 13: `mr land` the squash again and `mr publish`: exit 0 "published",
 /// origin's `main` and the local `main` both at the landed commit. False, with the later checks written as not run,
@@ -22,7 +22,7 @@ pub fn flow_publish(world: &World, checks: &mut Checks, state: &mut FlowState) -
     let integration = git_out(world, &world.work, &["rev-parse", "integration"]);
     let main = git_out(world, &world.work, &["rev-parse", "main"]);
     let squash_ref = git_out(world, &world.work, &["rev-parse", "-q", "--verify", "refs/mortar/squash/a"]);
-    let refused = publish.exit == Some(1) && publish.outcome == "origin-moved";
+    let refused = publish.exit == Some(3) && publish.outcome == "origin-moved";
     let others_only = remote == theirs && count == "2";
     let on_found = publish.text("found") == theirs && integration == theirs && main == theirs;
     let ok = !theirs.is_empty() && refused && publish.next.starts_with("land") && others_only && on_found

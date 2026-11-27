@@ -18,13 +18,13 @@ const VERB: &str = "land";
 ///   is the batch's tip, not that member's commit. In a batch of more than one, a second line names this squash's
 ///   place in it. Next runs the integration tests, then publish or back-out. Fields change_id, commit, integration,
 ///   folder (Null for none) and batch (the batch's change IDs; this squash's alone when the batch is empty).
-/// - Conflicted: exit 2 "conflict", each conflicting file on its own line, owner the change's zone; next is
+/// - Conflicted: exit 1 "conflict", each conflicting file on its own line, owner the change's zone; next is
 ///   CHANGE_CONFLICT_NEXT, and with a batch in flight the last line names it and next says it is kept for another
 ///   zone's squash. Fields change_id, commit, files and batch; with no batch in flight batch is [], since the
 ///   conflicting squash did not join one.
-/// - Busy: exit 3 "busy", owned by the other change's landing; next finishes that landing, then lands this
+/// - Busy: exit 4 "busy", owned by the other change's landing; next finishes that landing, then lands this
 ///   commit again. Fields change_id, commit and busy_with.
-/// - ZoneInBatch: exit 1 "zone-in-batch", owned by the landing of the member holding the zone; next publishes or
+/// - ZoneInBatch: exit 3 "zone-in-batch", owned by the landing of the member holding the zone; next publishes or
 ///   backs out the batch, then lands this commit again. Fields change_id, commit, zone and member.
 pub fn land_report(
     squash: &Squash,

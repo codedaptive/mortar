@@ -10,7 +10,7 @@
 //! No unit test: it takes a real lock file and runs git and the op log; lock_report_tests and
 //! failure_report_tests cover what it reports. The integration tests
 //! crates/cli/tests/save_join_runs/{recovery,joins}.rs cover, with the mortar binary as a
-//! child process in a throwaway repository and `mr join`: a lock held by a live pid is exit 3 naming the holder's
+//! child process in a throwaway repository and `mr join`: a lock held by a live pid is exit 4 naming the holder's
 //! pid, host and since, and the act does not run; an open intent left in the op log is settled by recover before
 //! the act runs; the lock file is gone after the act, whether it was done or refused; an act's refusal comes back
 //! as its own report.

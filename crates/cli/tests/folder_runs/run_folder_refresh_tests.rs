@@ -113,7 +113,7 @@ fn refresh_widens_the_cone_and_brings_the_zone_folder_to_the_tip_then_a_repeat_c
 fn refresh_of_a_request_folder_is_refused_with_mr_join_next() {
     let s = Refresh::new();
     let before = s.state(&s.request);
-    let r = s.refresh(&s.f.git.repo, s.request.to_str().unwrap(), 1, "refused");
+    let r = s.refresh(&s.f.git.repo, s.request.to_str().unwrap(), 3, "refused");
     assert!(r.text("next").contains("mr join"), "{}", r.text("next"));
     assert_eq!(s.state(&s.request), before);
 }
@@ -125,7 +125,7 @@ fn refresh_of_an_attempt_folder_is_refused_with_mr_join_next() {
     s.harness(&s.request, &["folder", "attempts", "1", tries.to_str().unwrap()], 0, "made");
     let attempt = tries.join("try-1");
     let before = s.state(&attempt);
-    let r = s.refresh(&s.f.git.repo, attempt.to_str().unwrap(), 1, "refused");
+    let r = s.refresh(&s.f.git.repo, attempt.to_str().unwrap(), 3, "refused");
     assert!(r.text("next").contains("mr join"), "{}", r.text("next"));
     assert_eq!(s.state(&attempt), before);
 }
@@ -137,7 +137,7 @@ fn an_unstaged_edit_in_the_way_refuses_the_move_and_keeps_the_edit() {
     write(&s.zone, "src/file", b"owner's unstaged edit\n");
     let base_tree = s.f.git.commit_info(&s.f.base).unwrap().tree;
     let zone = s.zone.to_str().unwrap();
-    let r = s.refresh(&s.f.git.repo, zone, 1, "folder-not-moved");
+    let r = s.refresh(&s.f.git.repo, zone, 3, "folder-not-moved");
     assert!(r.text("next").ends_with(&format!("mr folder refresh {zone} --actor <name>")), "{}", r.text("next"));
     assert_eq!(fs::read(s.zone.join("src/file")).unwrap(), b"owner's unstaged edit\n");
     assert_eq!(s.f.git.index_tree(&s.zone).unwrap(), base_tree);
@@ -150,7 +150,7 @@ fn a_staged_change_matching_no_zone_commit_refuses_the_move_and_keeps_the_staged
     write(&s.zone, "src/staged", b"owner's staged edit\n");
     raw(&s.git(&s.zone), &["add", "src/staged"]);
     let before = s.state(&s.zone);
-    s.refresh(&s.f.git.repo, s.zone.to_str().unwrap(), 1, "folder-not-moved");
+    s.refresh(&s.f.git.repo, s.zone.to_str().unwrap(), 3, "folder-not-moved");
     assert_eq!(raw(&s.git(&s.zone), &["show", ":src/staged"]), b"owner's staged edit\n");
     assert_eq!(fs::read(s.zone.join("src/staged")).unwrap(), b"owner's staged edit\n");
     assert!(!s.zone.join("src/joined").exists());
@@ -161,7 +161,7 @@ fn a_staged_change_matching_no_zone_commit_refuses_the_move_and_keeps_the_staged
 fn refresh_with_no_path_is_a_usage_error_naming_refresh() {
     let s = Refresh::new();
     let before = s.state(&s.zone);
-    let r = s.harness(&s.f.git.repo, &["folder", "refresh"], 4, "usage");
+    let r = s.harness(&s.f.git.repo, &["folder", "refresh"], 2, "usage");
     assert!(r.text("next").contains("refresh <"), "{}", r.text("next"));
     assert_eq!(s.state(&s.zone), before);
 }
@@ -172,14 +172,14 @@ fn refresh_of_a_path_that_is_not_a_mortar_folder_is_not_a_folder() {
     let plain_dir = s.f.root.join("plain-dir");
     write(&plain_dir, "file", b"plain\n");
     let before = s.state(&s.zone);
-    s.refresh(&s.f.git.repo, plain_dir.to_str().unwrap(), 1, "not-a-folder");
+    s.refresh(&s.f.git.repo, plain_dir.to_str().unwrap(), 3, "not-a-folder");
     assert_eq!(fs::read(plain_dir.join("file")).unwrap(), b"plain\n");
     assert_eq!(s.state(&s.zone), before);
     // A git worktree Mortar did not make: git finds it, but it holds no folder record.
     let worktree = s.f.root.join("plain-worktree");
     raw(&s.f.git, &["worktree", "add", "-q", "--detach", worktree.to_str().unwrap(), s.f.base.as_str()]);
     let before = s.state(&worktree);
-    s.refresh(&s.f.git.repo, worktree.to_str().unwrap(), 1, "not-a-folder");
+    s.refresh(&s.f.git.repo, worktree.to_str().unwrap(), 3, "not-a-folder");
     assert_eq!(s.state(&worktree), before);
 }
 
@@ -191,7 +191,7 @@ fn refresh_of_a_zone_folder_whose_zone_the_config_no_longer_names_is_refused_wit
     other.zones.insert("other".into(), ZoneConfig { paths: vec!["sub".into()] });
     s.f.configure(&other);
     let before = s.state(&s.zone);
-    let r = s.refresh(&s.f.git.repo, s.zone.to_str().unwrap(), 1, "refused");
+    let r = s.refresh(&s.f.git.repo, s.zone.to_str().unwrap(), 3, "refused");
     let next = r.text("next");
     assert!(next.starts_with("mr init --replace"), "{next}");
     assert!(next.contains("--zone core="), "{next}");
@@ -206,7 +206,7 @@ fn refresh_with_the_join_lock_held_by_a_live_pid_is_busy_and_changes_nothing() {
     let holder = LockRecord { pid: std::process::id(), host: oplog::host_name().unwrap(), key: "refresh-live-holder".into(), since: 456 };
     let held = oplog::acquire_lock(&s.f.common, &LockName::Join("core".into()), &holder, &KillPidProbe).unwrap();
     let before = s.state(&s.zone);
-    let r = s.refresh(&s.f.git.repo, s.zone.to_str().unwrap(), 3, "busy");
+    let r = s.refresh(&s.f.git.repo, s.zone.to_str().unwrap(), 4, "busy");
     assert_eq!(r.number("holder_pid"), u64::from(holder.pid));
     assert_eq!(r.text("holder_key"), "refresh-live-holder");
     assert!(!s.zone.join("sub/keep").exists());

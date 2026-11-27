@@ -1,4 +1,4 @@
-//! landing_refusal: exit 1 "refused" with the lines, owner and next given, and no fields.
+//! landing_refusal: exit 3 "refused" with the lines, owner and next given, and no fields.
 
 use super::landing_refusal;
 use crate::report::{ExitCode, Report};

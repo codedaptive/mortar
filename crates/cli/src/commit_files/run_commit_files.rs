@@ -22,7 +22,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "commit-files";
 
-/// The paths and --message text read by parse_commit_files_args (an Err is commit-files' usage report, exit 4,
+/// The paths and --message text read by parse_commit_files_args (an Err is commit-files' usage report, exit 2,
 /// before any git); the message is the --message text, else default_commit_message. Then the top of `cwd`'s
 /// worktree: when it is the integration folder (integration_folder, both paths canonicalized), the integration run;
 /// else the folder record (read_folder_context; none is context_report), a request or attempt folder refused by

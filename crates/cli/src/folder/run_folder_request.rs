@@ -15,7 +15,7 @@
 //! already holds reported in partners_in_zone and not recorded (partner_cut_reports_partner_already_in_zone); a
 //! conflicting merge refused with its partner and files, nothing made (partner_cut_conflict_makes_nothing).
 //! Integration tests to write (not written here): a request branch already at another commit or
-//! checked out elsewhere, the cli's why and next; a folders lock held by a live pid, exit 3; free disk under the floor, exit 1
+//! checked out elsewhere, the cli's why and next; a folders lock held by a live pid, exit 4; free disk under the floor, exit 3
 //! with the cli's facts; a partner zone with no branch refused, nothing made.
 
 use std::path::Path;

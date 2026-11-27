@@ -13,8 +13,8 @@
 //! (disk_holds_clean_saved_and_joined_request); a zone folder shows its counts and no joined answer
 //! (disk_holds_zone_counts_without_a_joined_answer); a request folder whose branch is gone shows joined unknown with
 //! the missing branch as its reason beside a healthy folder's answer, exit 0, writing nothing
-//! (disk_answers_every_folder_when_one_joined_read_fails); disk with a config of no zones refused, exit 1, nothing
-//! read; any argument, exit 4; without a config, exit 1. The acceptance run's disk step checks disk's per-folder bytes
+//! (disk_answers_every_folder_when_one_joined_read_fails); disk with a config of no zones refused, exit 3, nothing
+//! read; any argument, exit 2; without a config, exit 3. The acceptance run's disk step checks disk's per-folder bytes
 //! and its store-once figure, reached through this verb.
 
 use std::path::Path;
@@ -37,7 +37,7 @@ const VERB: &str = "disk";
 const NO_BUILD_SWEEP: u64 = u64::MAX;
 
 /// Any argument is disk's usage report, before the verb runs git. Then the config's zones (config_zones; none is
-/// no_zones_report, exit 1), then folders' disk over every zone with no extra ref and the context's protected refs,
+/// no_zones_report, exit 3), then folders' disk over every zone with no extra ref and the context's protected refs,
 /// reported by disk_report or, when folders refuses or fails, folders_error_report. With the report, each folder's
 /// holds in order (read_folder_holds, with the config's snapshot settings and the context's actor), read inside one
 /// object quarantine over the repository's objects (the common dir's, an absolute path). A joined read that fails

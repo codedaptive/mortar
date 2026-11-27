@@ -1,4 +1,4 @@
-//! unknown_zone_report: a zone the config does not name is refused exit 1, its next init's --replace command with
+//! unknown_zone_report: a zone the config does not name is refused exit 3, its next init's --replace command with
 //! the zone added.
 
 use std::collections::BTreeMap;

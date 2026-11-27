@@ -42,7 +42,7 @@ fn partner_cut_conflict_makes_nothing() {
     let f = Partners::new();
     f.advance("refs/heads/zone/core", &[("Cargo.toml", b"core\n")]);
     f.advance("refs/heads/zone/web", &[("Cargo.toml", b"web\n")]);
-    let report = json::check(f.cut(&["--with", "web"]), "folder", 1, "refused");
+    let report = json::check(f.cut(&["--with", "web"]), "folder", 3, "refused");
     assert_eq!(report.text("partner"), "web");
     assert!(report.strings("files").contains(&"Cargo.toml".to_string()));
     assert!(!f.request.exists());
@@ -60,6 +60,6 @@ macro_rules! refusal {
         }
     };
 }
-refusal!(partner_cut_self_refused, &["--with", "core"], 4, "usage");
-refusal!(partner_cut_duplicate_refused, &["--with", "web", "--with", "web"], 4, "usage");
-refusal!(partner_cut_unknown_refused, &["--with", "nosuch"], 1, "refused");
+refusal!(partner_cut_self_refused, &["--with", "core"], 2, "usage");
+refusal!(partner_cut_duplicate_refused, &["--with", "web", "--with", "web"], 2, "usage");
+refusal!(partner_cut_unknown_refused, &["--with", "nosuch"], 3, "refused");

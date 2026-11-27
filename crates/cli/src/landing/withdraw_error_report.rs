@@ -13,7 +13,7 @@ use crate::report::{failure_report, Report};
 ///   withdraw again.
 /// - OpFailed, OpRepeated: as squash_error_report words them.
 ///
-/// Every refusal is exit 1, outcome "refused", with no fields.
+/// Every refusal is exit 3, outcome "refused", with no fields.
 pub fn withdraw_error_report(verb: &str, error: &WithdrawError) -> Report {
     let nothing_moved = |line: String| vec![line, "nothing was moved".to_string()];
     match error {

@@ -2,8 +2,8 @@
 //! says whether they are in place: its words read, then the sub-verb's runner.
 //! No sibling test: it reaches git, the op log and land through its runners; parse_guard_args_tests covers
 //! its words. The integration tests crates/cli/tests/guard_runs/run_guard_install_tests.rs and run_guard_status_tests.rs cover it
-//! through the binary: no sub-verb and an unknown sub-verb exit 4 with guard's usage line as next, nothing written.
-//! Integration tests to write (not written here): without a config, exit 1, next
+//! through the binary: no sub-verb and an unknown sub-verb exit 2 with guard's usage line as next, nothing written.
+//! Integration tests to write (not written here): without a config, exit 3, next
 //! mr init (the shell's load_config).
 
 use std::path::Path;
@@ -15,7 +15,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "guard";
 
-/// The words after the verb read by parse_guard_args (an Err is guard's usage report, exit 4, before the verb runs
+/// The words after the verb read by parse_guard_args (an Err is guard's usage report, exit 2, before the verb runs
 /// git); then install's or status's runner with the config the shell loaded.
 pub fn run_guard(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;

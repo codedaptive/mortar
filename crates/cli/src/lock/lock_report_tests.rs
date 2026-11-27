@@ -52,7 +52,7 @@ fn a_takeover_in_progress_is_busy_naming_the_guard_holder() {
         removed_guards: Vec::new(),
     };
     let report = lock_report("land", &error);
-    assert_eq!(report.exit as i32, 3);
+    assert_eq!(report.exit as i32, 4);
     assert_eq!(
         report.lines,
         vec!["a takeover of the lock is in progress: /r/.git/mortar/locks/land.lock.takeover is held by pid 4242 \

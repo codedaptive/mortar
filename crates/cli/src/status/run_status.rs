@@ -8,7 +8,7 @@
 //! - in an attempt folder: exit 0, attempt k's own branch and snapshot, next mr save or the wait for
 //!   the harness, never join (status_attempt_folder_tests.rs);
 //! - a zone folder is refused;
-//! - any argument is exit 4;
+//! - any argument is exit 2;
 //! - --json gives one object;
 //! - status moves no ref and leaves the repository's files alone (refs, index and op log unchanged); its answer
 //!   carries savings, so the binary's edge (entry/main_entry, through record_savings) appends one line to the

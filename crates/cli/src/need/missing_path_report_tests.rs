@@ -1,4 +1,4 @@
-//! missing_path_report: a path not at the folder's commit is exit 1, names the path and the commit, says nothing
+//! missing_path_report: a path not at the folder's commit is exit 3, names the path and the commit, says nothing
 //! ran, and is this request's to fix.
 
 use gitio::Oid;

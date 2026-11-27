@@ -84,7 +84,7 @@ fn a_missing_empty_blank_or_repeated_message_is_usage_naming_message_and_writes_
         &["squash", "core", "--message", "  \n "],
         &["squash", "core", "--message", "one", "--message", "two"],
     ] {
-        let r = run(&f, words, 4, "usage");
+        let r = run(&f, words, 2, "usage");
         let reason = &r.strings("lines")[0];
         assert!(reason.starts_with("--message "), "{words:?}: {reason}");
         assert_eq!(f.git.read_ref(SQUASH_CORE).unwrap(), None, "{words:?}");

@@ -4,10 +4,10 @@
 //! check_restore_ref_names, plan_restore), covered there, and restore_refusal_tests cover what restore decides from
 //! the moves. The integration tests are to cover, with the mortar binary as a child process in a throwaway
 //! repository (tests running real git set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
-//! - a restore that would delete a folder's ref refuses exit 1.
+//! - a restore that would delete a folder's ref refuses exit 3.
 //!   The integration test crates/cli/tests/log_restore_runs/run_restore_repeat_tests.rs covers a kill between oplog::restore and the folder
 //!   move finished by a plain repeat (Repeated, then the move). The integration test crates/cli/tests/log_restore_runs/run_restore_tests.rs
-//!   covers a ref name git refuses coming back as BadMove, exit 1, with no ref written and no record added.
+//!   covers a ref name git refuses coming back as BadMove, exit 3, with no ref written and no record added.
 
 use std::path::Path;
 

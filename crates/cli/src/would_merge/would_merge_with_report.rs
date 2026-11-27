@@ -14,7 +14,7 @@ const NOTHING_REACHED: &str = "no ref moved; any merge commit the trial wrote is
 /// Step 1 is `squash`, step k + 1 the k-th of `with`. Fields change_id and commit name `squash` in both answers.
 /// - Clean: exit 0 "merges", a line for step 1 merging into integration and one for each later step merging onto
 ///   the step before; next lands each step's commit in order.
-/// - Conflicted: exit 2 "conflict", naming the step that conflicts (and, past step 1, the step it came after) and
+/// - Conflicted: exit 1 "conflict", naming the step that conflicts (and, past step 1, the step it came after) and
 ///   listing each conflicting file on its own line, owner the change's zone; next is CHANGE_CONFLICT_NEXT. Fields
 ///   also files and step (its number and commit).
 ///

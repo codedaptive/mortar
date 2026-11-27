@@ -18,7 +18,7 @@ const RESTORE: &str = "restore-backup";
 ///   are cleared on the remote first.
 /// - OpFailed, OpRepeated: refused, naming the op id or the op key; the next step repeats the command.
 ///
-/// Every refusal is exit 1, outcome "refused", with no fields.
+/// Every refusal is exit 3, outcome "refused", with no fields.
 pub fn backup_error_report(verb: &str, error: &BackupError, remote: &str) -> Report {
     match error {
         BackupError::Host(_) => failure_report(verb, "this machine's host name could not be read"),
