@@ -82,7 +82,7 @@ Rules for tests:
 - **A test proves an outcome, never a speed.** A test that fails on a busy machine is in the wrong group or is wrong.
 - **Put a test in the group that matches what it reaches.** A unit test that runs git is an integration test; move it.
 
-The repository carries a rule file, `temperare.toml`: clippy over every target with every warning an error, except `clippy::result_large_err` and `clippy::module_inception`. If you have Temperare installed, `tm check` runs it.
+The repository carries a rule file, `tao.toml`: clippy over every target with every warning an error, except `clippy::result_large_err` and `clippy::module_inception`. If you have Temperare installed, `tm check` runs it.
 
 ---
 
