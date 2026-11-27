@@ -1,6 +1,6 @@
-//! publish_report: Published (pushed and not, each under push on and push off), OriginMoved under push on (with and
-//! without a moved integration folder) and push off (with one) and NothingToPublish, each with its exit, outcome, lines, owner, next and fields, pushed
-//! among them.
+//! publish_report: Published (pushed and not, each under push on and push off; one zone, two zones and none),
+//! OriginMoved under push on (with and without a moved integration folder) and push off (with one) and
+//! NothingToPublish, each with its exit, outcome, lines, owner, next and fields, pushed among them.
 
 use std::path::Path;
 
@@ -27,6 +27,10 @@ fn text(name: &str, value: &str) -> (String, OutValue) {
 
 fn pushed(value: bool) -> (String, OutValue) {
     ("pushed".to_string(), OutValue::Bool(value))
+}
+
+fn zones(names: &[&str]) -> Vec<String> {
+    names.iter().map(|name| name.to_string()).collect()
 }
 
 fn moved() -> PublishAnswer {
@@ -58,6 +62,7 @@ fn published_names_the_landed_commit_and_where_it_is() {
                 was_pushed,
                 push,
                 &refs(),
+                &zones(&["core"]),
                 None
             ),
             Report {
@@ -66,10 +71,52 @@ fn published_names_the_landed_commit_and_where_it_is() {
                 outcome: "published".to_string(),
                 lines: vec![first.to_string(), "the landing state and the zone's squash ref are removed".to_string()],
                 owner: None,
-                next: "nothing more for this landing; the next landing can start".to_string(),
+                next: "mr after-publish core --actor <name>".to_string(),
                 fields: vec![text("origin", ORIGIN), pushed(was_pushed)],
             },
             "pushed {was_pushed}, push {push}"
+        );
+    }
+}
+
+#[test]
+fn published_of_two_zones_or_none_names_after_publish_for_each_zone() {
+    let rows = [
+        (
+            zones(&["core", "peer"]),
+            "the landing state and the squash refs of zones core, peer are removed",
+            "mr after-publish core --actor <name>, then mr after-publish peer --actor <name>",
+        ),
+        (
+            zones(&[]),
+            "the landing state and the zone's squash ref are removed",
+            "mr after-publish <zone> --actor <name> for each zone this landing published",
+        ),
+    ];
+    for (batch, second, next) in rows {
+        assert_eq!(
+            publish_report(
+                &PublishAnswer::Published { origin: Oid::parse(ORIGIN).unwrap() },
+                true,
+                true,
+                &refs(),
+                &batch,
+                None
+            ),
+            Report {
+                verb: "publish".to_string(),
+                exit: ExitCode::Done,
+                outcome: "published".to_string(),
+                lines: vec![
+                    "published 1111111111111111111111111111111111111111: origin's main and the local main are at it"
+                        .to_string(),
+                    second.to_string(),
+                ],
+                owner: None,
+                next: next.to_string(),
+                fields: vec![text("origin", ORIGIN), pushed(true)],
+            },
+            "zones {batch:?}"
         );
     }
 }
@@ -111,7 +158,7 @@ fn origin_moved_exits_1_naming_who_moved_which_origin_and_the_folder() {
     ];
     for (push, folder, first, folder_line, owner, next, folder_field) in rows {
         assert_eq!(
-            publish_report(&moved(), false, push, &refs(), folder),
+            publish_report(&moved(), false, push, &refs(), &[], folder),
             Report {
                 verb: "publish".to_string(),
                 exit: ExitCode::Refused,
@@ -141,7 +188,7 @@ fn origin_moved_exits_1_naming_who_moved_which_origin_and_the_folder() {
 fn nothing_to_publish_is_done_with_pushed_false() {
     for push in [true, false] {
         assert_eq!(
-            publish_report(&PublishAnswer::NothingToPublish, false, push, &refs(), None),
+            publish_report(&PublishAnswer::NothingToPublish, false, push, &refs(), &[], None),
             Report {
                 verb: "publish".to_string(),
                 exit: ExitCode::Done,

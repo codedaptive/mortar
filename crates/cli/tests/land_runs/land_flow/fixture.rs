@@ -60,6 +60,9 @@ impl Landing {
         assert_eq!(self.locked(|| land::land(&self.f.git, &self.refs, &self.squash, "land-flow-setup").unwrap()),
             LandAnswer::Landed { integration: self.squash.commit.clone() });
     }
+    pub fn kit_append(&self, squash: &Squash) {
+        assert!(matches!(self.locked(|| land::land_batch(&self.f.git, &self.refs, squash, "land-flow-setup").unwrap()), land::BatchLandAnswer::Landed { .. }));
+    }
     pub fn kit_back_out(&self) {
         assert!(matches!(self.locked(|| land::back_out(&self.f.git, &self.refs, "land-flow-setup").unwrap()), land::BackOutAnswer::BackedOut { .. }));
     }
@@ -68,11 +71,41 @@ impl Landing {
         raw(&self.f.git, &["push", "-q", "origin", &format!("{next}:refs/heads/main")]);
         next
     }
+    pub fn disjoint_squashes() -> (Self, Squash) {
+        let mut s = Self::without_remote(true);
+        let base = s.f.commit(&s.f.base, &[("src/file", b"one\ntwo\nthree\nfour\nfive\nsix\nseven\n")], "multiline base\n");
+        raw(&s.f.git, &["update-ref", "refs/heads/main", base.as_str()]);
+        raw(&s.f.git, &["update-ref", "refs/heads/integration", base.as_str()]);
+        s.sync(&s.f.base, &base);
+        s.f.base = base;
+        let core = s.f.commit(&s.f.base, &[("src/file", b"core\ntwo\nthree\nfour\nfive\nsix\nseven\n")], "core edit\n");
+        raw(&s.f.git, &["update-ref", ZONE, core.as_str()]);
+        s.squash = s.locked(|| {
+            let SquashAnswer::Made(squash) = land::squash(&s.f.git, &s.refs, "core", "land-flow-core").unwrap() else { panic!("expected core squash") };
+            squash
+        });
+        let peer = s.f.commit(&s.f.base, &[("src/file", b"one\ntwo\nthree\nfour\nfive\nsix\npeer\n")], "peer edit\n");
+        raw(&s.f.git, &["update-ref", "refs/heads/zone/peer", peer.as_str()]);
+        let peer = s.locked(|| {
+            let SquashAnswer::Made(squash) = land::squash(&s.f.git, &s.refs, "peer", "land-flow-peer").unwrap() else { panic!("expected peer squash") };
+            squash
+        });
+        (s, peer)
+    }
     pub fn peer_squash(&self) -> Squash {
         let commit = self.f.commit(&self.f.base, &[("src/peer", b"peer work\n")], "peer work\n");
         raw(&self.f.git, &["update-ref", "refs/heads/zone/peer", commit.as_str()]);
         self.locked(|| {
             let SquashAnswer::Made(squash) = land::squash(&self.f.git, &self.refs, "peer", "land-flow-peer").unwrap() else { panic!("expected peer squash") };
+            squash
+        })
+    }
+    pub fn further_core_squash(&self) -> Squash {
+        let zone = self.f.git.read_ref(ZONE).unwrap().unwrap();
+        let next = self.f.commit(&zone, &[("src/further", b"further work\n")], "further work\n");
+        raw(&self.f.git, &["update-ref", ZONE, next.as_str()]);
+        self.locked(|| {
+            let SquashAnswer::Made(squash) = land::squash(&self.f.git, &self.refs, "core", "land-flow-further").unwrap() else { panic!("expected further squash") };
             squash
         })
     }

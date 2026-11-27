@@ -1,6 +1,6 @@
-//! The report of a landing verb (back-out, publish) that land's land, back_out or one of publish's ops refused, in
-//! the cli's own words: land's, gitio's and oplog's Display texts are never printed; only an error's oids, op ids
-//! and keys are.
+//! The report of a landing verb (land, back-out, publish) that land's land_batch, back_out_batch or one of
+//! publish's ops refused, in the cli's own words: land's, gitio's and oplog's Display texts are never printed; only
+//! an error's oids, op ids and keys are.
 
 use land::LandError;
 

@@ -16,7 +16,8 @@
 //! through the binary; crates/cli/tests/land_runs/land_flow/landing.rs covers the land lock held by a live pid
 //! (exit 3), land_flow/killed.rs the stopped-move finish (a kill after land's op and before the folder move, then a
 //! plain repeat moves the folder from the op's old value to the tip and the report's first line says so) and
-//! land_flow/stopped.rs a staged edit in the integration folder (no move, the verb goes on).
+//! land_flow/stopped.rs a staged edit in the integration folder (no move, the verb goes on); land_flow/batch.rs the
+//! next naming `mr after-publish` for each zone of a batch, in landing order.
 //! Integration tests to write (not written here): without a config, exit 1, next mr init (land_flow/landing.rs
 //! covers it for land and would-merge only); the PublishError texts through a real remote (PushRefused by a
 //! remote hook, RemoteMissing, a PushIntent already done).
@@ -30,8 +31,8 @@ use oplog::{KillPidProbe, LockName};
 use super::{parse_publish_args, publish_report};
 use crate::args::{usage_report, UsageError};
 use crate::guard::guard_refs_for;
-use crate::integration_folder::{finish_stopped_move, move_integration_folder, note_finished_move};
-use crate::landing::publish_error_report;
+use crate::integration_folder::{finish_stopped_move, integration_tip, move_integration_folder, note_finished_move};
+use crate::landing::{publish_error_report, read_batch};
 use crate::lock::locked_act;
 use crate::opkey::op_key;
 use crate::report::{failure_report, Report};
@@ -45,11 +46,11 @@ const REPEAT_NO_PUSH: &str = "mr publish --no-push --actor <name>";
 
 /// Words parse_publish_args refuses are publish's usage report, exit 4, before the verb runs git. Then, under the land
 /// lock after recover (locked_act), keyed by --key or op_key("publish", the common dir): first a stopped integration
-/// folder move is finished (finish_stopped_move), then integration's tip read, land's publish_with_push as the
-/// context's actor with push off under --no-push, reported by publish_report or, when refused,
-/// publish_error_report. On OriginMoved the integration folder is moved from that tip onto the found origin first; a
-/// refused move is its own report. A finished stopped move is the first line of every report after it, refusals
-/// included (note_finished_move).
+/// folder move is finished (finish_stopped_move), then integration's tip and the landing batch's zones read, land's
+/// publish_with_push as the context's actor with push off under --no-push, reported by publish_report or, when
+/// refused, publish_error_report. On OriginMoved the integration folder is moved from that tip onto the found origin
+/// first; a refused move is its own report. A finished stopped move is the first line of every report after it,
+/// refusals included (note_finished_move).
 pub fn run_publish(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let push = match parse_publish_args(&args.rest) {
@@ -76,18 +77,19 @@ pub fn run_publish(context: &ShellContext, cwd: &Path) -> Report {
     .unwrap_or_else(|report| report)
 }
 
-/// integration's tip read, land's publish_with_push, and on OriginMoved the folder moved with integration onto
-/// `found`, its done line naming the remote's origin branch under push on and the local one under push off.
+/// integration's tip read (integration_tip), then the batch's zones in landing order (read_batch, before
+/// publish_with_push removes the landing state; no state is no zones), land's publish_with_push, and on OriginMoved
+/// the folder moved with integration onto `found`, its done line naming the remote's origin branch under push on and
+/// the local one under push off.
 fn publish(git: &Git, refs: &LandRefs, actor: &str, push: bool, repeat: &str) -> Result<Report, Report> {
     let integration = &refs.integration_branch;
-    let Ok(Some(before)) = git.read_ref(&format!("refs/heads/{integration}")) else {
-        return Err(failure_report(VERB, &format!("git could not read the integration branch {integration}")));
-    };
+    let before = integration_tip(git, VERB, integration)?;
+    let zones: Vec<String> = read_batch(git, VERB)?.into_iter().map(|member| member.zone).collect();
     let outcome = land::publish_with_push(git, refs, actor, push).map_err(|error| publish_error_report(&error, refs))?;
     let found = match &outcome.answer {
         PublishAnswer::OriginMoved { found } => found,
         PublishAnswer::Published { .. } | PublishAnswer::NothingToPublish => {
-            return Ok(publish_report(&outcome.answer, outcome.pushed, push, refs, None));
+            return Ok(publish_report(&outcome.answer, outcome.pushed, push, refs, &zones, None));
         }
     };
     let origin_branch = &refs.origin_branch;
@@ -97,5 +99,5 @@ fn publish(git: &Git, refs: &LandRefs, actor: &str, push: bool, repeat: &str) ->
         format!("the local {origin_branch} was moved to {found}; integration is back on it")
     };
     let folder = move_integration_folder(git, VERB, integration, &before, found, actor, &done, repeat)?;
-    Ok(publish_report(&outcome.answer, outcome.pushed, push, refs, folder.as_deref()))
+    Ok(publish_report(&outcome.answer, outcome.pushed, push, refs, &zones, folder.as_deref()))
 }

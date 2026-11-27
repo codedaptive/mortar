@@ -22,7 +22,7 @@ use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
 const VERB: &str = "commit-files";
-const NEXT: &str = "mr publish --actor <name> pushes it with the landing; mr back-out --actor <name> drops both";
+const NEXT: &str = "mr publish --actor <name> pushes it with the batch; mr back-out --actor <name> drops it with the batch";
 
 /// `top` is the integration folder's top. Under the land lock after recover (locked_act), keyed by --key or
 /// op_key("commit-files", the common dir): refs/heads/<integration>'s tip read (git failing or the branch missing is

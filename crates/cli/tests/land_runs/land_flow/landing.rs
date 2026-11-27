@@ -52,11 +52,10 @@ fn conflicting_landing_lists_files_and_leaves_integration_folder_log_and_state_u
 }
 
 #[test]
-fn another_squash_is_busy_with_the_in_flight_change_and_a_change_id_is_usage_not_a_landing() {
+fn another_zone_lands_in_the_batch_and_a_change_id_is_usage_not_a_landing() {
     let s = Landing::without_remote(true); let peer = s.peer_squash(); s.land();
+    s.run("land", Some(peer.commit.as_str()), 0, "landed");
     let before = s.observe();
-    let r = s.run("land", Some(peer.commit.as_str()), 3, "busy");
-    assert_eq!(r.text("busy_with"), s.squash.change_id.as_str()); assert_eq!(s.observe(), before);
     let r = s.run("land", Some(s.squash.change_id.as_str()), 4, "usage");
     let id = s.squash.change_id.as_str();
     assert_eq!(r.strings("lines")[0], format!("\"{id}\" is a change ID; land takes the squash's commit id only (find it with mr would-merge {id} --actor <name>)"));

@@ -14,9 +14,12 @@ const VERB: &str = "publish";
 
 /// `pushed` is land's PublishOutcome's; `push` is false for `mr publish --no-push`. Every answer carries the field
 /// pushed (a boolean).
-/// - Published: exit 0 "published", the landing state and the zone's squash ref removed; field origin. When pushed,
-///   its line says the remote's and the local origin branch are at `origin`; otherwise it names only the local origin
-///   branch and says this publish pushed nothing to the remote.
+/// `zones` are the published batch's zones in landing order, read before land removed the state (empty when it was
+/// already gone).
+/// - Published: exit 0 "published", the landing state and the squash refs removed (removed_line); field origin. When
+///   pushed, its line says the remote's and the local origin branch are at `origin`; otherwise it names only the local
+///   origin branch and says this publish pushed nothing to the remote. Next names `mr after-publish` for each zone
+///   (after_publish_next).
 /// - OriginMoved: exit 1 "origin-moved", nothing published; the local origin branch and integration are on `found`,
 ///   the squash kept, and `folder` (the integration folder moved onto `found`, if any) is named. Push on: someone
 ///   else moved the remote's origin branch to `found`, owned by whoever pushed it. Push off: someone else moved the
@@ -29,6 +32,7 @@ pub fn publish_report(
     pushed: bool,
     push: bool,
     refs: &LandRefs,
+    zones: &[String],
     folder: Option<&Path>,
 ) -> Report {
     let remote = &refs.remote;
@@ -48,10 +52,10 @@ pub fn publish_report(
                          {remote}"
                     )
                 },
-                "the landing state and the zone's squash ref are removed".to_string(),
+                removed_line(zones),
             ],
             owner: None,
-            next: "nothing more for this landing; the next landing can start".to_string(),
+            next: after_publish_next(zones),
             fields: vec![("origin".to_string(), OutValue::Text(origin.to_string())), pushed_field],
         },
         PublishAnswer::OriginMoved { found } => {
@@ -69,6 +73,24 @@ pub fn publish_report(
             fields: vec![pushed_field],
         },
     }
+}
+
+/// Published's second line. A batch of one (or a state already gone) keeps the single-zone wording; a batch of more
+/// names its zones.
+fn removed_line(zones: &[String]) -> String {
+    if zones.len() > 1 {
+        format!("the landing state and the squash refs of zones {} are removed", zones.join(", "))
+    } else {
+        "the landing state and the zone's squash ref are removed".to_string()
+    }
+}
+
+/// Published's next: `mr after-publish` for each zone in landing order; with no zones read, the general form.
+fn after_publish_next(zones: &[String]) -> String {
+    if zones.is_empty() {
+        return "mr after-publish <zone> --actor <name> for each zone this landing published".to_string();
+    }
+    zones.iter().map(|zone| format!("mr after-publish {zone} --actor <name>")).collect::<Vec<_>>().join(", then ")
 }
 
 /// OriginMoved's report without the pushed field: push on names the remote's origin branch, push off the local one.

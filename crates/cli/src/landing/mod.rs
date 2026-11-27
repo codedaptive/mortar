@@ -1,6 +1,7 @@
 //! The cli's words for land's refusals and failures, shared by the landing verbs: squash's, would-merge's, land's,
 //! the landing state file's, back-out's, publish's and withdraw's; the squash those verbs read, named by its commit
-//! or by the change ID its squash ref carries; and the check that a zone word is a zone the config names.
+//! or by the change ID its squash ref carries; the landing batch land and publish read; and the check that a zone
+//! word is a zone the config names.
 
 mod change_conflict_next;
 mod known_zone;
@@ -9,6 +10,7 @@ mod landing_refusal;
 mod landing_state_error_report;
 mod pick_squash_ref;
 mod publish_error_report;
+mod read_batch;
 mod resolve_squash;
 mod squash_error_report;
 mod squash_name;
@@ -43,6 +45,7 @@ pub(crate) use land_error_report::land_error_report;
 pub(crate) use landing_state_error_report::landing_state_error_report;
 pub(crate) use pick_squash_ref::pick_squash_ref;
 pub(crate) use publish_error_report::publish_error_report;
+pub(crate) use read_batch::read_batch;
 pub(crate) use resolve_squash::resolve_squash;
 pub(crate) use squash_error_report::squash_error_report;
 pub(crate) use squash_name::SquashName;
