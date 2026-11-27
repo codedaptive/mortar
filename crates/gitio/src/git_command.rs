@@ -5,13 +5,13 @@ use crate::{Git, RunOpts};
 use std::ffi::OsString;
 use std::process::Command;
 
-/// Variables a child git must not inherit. The first six are set by git for the hooks it runs: Mortar runs inside git
-/// hooks, and a child git that inherited them would act on the hook's repository, index or object store instead of
-/// the one passed as `-C`. The last four set a pathspec mode, which changes how every pathspec gitio sends is read
-/// (under GIT_LITERAL_PATHSPECS an exclude such as `:!target/` stops matching), and git refuses
-/// some pairs of them (GIT_LITERAL_PATHSPECS with GIT_GLOB_PATHSPECS or GIT_ICASE_PATHSPECS; GIT_GLOB_PATHSPECS with
-/// GIT_NOGLOB_PATHSPECS).
-const SCRUBBED: [&str; 10] = [
+/// Variables a child git, or a commit hook gitio starts (hook_command), must not inherit. The first six are set by git
+/// for the hooks it runs: Mortar runs inside git hooks, and a child that inherited them would act on the hook's
+/// repository, index or object store instead of the one gitio names. The last four set a pathspec mode, which changes
+/// how every pathspec gitio sends is read (under GIT_LITERAL_PATHSPECS an exclude such as `:!target/` stops
+/// matching), and git refuses some pairs of them (GIT_LITERAL_PATHSPECS with GIT_GLOB_PATHSPECS or
+/// GIT_ICASE_PATHSPECS; GIT_GLOB_PATHSPECS with GIT_NOGLOB_PATHSPECS).
+pub(crate) const SCRUBBED: [&str; 10] = [
     "GIT_DIR",
     "GIT_WORK_TREE",
     "GIT_INDEX_FILE",
