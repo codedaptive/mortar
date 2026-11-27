@@ -8,6 +8,7 @@ mod check_exit;
 mod check_ref_format_request;
 mod classify_fetch_ref;
 mod classify_update_refs;
+mod commit_hooks_outcome;
 mod commit_info;
 mod commit_info_request;
 mod commit_tree_request;
@@ -24,6 +25,7 @@ mod git;
 mod git_changed_files;
 mod git_check_ref_format;
 mod git_command;
+mod git_commit_hooks;
 mod git_commit_info;
 mod git_commit_tree;
 mod git_common_dir;
@@ -39,6 +41,7 @@ mod git_first_parent_list;
 mod git_folder_move;
 mod git_git_dir;
 mod git_head;
+mod git_hook_folder;
 mod git_hooks_path;
 mod git_index_tree;
 mod git_is_ancestor;
@@ -82,6 +85,9 @@ mod git_worktree_list;
 mod git_worktree_remove;
 mod git_write_blob_paths;
 mod head_requests;
+mod hook_command;
+mod hook_folder_request;
+mod hook_refusal;
 mod hooks_path_request;
 mod index_info_stdin;
 mod index_tree_error;
@@ -96,6 +102,7 @@ mod merge_base_request;
 mod merge_tree_outcome;
 mod merge_tree_request;
 mod next_temp_index;
+mod next_temp_message;
 mod no_nul;
 mod no_refresh_parameters;
 mod oid;
@@ -121,6 +128,7 @@ mod push_refusal;
 mod push_request;
 mod range_diff_ranges_request;
 mod range_diff_request;
+mod read_bare_flag;
 mod read_check_ref_format;
 mod read_commit_info;
 mod read_disk_usage;
@@ -160,6 +168,7 @@ mod replay_request;
 mod rev_list_request;
 mod rev_parse_request;
 mod run_counted;
+mod run_hook;
 mod run_opts;
 mod set_index_request;
 mod settle;
@@ -172,6 +181,7 @@ mod spawn_refusal;
 mod status_paths;
 mod status_paths_request;
 mod temp_index_path;
+mod temp_message_path;
 mod text_refusal;
 mod trailers_add_request;
 mod trailers_parse_request;
@@ -203,12 +213,14 @@ mod worktree_remove_request;
 mod write_blob_paths_request;
 
 pub use baseline_query::BaselineQuery;
+pub use commit_hooks_outcome::CommitHooksOutcome;
 pub use commit_info::CommitInfo;
 pub use entry_kind::EntryKind;
 pub use fetch_ref_outcome::FetchRefOutcome;
 pub use folder_move_outcome::FolderMoveOutcome;
 pub use git::Git;
 pub use git_error::GitError;
+pub use hook_refusal::HookRefusal;
 pub use index_tree_error::IndexTreeError;
 pub use merge_tree_outcome::MergeTreeOutcome;
 pub use oid::Oid;
@@ -288,6 +300,10 @@ mod git_version_tests;
 #[cfg(test)]
 mod head_requests_tests;
 #[cfg(test)]
+mod hook_command_tests;
+#[cfg(test)]
+mod hook_folder_request_tests;
+#[cfg(test)]
 mod hooks_path_request_tests;
 #[cfg(test)]
 mod index_info_stdin_tests;
@@ -313,6 +329,8 @@ mod merge_base_request_tests;
 mod merge_tree_request_tests;
 #[cfg(test)]
 mod next_temp_index_tests;
+#[cfg(test)]
+mod next_temp_message_tests;
 #[cfg(test)]
 mod no_nul_tests;
 #[cfg(test)]
@@ -353,6 +371,8 @@ mod push_request_tests;
 mod range_diff_ranges_request_tests;
 #[cfg(test)]
 mod range_diff_request_tests;
+#[cfg(test)]
+mod read_bare_flag_tests;
 #[cfg(test)]
 mod read_check_ref_format_tests;
 #[cfg(test)]
@@ -447,6 +467,8 @@ mod spawn_refusal_tests;
 mod status_paths_request_tests;
 #[cfg(test)]
 mod temp_index_path_tests;
+#[cfg(test)]
+mod temp_message_path_tests;
 #[cfg(test)]
 mod text_refusal_tests;
 #[cfg(test)]

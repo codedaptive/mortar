@@ -1,4 +1,5 @@
-//! temp_index_path: where a temporary index (Git::snapshot_tree, Git::tree_with_paths, Git::index_tree) lives.
+//! temp_index_path: where a temporary index (Git::snapshot_tree, Git::tree_with_paths, Git::index_tree,
+//! Git::commit_hooks) lives.
 
 use std::path::{Path, PathBuf};
 
