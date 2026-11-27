@@ -1,6 +1,7 @@
 //! Real CLI/Land/Folder/Oplog/Git interfaces.
 //! Each case owns and removes its repository, worktrees and, where it has one, bare remote. No live service or team repository.
 mod fixture;
+mod batch;
 mod would_merge;
 mod would_merge_with;
 mod landing;

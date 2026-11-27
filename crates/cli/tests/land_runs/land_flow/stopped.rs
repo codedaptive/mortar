@@ -1,5 +1,7 @@
 //! Joins finish_stopped_move through CLI land/back-out/publish with real Land ops, Folder moves and Git indexes.
 //! A blocked finish stops BEFORE the verb's own call; clearing preserves the index, not HEAD.
+//! A repeat of land refuses a folder holding a staged edit to a path the move changes or an unmerged index, as
+//! land's own folder move does.
 use super::fixture::Landing;
 use crate::{json::Report, support::{raw, write}};
 use gitio::{Oid, RunOpts};
@@ -62,6 +64,42 @@ fn refused_own_folder_move_is_finished_on_the_plain_repeat(verb: &str) {
 }
 
 #[test]
+fn land_repeat_refuses_staged_edit_until_folder_is_cleared() {
+    let s = Landing::without_remote(true);
+    write(&s.folder, "src/file", b"staged owner work\n");
+    raw(&s.folder_git(), &["add", "src/file"]);
+    let index = s.index();
+    let bytes = s.bytes();
+    let r = s.run("land", word(&s, "land"), 1, "folder-not-moved");
+    assert_eq!(s.tip(), s.squash.commit);
+    assert_eq!(s.index(), index);
+    assert_eq!(s.bytes(), bytes);
+    refusal(&s, &r, "land", &s.f.base, &s.squash.commit);
+
+    let r = s.run("land", word(&s, "land"), 1, "folder-not-moved");
+    assert_eq!(r.strings("paths"), &["src/file"]);
+    assert_eq!(s.index(), index);
+    assert_eq!(s.bytes(), bytes);
+
+    raw(&s.folder_git(), &["read-tree", s.f.base.as_str()]);
+    s.clear_to_index();
+    s.land();
+    s.assert_clean_at(&s.squash.commit, b"zone work\n");
+}
+
+#[test]
+fn land_repeat_refuses_an_unmerged_folder_index() {
+    let s = Landing::without_remote(true);
+    s.land();
+    let other = s.f.commit(&s.f.base, &[("src/file", b"other conflict\n")], "conflicting index\n");
+    raw(&s.folder_git(), &["read-tree", "-m", s.f.base.as_str(), s.squash.commit.as_str(), other.as_str()]);
+    assert!(!raw(&s.folder_git(), &["ls-files", "-u"]).is_empty());
+    let before = s.observe();
+    s.run("land", word(&s, "land"), 1, "folder-not-moved");
+    assert_eq!(s.observe(), before);
+}
+
+#[test]
 fn stopped_back_out_finishes_even_when_the_kit_repeat_answers_nothing() { stopped_move_finishes_even_when_the_kit_repeat_answers_nothing("back-out"); }
 
 #[test]
@@ -104,12 +142,13 @@ fn index_is_not_a_stall_and_is_left_byte_for_byte(unmerged: bool) {
 }
 
 #[test]
-fn land_with_a_staged_non_stall_index_goes_on_to_its_busy_answer_without_touching_the_folder() {
+fn land_with_a_staged_non_stall_index_goes_on_to_land_the_peer() {
     let s = Landing::new(true); let peer = s.peer_squash(); s.kit_land();
-    write(&s.folder, "src/file", b"staged owner work\n"); raw(&s.folder_git(), &["add", "src/file"]);
-    let before = s.observe(); let r = s.run("land", Some(peer.commit.as_str()), 3, "busy");
-    assert_eq!(r.text("busy_with"), s.squash.change_id.as_str());
-    assert!(!r.lines().contains("first finished a stopped move")); assert_eq!(s.observe(), before);
+    write(&s.folder, "sub/keep", b"staged owner work\n"); raw(&s.folder_git(), &["add", "sub/keep"]);
+    let r = s.run("land", Some(peer.commit.as_str()), 0, "landed");
+    assert_eq!(r.text("change_id"), peer.change_id.as_str());
+    assert!(!r.lines().contains("first finished a stopped move"));
+    assert_eq!(raw(&s.folder_git(), &["show", ":sub/keep"]), b"staged owner work\n");
 }
 
 #[test]

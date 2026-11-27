@@ -10,5 +10,6 @@ mod saves;
 mod joins;
 mod partner_join_tests;
 mod plain_base_tests;
+mod zone_moved_sideways_tests;
 mod recovery;
 mod processes;

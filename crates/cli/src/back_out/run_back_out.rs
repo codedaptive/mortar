@@ -1,5 +1,6 @@
-//! run_back_out: `mr back-out`, integration moved back to where the landing found it and the integration folder
-//! moved back with it, under the land lock (land's back_out, then the integration folder moved back).
+//! run_back_out: `mr back-out`, integration moved back to where the landing batch found it (every member of the
+//! batch goes) and the integration folder moved back with it, under the land lock (land's back_out_batch, then the
+//! integration folder moved back).
 //! --key names the lock holder only, never passed to the op log; repeat safety comes from
 //! land's answers (NothingToBackOut) and from the stopped-move finish: before land's call, finish_stopped_move moves
 //! an integration folder a stopped run left on the old commit onto integration's tip, so a plain repeat after
@@ -12,8 +13,9 @@
 //! crates/cli/tests/land_runs/run_back_out_tests.rs covers it through the binary;
 //! crates/cli/tests/land_runs/land_flow/landing.rs covers the land lock held by a live pid (exit 3),
 //! land_flow/killed.rs the stopped-move finish (a kill after land's op and before the folder move, then a plain
-//! repeat moves the folder and the report's first line says so) and land_flow/stopped.rs a staged edit in the
-//! integration folder through publish only, not back-out (no move, the verb goes on).
+//! repeat moves the folder and the report's first line says so) and land_flow/stopped.rs an owner's edit to a path
+//! the move changes refusing back-out's own folder move (folder-not-moved, the index left as it is), and a staged
+//! edit left alone while land and publish go on.
 //! Integration tests to write (not written here): without a config, exit 1, next mr init (land_flow/landing.rs
 //! covers it for land and would-merge only); the LandError texts that need git, the op log or the landing
 //! state to fail for real; a back-out after a failed integration test of a landed squash.
@@ -21,13 +23,13 @@
 use std::path::Path;
 
 use gitio::{Git, Oid};
-use land::{BackOutAnswer, LandRefs};
+use land::{BatchBackOutAnswer, LandRefs};
 use oplog::{KillPidProbe, LockName};
 
 use super::back_out_report;
 use crate::args::no_arguments_report;
 use crate::guard::guard_refs_for;
-use crate::integration_folder::{finish_stopped_move, move_integration_folder, note_finished_move};
+use crate::integration_folder::{finish_stopped_move, move_integration_folder, note_finished_move, stopped_before_move};
 use crate::landing::land_error_report;
 use crate::lock::locked_act;
 use crate::opkey::op_key;
@@ -40,10 +42,12 @@ const REPEAT: &str = "mr back-out --actor <name>";
 
 /// Any argument is back-out's usage report, before the verb runs git. Then, under the land lock after recover
 /// (locked_act), keyed by --key or op_key("back-out", the common dir): first a stopped integration folder move is
-/// finished (finish_stopped_move), then integration's tip read, land's back_out as the context's actor (refused:
+/// finished (finish_stopped_move), then integration's tip read, land's back_out_batch as the context's actor (refused:
 /// land_error_report), and on BackedOut the integration folder moved from the old tip to the new one
-/// (move_integration_folder), reported by back_out_report. NothingToBackOut moves no folder of its own; a finished
-/// stopped move is the first line of every report after it, refusals included (note_finished_move).
+/// (move_integration_folder), reported by back_out_report. After BackedOut, a failed tip read is exit 1
+/// "folder-not-moved" led by the backed-out line without the tip, repeat as next. NothingToBackOut moves no folder of
+/// its own; a finished stopped move is the first line of every report after it, refusals included
+/// (note_finished_move).
 pub fn run_back_out(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     if let Some(usage) = no_arguments_report(VERB, &args.rest, args.json) {
@@ -69,15 +73,26 @@ pub fn run_back_out(context: &ShellContext, cwd: &Path) -> Report {
     .unwrap_or_else(|report| report)
 }
 
-/// integration's tip read, land's back_out, and on BackedOut the folder moved back with integration.
+/// integration's tip read, land's back_out_batch, and on BackedOut integration's tip read again and the folder moved
+/// back with integration. The move's done text, the first line of a refused move's report, is back_out_report's
+/// first line, so it names every member of the batch in landing order; a failed second tip read is led by that line
+/// without the tip (stopped_before_move).
 fn back_out(git: &Git, refs: &LandRefs, integration: &str, actor: &str) -> Result<Report, Report> {
     let before = integration_tip(git, integration)?;
-    let answer = land::back_out(git, refs, actor).map_err(|error| land_error_report(VERB, &error, integration))?;
-    let BackOutAnswer::BackedOut { change_id } = &answer else {
+    let answer = land::back_out_batch(git, refs, actor).map_err(|error| land_error_report(VERB, &error, integration))?;
+    let BatchBackOutAnswer::BackedOut { change_id, change_ids } = &answer else {
         return Ok(back_out_report(&answer, &before, None));
     };
-    let after = integration_tip(git, integration)?;
-    let done = format!("backed out change {change_id}: integration is back at {after}");
+    let after = integration_tip(git, integration).map_err(|error| {
+        let line = if change_ids.len() <= 1 {
+            format!("backed out change {change_id}")
+        } else {
+            let ids = change_ids.iter().map(ToString::to_string).collect::<Vec<_>>().join(", ");
+            format!("backed out changes {ids} (in landing order)")
+        };
+        stopped_before_move(&line, error, REPEAT)
+    })?;
+    let done = back_out_report(&answer, &after, None).lines.remove(0);
     let folder = move_integration_folder(git, VERB, integration, &before, &after, actor, &done, REPEAT)?;
     Ok(back_out_report(&answer, &after, folder.as_deref()))
 }
