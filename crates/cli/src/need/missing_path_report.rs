@@ -4,7 +4,7 @@ use gitio::Oid;
 
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Exit 1 "refused": `path` is not in the repository at the folder's commit `commit`, and nothing ran (the check
+/// Exit 3 "refused": `path` is not in the repository at the folder's commit `commit`, and nothing ran (the check
 /// runs before the lock). Owned by this request; next names a path the repository holds. Fields path and commit.
 pub fn missing_path_report(path: &str, commit: &Oid) -> Report {
     Report {

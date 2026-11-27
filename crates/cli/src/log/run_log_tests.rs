@@ -1,7 +1,7 @@
 //! run_log: a filter word log does not know, a second --ref and a --ref without a value are each log's usage (exit
-//! 4, next log's usage line), returned before the op log or git is read.
+//! 2, next log's usage line), returned before the op log or git is read.
 //! Unit tests: log_filters and usage_report are plain functions, used directly; the context is built by hand. cwd does not
-//! exist, so a run that read git would answer a refusal or a failure, not exit 4. The listing cases, with a real op
+//! exist, so a run that read git would answer a refusal or a failure, not exit 2. The listing cases, with a real op
 //! log, are integration tests in crates/cli/tests/log_restore_runs/run_log_tests.rs.
 
 use std::path::Path;

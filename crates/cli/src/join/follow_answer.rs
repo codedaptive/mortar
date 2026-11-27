@@ -9,7 +9,7 @@
 //! partner_join_tests.rs covers a request cut on a merge with a partner: unmoved, the zone takes only the request's
 //! commits, the record naming the zone's tip before the join, with no partners; a moved partner rebases onto a new
 //! merge the record names, next "run the unit tests, then mr join", and with every partner already in the zone it is
-//! the plain rebase, the record naming the zone tip with no partners; a conflicting new merge is exit 1 naming the
+//! the plain rebase, the record naming the zone tip with no partners; a conflicting new merge is exit 3 naming the
 //! partner and files, nothing moved.
 
 use folders::{move_folder, RecordedBase};

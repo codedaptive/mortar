@@ -75,7 +75,7 @@ fn undetected_target_refuses_without_writes() {
     let before = snapshot(&tree.env.home);
     let mut opts = options();
     opts.targets = Some(vec![&HARNESSES[1]]);
-    assert_report(&tree.install(&opts), 1, "refused");
+    assert_report(&tree.install(&opts), 3, "refused");
     assert_eq!(snapshot(&tree.env.home), before);
 }
 

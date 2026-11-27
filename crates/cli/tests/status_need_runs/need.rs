@@ -28,7 +28,7 @@ fn need_bad_or_absent_paths_refuse_before_record_cone_or_refs_change() {
     for path in ["../x", "/absolute", "not-present"] {
         let n = Need::new(); let old = before(&n.f, &n.folder);
         let cone = n.f.git.sparse_list(&n.folder).unwrap();
-        let report = n.report(&["--json", "need", path], 1, "refused");
+        let report = n.report(&["--json", "need", path], 3, "refused");
         if path == "not-present" {
             assert!(report.lines().contains(&format!("not-present is not in the repository at the folder's commit {}", n.f.base)));
             assert_eq!(report.text("commit"), n.f.base.as_str()); assert_eq!(report.text("path"), path);
@@ -46,7 +46,7 @@ fn need_live_join_and_folders_locks_refuse_without_changing_the_record() {
         let old = before(&n.f, &n.folder);
         let output = with_lock(&n.f.git, &n.f.common, &name, "held-for-need-validation", &KillPidProbe,
             || Ok::<_, std::io::Error>(n.f.command(&n.folder, &["--json", "need", "sub"]).output().unwrap())).unwrap();
-        let report = check(output, "need", 3, "busy");
+        let report = check(output, "need", 4, "busy");
         assert!(report.lines().contains("held-for-need-validation"));
         assert!(report.lines().contains(&std::process::id().to_string()));
         assert_eq!(before(&n.f, &n.folder), old); assert!(!n.folder.join("sub/keep").exists());
@@ -59,7 +59,7 @@ fn need_missing_zone_ref_refuses_without_expanding_the_cone_or_record() {
     // read_branch_tips header: missing zone is a need refusal with nothing changed, not a partial successful need.
     let n = Need::new(); raw(&n.f.git, &["update-ref", "-d", ZONE]);
     let old = before(&n.f, &n.folder); let cone = n.f.git.sparse_list(&n.folder).unwrap();
-    let report = n.report(&["--json", "need", "sub"], 1, "refused");
+    let report = n.report(&["--json", "need", "sub"], 3, "refused");
     assert_eq!(report.text("owner"), "the zone's coordinator");
     assert_eq!(report.lines(), format!("the branch {ZONE} does not exist"));
     assert_eq!(before(&n.f, &n.folder), old, "a missing prerequisite must not silently complete need");
@@ -92,7 +92,7 @@ fn need_unborn_head_is_refused_without_record_or_cone_changes() {
     // Public request folder whose symbolic HEAD no longer resolves; read_need_path's HEAD refusal.
     let n = Need::new(); raw(&n.f.git, &["update-ref", "-d", "refs/heads/req/core/need"]);
     let old = before(&n.f, &n.folder); let cone = n.f.git.sparse_list(&n.folder).unwrap();
-    let report = n.report(&["--json", "need", "sub"], 1, "refused");
+    let report = n.report(&["--json", "need", "sub"], 3, "refused");
     assert_eq!(report.text("owner"), "the folder's HEAD");
     assert_eq!(report.text("next"), "check out the request's branch in the folder, then repeat the same command");
     assert_eq!(report.strings("lines"), &[format!("HEAD of the folder {} has no commit", n.folder.display())]);
@@ -106,7 +106,7 @@ fn need_attempt_folder_is_refused_without_mutation() {
     oplog::recover(&f.git, &f.common).unwrap();
     folders::make_attempts(&setup(&f.git, &attempts), "core", "task", &["src".into()], 1).unwrap();
     let folder = attempts.join("try-1"); let old = before(&f, &folder);
-    check(f.command(&folder, &["--json", "need", "sub"]).output().unwrap(), "need", 1, "refused");
+    check(f.command(&folder, &["--json", "need", "sub"]).output().unwrap(), "need", 3, "refused");
     assert_eq!(before(&f, &folder), old);
 }
 

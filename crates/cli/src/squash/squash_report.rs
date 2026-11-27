@@ -10,7 +10,7 @@ const VERB: &str = "squash";
 ///   asks mr would-merge of the squash's commit, then hands the change to review.
 /// - Same: exit 0 "already-squashed", the commit already at the squash ref; nothing written. Fields and next as Made.
 /// - Nothing: exit 0 "nothing-to-squash", the zone holds nothing origin lacks; fields zone and source.
-/// - Conflicted: exit 2 "conflict", each conflicting file on its own line, owner the zone; next brings the zone up
+/// - Conflicted: exit 1 "conflict", each conflicting file on its own line, owner the zone; next brings the zone up
 ///   to date through a request, then squashes again. Fields zone and files.
 pub fn squash_report(zone: &str, answer: &SquashAnswer) -> Report {
     let report = |exit, outcome: &str, lines, owner, next: String, fields| Report {

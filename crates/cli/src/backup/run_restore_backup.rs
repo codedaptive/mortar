@@ -5,8 +5,8 @@
 //! parse_restore_backup_args_tests, restore_backup_report_tests and backup_error_report_tests cover its decisions.
 //! The integration tests in crates/cli/tests/across_kits/bisect_backup/ cover it through the binary: backup.rs backup
 //! then restore-backup round trip into a fresh clone; restore-backup with a local ref at another commit (Differs,
-//! left as it is); restore-backup of a host with no backup; guards.rs the land lock held by a live pid, exit 3, and
-//! without a config, exit 1.
+//! left as it is); restore-backup of a host with no backup; guards.rs the land lock held by a live pid, exit 4, and
+//! without a config, exit 3.
 
 use std::path::Path;
 
@@ -23,7 +23,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "restore-backup";
 
-/// The host named by parse_restore_backup_args (an Err is restore-backup's usage report, exit 4, before the verb runs git);
+/// The host named by parse_restore_backup_args (an Err is restore-backup's usage report, exit 2, before the verb runs git);
 /// then, under the land lock after recover (locked_act), keyed by --key or op_key("restore-backup", the common
 /// dir), land's restore_backup of that host from the config's remote as the context's actor, reported by
 /// restore_backup_report or, when refused, backup_error_report naming that remote.

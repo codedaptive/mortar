@@ -3,10 +3,10 @@
 //! init_report_tests and repository_report_tests cover its parts. Integration tests to write (not written here), with the
 //! mortar binary as a child process in a throwaway repository: init writes <common>/mortar/config.json, exit 0 "written",
 //! and it decodes to the values given; a repeat with the same values is exit 0 "already-done" and the file is
-//! byte-identical; a repeat with different values is exit 1 naming the differing keys, the file unchanged; the same with
+//! byte-identical; a repeat with different values is exit 3 naming the differing keys, the file unchanged; the same with
 //! --replace is exit 0 "replaced" and the file holds the new values; init from a linked worktree writes the main
-//! repository's common dir; init outside any git repository is refused, exit 1, outcome "not-a-repository", naming the
-//! directory; a bad init argument is exit 4 with init's usage as next.
+//! repository's common dir; init outside any git repository is refused, exit 3, outcome "not-a-repository", naming the
+//! directory; a bad init argument is exit 2 with init's usage as next.
 
 use std::path::Path;
 

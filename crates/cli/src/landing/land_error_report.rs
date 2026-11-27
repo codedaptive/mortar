@@ -14,7 +14,7 @@ use crate::report::{failure_report, Report};
 ///   op that moved integration in the log and restores it.
 /// - OpFailed, OpRepeated: refused, naming the record's op id or key; the next step is a repeat.
 ///
-/// Every refusal is exit 1, outcome "refused", with no fields.
+/// Every refusal is exit 3, outcome "refused", with no fields.
 pub fn land_error_report(verb: &str, error: &LandError, integration_branch: &str) -> Report {
     let refused = |line: String, owner: &str, next: String| landing_refusal(verb, vec![line], owner, next);
     let integration_ref = format!("refs/heads/{integration_branch}");

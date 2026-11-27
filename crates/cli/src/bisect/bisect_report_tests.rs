@@ -1,5 +1,5 @@
 //! bisect_report: a culprit (exit 0) naming its landing, its trailers and the next step in its zone; no culprit
-//! (exit 1) for each reason; every probe as a line and in the "probes" field, in the order it ran.
+//! (exit 3) for each reason; every probe as a line and in the "probes" field, in the order it ran.
 
 use std::path::PathBuf;
 use std::time::Duration;

@@ -3,7 +3,7 @@
 
 use crate::report::{ExitCode, Report};
 
-/// Refused (exit 1) for `verb`: HOME is not set or is empty, and nothing changed; `owner` is who must set it.
+/// Refused (exit 3) for `verb`: HOME is not set or is empty, and nothing changed; `owner` is who must set it.
 pub fn home_unset_refusal(verb: &str, owner: &str) -> Report {
     Report {
         verb: verb.to_string(),

@@ -8,7 +8,7 @@ use gitio::Oid;
 use crate::report::{ExitCode, OutValue, Report};
 use crate::zone_folder_move::ZoneOld;
 
-/// `old` is find_zone_old's answer for the zone folder's index tree. AtTip gives None. From and NoMatch are exit 1
+/// `old` is find_zone_old's answer for the zone folder's index tree. AtTip gives None. From and NoMatch are exit 3
 /// "refused", owner "zone <zone>", fields zone and tip: a line saying where the folder stands, then that nothing was
 /// written.
 /// - From(v): the folder stands on v, a commit the branch held before its tip; next refreshes it onto the tip.

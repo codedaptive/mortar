@@ -11,9 +11,9 @@
 //! land_report_tests, note_finished_move_tests and landing's land_error_report_tests cover its decisions.
 //! The integration tests in crates/cli/tests/land_runs/land_flow/ cover it through the binary: landing.rs land by
 //! fast-forward and by merge commit, with and without an integration folder (the folder moved from integration's tip
-//! before the landing to the one after it), conflicted (exit 2 with the files and integration unmoved), another
+//! before the landing to the one after it), conflicted (exit 1 with the files and integration unmoved), another
 //! zone's squash landing in the batch, a repeat after Landed answering landed with no further op, a change ID
-//! word (exit 4), the land lock held by a live pid (exit 3) and without a config (exit 1, next mr init); batch.rs two
+//! word (exit 2), the land lock held by a live pid (exit 4) and without a config (exit 3, next mr init); batch.rs two
 //! zones landing as one batch in order, the second member's edit merged into the integration folder beside the
 //! first's, a repeat of the first member reporting the batch's tip and the folder line naming the folder at the tip
 //! with no further op, a batch of one's repeat keeping its two text lines with no further op, a second squash of a
@@ -49,7 +49,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "land";
 
-/// The commit read by parse_land_args (an Err is land's usage report, exit 4, before the verb runs git). Then, under
+/// The commit read by parse_land_args (an Err is land's usage report, exit 2, before the verb runs git). Then, under
 /// the land lock after recover (locked_act), keyed by --key or op_key("land", the common dir): first a stopped
 /// integration folder move is finished (finish_stopped_move), then the squash at that commit read (resolve_squash),
 /// integration's tip read (`before`), and land's land_batch as the context's actor (refused: land_error_report). On
@@ -59,7 +59,7 @@ const VERB: &str = "land";
 /// (last_integration_old), or from `before` when the op log holds no such op or its old is `after`; for a repeat that
 /// is the same move again. Conflicted, Busy and ZoneInBatch move no folder. After Landed (before the move) and
 /// Conflicted the landing batch is read (read_batch, no state an empty batch) and land_report reports it all. After
-/// Landed, every failed read before the move (the second tip read, the op log, the batch) is exit 1
+/// Landed, every failed read before the move (the second tip read, the op log, the batch) is exit 3
 /// "folder-not-moved" led by the landed line (stopped_before_move), repeat as next; when the tip read is what failed,
 /// that line names the change and its commit without the tip. A finished stopped move is the first line of every
 /// report after it, refusals included (note_finished_move).

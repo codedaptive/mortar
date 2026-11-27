@@ -3,8 +3,8 @@
 //! taken from the request folder, not the subfolder it is run in, and one that normalizes inside it is a usage error.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
-//! - a folders lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks);
-//! - free disk under the floor at attempt j: exit 1 with the cli's own facts, never folders' BelowFloor Display text,
+//! - a folders lock held by a live pid: exit 4 naming the holder's pid, host and since (cli with oplog's locks);
+//! - free disk under the floor at attempt j: exit 3 with the cli's own facts, never folders' BelowFloor Display text,
 //!   and a repeat making the rest;
 //! - a request branch gone (RequestBranchMissing): the cli's why and next, never folders' FolderError Display text.
 
@@ -206,7 +206,7 @@ fn attempts_run_in_a_zone_folder_are_refused_and_make_nothing() {
     let before = ops(&fx.common).len();
     let refused = fx.folder(&zone, &["attempts", "2", fx.dir_arg()]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
     assert_eq!(next, "run mr folder attempts <n> <dir> --actor <name> in the request's own folder", "{out}");
@@ -220,7 +220,7 @@ fn zero_attempts_is_a_usage_error_and_makes_nothing() {
     let before = ops(&fx.common).len();
     let refused = fx.folder(&fx.request, &["attempts", "0", fx.dir_arg()]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(4), "{out}");
+    assert_eq!(refused.status.code(), Some(2), "{out}");
     assert_eq!(member(&refused, "outcome"), "usage", "{out}");
     assert_eq!(member(&refused, "next"), USAGE, "{out}");
     fx.assert_nothing_made(before, &out);
@@ -250,7 +250,7 @@ fn a_relative_dir_that_normalizes_inside_the_request_folder_is_a_usage_error() {
     let before = ops(&fx.common).len();
     let refused = fx.folder(&subfolder, &["attempts", "2", "sub/../tries"]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(4), "{out}");
+    assert_eq!(refused.status.code(), Some(2), "{out}");
     assert_eq!(member(&refused, "outcome"), "usage", "{out}");
     assert!(!fx.request.join("tries").exists(), "{out}");
     assert!(!subfolder.join("tries").exists(), "{out}");

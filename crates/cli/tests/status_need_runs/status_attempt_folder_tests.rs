@@ -78,7 +78,7 @@ fn need_in_an_attempt_is_still_refused() {
     let f = Fixture::new();
     let (one, _) = attempts(&f);
     let old = before(&f, &one);
-    check(f.command(&one, &["--json", "need", "src"]).output().unwrap(), "need", 1, "refused");
+    check(f.command(&one, &["--json", "need", "src"]).output().unwrap(), "need", 3, "refused");
     assert_eq!(before(&f, &one), old);
 }
 

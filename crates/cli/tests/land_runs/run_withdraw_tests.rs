@@ -69,7 +69,7 @@ fn withdraw_of_a_squash_already_in_origin_is_refused_with_squash_next() {
     let past = f.commit(&commit, &[("src/past", b"past the squash\n")], "past the squash\n");
     raw(&f.git, &["update-ref", "refs/heads/main", past.as_str()]);
     let before = refs(&f);
-    let r = run(&f, &["withdraw", "core"], 1, "refused");
+    let r = run(&f, &["withdraw", "core"], 3, "refused");
     assert!(r.text("next").contains("mr squash core"), "{}", r.text("next"));
     assert_eq!(squash_ref(&f), Some(commit));
     assert_eq!(refs(&f), before);
@@ -81,7 +81,7 @@ fn withdraw_of_the_landing_in_flight_is_refused_with_back_out_then_withdraw_next
     let made = squash(&f);
     run(&f, &["land", made.text("commit")], 0, "landed");
     let before = refs(&f);
-    let r = run(&f, &["withdraw", "core"], 1, "refused");
+    let r = run(&f, &["withdraw", "core"], 3, "refused");
     let next = r.text("next");
     assert!(next.contains("mr back-out"), "{next}");
     assert!(next.contains("mr withdraw core"), "{next}");
@@ -95,7 +95,7 @@ fn withdraw_usage_errors_name_withdraws_usage_and_leave_the_squash_ref() {
     squash(&f);
     let before = refs(&f);
     for words in [&["withdraw"][..], &["withdraw", "core", "extra"], &["withdraw", "nope"]] {
-        let r = run(&f, words, 4, "usage");
+        let r = run(&f, words, 2, "usage");
         assert!(r.text("next").starts_with("mr withdraw <zone>"), "{words:?}: {}", r.text("next"));
         assert_eq!(refs(&f), before, "{words:?}");
     }

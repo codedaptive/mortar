@@ -25,6 +25,6 @@ fn a_missing_config_is_refused_with_init_as_next() {
 }
 
 #[test]
-fn the_refusal_code_is_1() {
-    assert_eq!(missing_config_report("land", Path::new("/c")).exit as i32, 1);
+fn the_refusal_code_is_3() {
+    assert_eq!(missing_config_report("land", Path::new("/c")).exit as i32, 3);
 }

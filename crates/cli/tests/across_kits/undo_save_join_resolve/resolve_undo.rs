@@ -21,7 +21,7 @@ impl Resolved {
         // the index, introducing a separate folder-move refusal rather than this clean restore round trip.
         let zone = w.s.f.commit(&w.s.f.base, &[("src/file", b"zone conflict\n")], "zone conflict\n");
         raw(&w.s.f.git, &["update-ref", ZONE, zone.as_str()]);
-        ours(&w, &["join"], 2, "conflicted"); ours(&w, &["resolve"], 2, "files-written");
+        ours(&w, &["join"], 1, "conflicted"); ours(&w, &["resolve"], 1, "files-written");
         w.s.f.write("src/file", CHOSEN); w.s.f.write("sub/keep", OUTSIDE);
         let paused = fs::read(state(&w)).unwrap();
         let literal = w.s.f.commit(&old, &[("src/file", CHOSEN)], "literal expected folder tree\n");
@@ -100,7 +100,7 @@ fn binary_undo_precheck_keeps_another_real_paused_join_before_snapshot_ref_or_in
     assert!(matches!(answer, join::JoinAnswer::Conflicted { commit, files, .. }
         if commit == other && files == vec![PathBuf::from("src/file")]));
     let paused = fs::read(state(&s.w)).unwrap(); let before = observe(&s.w); let index = index_bytes(&s.w);
-    let r = ours(&s.w, &["undo"], 1, "refused");
+    let r = ours(&s.w, &["undo"], 3, "refused");
     assert_eq!(r.strings("lines"), &[format!("{} holds another paused join, which undo never overwrites", state(&s.w).display()), "nothing was changed".into()]);
     assert_eq!(r.text("next"), "mr status");
     assert_eq!(observe(&s.w), before); assert_eq!(index_bytes(&s.w), index);
@@ -112,7 +112,7 @@ fn binary_undo_precheck_keeps_another_real_paused_join_before_snapshot_ref_or_in
 fn binary_undo_precheck_keeps_corrupt_state_and_refuses_before_snapshot_or_any_undo() {
     let s = Resolved::new(); fs::write(state(&s.w), BAD).unwrap();
     let before = observe(&s.w); let index = index_bytes(&s.w);
-    let r = ours(&s.w, &["undo"], 1, "refused");
+    let r = ours(&s.w, &["undo"], 3, "refused");
     assert_eq!(r.strings("lines").len(), 3);
     assert!(r.strings("lines")[0].starts_with(&format!("{} is not a paused-join file mortar wrote: ", state(&s.w).display())));
     assert_eq!(&r.strings("lines")[1..], &["the file is kept", "nothing was changed"]);
@@ -138,7 +138,7 @@ fn binary_undo_refuses_a_real_resolve_record_in_the_legacy_format_without_record
     let [before, after] = bases(&s.w, &s.zone);
     assert_eq!(resolve_records(&s.w)[0].values, vec![("folder_tree".into(), s.folder_tree.to_string()), before, after]);
     let before = observe(&s.w); let index = index_bytes(&s.w);
-    let r = ours(&s.w, &["undo"], 1, "refused");
+    let r = ours(&s.w, &["undo"], 3, "refused");
     assert_eq!(r.strings("lines"), &[format!("op {} resolved a join before mortar recorded the paused join, so undo cannot put it back", s.target.record.op_id), "nothing was changed".into()]);
     assert_eq!(r.text("next"), "change the files, mr save, then mr join");
     assert_eq!(observe(&s.w), before); assert_eq!(index_bytes(&s.w), index);
@@ -192,7 +192,7 @@ exec "$MORTAR_VALIDATION_REAL_GIT" "$@"
     let mut command = s.w.s.f.command(&s.w.s.f.request, &["--json", "undo"]);
     command.env("PATH", shim_path(&dir)).env("MORTAR_VALIDATION_LOG", oplog::oplog_path(&s.w.s.f.common))
         .env("MORTAR_VALIDATION_REAL_GIT", actual_git()).env("MORTAR_VALIDATION_STATE", state(&s.w)).env("MORTAR_VALIDATION_MARKER", &marker);
-    let r = crate::json::check(command.output().unwrap(), "undo", 1, "refused");
+    let r = crate::json::check(command.output().unwrap(), "undo", 3, "refused");
     assert_eq!(fs::read(marker).unwrap(), b"after undo ref transaction\n");
     let undo = assert_one_undo(&s.w, &s.target.record, &s.new, &s.old);
     assert_eq!(r.text("undone_op"), s.target.record.op_id); assert_eq!(r.text("undo_op"), undo.op_id);
@@ -251,6 +251,6 @@ fn save_after_a_resolve_undo_keeps_every_file_instead_of_finishing_a_plain_rebas
 #[test]
 fn join_after_a_resolve_undo_keeps_every_file_instead_of_finishing_a_plain_rebase_undo_move() {
     let s = Resolved::new(); s.undo(); let files = s.w.folder_state(&s.w.s.f.request).1;
-    let r = ours(&s.w, &["join"], 2, "conflicted"); assert_eq!(r.text("next"), "mr resolve");
+    let r = ours(&s.w, &["join"], 1, "conflicted"); assert_eq!(r.text("next"), "mr resolve");
     assert_eq!(s.w.folder_state(&s.w.s.f.request).1, files); assert_eq!(done(&s.w, "undo").len(), 1);
 }

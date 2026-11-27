@@ -46,7 +46,7 @@ fn conflicting_landing_lists_files_and_leaves_integration_folder_log_and_state_u
     raw(&s.f.git, &["update-ref", "refs/heads/main", origin.as_str()]);
     raw(&s.f.git, &["update-ref", "refs/heads/integration", origin.as_str()]); s.sync(&s.f.base, &origin);
     let before = s.observe();
-    let r = s.run("land", Some(s.squash.commit.as_str()), 2, "conflict");
+    let r = s.run("land", Some(s.squash.commit.as_str()), 1, "conflict");
     assert_eq!(r.strings("files"), &["src/file"]); assert_eq!(r.text("owner"), "the change's zone");
     assert_eq!(s.observe(), before);
 }
@@ -56,7 +56,7 @@ fn another_zone_lands_in_the_batch_and_a_change_id_is_usage_not_a_landing() {
     let s = Landing::without_remote(true); let peer = s.peer_squash(); s.land();
     s.run("land", Some(peer.commit.as_str()), 0, "landed");
     let before = s.observe();
-    let r = s.run("land", Some(s.squash.change_id.as_str()), 4, "usage");
+    let r = s.run("land", Some(s.squash.change_id.as_str()), 2, "usage");
     let id = s.squash.change_id.as_str();
     assert_eq!(r.strings("lines")[0], format!("\"{id}\" is a change ID; land takes the squash's commit id only (find it with mr would-merge {id} --actor <name>)"));
     assert_eq!(s.observe(), before);
@@ -74,7 +74,7 @@ fn live_land_lock_prevents_all_five_verbs_and_identifies_its_real_holder() {
             "withdraw" => Some("core"),
             _ => None,
         };
-        let r = s.run(verb, word, 3, "busy");
+        let r = s.run(verb, word, 4, "busy");
         assert_eq!(r.number("holder_pid"), u64::from(holder.pid)); assert_eq!(r.text("holder_host"), holder.host);
         assert_eq!(r.text("holder_key"), holder.key); assert_eq!(r.number("since"), holder.since);
         assert_eq!(s.observe(), before);
@@ -91,7 +91,7 @@ fn without_config_the_new_verbs_refuse_and_point_to_init_without_mutating_the_re
     std::fs::rename(&config, config.with_extension("saved")).unwrap();
     let before = s.observe();
     for verb in ["land", "would-merge"] {
-        let r = s.run(verb, Some(s.squash.commit.as_str()), 1, "no-config");
+        let r = s.run(verb, Some(s.squash.commit.as_str()), 3, "no-config");
         assert!(r.text("next").contains("mr init")); assert_eq!(s.observe(), before);
     }
 }

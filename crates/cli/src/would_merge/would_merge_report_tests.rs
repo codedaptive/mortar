@@ -1,4 +1,4 @@
-//! would_merge_report: Yes merges (exit 0, next lands the commit) and No conflicts (exit 2, each file on its own
+//! would_merge_report: Yes merges (exit 0, next lands the commit) and No conflicts (exit 1, each file on its own
 //! line, owned by the change's zone), each saying no ref moved and no commit was written.
 
 use std::path::PathBuf;
@@ -49,7 +49,7 @@ fn yes_merges_and_next_lands_the_commit() {
 }
 
 #[test]
-fn no_exits_2_listing_each_file_owned_by_the_changes_zone() {
+fn no_exits_1_listing_each_file_owned_by_the_changes_zone() {
     let files = vec![PathBuf::from("src/a/x"), PathBuf::from("docs/y.md")];
     assert_eq!(
         would_merge_report(&squash(), &WouldMerge::No { files }),

@@ -3,7 +3,7 @@
 use super::{context_report, ContextError};
 use crate::report::{ExitCode, Report};
 
-/// NotARepository: refused (exit 1), outcome "not-a-repository", naming the directory and git's error, owned by
+/// NotARepository: refused (exit 3), outcome "not-a-repository", naming the directory and git's error, owned by
 /// whoever sets up Mortar, next "run mr <verb> inside the git repository". Every other error (Git, from
 /// repository_error) reports as context_report does: git failing is a failure (exit 5).
 pub(crate) fn repository_report(verb: &str, error: &ContextError) -> Report {

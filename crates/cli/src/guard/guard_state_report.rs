@@ -11,7 +11,7 @@ use crate::report::{ExitCode, Report};
 const HOOKS: [&str; 2] = ["reference-transaction", "pre-push"];
 
 /// Fields in every case: guard_fields(state).
-/// - Any hook Foreign: exit 1 Refused, outcome "foreign-hook", foreign_hook_report's lines (one per foreign hook,
+/// - Any hook Foreign: exit 3 Refused, outcome "foreign-hook", foreign_hook_report's lines (one per foreign hook,
 ///   naming `<hooks_dir>/<name>`), owner "the repository's own hooks", next moving the first aside, then
 ///   `mr guard install --actor <name>`.
 /// - Else in place (guard_in_place against `refs`): guard_installed_report's exit 0 Done, outcome "installed", lines

@@ -16,7 +16,7 @@ const VERB: &str = "folder";
 
 /// Lock is lock_report("folder"). Git and Oplog are failure_report with the inner error's own text (gitio's and
 /// oplog's, not folders'), DiskProbe with its path and reason, Io with folder_error_why's line, each led by
-/// "mr folder <sub>". Every other variant is exit 1, outcome "refused", folder_error_why's lines and
+/// "mr folder <sub>". Every other variant is exit 3, outcome "refused", folder_error_why's lines and
 /// folder_refusal's next.
 pub fn folder_error_report(sub: &str, error: &FolderError) -> Report {
     let failed = |what: String| failure_report(VERB, &format!("mr folder {sub}: {what}"));

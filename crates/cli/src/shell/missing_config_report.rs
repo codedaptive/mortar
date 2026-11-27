@@ -4,7 +4,7 @@ use std::path::Path;
 
 use crate::report::{ExitCode, Report};
 
-/// Refused (exit 1), outcome "no-config", naming the missing file; the next step is `mr init`.
+/// Refused (exit 3), outcome "no-config", naming the missing file; the next step is `mr init`.
 pub fn missing_config_report(verb: &str, path: &Path) -> Report {
     Report {
         verb: verb.to_string(),

@@ -31,7 +31,7 @@ fn second_squash_conflicts_with_first_result_without_moving_refs() {
     s.run("would-merge", Some(peer.commit.as_str()), 0, "merges");
     let before = s.observe();
     let r = check(s.command("would-merge", Some(s.squash.commit.as_str()))
-        .args(["--with", peer.commit.as_str()]).output().unwrap(), "would-merge", 2, "conflict");
+        .args(["--with", peer.commit.as_str()]).output().unwrap(), "would-merge", 1, "conflict");
     assert_eq!(r.text("change_id"), s.squash.change_id.as_str());
     assert_eq!(r.text("commit"), s.squash.commit.as_str());
     assert_eq!(r.text("owner"), "the change's zone");
@@ -70,10 +70,10 @@ fn missing_with_change_id_is_refused_like_plain_form_without_moving_refs() {
     let s = Landing::without_remote(false);
     let missing = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk";
     let before = s.observe();
-    let plain = s.run("would-merge", Some(missing), 1, "refused");
+    let plain = s.run("would-merge", Some(missing), 3, "refused");
     assert!(plain.lines().contains("no squash at refs/mortar/squash/* carries change ID"));
     let with = check(s.command("would-merge", Some(s.squash.commit.as_str()))
-        .args(["--with", missing]).output().unwrap(), "would-merge", 1, "refused");
+        .args(["--with", missing]).output().unwrap(), "would-merge", 3, "refused");
     assert_eq!(with.strings("lines"), plain.strings("lines"));
     assert_eq!(s.observe(), before);
 }

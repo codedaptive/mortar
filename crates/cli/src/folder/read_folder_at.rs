@@ -2,7 +2,7 @@
 //! `mr folder remove` and `mr folder refresh` make before any lock.
 //! No sibling test: it runs git and reads the record from disk, and holds no decision of its own. The integration
 //! tests crates/cli/tests/folder_runs/run_folder_refresh_tests.rs (a plain directory and a plain git worktree each
-//! exit 1 not-a-folder; zone, request and attempt folders read) and run_folder_remove_tests.rs (request, attempt and
+//! exit 3 not-a-folder; zone, request and attempt folders read) and run_folder_remove_tests.rs (request, attempt and
 //! zone folders read) cover it through the binary.
 
 use std::path::{Path, PathBuf};

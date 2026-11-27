@@ -11,17 +11,17 @@
 //! cover the reports. Integration tests to write (not written here), with the binary as a child process in a throwaway
 //! repository: `mr init --actor h --origin main --integration integration --remote origin` writes the
 //! config, exit 0, stdout ending "next: mr folder zone <zone> <path>"; the same again is exit 0
-//! "already-done" with the file byte-identical; other values are exit 1 naming the keys; --replace rewrites,
-//! exit 0; init without --actor is exit 4; an unknown verb is exit 4 listing the verbs; --json prints one JSON
-//! object on one line and nothing else; run outside a git repository init is refused, exit 1; a non-UTF-8
-//! argument is exit 4; a held lock is exit 3 naming the holder and since, and recover runs before the act (with
-//! mr join, the first ref-moving verb); an agent verb outside a Mortar folder is refused, exit 1 (with
+//! "already-done" with the file byte-identical; other values are exit 3 naming the keys; --replace rewrites,
+//! exit 0; init without --actor is exit 2; an unknown verb is exit 2 listing the verbs; --json prints one JSON
+//! object on one line and nothing else; run outside a git repository init is refused, exit 3; a non-UTF-8
+//! argument is exit 2; a held lock is exit 4 naming the holder and since, and recover runs before the act (with
+//! mr join, the first ref-moving verb); an agent verb outside a Mortar folder is refused, exit 3 (with
 //! mr join, the first agent verb); `mortar guard-hook` allowing a move prints nothing on stdout or stderr,
 //! exit 0, also with --json; `mr --version` and `mortar --version` print one line "mortar <crate version>
 //! <12 hex or unknown>" and nothing else, exit 0, and with --json (either order) one object {verb: "version", ok,
 //! version, commit} on one line, exit 0; `mr help`, `mr --help` and `mr resolve --help` outside any repository are
 //! exit 0; `mr help` in a directory that has been removed is exit 0; `mr save --help` in a request folder with
-//! unsaved work is exit 0, saves nothing and writes no op; `mr help nosuch` is exit 4.
+//! unsaved work is exit 0, saves nothing and writes no op; `mr help nosuch` is exit 2.
 
 use std::ffi::OsString;
 use std::io::Write;

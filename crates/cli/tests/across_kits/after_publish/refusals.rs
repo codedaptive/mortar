@@ -9,7 +9,7 @@ fn staged_work_at_a_path_the_published_tip_changes_is_kept_then_clear_and_repeat
     let w = World::new(); w.core(&[("src/file", b"published\n")]); let (_, origin) = w.publish();
     write(&w.s.f.zone, "src/file", b"owner's staged bytes\n");
     raw(&w.git(&w.s.f.zone), &["add", "src/file"]); let folder = w.folder_state(&w.s.f.zone);
-    let r = w.after(1, "folder-not-moved");
+    let r = w.after(3, "folder-not-moved");
     assert_eq!(r.strings("moved"), &["core", "b"]);
     assert_eq!(r.strings("folders_refused"), &[w.s.f.zone.display().to_string()]);
     assert_eq!(r.strings("folders_moved"), &[w.b.display().to_string()]);
@@ -45,7 +45,7 @@ fn unstaged_untracked_and_unmerged_refusals_preserve_every_byte_leave_other_zone
             git.run(&["update-index", "--index-info"], &RunOpts { stdin: Some(data.into_bytes()), ..RunOpts::default() }).unwrap();
             assert!(!raw(&git, &["ls-files", "-u"]).is_empty());
         }
-        let before_folder = w.folder_state(folder); let r = w.after(1, "folder-not-moved");
+        let before_folder = w.folder_state(folder); let r = w.after(3, "folder-not-moved");
         assert_eq!(r.strings("folders_refused"), &[folder.display().to_string()]);
         assert_eq!(r.strings("folders_moved"), &[w.b.display().to_string()]);
         let reason = if kind == "unmerged" { "its index has unmerged entries at:" } else { "local changes are in the way at:" };
@@ -73,7 +73,7 @@ fn squash_of_not_in_publishing_zone_refuses_with_the_real_zone_and_source_before
     let other = w.s.f.commit(&w.s.f.base, &[("src/other", b"not that source\n")], "other lineage\n");
     raw(&w.s.f.git, &["update-ref", "refs/heads/zone/core", other.as_str()]);
     let before = w.store(); let folders = (w.folder_state(&w.s.f.zone), w.folder_state(&w.b));
-    let r = w.after(1, "refused");
+    let r = w.after(3, "refused");
     assert_eq!(r.strings("lines")[0], format!("zone core's published squash was made from {source}, which zone core does not hold, itself or as a recorded replay"));
     assert_eq!(r.strings("lines")[1], "any zone named before it was already moved; no zone folder was brought to its tip");
     assert_eq!(r.text("owner"), "zone core"); assert!(r.text("next").contains(&format!("{source}")));

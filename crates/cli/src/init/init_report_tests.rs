@@ -1,4 +1,4 @@
-//! init_report: written, replaced and already-done are exit 0 with the folder step as next; refused is exit 1
+//! init_report: written, replaced and already-done are exit 0 with the folder step as next; refused is exit 3
 //! naming the keys and owned by the existing config; every arm carries config_path.
 
 use std::path::Path;

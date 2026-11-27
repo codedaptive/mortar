@@ -16,7 +16,7 @@ const FILES: &str = "name the files inside the folder, not the folder that holds
 /// - Ancestor, Git: failure_report, git or the file system failed while reading the paths.
 /// - IndexNotSet: failure_report naming the commit written, with the index not set and no ref moved.
 ///
-/// Every refusal is exit 1, outcome "refused", no owner and no fields, its last line "nothing was written and no
+/// Every refusal is exit 3, outcome "refused", no owner and no fields, its last line "nothing was written and no
 /// ref moved".
 pub fn commit_paths_error_report(verb: &str, error: &CommitPathsError) -> Report {
     let (line, next) = match error {

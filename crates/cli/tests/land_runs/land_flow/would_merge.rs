@@ -18,7 +18,7 @@ fn would_merge_by_commit_and_change_id_moves_nothing(conflict: bool) {
     }
     for word in [s.squash.commit.as_str(), s.squash.change_id.as_str()] {
         let before = s.observe(); let commits = commits(&s);
-        let r = s.run("would-merge", Some(word), if conflict { 2 } else { 0 }, if conflict { "conflict" } else { "merges" });
+        let r = s.run("would-merge", Some(word), if conflict { 1 } else { 0 }, if conflict { "conflict" } else { "merges" });
         assert_eq!(r.text("change_id"), s.squash.change_id.as_str());
         assert_eq!(r.text("commit"), s.squash.commit.as_str());
         if conflict { assert_eq!(r.strings("files"), &["src/file"]); }
@@ -32,12 +32,12 @@ fn would_merge_by_commit_and_change_id_moves_nothing(conflict: bool) {
 fn missing_and_duplicate_change_ids_are_refused_without_movement_and_name_the_ambiguity() {
     let s = Landing::without_remote(true);
     let before = s.observe();
-    let r = s.run("would-merge", Some("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"), 1, "refused");
+    let r = s.run("would-merge", Some("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"), 3, "refused");
     assert!(r.lines().contains("no squash at refs/mortar/squash/* carries change ID"));
     assert!(r.text("next").contains("mr squash <zone>")); assert_eq!(s.observe(), before);
     raw(&s.f.git, &["update-ref", "refs/mortar/squash/duplicate", s.squash.commit.as_str()]);
     let before = s.observe();
-    let r = s.run("would-merge", Some(s.squash.change_id.as_str()), 1, "refused");
+    let r = s.run("would-merge", Some(s.squash.change_id.as_str()), 3, "refused");
     assert!(r.lines().contains("refs/mortar/squash/core, refs/mortar/squash/duplicate"));
     assert!(r.text("next").contains("mr would-merge <commit>")); assert_eq!(s.observe(), before);
     s.run("would-merge", Some(s.squash.commit.as_str()), 0, "merges");
@@ -49,14 +49,14 @@ fn a_commit_without_mortar_trailers_is_refused_but_a_bad_ref_beside_a_good_ref_i
     let s = Landing::without_remote(true);
     raw(&s.f.git, &["update-ref", "refs/mortar/squash/aaa-bad", s.f.base.as_str()]);
     let before = s.observe();
-    let r = s.run("would-merge", Some(s.f.base.as_str()), 1, "refused");
+    let r = s.run("would-merge", Some(s.f.base.as_str()), 3, "refused");
     assert!(r.lines().contains("carries no Mortar-")); assert!(r.lines().contains(s.f.base.as_str()));
     assert_eq!(s.observe(), before);
     s.run("would-merge", Some(s.squash.change_id.as_str()), 0, "merges");
     assert_eq!(s.observe(), before);
     raw(&s.f.git, &["update-ref", "-d", "refs/mortar/squash/core"]);
     let before = s.observe();
-    s.run("would-merge", Some(s.squash.change_id.as_str()), 1, "refused");
+    s.run("would-merge", Some(s.squash.change_id.as_str()), 3, "refused");
     assert_eq!(s.observe(), before);
 }
 
@@ -90,7 +90,7 @@ fn would_merge_savings_large_patch_and_conflict() {
         let mut cmd = s.f.command(&s.f.git.repo, &[]);
         if json { cmd.arg("--json"); }
         let out = cmd.args(["--actor", "land-flow", "would-merge", squash.commit.as_str()]).output().unwrap();
-        assert_eq!(out.status.code(), Some(2), "{out:?}");
+        assert_eq!(out.status.code(), Some(1), "{out:?}");
         let text = String::from_utf8(out.stdout).unwrap();
         assert!(!text.contains("[mr] tokens saved") && !text.contains("\"savings\""), "{text}");
     }

@@ -8,7 +8,7 @@ use crate::report::ExitCode;
 
 /// None for Lock, Git, Oplog and DiskProbe: those are reported as every cli verb reports them (lock_report,
 /// failure_report). Io is Failure (exit 5), its next a repeat of the same command. Every other
-/// variant is Refused (exit 1) with one next step for the harness: a command that runs now as written (every harness
+/// variant is Refused (exit 3) with one next step for the harness: a command that runs now as written (every harness
 /// command it names carries `--actor <name>`), or the step in words when none does. No next is aimed at an
 /// agent; placeholders such as `<k>` and `<name>` are printed as written.
 pub fn folder_refusal(error: &FolderError) -> Option<(ExitCode, String)> {

@@ -23,7 +23,7 @@ const VERB: &str = "undo";
 /// index to the branch's tree, the files kept, and gives what the restore answered. A recorded base that cannot be
 /// read is failure_report naming `target`'s op, the paused join not put back. The restore runs before the index is
 /// set so that a refused restore leaves the index as it was; its refusal is restore_failed_report naming `target`'s
-/// op and `undo_op` (exit 1, next mr undo).
+/// op and `undo_op` (exit 3, next mr undo).
 pub(super) fn folder_step(
     run: &RequestRun,
     step: UndoStep,

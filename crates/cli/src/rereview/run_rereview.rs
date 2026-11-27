@@ -5,14 +5,14 @@
 //! rereview_report_tests and rereview_error_report_tests cover its decisions. The integration test
 //! crates/cli/tests/land_runs/run_rereview_tests.rs covers it through the binary: two squashes of one change with
 //! a changed squash are "rereviewed", same_patch false, with both ids and only what changed; squashes of two
-//! changes are refused exit 1 "not-same-change"; one word, three words and a word that is not a full commit id are
-//! exit 4 with rereview's usage line as next.
+//! changes are refused exit 3 "not-same-change"; one word, three words and a word that is not a full commit id are
+//! exit 2 with rereview's usage line as next.
 //! crates/cli/tests/land_runs/run_rereview_same_patch_tests.rs covers a remake on a moved origin and one commit
 //! given twice: "same-patch", same_patch true, its next not handing the diff to a reviewer.
 //! crates/cli/tests/land_runs/run_rereview_savings_tests.rs covers its savings: the baseline equal to git diff of
 //! the two commits, in the plain answer, --json and savings.jsonl.
 //! Integration tests to write (not written here): the land lock held by a live pid, exit
-//! 3 (oplog's locks); without a config, exit 1, next mr init (the shell's load_config); RereviewError Git,
+//! 4 (oplog's locks); without a config, exit 3, next mr init (the shell's load_config); RereviewError Git,
 //! Trailers and NoParent (a root commit) through the binary; the acceptance check of rereview.
 
 use std::path::Path;
@@ -30,7 +30,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "rereview";
 
-/// The words after the verb read by parse_rereview_args (an Err is rereview's usage report, exit 4, before any
+/// The words after the verb read by parse_rereview_args (an Err is rereview's usage report, exit 2, before any
 /// git); then, under the land lock keyed by --key or op_key("rereview", the common dir), land's answer_rereview of
 /// the two commits: its answer is rereview_report, its refusal or failure rereview_error_report. A Done report gets its
 /// savings by with_counted_savings, outside the lock since it only reads: one more git read, git diff of the two

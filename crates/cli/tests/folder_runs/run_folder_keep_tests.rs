@@ -5,9 +5,9 @@
 //! Tests to write (not written here):
 //! - a request branch moved on after the attempts were cut (RequestMovedOn) and a try branch moved under the op
 //!   (AttemptRefsLeft): the cli's why and next, never folders' FolderError Display text;
-//! - an orphan with no trysnap ref (OrphanWithoutSnapshot): exit 1 naming the folder, nothing changed;
+//! - an orphan with no trysnap ref (OrphanWithoutSnapshot): exit 3 naming the folder, nothing changed;
 //! - a file the snapshot cap refuses in an attempt counts as unsaved (cli with snapshot's saved_state);
-//! - a join-<zone> lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks).
+//! - a join-<zone> lock held by a live pid: exit 4 naming the holder's pid, host and since (cli with oplog's locks).
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -211,7 +211,7 @@ fn an_unsaved_attempt_is_refused_and_nothing_changes() {
     let before = ops(&fx.common).len();
     let refused = fx.keep(2);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
     assert_eq!(next, "repeat once each listed attempt's work is saved", "{out}");
@@ -228,7 +228,7 @@ fn a_request_folder_with_unsaved_work_is_refused_and_nothing_runs() {
     let before = ops(&fx.common).len();
     let refused = fx.keep(2);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
     assert_eq!(next, "repeat once the request folder's work is saved", "{out}");

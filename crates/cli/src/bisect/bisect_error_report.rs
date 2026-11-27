@@ -7,7 +7,7 @@ use crate::report::{failure_report, Report};
 
 const VERB: &str = "bisect";
 
-/// Each BisectError arm as a refusal (exit 1) naming the commits or ref involved and a next step, or, for git and
+/// Each BisectError arm as a refusal (exit 3) naming the commits or ref involved and a next step, or, for git and
 /// unreadable squash trailers, a failure (exit 5). No error text of gitio, oplog or the probe's spawn is printed:
 /// ProbeCouldNotRun's `error` is an OS message, so only its commit is named.
 pub fn bisect_error_report(error: &BisectError) -> Report {

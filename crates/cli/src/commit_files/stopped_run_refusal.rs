@@ -7,7 +7,7 @@ use gitio::Oid;
 
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Exit 1 "refused", owner "zone <zone>", fields zone and tip: a line naming the commit the paths were staged on
+/// Exit 3 "refused", owner "zone <zone>", fields zone and tip: a line naming the commit the paths were staged on
 /// and the tip the branch has moved to, then that nothing was written. Next puts the paths back in the index as
 /// `staged_on` has them, then refreshes the folder, then runs mr commit-files again. The refresh brings the folder
 /// onto the tip unless the tip's move changed a path the folder has an edit in (a named path, whose stopped-run

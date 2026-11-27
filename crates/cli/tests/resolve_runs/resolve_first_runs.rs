@@ -32,7 +32,7 @@ fn first_resolve_writes_exact_conflicted_bytes_after_snapshot_from_subdirectory_
     let conflict_blob = f.git.tree_entry(&r.tree, "src/file".as_ref()).unwrap().unwrap();
     let unrelated_index = raw(&f.local(), &["ls-files", "--stage", "-z", "--", "root.txt", "sub/keep"]);
     let start = f.records().len();
-    let report = check(f.command(&f.request.join("src"), &["--json", "resolve"]).output().unwrap(), "resolve", 2, "files-written");
+    let report = check(f.command(&f.request.join("src"), &["--json", "resolve"]).output().unwrap(), "resolve", 1, "files-written");
     assert_eq!(report.text("commit"), r.bad.as_str()); assert_eq!(report.text("request_ref"), REQUEST);
     assert_eq!(report.strings("files"), &["src/file"]); assert!(report.strings("skipped").is_empty()); assert!(report.strings("gitlinks").is_empty());
     assert_eq!(report.text("next"), "fix the files, then mr resolve");
@@ -59,7 +59,7 @@ fn marker_repeat_is_exit_two_naming_literal_lines_without_rewriting_work_or_paus
     // This fixture conflicts on its sole line: unlike a prefixed file, its marker lines are 1/3/5.
     let text = String::from_utf8(bytes.clone()).unwrap(); let lines: Vec<_> = text.lines().collect();
     assert!(lines[0].starts_with("<<<<<<<")); assert_eq!(lines[2], "======="); assert!(lines[4].starts_with(">>>>>>>"));
-    let report = f.report(&["--json", "resolve"], "resolve", 2, "still-marked");
+    let report = f.report(&["--json", "resolve"], "resolve", 1, "still-marked");
     assert!(report.lines().contains("src/file (lines 1, 3, 5)"), "{}", report.lines());
     assert_eq!(report.text("next"), "fix the files, then mr resolve");
     assert_eq!(fs::read(f.request.join("src/file")).unwrap(), bytes); assert_eq!(r.state_bytes(), state);
@@ -77,7 +77,7 @@ fn markers_left_after_a_finished_move_name_the_snapshot_that_move_wrote() {
     let r = Paused::start(f, &zone1, &rebased); r.first();
     let markers = fs::read(r.f.request.join("src/file")).unwrap();
     let start = r.f.records().len();
-    let report = r.f.report(&["--json", "resolve"], "resolve", 2, "still-marked");
+    let report = r.f.report(&["--json", "resolve"], "resolve", 1, "still-marked");
     let text = String::from_utf8(markers.clone()).unwrap();
     let marked: Vec<String> = text.lines().enumerate()
         .filter(|(_, line)| ["<<<<<<<", "=======", ">>>>>>>"].iter().any(|marker| line.starts_with(marker)))

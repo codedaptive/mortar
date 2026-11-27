@@ -11,7 +11,7 @@
 //! - requests touching different files give no pair, exit 0, outcome no-overlap;
 //! - a request rebased onto a zone that moved shows no overlap on paths only the zone changed (its base is
 //!   its fork point from the zone);
-//! - overlap of a zone not in the config, no zone, or a second word, exit 4; without a config, exit 1;
+//! - overlap of a zone not in the config, no zone, or a second word, exit 2; without a config, exit 3;
 //! - a request whose zone branch is missing, exit 5 under the verb overlap, naming the ref;
 //! - overlap moves no ref and writes nothing in the repository;
 //! - overlap_savings_counts_each_open_request_range: the "[mr] tokens saved" line first in the plain answer, its
@@ -31,7 +31,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "overlap";
 
-/// The config, then the zone read by parse_overlap_args (an Err is overlap's usage report, exit 4, before the verb
+/// The config, then the zone read by parse_overlap_args (an Err is overlap's usage report, exit 2, before the verb
 /// runs git). Then the zone's open requests from the folder records, each based at its fork point from the zone
 /// (read_named_zones; its failure report is relabelled to the verb overlap), and join's overlap over
 /// them (a failure is overlap_error_report); reported by overlap_report. That report gets its savings by

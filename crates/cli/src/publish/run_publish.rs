@@ -1,5 +1,5 @@
 //! run_publish: `mr publish [--no-push]`, the landing on integration put on the local origin branch under the land
-//! lock, pushed to the remote's origin branch first unless --no-push (land publish_with_push; exit 1 when origin
+//! lock, pushed to the remote's origin branch first unless --no-push (land publish_with_push; exit 3 when origin
 //! moved, saying land again). With --no-push the remote is never read and nothing is fetched; origin moved means the
 //! local origin branch moved. On OriginMoved the integration folder moves with integration onto the found origin, as
 //! back-out moves it. --key names the lock holder only, never passed to the op log; repeat safety comes from land's
@@ -14,11 +14,11 @@
 //! publish_report_tests, note_finished_move_tests and landing's publish_error_report_tests cover its decisions. The
 //! integration tests crates/cli/tests/land_runs/run_publish_tests.rs and run_publish_no_push_tests.rs cover it
 //! through the binary; crates/cli/tests/land_runs/land_flow/landing.rs covers the land lock held by a live pid
-//! (exit 3), land_flow/killed.rs the stopped-move finish (a kill after land's op and before the folder move, then a
+//! (exit 4), land_flow/killed.rs the stopped-move finish (a kill after land's op and before the folder move, then a
 //! plain repeat moves the folder from the op's old value to the tip and the report's first line says so) and
 //! land_flow/stopped.rs a staged edit in the integration folder (no move, the verb goes on); land_flow/batch.rs the
 //! next naming `mr after-publish` for each zone of a batch, in landing order.
-//! Integration tests to write (not written here): without a config, exit 1, next mr init (land_flow/landing.rs
+//! Integration tests to write (not written here): without a config, exit 3, next mr init (land_flow/landing.rs
 //! covers it for land and would-merge only); the PublishError texts through a real remote (PushRefused by a
 //! remote hook, RemoteMissing, a PushIntent already done).
 
@@ -44,7 +44,7 @@ const REPEAT: &str = "mr publish --actor <name>";
 /// The same under --no-push.
 const REPEAT_NO_PUSH: &str = "mr publish --no-push --actor <name>";
 
-/// Words parse_publish_args refuses are publish's usage report, exit 4, before the verb runs git. Then, under the land
+/// Words parse_publish_args refuses are publish's usage report, exit 2, before the verb runs git. Then, under the land
 /// lock after recover (locked_act), keyed by --key or op_key("publish", the common dir): first a stopped integration
 /// folder move is finished (finish_stopped_move), then integration's tip and the landing batch's zones read, land's
 /// publish_with_push as the context's actor with push off under --no-push, reported by publish_report or, when

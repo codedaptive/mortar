@@ -5,10 +5,10 @@
 //! attempts_dir_tests, folder_setup_for_tests and attempts_made_report_tests cover its decisions. The integration test
 //! crates/cli/tests/folder_runs/run_folder_attempts_tests.rs covers it through the binary: attempts at <dir>/try-<k> with
 //! Attempt(k) records and try branches at the request tip, made by ops of the actor; a relative <dir> run from a
-//! subfolder taken from the request folder; run in a zone folder it is refused exit 1, nothing made; n = 0 or a <dir>
-//! that normalizes inside the request folder is exit 4.
-//! Integration tests to write (not written here): a folders lock held by a live pid, exit 3; free disk
-//! under the floor at attempt j, exit 1 with the cli's facts, and a repeat making the rest; a request branch gone, the
+//! subfolder taken from the request folder; run in a zone folder it is refused exit 3, nothing made; n = 0 or a <dir>
+//! that normalizes inside the request folder is exit 2.
+//! Integration tests to write (not written here): a folders lock held by a live pid, exit 4; free disk
+//! under the floor at attempt j, exit 3 with the cli's facts, and a repeat making the rest; a request branch gone, the
 //! cli's why and next.
 
 use std::path::{Path, PathBuf};
@@ -31,8 +31,8 @@ use crate::shell::ShellContext;
 const VERB: &str = "folder";
 
 /// `cwd` must be in a request folder (read_folder_context; a zone or attempt folder is request_folder_refusal's exit
-/// 1). `dir` is resolved by attempts_dir: taken from that folder's toplevel when relative, normalized, and it must lie
-/// outside that folder (the toplevel or inside it is folder's usage, exit 4).
+/// 3). `dir` is resolved by attempts_dir: taken from that folder's toplevel when relative, normalized, and it must lie
+/// outside that folder (the toplevel or inside it is folder's usage, exit 2).
 /// Under join-<zone> after recover (locked_act), keyed by --key or op_key("folder-attempts", dir): folders'
 /// make_attempts at `dir` on the request record's cone (its work order paths, then its needed paths), as the actor.
 pub fn run_folder_attempts(context: &ShellContext, config: &Config, cwd: &Path, n: u32, dir: &Path) -> Report {

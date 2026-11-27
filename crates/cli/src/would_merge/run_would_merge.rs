@@ -7,12 +7,12 @@
 //! would_merge_report_tests, would_merge_with_report_tests and landing's pick_squash_ref_tests,
 //! squash_pick_report_tests, squash_error_report_tests and land_error_report_tests cover its decisions.
 //! The integration tests in crates/cli/tests/land_runs/land_flow/ cover it through the binary: would_merge.rs
-//! would-merge yes and no, by change ID and by commit; a change ID no squash ref carries, exit 1; two squash refs
-//! carrying one change ID, exit 1; a squash ref holding a commit read_squash refuses; its savings, the baseline equal
+//! would-merge yes and no, by change ID and by commit; a change ID no squash ref carries, exit 3; two squash refs
+//! carrying one change ID, exit 3; a squash ref holding a commit read_squash refuses; its savings, the baseline equal
 //! to git log -p of the squash over the integration branch, and none on a conflict; would_merge_with.rs ordered
 //! squashes merging cleanly, a second squash conflicting with the first's result naming step 2, a change ID to
 //! --with answered like its commit, a --with change ID no squash ref carries refused like the plain form, each with
-//! the refs unchanged; landing.rs the land lock held by a live pid, exit 3, and without a config, exit 1, next mr
+//! the refs unchanged; landing.rs the land lock held by a live pid, exit 4, and without a config, exit 3, next mr
 //! init.
 
 use std::path::Path;
@@ -34,14 +34,14 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "would-merge";
 
-/// The words read by parse_would_merge_args (an Err is would-merge's usage report, exit 4, before the verb runs
+/// The words read by parse_would_merge_args (an Err is would-merge's usage report, exit 2, before the verb runs
 /// git); then, under the land lock after recover (locked_act), keyed by --key or op_key("would-merge", the common
 /// dir), the squash read by resolve_squash. With no --with, land's would_merge of it into the config's integration
 /// branch, reported by would_merge_report or, when refused, squash_error_report. A Done would_merge_report (would
 /// merge) gets its savings by with_counted_savings, inside the lock where the squash is known: one more git read, git
 /// log -p of the squash's commits not on refs/heads/<integration branch> (would_merge_queries), its output characters
 /// counted by Git::output_chars. A count that fails drops the savings, so the answer goes out without the line; a
-/// conflict answer (exit 2), a refusal or a failure runs no count. With --with, see with_answer.
+/// conflict answer (exit 1), a refusal or a failure runs no count. With --with, see with_answer.
 pub fn run_would_merge(context: &ShellContext, cwd: &Path) -> Report {
     let args = &context.args;
     let Some(config) = &context.config else {

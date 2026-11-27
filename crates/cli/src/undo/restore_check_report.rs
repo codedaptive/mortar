@@ -9,7 +9,7 @@ use super::restore_why;
 use crate::report::{ExitCode, Report};
 
 /// The why lines, then "nothing was changed". An op recording no usable paused join, another paused join present
-/// and a state file mortar did not write are exit 1 "refused", each with its own next step. Git or the disk failing,
+/// and a state file mortar did not write are exit 3 "refused", each with its own next step. Git or the disk failing,
 /// and every error the check never gives, are exit 5 "failed": a repeat is safe because nothing moved.
 pub fn restore_check_report(error: &JoinRunError) -> Report {
     let refused = |next: &str| (ExitCode::Refused, "refused", next.to_string());

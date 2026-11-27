@@ -166,10 +166,10 @@ fn savings_usage_refusal_and_act_have_no_metadata_or_log() {
     let f = unsaved();
     let log = f.root.join(".local/state/mortar/savings.jsonl");
     let usage = f.app(&["status", "extra"]);
-    assert_eq!(usage.status.code(), Some(4));
+    assert_eq!(usage.status.code(), Some(2));
     assert!(!String::from_utf8_lossy(&usage.stdout).contains("[mr] tokens saved"));
     let usage_json = f.app(&["--json", "status", "extra"]);
-    assert_eq!(usage_json.status.code(), Some(4));
+    assert_eq!(usage_json.status.code(), Some(2));
     assert!(!String::from_utf8_lossy(&usage_json.stdout).contains("\"savings\":"));
     let save = f.app(&["--json", "save", "x"]);
     assert_eq!(save.status.code(), Some(0));
@@ -197,7 +197,7 @@ fn assert_unsuccessful_status_has_no_savings(f: &Fixture, cwd: &Path, exit: i32,
 #[test]
 fn savings_bad_status_refusal_has_no_savings() {
     let f = Fixture::new();
-    assert_unsuccessful_status_has_no_savings(&f, &f.zone, 1, "refused");
+    assert_unsuccessful_status_has_no_savings(&f, &f.zone, 3, "refused");
 }
 
 #[test]

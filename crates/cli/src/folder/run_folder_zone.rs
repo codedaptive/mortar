@@ -6,8 +6,8 @@
 //! With no --start, a missing zone branch is started at the origin branch tip (default_zone_start_tests covers
 //! the decision); the same integration test file covers a bare folder zone on a missing zone branch made at the
 //! origin branch tip, and, with no origin branch either, refused with a next naming --start.
-//! Integration tests to write (not written here): a folders lock held by a live pid, exit 3; free disk
-//! under the floor, exit 1 with the cli's facts; the zone branch checked out elsewhere or a different folder at the
+//! Integration tests to write (not written here): a folders lock held by a live pid, exit 4; free disk
+//! under the floor, exit 3 with the cli's facts; the zone branch checked out elsewhere or a different folder at the
 //! path, the cli's why and next.
 
 use std::path::Path;
@@ -27,7 +27,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "folder";
 
-/// `path` is taken from `cwd` when relative. `start` is resolved to a commit before any lock (none: exit 1, nothing
+/// `path` is taken from `cwd` when relative. `start` is resolved to a commit before any lock (none: exit 3, nothing
 /// made). With no `start` and no zone branch, the start is the tip of `config.origin_branch`; with no origin branch
 /// either, there is none and make_zone_folder's refusal stands. Under join-<zone> after recover (locked_act), keyed by
 /// --key or op_key("folder-zone", the folder): folders' make_zone_folder with `paths` (the zone's paths and root
@@ -76,7 +76,7 @@ fn origin_start(git: &Git, zone: &str, origin_branch: &str) -> Result<Option<Oid
     default_zone_start(None, exists, origin_branch).map_or(Ok(None), |rev| git.rev_parse(&rev).map_err(failure))
 }
 
-/// Exit 1 "refused": `rev` names no commit in the repository; nothing was made.
+/// Exit 3 "refused": `rev` names no commit in the repository; nothing was made.
 fn no_commit(rev: &str) -> Report {
     Report {
         verb: VERB.to_string(),

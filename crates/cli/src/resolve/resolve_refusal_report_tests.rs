@@ -1,5 +1,5 @@
-//! resolve_refusal_report: no paused join is exit 0; markers left are exit 2 with each file's marker lines; a stale
-//! state, a conflicted path that is a folder or refused, and a corrupt state are exit 1 owned by this request; the
+//! resolve_refusal_report: no paused join is exit 0; markers left are exit 1 with each file's marker lines; a stale
+//! state, a conflicted path that is a folder or refused, and a corrupt state are exit 3 owned by this request; the
 //! rest are join_refusal_report's reports under the verb resolve. The expected lines are join's own refusal texts.
 //! Unit tests: the errors are built as data; their lines come from join's exported, pure Display impls,
 //! and join_refusal_report and the report module are pure and used directly.

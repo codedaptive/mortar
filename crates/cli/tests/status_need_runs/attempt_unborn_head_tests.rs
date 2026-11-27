@@ -21,7 +21,7 @@ fn attempt_unborn_head_status() {
     let f = Fixture::new();
     let attempt = unborn_attempt(&f);
     let old = before(&f, &attempt);
-    let report = check(f.command(&attempt, &["--json", "status"]).output().unwrap(), "status", 1, "refused");
+    let report = check(f.command(&attempt, &["--json", "status"]).output().unwrap(), "status", 3, "refused");
     assert_eq!(before(&f, &attempt), old);
     assert_eq!(report.text("owner"), "the folder's HEAD");
     assert_eq!(report.strings("lines"), &[format!("HEAD of the folder {} has no commit", attempt.display())]);
@@ -33,7 +33,7 @@ fn attempt_unborn_head_need() {
     let f = Fixture::new();
     let attempt = unborn_attempt(&f);
     let old = before(&f, &attempt);
-    let report = check(f.command(&attempt, &["--json", "need", "src"]).output().unwrap(), "need", 1, "refused");
+    let report = check(f.command(&attempt, &["--json", "need", "src"]).output().unwrap(), "need", 3, "refused");
     assert_eq!(before(&f, &attempt), old);
     assert_eq!(report.text("next"), "keep or drop the attempts, then mr join in the request's folder");
 }

@@ -37,16 +37,16 @@ fn join_with_git_version(version: &str) -> Output {
 #[test]
 fn mr_join_with_git_2_45_is_refused_by_the_floor_before_any_folder_read() {
     let output = join_with_git_version("2.45.2");
-    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(output.status.code(), Some(3));
     let stdout = String::from_utf8(output.stdout).unwrap();
-    assert_eq!(stdout, "{\"verb\":\"join\",\"ok\":false,\"outcome\":\"refused\",\"exit\":1,\"next\":\"install git 2.46 or newer, then repeat the command\",\"lines\":[\"git 2.45.2 found; mortar needs git 2.46 or newer\"],\"owner\":\"this machine's git\"}\n");
+    assert_eq!(stdout, "{\"verb\":\"join\",\"ok\":false,\"outcome\":\"refused\",\"exit\":3,\"next\":\"install git 2.46 or newer, then repeat the command\",\"lines\":[\"git 2.45.2 found; mortar needs git 2.46 or newer\"],\"owner\":\"this machine's git\"}\n");
     assert!(!stdout.contains("not-a-folder"));
 }
 
 #[test]
 fn mr_join_with_git_2_46_is_refused_as_not_a_folder() {
     let output = join_with_git_version("2.46.0");
-    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(output.status.code(), Some(3));
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(stdout.contains("\"outcome\":\"not-a-folder\""), "{stdout}");
     assert!(stdout.contains("\"next\":\"run mr join inside a folder Mortar made\""), "{stdout}");

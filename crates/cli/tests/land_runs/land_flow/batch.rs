@@ -61,7 +61,7 @@ fn batch_refuses_a_second_squash_of_the_same_zone_without_moving_state() {
     s.land();
     let further = s.further_core_squash();
     let before = s.observe();
-    let r = s.run("land", Some(further.commit.as_str()), 1, "zone-in-batch");
+    let r = s.run("land", Some(further.commit.as_str()), 3, "zone-in-batch");
     let member = s.squash.change_id.as_str();
     let id = further.change_id.as_str();
     let commit = further.commit.as_str();

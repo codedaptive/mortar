@@ -9,7 +9,7 @@ fn a_live_land_lock_refuses_before_after_publish_and_names_the_exact_holder() {
     let holder = LockRecord { pid: std::process::id(), host: oplog::host_name().unwrap(), key: "after-publish-held-land".into(), since: 1700000000 };
     let lock = oplog::acquire_lock(&w.s.f.common, &LockName::Land, &holder, &KillPidProbe).unwrap();
     let before = w.store(); let folders = (w.folder_state(&w.s.f.zone), w.folder_state(&w.b));
-    let r = w.s.app(&["after-publish", "core", "--move", "b"], 3, "busy");
+    let r = w.s.app(&["after-publish", "core", "--move", "b"], 4, "busy");
     assert_eq!(r.number("holder_pid"), u64::from(holder.pid)); assert_eq!(r.text("holder_host"), holder.host);
     assert_eq!(r.text("holder_key"), holder.key); assert_eq!(r.number("since"), holder.since);
     assert_eq!(r.text("owner"), format!("pid {} on {}", holder.pid, holder.host));
@@ -24,7 +24,7 @@ fn missing_config_refuses_without_any_work_and_names_init_as_next() {
     let w = World::new(); w.core(&[("src/file", b"published\n")]); w.publish();
     let config = w.s.f.common.join("mortar/config.json"); fs::rename(&config, config.with_extension("held")).unwrap();
     let before = w.store(); let folders = (w.folder_state(&w.s.f.zone), w.folder_state(&w.b));
-    let r = w.after(1, "no-config");
+    let r = w.after(3, "no-config");
     assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
     assert_eq!(r.text("next"), "mr init"); assert_eq!(w.store(), before);
     assert_eq!((w.folder_state(&w.s.f.zone), w.folder_state(&w.b)), folders);

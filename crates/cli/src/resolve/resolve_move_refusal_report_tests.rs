@@ -1,4 +1,4 @@
-//! resolve_move_refusal_report: edits on paths the zone changed are exit 1 owned by the folder, naming the paths and
+//! resolve_move_refusal_report: edits on paths the zone changed are exit 3 owned by the folder, naming the paths and
 //! the snapshot that keeps them; anything else is move_refusal_report's report under the verb resolve.
 //! Unit tests: join/move_refusal_report is pure and used directly.
 

@@ -8,7 +8,7 @@ use oplog::RefMove;
 use super::FolderOnRef;
 use crate::report::{is_zero_oid, ExitCode, Report};
 
-/// Refused (exit 1, nothing moved) when a request or attempt folder stands on a ref the restore would delete (a
+/// Refused (exit 3, nothing moved) when a request or attempt folder stands on a ref the restore would delete (a
 /// move with an all-zero new), or a folder in `unsaved` (the caller puts there each folder needing a move whose work
 /// is not saved, or holds a file the size cap refused). One line per folder and why, in `folders`' order, then
 /// "nothing was moved". Zone folders are neither checked nor moved. The next step is in words:

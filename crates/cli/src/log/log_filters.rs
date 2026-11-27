@@ -3,7 +3,7 @@
 use oplog::HistoryFilter;
 
 /// `rest` may hold `--ref <r>` or `--ref=<r>`, once; a second --ref, a missing or empty value, or any other word
-/// is Err with the reason, which the caller reports as log's usage (exit 4). The filters come Ref, then Actor,
+/// is Err with the reason, which the caller reports as log's usage (exit 2). The filters come Ref, then Actor,
 /// then Key; none given is no filter (the whole log).
 pub fn log_filters(rest: &[String], key: Option<&str>, actor: Option<&str>) -> Result<Vec<HistoryFilter>, String> {
     let mut refname: Option<String> = None;

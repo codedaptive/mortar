@@ -130,7 +130,7 @@ fn repeat_after_ref_transaction_finishes_the_folder_move_once() {
 }
 
 /// A crash-repeat whose folder gained work after the kill refuses and moves nothing: before the folder move,
-/// the repeat makes the saved check against the snapshot ref's old value, finds the new file unsaved, exits 1
+/// the repeat makes the saved check against the snapshot ref's old value, finds the new file unsaved, exits 3
 /// with the unsaved-work report, and leaves the refs, the folder and the folder-move count as they were.
 #[test]
 fn crash_repeat_with_work_added_after_the_kill_refuses_and_moves_nothing() {
@@ -161,7 +161,7 @@ fn crash_repeat_with_work_added_after_the_kill_refuses_and_moves_nothing() {
     let moves_before = folder_moves();
     let repeated = fx.restore();
     let out = format!("{}{}", String::from_utf8_lossy(&repeated.stdout), String::from_utf8_lossy(&repeated.stderr));
-    assert_eq!(repeated.status.code(), Some(1), "repeat: {out}");
+    assert_eq!(repeated.status.code(), Some(3), "repeat: {out}");
     let path = fx.request.display().to_string();
     assert!(out.lines().any(|l| l.contains(&path) && l.contains("holds work that is not saved")), "repeat: {out}");
     assert!(out.contains("nothing was moved"), "repeat: {out}");
@@ -211,7 +211,7 @@ fn first_restore_refuses_unsaved_work_without_moving_refs() {
     fs::write(fx.request.join("src/file"), b"unsaved edit\n").unwrap();
     let output = fx.restore();
     let text = format!("{}{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
-    assert_eq!(output.status.code(), Some(1), "{text}");
+    assert_eq!(output.status.code(), Some(3), "{text}");
     assert!(text.lines().any(|line| line.contains(&fx.request.display().to_string()) && line.contains("holds work that is not saved")), "{text}");
     assert!(text.contains("nothing was moved"), "{text}");
     assert_eq!(fx.git.read_ref(REQUEST).unwrap(), Some(fx.branch_saved));

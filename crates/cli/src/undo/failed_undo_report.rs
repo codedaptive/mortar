@@ -6,7 +6,7 @@ use oplog::{OpRecord, OpResult, OplogError};
 use super::undo_error_report;
 use crate::report::{failure_report, Report};
 
-/// For a Stale result, undo_error_report's MovedSince refusal (exit 1) naming `target_op`, the stale ref and that it
+/// For a Stale result, undo_error_report's MovedSince refusal (exit 3) naming `target_op`, the stale ref and that it
 /// moved outside mortar. A Failed record with any other result is failure_report naming the undo op.
 pub fn failed_undo_report(target_op: &str, failed: &OpRecord) -> Report {
     match &failed.result {

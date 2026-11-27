@@ -99,7 +99,7 @@ fn cannot(path: &Path, error: &io::Error) -> String {
     format!("cannot remove {}: {error}", path.display())
 }
 
-/// Refused (exit 1): the record cannot be read or decoded, so uninstall cannot tell what is install's.
+/// Refused (exit 3): the record cannot be read or decoded, so uninstall cannot tell what is install's.
 fn record_refusal(why: &str, record_path: &Path) -> Report {
     Report {
         verb: "uninstall".to_string(),

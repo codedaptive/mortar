@@ -1,9 +1,9 @@
-//! A zone moved during the real join is protected and reported through the CLI.
+//! A zone moved during the real join is protected and reported through the CLI as refused.
 use crate::{json, support::{actual_git, fixture_partners::Partners, script, shim_path, REQUEST, ZONE}};
 use std::{fs, process::{Command, Stdio}};
 
 #[test]
-fn zone_moved_sideways_reports_the_protected_join_failure() {
+fn zone_moved_sideways_reports_the_protected_join_refused() {
     let f = Partners::new();
     f.set();
     f.commit_request("src/core/c.txt", b"request work\n");
@@ -33,15 +33,15 @@ exec "$REAL_GIT" "$@"
         .env("RACE_REQUEST", request.as_str()).env("RACE_BASE", f.base.as_str())
         .env("RACE_TIP", sideways.as_str()).env("RACE_MARKER", &marker).env("RACE_TARGET", &target)
         .stdin(Stdio::null()).args(["--json", "join"]).output().unwrap();
-    let r = json::check(out, "join", 5, "failed");
+    let r = json::check(out, "join", 3, "refused");
     assert!(marker.exists());
     let proposed = fs::read_to_string(target).unwrap();
     assert_eq!(r.strings("lines"), &[
         "the snapshot ref moved as the work was saved first".to_string(),
         format!("join op log: ref refs/heads/zone/core is protected by join: moving it from {sideways} to {proposed} is not a fast-forward; nothing was changed; move it only to a commit that has {sideways} as an ancestor, or ask join"),
     ]);
-    assert!(r.is_null("owner"));
-    assert_eq!(r.text("next"), "repeat the same command");
+    assert_eq!(r.text("owner"), "the zone's coordinator");
+    assert_eq!(r.text("next"), "ask the zone's coordinator why refs/heads/zone/core moved, then mr join");
     assert_eq!(f.tip(ZONE), sideways);
     assert_eq!(f.tip(REQUEST), request);
 }

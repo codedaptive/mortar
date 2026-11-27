@@ -23,7 +23,7 @@ const PUBLISH: &str = "mr publish --actor <name>";
 ///   closes the intent. Any other phase, as land reads it (already done when publish opened it): refused, naming
 ///   the op id, nothing pushed; the next step checks the remote's origin branch, then publishes.
 ///
-/// Every refusal is exit 1, outcome "refused", with no fields.
+/// Every refusal is exit 3, outcome "refused", with no fields.
 pub fn publish_error_report(error: &PublishError, refs: &LandRefs) -> Report {
     match error {
         PublishError::Squash(error) => squash_error_report(VERB, error),

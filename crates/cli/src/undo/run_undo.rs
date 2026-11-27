@@ -9,21 +9,21 @@
 //! - save then undo keeps the files and shows them unsaved (the index at the branch's restored tree);
 //! - undo after a join's rebase moves the folder back to the tip before the rebase; with an edit in the way the move
 //!   is refused and left pending, status gives next mr undo, and the next undo, save or join finishes it;
-//! - undo of a joined request (the zone branch moved) is refused, exit 1;
-//! - a ref moved since by another actor is refused, exit 1, naming the op and the actor;
+//! - undo of a joined request (the zone branch moved) is refused, exit 3;
+//! - a ref moved since by another actor is refused, exit 3, naming the op and the actor;
 //! - nothing to undo is exit 0, its next as status would give;
 //! - undo of a resolve step restores the paused join: status shows the join paused, next mr resolve, and mr resolve
 //!   then answers with the same folder_tree; a repeat answers already-done naming the undo op;
-//! - each pre-check refusal is exit 1 with nothing moved: another paused join's mortar-join.json present
+//! - each pre-check refusal is exit 3 with nothing moved: another paused join's mortar-join.json present
 //!   (StatePresent), and a mortar-join.json that does not decode (StateCorrupt), the file kept;
-//! - undo of a resolve recorded without its paused join (no join_state value) is refused, exit 1, nothing changed;
+//! - undo of a resolve recorded without its paused join (no join_state value) is refused, exit 3, nothing changed;
 //! - `mr log --json` shows the join_state value on the resolve op's line;
-//! - a resolve undo whose own folder move is pending with a file in the way is the move refusal, exit 1, the
+//! - a resolve undo whose own folder move is pending with a file in the way is the move refusal, exit 3, the
 //!   snapshot kept and no undo op (crates/cli/tests/across_kits/undo_save_join_resolve/refusals.rs covers it);
 //! - the snapshot taken first is restorable with mr restore;
 //! - a repeat after a kill answers already-done, finishing the folder step the kill left;
-//! - a held join-<zone> lock is exit 3 naming the holder;
-//! - undo in an attempt folder whose HEAD is unborn is refused, exit 1, owner the folder's HEAD, its next checking out
+//! - a held join-<zone> lock is exit 4 naming the holder;
+//! - undo in an attempt folder whose HEAD is unborn is refused, exit 3, owner the folder's HEAD, its next checking out
 //!   the try branch, with no undo op and no ref moved;
 //! - in attempt folder k, only attempt k's own save is undone, never the request's, and the reverse.
 

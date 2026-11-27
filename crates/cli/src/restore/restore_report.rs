@@ -9,7 +9,7 @@ use super::FolderOnRef;
 use crate::report::{is_zero_oid, ExitCode, OutValue, Report};
 
 /// Done is exit 0 "restored"; Repeated (the same key ran before) exit 0 "already-done"; both name next
-/// "mr log --key <key>". Failed is exit 1 "not-moved": a ref was not where it was read and nothing moved; next
+/// "mr log --key <key>". Failed is exit 3 "not-moved": a ref was not where it was read and nothing moved; next
 /// "mr log --ref <that ref>". Lines: each move of the record, "<ref> <old|absent> -> <new|deleted>" (or "every
 /// ref already holds its value as of op <op_id>" when there is none; for Failed, the ref that stood in the way
 /// instead); each folder `moved`; each folder already `in_place`; each folder `left_alone` because its ref has moved

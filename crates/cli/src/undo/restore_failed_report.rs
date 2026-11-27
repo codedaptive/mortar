@@ -8,7 +8,7 @@ use ::join::JoinRunError;
 use super::restore_why;
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Every error is exit 1 "refused": op `undone_op` was undone by op `undo_op` but the paused join was not put back,
+/// Every error is exit 3 "refused": op `undone_op` was undone by op `undo_op` but the paused join was not put back,
 /// then the why lines. The next step is mr undo, whose repeat runs the restore again and finishes it.
 pub fn restore_failed_report(error: &JoinRunError, undone_op: &str, undo_op: &str) -> Report {
     let mut lines = vec![format!("op {undone_op} was undone by op {undo_op}; the paused join was not put back")];

@@ -10,7 +10,7 @@ use crate::report::{with_moved_first, ExitCode, Report};
 const VERB: &str = "resolve";
 
 /// `moved` (moved_before's line for what the snapshots before the move moved) is the first line of each report, then
-/// `before` (what the resolve already did). Edits on paths the zone changed (MoveRefused) are exit 1
+/// `before` (what the resolve already did). Edits on paths the zone changed (MoveRefused) are exit 3
 /// "refused", owned by the folder: the paths, then the snapshot ref and commit that keep them, since the snapshot
 /// taken before join resolve holds them; next "put those files back to the folder's version, then mr join".
 /// Anything else is move_refusal_report's report under the verb resolve.

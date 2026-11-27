@@ -7,7 +7,7 @@ use super::AnswerPart;
 use crate::report::{ExitCode, OutValue};
 
 /// Joined and FastForwarded are exit 0 "joined", next "wait for the zone's tests"; Rebased is exit 0 "rebased", next
-/// "mr join", since the unit tests must run again first; Conflicted is exit 2 "conflicted", each file
+/// "mr join", since the unit tests must run again first; Conflicted is exit 1 "conflicted", each file
 /// indented, then a line saying mr resolve writes both sides into those files with markers to fix before running mr
 /// resolve again, next "mr resolve". FilesWritten, which only resolve gives, is None. `moved` (moved_before's line)
 /// names the refs the save or snapshot before the join moved: Joined says it before "nothing else moved",

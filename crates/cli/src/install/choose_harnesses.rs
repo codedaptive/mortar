@@ -6,7 +6,7 @@ use crate::report::{ExitCode, Report};
 use super::{parse_picker_answer, HarnessSpec, InstallOptions};
 
 /// The harnesses to wire and, when none are wired for a reason, the wiring-skipped note; Err a refusal (a target not
-/// detected, exit 1) or a usage report (a bad picker answer, exit 4). Checked in order: --target, no harness
+/// detected, exit 3) or a usage report (a bad picker answer, exit 2). Checked in order: --target, no harness
 /// detected, -y, no terminal, then the picker. `ask` is called at most once, only for the picker on a terminal.
 pub fn choose_harnesses(
     detected: &[&'static HarnessSpec],

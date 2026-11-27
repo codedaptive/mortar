@@ -1,4 +1,4 @@
-//! zone_folder_refusal: a snapshot in a zone folder is refused (exit 1) naming the folder, with a next that names
+//! zone_folder_refusal: a snapshot in a zone folder is refused (exit 3) naming the folder, with a next that names
 //! mr snapshot with --actor in a request or attempt folder.
 
 use std::path::Path;

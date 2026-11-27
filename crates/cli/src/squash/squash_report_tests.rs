@@ -103,7 +103,7 @@ fn nothing_is_nothing_to_squash_naming_the_tip() {
 }
 
 #[test]
-fn conflicted_exits_2_listing_each_file() {
+fn conflicted_exits_1_listing_each_file() {
     let files = vec![PathBuf::from("src/a/x"), PathBuf::from("src/a/y")];
     assert_eq!(
         squash_report("a", &SquashAnswer::Conflicted { files }),

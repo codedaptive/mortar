@@ -13,8 +13,8 @@ const FILE: &str = "src/a/a.txt";
 const RESOLVED: &str = "a from r1\na from r2\n";
 
 /// Check 5: r1 edits src/a/a.txt's one line and joins first (its own line), then r2 edits the same line and joins:
-/// exit 2 "conflicted", the file listed, next `mr resolve`, and r2's folder still holding r2's own text, with no
-/// markers, no unmerged entry and nothing uncommitted. Check 6: `mr resolve` writes the markers (exit 2
+/// exit 1 "conflicted", the file listed, next `mr resolve`, and r2's folder still holding r2's own text, with no
+/// markers, no unmerged entry and nothing uncommitted. Check 6: `mr resolve` writes the markers (exit 1
 /// "files-written"); the drive writes both lines; `mr resolve` again (exit 0), then `mr join`: joined, and zone a
 /// holds both edits and r2's file. False, with the later checks written as not run, when the conflict did not come
 /// or the last join did not join.
@@ -27,7 +27,7 @@ pub fn flow_conflict(world: &World, checks: &mut Checks, state: &mut FlowState) 
     let unmerged = git_out(world, &state.r2, &["ls-files", "-u"]);
     let status = git_out(world, &state.r2, &["status", "--porcelain"]);
     let files = join.texts("files");
-    let conflicted = join.exit == Some(2) && join.outcome == "conflicted";
+    let conflicted = join.exit == Some(1) && join.outcome == "conflicted";
     let clean = text == "a from r2\n" && !holds_conflict_markers(&text) && unmerged.is_empty() && status.is_empty();
     let ok = conflicted && files == [FILE] && join.next == "mr resolve" && clean;
     let saw = format!(
@@ -48,7 +48,7 @@ pub fn flow_conflict(world: &World, checks: &mut Checks, state: &mut FlowState) 
 fn resolve(world: &World, checks: &mut Checks, r2: &Path) -> bool {
     let first = agent_mr(world, r2, &["resolve"]);
     let marked = read(r2, FILE);
-    let written = first.exit == Some(2) && first.outcome == "files-written";
+    let written = first.exit == Some(1) && first.outcome == "files-written";
     let ok = written && first.texts("files").iter().any(|file| file == FILE) && holds_conflict_markers(&marked);
     let saw = format!("{}; files [{}]; {FILE} {marked:?}", first.saw, first.texts("files").join(", "));
     checks.check("6. mr resolve in r2", ok, &saw);

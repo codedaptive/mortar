@@ -11,7 +11,7 @@ const OWNER: &str = "the zones' squash refs";
 /// - Missing: refused, no squash ref carries the change ID; the next step makes the change's squash.
 /// - Several: refused, naming each ref carrying it; the next step names the squash by its commit to `verb`.
 ///
-/// Every refusal is exit 1, outcome "refused", with no fields.
+/// Every refusal is exit 3, outcome "refused", with no fields.
 pub fn squash_pick_report(verb: &str, change: &ChangeId, pick: &SquashPick) -> Option<Report> {
     match pick {
         SquashPick::One { .. } => None,

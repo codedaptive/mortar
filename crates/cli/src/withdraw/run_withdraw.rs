@@ -21,7 +21,7 @@ use crate::shell::ShellContext;
 
 const VERB: &str = "withdraw";
 
-/// The config's zone read by parse_withdraw_args (an Err is withdraw's usage report, exit 4, before the verb runs
+/// The config's zone read by parse_withdraw_args (an Err is withdraw's usage report, exit 2, before the verb runs
 /// git); then, under the land lock after recover (locked_act), keyed by --key or op_key("withdraw", the common dir),
 /// land's withdraw of that zone's squash, read against the config's origin branch, as the context's actor, reported
 /// by withdraw_report or, when refused, withdraw_error_report.

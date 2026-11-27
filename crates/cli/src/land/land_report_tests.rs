@@ -115,7 +115,7 @@ fn landed_second_of_two_inserts_its_place_in_the_batch_and_lists_the_batch() {
 }
 
 #[test]
-fn conflicted_with_no_batch_exits_2_listing_each_file_as_today_with_an_empty_batch() {
+fn conflicted_with_no_batch_exits_1_listing_each_file_as_today_with_an_empty_batch() {
     assert_eq!(
         land_report(&squash(), &conflicted(), &[], None),
         Report {
@@ -171,7 +171,7 @@ fn conflicted_with_a_batch_in_flight_names_the_unchanged_batch_and_says_it_is_ke
 }
 
 #[test]
-fn busy_exits_3_owned_by_the_other_changes_landing() {
+fn busy_exits_4_owned_by_the_other_changes_landing() {
     let busy = BatchLandAnswer::Busy { change_id: ChangeId::parse(OTHER).unwrap() };
     assert_eq!(
         land_report(&squash(), &busy, &[], None),

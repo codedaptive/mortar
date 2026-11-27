@@ -17,7 +17,7 @@ impl Paused {
         let MergeTreeOutcome::Conflicted { tree, files } = f.git.merge_tree(&zone, Some(base), &zone, bad).unwrap() else {
             panic!("fixture must have a real conflict");
         };
-        let report = f.report(&["--json", "join"], "join", 2, "conflicted");
+        let report = f.report(&["--json", "join"], "join", 1, "conflicted");
         assert_eq!(report.text("commit"), bad.as_str());
         assert_eq!(report.strings("files"), files.iter().map(|p| p.to_str().unwrap().to_string()).collect::<Vec<_>>());
         let state = f.local().git_dir(&f.request).unwrap().join("mortar-join.json");
@@ -25,7 +25,7 @@ impl Paused {
         let this = Self { f, old, zone, bad: bad.clone(), state, tree };
         this.assert_unmoved(); this
     }
-    pub fn first(&self) -> Report { self.f.report(&["--json", "resolve"], "resolve", 2, "files-written") }
+    pub fn first(&self) -> Report { self.f.report(&["--json", "resolve"], "resolve", 1, "files-written") }
     pub fn state_bytes(&self) -> Vec<u8> { fs::read(&self.state).unwrap() }
     pub fn assert_unmoved(&self) {
         assert_eq!(self.f.head(), self.old);

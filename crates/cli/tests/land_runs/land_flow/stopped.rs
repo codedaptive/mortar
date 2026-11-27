@@ -21,7 +21,7 @@ fn refused_pre_act_finish_then_clear_and_repeat_finishes(verb: &str) {
         s.land(); s.kit_back_out(); (s.squash.commit.clone(), s.f.base.clone())
     } else { s.kit_land(); (s.f.base.clone(), s.squash.commit.clone()) };
     s.obstruct(); let before = s.observe();
-    let r = s.run(verb, word(&s, verb), 1, "folder-not-moved");
+    let r = s.run(verb, word(&s, verb), 3, "folder-not-moved");
     assert_eq!(s.observe(), before, "{verb} must not move integration, publish, consume state, log or touch the folder");
     assert_eq!(r.strings("lines")[0], format!("{verb} stopped before its land call and moved nothing: integration is at {tip}, where an earlier run moved it, and its folder is still at {old}"));
     refusal(&s, &r, verb, &old, &tip);
@@ -53,7 +53,7 @@ fn refused_own_folder_move_is_finished_on_the_plain_repeat(verb: &str) {
         (s.squash.commit.clone(), tip)
     };
     s.obstruct(); let index = s.index(); let bytes = s.bytes();
-    let r = s.run(verb, word(&s, verb), 1, "folder-not-moved");
+    let r = s.run(verb, word(&s, verb), 3, "folder-not-moved");
     assert_eq!(s.tip(), tip); assert_eq!(s.index(), index); assert_eq!(s.bytes(), bytes);
     assert!(!r.lines().contains("stopped before its land call")); refusal(&s, &r, verb, &old, &tip);
     s.clear_to_index(); assert_eq!(s.index(), index);
@@ -70,13 +70,13 @@ fn land_repeat_refuses_staged_edit_until_folder_is_cleared() {
     raw(&s.folder_git(), &["add", "src/file"]);
     let index = s.index();
     let bytes = s.bytes();
-    let r = s.run("land", word(&s, "land"), 1, "folder-not-moved");
+    let r = s.run("land", word(&s, "land"), 3, "folder-not-moved");
     assert_eq!(s.tip(), s.squash.commit);
     assert_eq!(s.index(), index);
     assert_eq!(s.bytes(), bytes);
     refusal(&s, &r, "land", &s.f.base, &s.squash.commit);
 
-    let r = s.run("land", word(&s, "land"), 1, "folder-not-moved");
+    let r = s.run("land", word(&s, "land"), 3, "folder-not-moved");
     assert_eq!(r.strings("paths"), &["src/file"]);
     assert_eq!(s.index(), index);
     assert_eq!(s.bytes(), bytes);
@@ -95,7 +95,7 @@ fn land_repeat_refuses_an_unmerged_folder_index() {
     raw(&s.folder_git(), &["read-tree", "-m", s.f.base.as_str(), s.squash.commit.as_str(), other.as_str()]);
     assert!(!raw(&s.folder_git(), &["ls-files", "-u"]).is_empty());
     let before = s.observe();
-    s.run("land", word(&s, "land"), 1, "folder-not-moved");
+    s.run("land", word(&s, "land"), 3, "folder-not-moved");
     assert_eq!(s.observe(), before);
 }
 
@@ -165,7 +165,7 @@ fn no_integration_folder_or_no_done_integration_op_means_no_catch_up() {
 #[test]
 fn setting_the_index_to_head_removes_the_stall_and_does_not_invent_a_worktree_content_heuristic() {
     let s = Landing::new(true); s.land(); s.kit_back_out(); s.obstruct();
-    s.run("publish", None, 1, "folder-not-moved");
+    s.run("publish", None, 3, "folder-not-moved");
     // Deliberately NOT the prescribed clear: index at HEAD, owner's file still differs, which is left unreported.
     s.folder_git().run(&["read-tree", "HEAD"], &RunOpts::default()).unwrap();
     let before = s.observe(); let r = s.run("publish", None, 0, "nothing-to-publish");

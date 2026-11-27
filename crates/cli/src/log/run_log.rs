@@ -10,7 +10,7 @@
 //! - with no filter it lists every op; a filter nothing matches is exit 0, outcome empty;
 //! - with several ops in the log, --json "records" are the log's own lines for those ops, byte for byte;
 //! - log writes nothing: refs, the op log and the lock folder are unchanged after it;
-//! - run outside any git repository it is refused, exit 1, outcome not-a-repository.
+//! - run outside any git repository it is refused, exit 3, outcome not-a-repository.
 
 use std::path::Path;
 
@@ -23,7 +23,7 @@ use crate::context::{repository_error, repository_report};
 use crate::report::{failure_report, Report};
 use crate::shell::ShellContext;
 
-/// Reads the filters first (log_filters: a bad line is log's usage, exit 4, before any read); then the repository's
+/// Reads the filters first (log_filters: a bad line is log's usage, exit 2, before any read); then the repository's
 /// common dir from `cwd` (no repository: repository_report) and its op log (unreadable: failure_report), and
 /// reports the records every filter keeps (matching_records) through log_report, with --json each record's own log
 /// line, values and remote mark included (encoded_records). No lock, no op, writes nothing.

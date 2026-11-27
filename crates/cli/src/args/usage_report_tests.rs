@@ -1,4 +1,4 @@
-//! usage_report: exit 4, the reason then the verbs, and the verb's usage (or the verb list) as next.
+//! usage_report: exit 2, the reason then the verbs, and the verb's usage (or the verb list) as next.
 //! Unit test: args/find_verb and the verb table are pure and used directly.
 
 use super::{usage_report, UsageError};
@@ -38,6 +38,6 @@ fn a_known_verb_gives_its_usage_as_next() {
     let error = UsageError { verb: Some("init".to_string()), reason: "--key needs a value".to_string(), json: false };
     let report = usage_report(&error);
     assert_eq!(report.verb, "init");
-    assert_eq!(report.exit as i32, 4);
+    assert_eq!(report.exit as i32, 2);
     assert_eq!(report.next, INIT_USAGE);
 }

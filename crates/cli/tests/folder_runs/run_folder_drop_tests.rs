@@ -5,8 +5,8 @@
 //! Tests to write (not written here):
 //! - a try branch moved under the op (AttemptRefsLeft): the cli's why and next, never folders' FolderError Display
 //!   text;
-//! - an orphan attempt folder with no trysnap ref (OrphanWithoutSnapshot): exit 1 naming the folder, nothing changed;
-//! - a join-<zone> lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks).
+//! - an orphan attempt folder with no trysnap ref (OrphanWithoutSnapshot): exit 3 naming the folder, nothing changed;
+//! - a join-<zone> lock held by a live pid: exit 4 naming the holder's pid, host and since (cli with oplog's locks).
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -224,7 +224,7 @@ fn a_branch_only_attempt_with_no_snapshot_is_refused_naming_its_branch() {
     let before = ops(&fx.common).len();
     let refused = fx.drop_attempts();
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     assert!(out.contains("try/core/task/1"), "the refusal names the branch: {out}");
     let next = member(&refused, "next");

@@ -45,7 +45,11 @@ pub const LANDING_GROUP: HelpGroup = HelpGroup {
             term: "guard install|status",
             line: "the git hooks that keep integration and origin to Mortar",
         },
-        HelpEntry { name: "guard-hook", term: "guard-hook <name>", line: "run by git's hooks, not by hand" },
+        HelpEntry {
+            name: "guard-hook",
+            term: "guard-hook <name>",
+            line: "run by git's hooks, not by hand; a refusal is exit 3, and git stops the push or the ref update it was preparing",
+        },
         HelpEntry {
             name: "bisect",
             term: "bisect <last pass> <failed> --timeout <s> -- <command>...",

@@ -14,8 +14,8 @@ use crate::report::{snapshot_step_failure, with_moved_first, Report};
 /// with `moved` as its first line when given, before any line about the failed step, on a refusal, a busy, an
 /// already-done and a failure alike. ChangeIdMissing and BranchMoved stay with
 /// save_error_report although snapshot_step_failure handles them: save's report of ChangeIdMissing is a refusal
-/// (exit 1) naming HEAD as the owner and the mend (ask the zone's coordinator to mend HEAD's trailers), since a
-/// repeat cannot finish a save until HEAD's trailers are mended, and of BranchMoved a busy (exit 3), since another
+/// (exit 3) naming HEAD as the owner and the mend (ask the zone's coordinator to mend HEAD's trailers), since a
+/// repeat cannot finish a save until HEAD's trailers are mended, and of BranchMoved a busy (exit 4), since another
 /// writer moved the branch; snapshot_step_failure's "repeat the same command" would hide either.
 pub(crate) fn save_step_failure(error: &SnapshotError, moved: Option<&str>) -> Report {
     match error {

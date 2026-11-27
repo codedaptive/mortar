@@ -1,4 +1,4 @@
-//! stopped_before_move: exit 1 "folder-not-moved" led by the verb's done line, the failed read and that the folder
+//! stopped_before_move: exit 3 "folder-not-moved" led by the verb's done line, the failed read and that the folder
 //! was not moved, the verb's stop line, and the failed read's next ending with the repeat.
 
 use super::stopped_before_move;

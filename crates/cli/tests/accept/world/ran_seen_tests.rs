@@ -11,7 +11,7 @@ fn exit_0_shows_no_stderr() {
 
 #[test]
 fn a_failing_exit_shows_the_first_stderr_line_that_is_not_blank() {
-    assert_eq!(ran(Some(2), None, "\n   \n  error: conflict in a.txt \nmore\n").seen(), "exit 2 / error: conflict in a.txt");
+    assert_eq!(ran(Some(1), None, "\n   \n  error: conflict in a.txt \nmore\n").seen(), "exit 1 / error: conflict in a.txt");
     assert_eq!(ran(Some(1), None, "").seen(), "exit 1");
 }
 

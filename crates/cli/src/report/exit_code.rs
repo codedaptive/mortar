@@ -10,9 +10,9 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExitCode {
     Done = 0,
-    Refused = 1,
-    Conflict = 2,
-    Busy = 3,
-    Usage = 4,
+    Conflict = 1,
+    Usage = 2,
+    Refused = 3,
+    Busy = 4,
     Failure = 5,
 }

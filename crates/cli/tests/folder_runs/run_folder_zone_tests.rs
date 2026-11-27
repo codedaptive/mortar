@@ -3,8 +3,8 @@
 //! supplies a missing zone branch, and a missing origin is refused with --start next.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
-//! - a folders lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks);
-//! - free disk under the floor: exit 1 with the cli's own facts, never folders' BelowFloor Display text;
+//! - a folders lock held by a live pid: exit 4 naming the holder's pid, host and since (cli with oplog's locks);
+//! - free disk under the floor: exit 3 with the cli's own facts, never folders' BelowFloor Display text;
 //! - the zone branch checked out in another folder, or a different folder at the path: the cli's why and next,
 //!   never folders' FolderError Display text.
 
@@ -194,7 +194,7 @@ fn a_zone_not_in_the_config_is_refused_and_makes_nothing() {
     let worktrees = fx.worktrees();
     let refused = fx.folder(true, &["zone", "web", fx.path_arg()]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
     assert!(next.contains("mr init --replace"), "{out}");
@@ -212,7 +212,7 @@ fn without_an_actor_it_is_a_usage_error_and_makes_nothing() {
     let worktrees = fx.worktrees();
     let refused = fx.folder(false, &["zone", "core", fx.path_arg()]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(4), "{out}");
+    assert_eq!(refused.status.code(), Some(2), "{out}");
     assert_eq!(member(&refused, "outcome"), "usage", "{out}");
     assert_eq!(member(&refused, "next"), USAGE, "{out}");
     assert!(!fx.path.exists(), "{out}");
@@ -267,7 +267,7 @@ fn precheck_scope_a_bare_zone_without_an_origin_or_zone_branch_refuses_naming_st
     assert_eq!(fx.git.read_ref("refs/heads/main").unwrap(), None);
     let before = ops(&fx.common); let worktrees = fx.worktrees();
     let refused = fx.folder(true, &["zone", "core", fx.path_arg()]); let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}"); assert_eq!(member(&refused, "outcome"), "refused");
+    assert_eq!(refused.status.code(), Some(3), "{out}"); assert_eq!(member(&refused, "outcome"), "refused");
     let next = member(&refused, "next"); assert!(next.contains("--start"), "{out}"); assert_harness_next(&next);
     assert!(!fx.path.exists()); assert_eq!(fx.git.read_ref("refs/heads/zone/core").unwrap(), None);
     assert_eq!(fx.git.read_ref("refs/heads/main").unwrap(), None);
@@ -281,7 +281,7 @@ fn a_start_that_names_no_commit_is_refused_and_makes_nothing() {
     let worktrees = fx.worktrees();
     let refused = fx.folder(true, &["zone", "core", fx.path_arg(), "--start", "no-such-commit"]);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_harness_next(&member(&refused, "next"));
     assert!(!fx.path.exists(), "{out}");
     assert_eq!(fx.git.read_ref("refs/heads/zone/core").unwrap(), None, "{out}");

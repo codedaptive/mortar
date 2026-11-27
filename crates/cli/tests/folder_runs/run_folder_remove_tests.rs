@@ -2,11 +2,11 @@
 //! remaining attempts, a zone folder and an attempt folder with an unborn HEAD each refused with nothing removed.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
-//! - a file the snapshot cap refuses counts as unsaved: exit 1, the cli's facts naming the file and the cap
+//! - a file the snapshot cap refuses counts as unsaved: exit 3, the cli's facts naming the file and the cap
 //!   (cli with snapshot's saved_state);
 //! - a request not joined (NotJoined) and a snapshot ref moved under the op (RemovedRefsLeft): the cli's why and
 //!   next, never folders' FolderError Display text;
-//! - a join-<zone> lock held by a live pid: exit 3 naming the holder's pid, host and since (cli with oplog's locks).
+//! - a join-<zone> lock held by a live pid: exit 4 naming the holder's pid, host and since (cli with oplog's locks).
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -167,7 +167,7 @@ fn a_request_folder_with_unsaved_work_is_refused_and_nothing_is_removed() {
     let before = ops(&fx.common).len();
     let refused = fx.remove(&fx.request);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
     assert_eq!(next, "repeat once the folder's work is saved", "{out}");
@@ -188,7 +188,7 @@ fn a_request_folder_with_attempts_left_is_refused_naming_keep_and_drop() {
     let before = ops(&fx.common).len();
     let refused = fx.remove(&fx.request);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     let next = member(&refused, "next");
     assert!(next.contains("mr folder keep"), "{out}");
@@ -211,7 +211,7 @@ fn attempt_unborn_head_remove_refuses_with_try_branch_next() {
     git.run(&["checkout", "--orphan", "unborn-test"], &RunOpts::default()).unwrap();
     let branch = fx.git.read_ref("refs/heads/try/core/task/1").unwrap();
     assert!(branch.is_some());
-    let r = crate::json::check(fx.remove(&attempt), "folder", 1, "refused");
+    let r = crate::json::check(fx.remove(&attempt), "folder", 3, "refused");
     assert_eq!(r.text("owner"), "the folder's HEAD");
     assert_eq!(r.strings("lines"), &[format!("HEAD of the folder {} has no commit", attempt.display())]);
     assert!(attempt.exists());
@@ -229,7 +229,7 @@ fn a_zone_folder_is_refused_and_nothing_is_removed() {
     let before = ops(&fx.common).len();
     let refused = fx.remove(&zone);
     let out = text(&refused);
-    assert_eq!(refused.status.code(), Some(1), "{out}");
+    assert_eq!(refused.status.code(), Some(3), "{out}");
     assert_eq!(member(&refused, "outcome"), "refused", "{out}");
     assert_harness_next(&member(&refused, "next"));
     assert!(zone.join("src/a/a.txt").exists(), "{out}");

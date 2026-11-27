@@ -18,7 +18,7 @@ use crate::report::{failure_report, Report};
 /// - RequestsMalformed: refused, naming the commit and how squash reads a message's request lines (a squash with
 ///   or without a caller's message); the next step is to make the squash again.
 ///
-/// Every refusal is exit 1, outcome "refused", with no fields.
+/// Every refusal is exit 3, outcome "refused", with no fields.
 pub fn squash_error_report(verb: &str, error: &SquashError) -> Report {
     let refused = |line: String, owner: &str, next: String| landing_refusal(verb, vec![line], owner, next);
     match error {

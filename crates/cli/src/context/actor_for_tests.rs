@@ -85,7 +85,7 @@ fn an_agent_verb_outside_a_request_folder_is_refused_naming_the_folder() {
     ];
     for (folder, why) in cases {
         let report = actor_for(&AGENT, folder, None).expect_err("refused");
-        assert_eq!(report.exit as i32, 1);
+        assert_eq!(report.exit as i32, 3);
         assert_eq!(report.verb, "save");
         assert_eq!(report.lines, vec![why.to_string(), "nothing ran".to_string()]);
         assert_eq!(report.next, "run mr save inside a request folder Mortar made");
@@ -105,7 +105,7 @@ fn a_harness_verb_ignores_the_record() {
 #[test]
 fn a_harness_verb_without_actor_is_usage() {
     let report = actor_for(init(), None, None).expect_err("usage");
-    assert_eq!(report.exit as i32, 4);
+    assert_eq!(report.exit as i32, 2);
     assert_eq!(report.verb, "init");
     assert_eq!(report.lines, vec!["--actor <name> is required".to_string(), "verbs: after-publish, back-out, backup, bisect, commit-files, disk, folder, guard, guard-hook, help, init, install, join, land, log, need, overlap, publish, rereview, resolve, restore, restore-backup, save, snapshot, squash, status, sweep, undo, uninstall, withdraw, would-merge".to_string()]);
     assert_eq!(report.next, init().usage);

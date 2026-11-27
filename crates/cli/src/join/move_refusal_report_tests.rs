@@ -1,4 +1,4 @@
-//! move_refusal_report: files in the way, a branch elsewhere and every other variant folder_refusal refuses are exit 1
+//! move_refusal_report: files in the way, a branch elsewhere and every other variant folder_refusal refuses are exit 3
 //! owned by the folder, after the lines of what was already done; a lock is lock_report's report with "nothing ran"
 //! scoped to the folder move, and a git, op log or disk probe error a failure, with those lines first, and the moved
 //! line (moved_before's) ahead of them all. folders' own Display text is never printed. Unit tests:

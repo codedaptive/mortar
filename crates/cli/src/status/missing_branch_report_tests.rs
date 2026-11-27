@@ -1,5 +1,5 @@
 //! missing_branch_report: a missing zone branch is the zone coordinator's, a missing request branch this request's;
-//! both exit 1 "refused", naming the branch and the verb to run again.
+//! both exit 3 "refused", naming the branch and the verb to run again.
 
 use super::missing_branch_report;
 use crate::report::{ExitCode, Report};

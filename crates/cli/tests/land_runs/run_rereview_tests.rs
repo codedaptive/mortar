@@ -1,12 +1,12 @@
 //! `mortar rereview <reviewed> <new>`: two squashes of one change answer rereviewed with both ids and a diff that
 //! names the file the second squash added and not the line both carry, with same_patch false and next telling the
 //! caller to hand the diff to the reviewer; squashes of two changes are refused as
-//! not-same-change (exit 1); one word, three words and a word that is not a full commit id are usage errors (exit 4)
+//! not-same-change (exit 3); one word, three words and a word that is not a full commit id are usage errors (exit 2)
 //! with rereview's usage line as next.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! The squashes are made in setup through land::squash under the land lock.
 //! Tests to write (not written here):
-//! - without a config: exit 1, next mortar init (the shell's load_config);
+//! - without a config: exit 3, next mortar init (the shell's load_config);
 //! - RereviewError::Git and RereviewError::Trailers texts (git or the trailers must fail);
 //! - RereviewError::NoParent: a root commit;
 //! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones.
@@ -144,7 +144,7 @@ fn rereview_of_two_different_changes_is_not_same_change() {
     let a = squash_in_setup(&root, "a");
     let b = squash_in_setup(&root, "b");
     let output = mortar(&root, &["--actor", "accept", "--json", "rereview", a.commit.as_str(), b.commit.as_str()]);
-    check(output, "rereview", 1, "not-same-change");
+    check(output, "rereview", 3, "not-same-change");
 }
 
 #[test]
@@ -157,7 +157,7 @@ fn rereview_usage_errors_name_rereviews_usage() {
         &["--actor", "accept", "--json", "rereview", reviewed, new, reviewed],
         &["--actor", "accept", "--json", "rereview", "HEAD", new],
     ] {
-        let report = check(mortar(&root, args), "rereview", 4, "usage");
+        let report = check(mortar(&root, args), "rereview", 2, "usage");
         assert_eq!(report.text("next"), USAGE, "{args:?}");
     }
 }

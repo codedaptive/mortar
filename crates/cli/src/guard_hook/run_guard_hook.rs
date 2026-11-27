@@ -3,7 +3,7 @@
 //! guard_hook_from_args_tests and guard_hook_report_tests cover the words it reads and the reports it gives;
 //! decide_with_intent_tests covers when the open intent is read.
 //! Integration tests in crates/cli/tests/guard_runs/run_guard_hook_tests.rs: hook input on stdin that is not UTF-8 is refused
-//! (exit 1), with nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let
+//! (exit 3), with nothing moved; with the op log unreadable, a reference-transaction committed or aborted is let
 //! through (exit 0, nothing printed) and a prepared one fails on the op log (exit 5).
 //! The integration tests in crates/cli/tests/guard_runs/guard.rs cover, with the mortar binary installed as the hook
 //! (the fixture installs it with land::guard_install, the code under `mr guard install`) in a throwaway
@@ -39,8 +39,8 @@ const INSTALLER: &str = "the harness that installs the guard";
 /// land::guard_decide reads this hook's input (decide_with_intent), the moves of the open intent MORTAR_OP names
 /// (None when it is unset or not unicode); and reports guard_decide's verdict (an allow's report is exit Done with
 /// nothing in it, and the binary prints none of it).
-/// A guard.json that is missing or is not a guard config, and input that cannot be read, are refused (exit 1): the
-/// guard cannot check the move, so it fails closed. Words it cannot read are usage (exit 4); git failing, or the op
+/// A guard.json that is missing or is not a guard config, and input that cannot be read, are refused (exit 3): the
+/// guard cannot check the move, so it fails closed. Words it cannot read are usage (exit 2); git failing, or the op
 /// log failing when it is read, is failure_report (exit 5). Takes no lock and moves nothing.
 pub fn run_guard_hook(context: &ShellContext, cwd: &Path) -> Report {
     decide(context, cwd).unwrap_or_else(|report| report)
@@ -54,7 +54,7 @@ fn decide(context: &ShellContext, cwd: &Path) -> Result<Report, Report> {
         .map(|verdict| guard_hook_report(&verdict))
 }
 
-/// The hook's words; words it cannot read are usage (exit 4), with the verb's usage line as next.
+/// The hook's words; words it cannot read are usage (exit 2), with the verb's usage line as next.
 fn hook(context: &ShellContext, git: &Git, refs: &LandRefs) -> Result<GuardHook, Report> {
     guard_hook_from_args(&context.args.rest, || git.remote_push_urls(&refs.remote).ok()).map_err(|reason| Report {
         next: context.args.verb.usage.to_string(),

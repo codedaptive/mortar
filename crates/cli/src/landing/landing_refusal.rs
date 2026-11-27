@@ -1,4 +1,4 @@
-//! The shape every refusal of the landing verbs shares: exit 1, outcome "refused", no fields.
+//! The shape every refusal of the landing verbs shares: exit 3, outcome "refused", no fields.
 
 use crate::report::{ExitCode, Report};
 

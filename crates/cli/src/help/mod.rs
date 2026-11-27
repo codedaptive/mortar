@@ -3,6 +3,7 @@
 //! row's line and its notes, plain or as the `--json` object.
 
 mod agent_group;
+mod exit_code_help_lines;
 mod find_help_entry;
 mod folder_group;
 mod help_asked;
@@ -23,6 +24,8 @@ mod usage_forms;
 mod verb_help_lines;
 mod verb_notes;
 
+#[cfg(test)]
+mod exit_code_help_lines_tests;
 #[cfg(test)]
 mod find_help_entry_tests;
 #[cfg(test)]
@@ -50,6 +53,7 @@ pub(crate) use help_asked::help_asked;
 pub(crate) use help_report::help_report;
 
 use agent_group::AGENT_GROUP;
+use exit_code_help_lines::exit_code_help_lines;
 use find_help_entry::find_help_entry;
 use folder_group::FOLDER_GROUP;
 use help_entry::HelpEntry;

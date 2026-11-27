@@ -119,7 +119,7 @@ fn rebased_is_done_and_joins_again() {
 }
 
 #[test]
-fn conflicted_is_exit_2_listing_the_files() {
+fn conflicted_is_exit_1_listing_the_files() {
     let answer = JoinAnswer::Conflicted {
         commit: oid(FROM),
         files: vec![PathBuf::from("src/a.rs"), PathBuf::from("docs/b.md")],

@@ -55,7 +55,7 @@ fn both_not_found_reasons_preserve_history_and_remove_probe_worktrees() {
     for passes in [true, false] {
         let s = Harness::new(); let (_, failed) = s.failing_landing(false);
         let command = if passes { "exit 0" } else { "exit 1" };
-        let r = run(&s, &mut s.bisect_command(&s.f.base, &failed, "60", Path::new("/bin/sh"), &["-c", command]), 1, "not-found");
+        let r = run(&s, &mut s.bisect_command(&s.f.base, &failed, "60", Path::new("/bin/sh"), &["-c", command]), 3, "not-found");
         assert_eq!(r.text("last_pass"), s.f.base.as_str()); assert_eq!(r.text("failed"), failed.as_str());
         assert_eq!(r.text("owner"), "the test command");
         if passes {
@@ -78,7 +78,7 @@ fn last_pass_off_the_first_parent_line_and_failed_off_origin_are_refused_before_
         let marker = s.f.root.join("must-not-run"); let program = s.f.root.join("marker.sh");
         script(&program, b"#!/bin/sh\nprintf 'ran\\n' >\"$1\"\nexit 0\n");
         let (last, end) = if last_off { (&off, &failed) } else { (&s.f.base, &off) };
-        let r = run(&s, &mut s.bisect_command(last, end, "60", &program, &[marker.to_str().unwrap()]), 1, "refused");
+        let r = run(&s, &mut s.bisect_command(last, end, "60", &program, &[marker.to_str().unwrap()]), 3, "refused");
         assert_eq!(r.text("owner"), "the commits named");
         let expected = if last_off { format!("the last passing commit {off} is not on {failed}'s first-parent line, so the range names no landings") }
         else { format!("the failed commit {off} is not on main's first-parent line, so it names no landing") };
@@ -90,7 +90,7 @@ fn last_pass_off_the_first_parent_line_and_failed_off_origin_are_refused_before_
 fn a_command_that_cannot_start_stops_at_the_failed_commit_and_leaves_no_probe_or_bisect_state() {
     let s = Harness::new(); let (_, failed) = s.failing_landing(false); let missing = s.f.root.join("no-such-program");
     assert!(!missing.exists());
-    let r = run(&s, &mut s.bisect_command(&s.f.base, &failed, "60", &missing, &[]), 1, "refused");
+    let r = run(&s, &mut s.bisect_command(&s.f.base, &failed, "60", &missing, &[]), 3, "refused");
     assert_eq!(r.strings("lines"), &[format!("the test command could not be run at {failed}, so its verdict there is unknown and the search stopped")]);
     assert_eq!(r.text("owner"), "the test command");
     assert_eq!(r.text("next"), "check that the test command's program exists and can be run, then repeat the same command");

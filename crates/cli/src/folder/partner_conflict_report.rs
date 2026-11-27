@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use crate::report::{ExitCode, OutValue, Report};
 
-/// Exit 1 "refused": the merge of `zone` with `partner` conflicts on `files` (one line each, indented two spaces)
+/// Exit 3 "refused": the merge of `zone` with `partner` conflicts on `files` (one line each, indented two spaces)
 /// and nothing was made. The coordinators of both zones own it; the next step cuts the request without the partner
 /// or repeats once the zones agree. Fields: partner, then files.
 pub fn partner_conflict_report(zone: &str, partner: &str, files: &[PathBuf]) -> Report {

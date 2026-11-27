@@ -1,6 +1,6 @@
 //! snapshot_error_report: every SnapshotError arm under the verb "snapshot", in the cli's own words. An unborn or
-//! detached HEAD and a path that is not UTF-8 are refusals (exit 1) with a next in words; a moved snapshot ref is busy
-//! (exit 3); a repeated op is already done (exit 0); every other arm is a failure (exit 5) naming what happened. No
+//! detached HEAD and a path that is not UTF-8 are refusals (exit 3) with a next in words; a moved snapshot ref is busy
+//! (exit 4); a repeated op is already done (exit 0); every other arm is a failure (exit 5) naming what happened. No
 //! arm prints an inner error's Display (gitio's, oplog's, io's).
 
 use std::path::PathBuf;

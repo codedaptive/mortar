@@ -1,12 +1,12 @@
 //! `mortar squash <zone>`: a zone one commit ahead of main is squashed onto main's tip at refs/mortar/squash/<zone>
 //! with main, integration and the zone branch unmoved; a repeat is already-squashed with the same commit and change
-//! ID; a zone at main has nothing to squash; a zone that conflicts with main exits 2 naming the file; a configured
-//! zone with no zone branch is refused (exit 1) naming the branch; no zone word, two words, an unknown zone and no
-//! --actor are usage errors (exit 4) with squash's usage line as next and no squash ref written.
+//! ID; a zone at main has nothing to squash; a zone that conflicts with main exits 1 naming the file; a configured
+//! zone with no zone branch is refused (exit 3) naming the branch; no zone word, two words, an unknown zone and no
+//! --actor are usage errors (exit 2) with squash's usage line as next and no squash ref written.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
-//! - the land lock held by a live pid: exit 3 (cli with oplog's locks);
-//! - without a config: exit 1, next mortar init (the shell's load_config);
+//! - the land lock held by a live pid: exit 4 (cli with oplog's locks);
+//! - without a config: exit 3, next mortar init (the shell's load_config);
 //! - each land error variant's text that needs git or the op log to fail: SquashError Git, Oplog, ChangeId,
 //!   Trailers, OpFailed and OpRepeated;
 //! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones.
@@ -157,7 +157,7 @@ fn squash_conflicting_with_main_exits_2_naming_the_file() {
     let (_repo, root) = repo();
     zone_a_ahead(&root);
     commit_on(&root, "main", "src/a/x", X_MAIN);
-    let report = check(squash(&root, "a"), "squash", 2, "conflict");
+    let report = check(squash(&root, "a"), "squash", 1, "conflict");
     assert!(report.strings("files").contains(&"src/a/x".to_string()), "{:?}", report.strings("files"));
     assert_eq!(tip(&root, SQUASH_A), None);
 }
@@ -165,7 +165,7 @@ fn squash_conflicting_with_main_exits_2_naming_the_file() {
 #[test]
 fn squash_of_a_zone_with_no_zone_branch_is_refused_naming_the_branch() {
     let (_repo, root) = repo();
-    let report = check(squash(&root, "b"), "squash", 1, "refused");
+    let report = check(squash(&root, "b"), "squash", 3, "refused");
     assert!(report.strings("lines").iter().any(|line| line.contains("refs/heads/zone/b")), "{}", report.lines());
     assert_eq!(squash_refs(&root), "");
 }
@@ -180,7 +180,7 @@ fn squash_usage_errors_name_squashs_usage_and_write_no_squash_ref() {
         &["--actor", "accept", "--json", "squash", "c"],
         &["--json", "squash", "a"],
     ] {
-        let report = check(mortar(&root, args), "squash", 4, "usage");
+        let report = check(mortar(&root, args), "squash", 2, "usage");
         assert_eq!(report.text("next"), USAGE, "{args:?}");
         assert_eq!(squash_refs(&root), "", "{args:?}");
     }

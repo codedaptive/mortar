@@ -7,7 +7,7 @@ use gitio::Oid;
 
 use crate::report::{ExitCode, Report};
 
-/// Exit 1 "refused", owner "zone <zone>", no fields: zone/<zone> moved after the run read it at `tip`, so no ref
+/// Exit 3 "refused", owner "zone <zone>", no fields: zone/<zone> moved after the run read it at `tip`, so no ref
 /// moved, and the named paths were left staged as committed onto `tip`. Next puts them back as `tip` has them, then
 /// has mr folder refresh bring the folder to the new tip, then runs mr commit-files again. The refresh refuses, with
 /// nothing lost, when the new tip changed a path the folder has an edit in, named or not (git refuses an edit in the

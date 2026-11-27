@@ -12,10 +12,10 @@ const OWNER: &str = "this request's folder";
 
 /// `moved` (moved_before's line for the refs the save and the snapshots before the move moved: run_join passes the
 /// save's branch movement with them, finish_pending_move the snapshot's alone) is the first line of each report, then
-/// `before` (what the join already did). Files in the way (MoveRefused) are exit 1 "refused": they
+/// `before` (what the join already did). Files in the way (MoveRefused) are exit 3 "refused": they
 /// are listed, and once they are out of the way the next join, resolve, save or undo finishes the move first, since
-/// the request branch already stands at the new tip. A branch at neither tip (BranchElsewhere) is exit 1
-/// "refused" with folder_error_why's line. Any other variant folder_refusal refuses is exit 1 "refused" with
+/// the request branch already stands at the new tip. A branch at neither tip (BranchElsewhere) is exit 3
+/// "refused" with folder_error_why's line. Any other variant folder_refusal refuses is exit 3 "refused" with
 /// folder_error_why's lines and folder_refusal's next. The rest (Lock, Git, Oplog, DiskProbe, and Io, which
 /// folder_refusal makes a failure) are fallback_report's report with `moved` and `before` ahead of its lines. Every
 /// refusal is owned by this request's folder.

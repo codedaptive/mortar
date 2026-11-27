@@ -39,13 +39,13 @@ fn a_failed_block_fails_the_result_and_extra_lines_are_indented() {
         number: 1,
         title: "the flow",
         verdict: Verdict::Fail,
-        lines: vec![check(false, "ran join", "exit 2\nCONFLICT a.txt"), Line::Log("one\ntwo".to_string())],
+        lines: vec![check(false, "ran join", "exit 1\nCONFLICT a.txt"), Line::Log("one\ntwo".to_string())],
     }];
     let expected = "mortar acceptance report\n\
                     commit 0123456789abcdef0123456789abcdef01234567 with local changes\n\
                     \n\
                     Step 1 the flow: FAIL\n  \
-                    FAIL  ran join: exit 2\n        \
+                    FAIL  ran join: exit 1\n        \
                     CONFLICT a.txt\n  \
                     log   one\n        \
                     two\n\

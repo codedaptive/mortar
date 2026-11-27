@@ -10,7 +10,7 @@ fn live_join_lock_refuses_join_and_save_with_exact_holder_and_no_act() {
         let held = oplog::acquire_lock(&f.common, &LockName::Join("core".into()), &holder, &KillPidProbe).unwrap();
         let lock_bytes = fs::read(f.lock_path()).unwrap(); let before = f.observe();
         let args = if verb == "save" { vec!["--json", "save", "Must not run"] } else { vec!["--json", "join"] };
-        let busy = f.report(&args, verb, 3, "busy");
+        let busy = f.report(&args, verb, 4, "busy");
         assert_eq!(busy.number("holder_pid"), u64::from(holder.pid)); assert_eq!(busy.text("holder_host"), holder.host);
         assert_eq!(busy.text("holder_key"), "validation-live-holder"); assert_eq!(busy.number("since"), 123);
         assert!(busy.lines().contains("nothing ran")); assert_eq!(f.observe(), before);

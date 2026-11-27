@@ -11,11 +11,11 @@ const VERB: &str = "resolve";
 const REQUEST: &str = "this request";
 
 /// `moved` is moved_before's line for what the steps before resolve moved. No paused join is exit 0
-/// "nothing-to-resolve", next "mr join", with `moved` as its first line. Markers left are exit 2 "still-marked", each
+/// "nothing-to-resolve", next "mr join", with `moved` as its first line. Markers left are exit 1 "still-marked", each
 /// file with its marker line numbers, next "fix the files, then mr resolve"; `moved` is named in its first line,
 /// which then says no other commit or ref moved. A request
 /// ref moved since the pause (StateStale), a conflicted path that is a folder or that gitio refused, and a state file
-/// join did not write (StateCorrupt, which is kept) are exit 1 "refused", owned by this request, with `moved` as the
+/// join did not write (StateCorrupt, which is kept) are exit 3 "refused", owned by this request, with `moved` as the
 /// first line and then the error's text. Every other error is join_refusal_report's report, given `moved`, under
 /// the verb resolve.
 pub fn resolve_refusal_report(error: &JoinRunError, moved: Option<&str>) -> Report {

@@ -14,7 +14,7 @@ use crate::report::{failure_report, ExitCode, OutValue, Report};
 const VERB: &str = "resolve";
 
 /// Lines: finished_move_part's, then the answer's. Fields: finished_move_part's, request_ref, then the answer's.
-/// FilesWritten (the first run) is exit 2 "files-written": the commit whose conflict was written, each file written,
+/// FilesWritten (the first run) is exit 1 "files-written": the commit whose conflict was written, each file written,
 /// each path skipped for having no version in the conflicted tree and each submodule path with its own step;
 /// next "fix the files, then mr resolve". Rebased and Conflicted report as join does (answer_part), and
 /// Rebased adds the snapshot's ref and commit. FilesWritten and Conflicted name the snapshot ref when the snapshot
