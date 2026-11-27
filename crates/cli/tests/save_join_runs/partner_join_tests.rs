@@ -102,6 +102,45 @@ exec "$MORTAR_TEST_REAL_GIT" "$@"
 }
 
 #[test]
+fn partner_base_recovers_killed_rebase() {
+    let f = Partners::new(); f.set();
+    let web = f.advance("refs/heads/zone/web", &[("web/w.txt", b"web moved\n")]);
+    f.commit_request("src/core/c.txt", b"request work\n");
+    let common = f.git.common_dir().unwrap();
+    let dir = common.join("partner-rebase-shim"); fs::create_dir(&dir).unwrap();
+    let marker = common.join("partner-rebase-killed");
+    script(&dir.join("git"), br#"#!/bin/sh
+set -eu
+if [ "${2-}" = "$MORTAR_TEST_FOLDER" ] && [ "${3-}" = rev-parse ] &&
+   [ "${4-}" = --path-format=absolute ] && [ "${5-}" = --git-dir ] &&
+   grep -q '"kind":"join-rebase"' "$MORTAR_TEST_LOG"; then
+  printf killed >"$MORTAR_TEST_MARKER"
+  kill -KILL "$PPID"
+  exit 97
+fi
+exec "$MORTAR_TEST_REAL_GIT" "$@"
+"#);
+    let out = Command::new(env!("CARGO_BIN_EXE_mortar"))
+        .current_dir(&f.request).env_clear().envs(f.git.env.iter().cloned())
+        .env("PATH", shim_path(&dir)).env("HOME", &f.repo.path).env("TMPDIR", &f.repo.path)
+        .env("CODETEAM_SESSION", "harness").env("MORTAR_TEST_FOLDER", &f.request)
+        .env("MORTAR_TEST_LOG", oplog::oplog_path(&common)).env("MORTAR_TEST_MARKER", &marker)
+        .env("MORTAR_TEST_REAL_GIT", actual_git()).stdin(Stdio::null()).args(["--json", "join"]).output().unwrap();
+    assert_eq!(out.status.signal(), Some(9), "{out:?}"); assert_eq!(fs::read(marker).unwrap(), b"killed");
+    let tip = f.tip(REQUEST); let parents = f.git.commit_info(&tip).unwrap().parents;
+    assert_eq!(parents.len(), 1); let merge = &parents[0];
+    assert_eq!(f.git.commit_info(merge).unwrap().parents, vec![f.base.clone(), web.clone()]);
+    // mr save runs the pending-move finisher and joins nothing, so the record it leaves is the finisher's alone.
+    json::read(f.command(&f.request, &["--json", "save", "Finish the killed join."]), "save", 0);
+    let out = f.app("status"); let body = text(&out); let status = json::read(out, "status", 0);
+    assert_eq!(status.text("base"), merge.as_str()); assert!(body.contains(&partners(&web)), "{body}");
+    // Zone and partner are where the new merge has them, so the join is ZoneJoined: base the zone's tip before it.
+    json::check(f.app("join"), "join", 0, "joined");
+    let record = folders::make::read_recorded_base(&f.git.git_dir(&f.request).unwrap()).unwrap().unwrap();
+    assert_eq!((record.base, record.partners.len()), (f.base.clone(), 0));
+}
+
+#[test]
 fn partner_join_remerge_drops_partners_already_in_zone() {
     let f = Partners::new(); f.set();
     raw(&f.git, &["update-ref", ZONE, f.web.as_str()]);
@@ -123,7 +162,7 @@ fn partner_join_moved_remerges_and_rewrites_record() {
     let web = f.advance("refs/heads/zone/web", &[("web/w.txt", b"web moved\n")]);
     f.commit_request("src/core/c.txt", b"request work\n");
     let report = json::check(f.app("join"), "join", 0, "rebased");
-    assert!(report.text("next").contains("mr join"));
+    assert_eq!(report.text("next"), "run the unit tests, then mr join");
     assert_eq!(f.zone(), f.base);
     let tip = f.tip(REQUEST);
     assert_eq!(f.local().rev_parse("HEAD").unwrap(), Some(tip.clone()));
@@ -135,6 +174,29 @@ fn partner_join_moved_remerges_and_rewrites_record() {
     let status = json::read(out, "status", 0);
     assert_eq!(status.text("base"), merge.as_str());
     assert!(body.contains(&partners(&web)), "{body}");
+}
+
+#[test]
+fn partner_join_undo_restores_cut_boundary_and_rejoin() {
+    let f = Partners::new(); let cut_merge = f.set();
+    let web = f.advance("refs/heads/zone/web", &[("web/w.txt", b"web moved\n")]);
+    f.commit_request("src/core/c.txt", b"request work\n");
+    json::check(f.app("join"), "join", 0, "rebased");
+    let merge = f.git.commit_info(&f.tip(REQUEST)).unwrap().parents[0].clone();
+    assert_eq!(f.git.commit_info(&merge).unwrap().parents, vec![f.base.clone(), web.clone()]);
+    let out = f.app("status"); let body = text(&out); let status = json::read(out, "status", 0);
+    assert_eq!(status.text("base"), merge.as_str()); assert!(body.contains(&partners(&web)), "{body}");
+
+    json::check(f.app("undo"), "undo", 0, "undone");
+    let out = f.app("status"); let body = text(&out); let status = json::read(out, "status", 0);
+    assert_eq!(status.text("base"), cut_merge.as_str()); assert!(body.contains(&partners(&f.web)), "{body}");
+
+    let report = json::check(f.app("join"), "join", 0, "rebased");
+    let remerge = f.git.commit_info(&f.tip(REQUEST)).unwrap().parents[0].clone();
+    assert_eq!(f.git.commit_info(&remerge).unwrap().parents, vec![f.base.clone(), web.clone()]);
+    assert_eq!(report.text("base"), remerge.as_str());
+    let out = f.app("status"); let body = text(&out); let status = json::read(out, "status", 0);
+    assert_eq!(status.text("base"), report.text("base")); assert!(body.contains(&partners(&web)), "{body}");
 }
 
 #[test]

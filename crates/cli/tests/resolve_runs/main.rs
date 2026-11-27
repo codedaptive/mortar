@@ -8,6 +8,7 @@ mod json;
 mod support;
 mod resolve_first_runs;
 mod resolve_finishes;
+mod resolve_base_tests;
 mod resolve_unusual;
 mod resolve_refusals;
 mod resolve_pending;

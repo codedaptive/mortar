@@ -1,14 +1,10 @@
 use crate::json::{check, Report};
-mod assert_values_then_bases;
 mod fixture_config;
 pub mod fixture_partners;
 mod fixture_formatter;
 mod fixture_plain;
 mod fixture_zone;
 mod write_fixture_config;
-// Only resolve_runs and across_kits call it; the includers' dead_code allow does not cover an unused re-export.
-#[allow(unused_imports)]
-pub use assert_values_then_bases::assert_values_then_bases;
 pub use fixture_config::FixtureConfig as Config;
 pub use fixture_formatter::FixtureFormatter as FormatterConfig;
 pub use fixture_zone::FixtureZone as ZoneConfig;

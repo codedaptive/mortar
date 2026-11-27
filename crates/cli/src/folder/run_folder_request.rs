@@ -2,10 +2,10 @@
 //! folder made from its zone's branch, or with partners from a merge of the zone's tip with each partner zone's tip,
 //! holding only its paths and the root files, with the config's build dirs shared into it from the zone folder.
 //! No sibling test: it takes a real lock and runs git, the op log, join and folders; request_folder_paths_tests,
-//! folder_setup_for_tests, folder_made_report_tests, partner_conflict_report_tests, partners_line_tests,
-//! partners_json_tests, build_output_lines_tests and build_output_json_tests cover its decisions. The integration test
-//! crates/cli/tests/folder_runs/run_folder_request_tests.rs covers it through the binary: the folder holding only its
-//! --paths and the root file, recorded as a request folder, its branch made by an op of the actor, and, the zone
+//! folder_setup_for_tests, folder_made_report_tests, partner_conflict_report_tests, request_base's partners_line_tests
+//! and partners_json_tests, build_output_lines_tests and build_output_json_tests cover its decisions. The integration
+//! test crates/cli/tests/folder_runs/run_folder_request_tests.rs covers it through the binary: the folder holding only
+//! its --paths and the root file, recorded as a request folder, its branch made by an op of the actor, and, the zone
 //! having no zone folder, each build dir reported refused (request_folder_holds_only_its_paths_and_the_root_files);
 //! a zone with no branch refused, nothing made; and the build dirs shared, absent, kept on a repeat, and refused
 //! without failing the verb (request_folder_build_output_shared, request_folder_build_output_absent,
@@ -26,13 +26,14 @@ use oplog::{KillPidProbe, LockName};
 
 use super::{
     build_output_json, build_output_lines, cut_on_partners, folder_error_report, folder_made_report,
-    folder_setup_for, partners_json, partners_line, zone_folder_of,
+    folder_setup_for, zone_folder_of,
 };
 use crate::config::Config;
 use crate::context::{repository_error, repository_report};
 use crate::lock::locked_act;
 use crate::opkey::op_key;
 use crate::report::{failure_report, OutValue, Report};
+use crate::request_base::{partners_json, partners_line};
 use crate::shell::ShellContext;
 
 const VERB: &str = "folder";

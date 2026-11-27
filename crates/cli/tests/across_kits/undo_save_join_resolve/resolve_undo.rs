@@ -3,7 +3,7 @@
 //! expected folder_tree is built by raw Git from literal resolved contents, not Join's composition code.
 //! Real post-undo faults and SIGKILL occur after the selected ref transaction, without clocks or fake kit answers.
 use super::fixture::{assert_one_undo, done, index_at, observe, ours, World};
-use crate::{json::Report, support::{actual_git, assert_values_then_bases, raw, script, shim_path, REQUEST, ZONE}};
+use crate::{json::Report, support::{actual_git, raw, script, shim_path, REQUEST, ZONE}};
 use gitio::Oid;
 use oplog::{JsonValue, KillPidProbe, LockName, OpPhase, PidProbe, ValuedRecord};
 use std::{fs, os::unix::process::ExitStatusExt, path::PathBuf, process::{Command, Stdio}};
@@ -13,7 +13,7 @@ const CHOSEN: &[u8] = b"chosen resolution\n";
 const OUTSIDE: &[u8] = b"owner's unrelated edit\n";
 const BAD: &[u8] = b"not a paused join\n";
 
-struct Resolved { w: World, old: Oid, new: Oid, paused: Vec<u8>, target: ValuedRecord, folder_tree: Oid }
+struct Resolved { w: World, old: Oid, new: Oid, zone: Oid, paused: Vec<u8>, target: ValuedRecord, folder_tree: Oid }
 impl Resolved {
     fn new() -> Self {
         let w = World::new(); let old = w.s.f.save_topic();
@@ -27,16 +27,16 @@ impl Resolved {
         let literal = w.s.f.commit(&old, &[("src/file", CHOSEN)], "literal expected folder tree\n");
         let folder_tree = w.s.f.git.commit_info(&literal).unwrap().tree;
         ours(&w, &["resolve"], 0, "rebased"); let new = w.s.f.head(); assert_ne!(old, new);
-        assert_eq!(w.s.f.git.commit_info(&new).unwrap().parents, vec![zone]);
+        assert_eq!(w.s.f.git.commit_info(&new).unwrap().parents, vec![zone.clone()]);
         let mut resolved = resolve_records(&w); assert_eq!(resolved.len(), 1); let target = resolved.remove(0);
         assert_eq!(target.record.moves, vec![oplog::RefMove { refname: REQUEST.into(), old: Some(old.clone()), new: new.clone() }]);
-        // Also accepts the base_before/base_after that WO-join-base-in-ops (totppouw) appends;
-        // G10 (WO-cli-g10-join-boundary) tightens this to the four-value form only.
-        assert_values_then_bases(&target.values, &[("folder_tree".into(), folder_tree.to_string()),
-            ("join_state".into(), std::str::from_utf8(&paused).unwrap().strip_suffix('\n').unwrap().to_string())]);
+        // Exactly the four values: the literal tree, the paused state, the cut tip the join started from, the zone tip.
+        let [before, after] = bases(&w, &zone);
+        assert_eq!(target.values, vec![("folder_tree".into(), folder_tree.to_string()),
+            ("join_state".into(), std::str::from_utf8(&paused).unwrap().strip_suffix('\n').unwrap().to_string()), before, after]);
         assert!(!state(&w).exists()); assert_eq!(fs::read(w.s.f.request.join("src/file")).unwrap(), CHOSEN);
         assert_eq!(fs::read(w.s.f.request.join("sub/keep")).unwrap(), OUTSIDE);
-        Self { w, old, new, paused, target, folder_tree }
+        Self { w, old, new, zone, paused, target, folder_tree }
     }
     fn assert_report(&self, r: &Report) -> String {
         let op = assert_one_undo(&self.w, &self.target.record, &self.new, &self.old);
@@ -54,6 +54,11 @@ impl Resolved {
         assert!(!self.w.s.f.lock_path().exists());
     }
     fn undo(&self) -> String { self.assert_report(&ours(&self.w, &["undo"], 0, "undone")) }
+}
+/// base_before (the fixture's cut tip) and base_after (`zone`), each as join records a plain request's base.
+fn bases(w: &World, zone: &Oid) -> [(String, String); 2] {
+    let base = |oid: &Oid| format!("{{\"base\":\"{oid}\",\"partners\":[]}}");
+    [("base_before".into(), base(&w.s.f.base)), ("base_after".into(), base(zone))]
 }
 fn state(w: &World) -> PathBuf { w.s.f.local().git_dir(&w.s.f.request).unwrap().join("mortar-join.json") }
 fn index_bytes(w: &World) -> Vec<u8> { fs::read(w.s.f.local().git_dir(&w.s.f.request).unwrap().join("index")).unwrap() }
@@ -129,9 +134,9 @@ fn binary_undo_refuses_a_real_resolve_record_in_the_legacy_format_without_record
     // Public Oplog encoding makes an actual persisted legacy input; no regex or private Join codec.
     let text: String = log.records.iter().map(|m| format!("{}\n", oplog::encode_marked_record(&m.record, &m.values, m.remote.as_deref()))).collect();
     fs::write(oplog::oplog_path(&s.w.s.f.common), text).unwrap();
-    // Also accepts the base_before/base_after that WO-join-base-in-ops (totppouw) appends;
-    // G10 (WO-cli-g10-join-boundary) tightens this to the four-value form (here less join_state) only.
-    assert_values_then_bases(&resolve_records(&s.w)[0].values, &[("folder_tree".into(), s.folder_tree.to_string())]);
+    // Exactly folder_tree and the two bases, which are unchanged.
+    let [before, after] = bases(&s.w, &s.zone);
+    assert_eq!(resolve_records(&s.w)[0].values, vec![("folder_tree".into(), s.folder_tree.to_string()), before, after]);
     let before = observe(&s.w); let index = index_bytes(&s.w);
     let r = ours(&s.w, &["undo"], 1, "refused");
     assert_eq!(r.strings("lines"), &[format!("op {} resolved a join before mortar recorded the paused join, so undo cannot put it back", s.target.record.op_id), "nothing was changed".into()]);
@@ -144,17 +149,6 @@ fn member<'a>(value: &'a JsonValue, key: &str) -> &'a JsonValue {
     let JsonValue::Object(pairs) = value else { panic!("expected an object: {value:?}") };
     let mut found = pairs.iter().filter(|(name, _)| name == key);
     let (_, value) = found.next().unwrap_or_else(|| panic!("missing {key}: {pairs:?}")); assert!(found.next().is_none()); value
-}
-/// The JSON form of `assert_values_then_bases`: each base is an object of exactly a String name and a String value.
-fn assert_json_values_then_bases(values: &JsonValue, expected: &[JsonValue]) {
-    let JsonValue::Array(items) = values else { panic!("values must be an array: {values:?}") };
-    assert_eq!(items.get(..expected.len()), Some(expected), "{values:?}");
-    let tail: Vec<_> = items[expected.len()..].iter().map(|item| {
-        assert!(matches!(item, JsonValue::Object(pairs) if pairs.len() == 2), "{item:?}");
-        assert!(matches!(member(item, "value"), JsonValue::String(value) if !value.is_empty()), "{item:?}");
-        let JsonValue::String(name) = member(item, "name") else { panic!("name must be a string: {item:?}") }; name.as_str()
-    }).collect();
-    assert!(tail.is_empty() || tail == ["base_before", "base_after"], "{values:?}");
 }
 #[test]
 fn binary_log_json_exposes_the_real_resolves_exact_recorded_join_state_on_intent_and_done_without_writing() {
@@ -169,14 +163,13 @@ fn binary_log_json_exposes_the_real_resolves_exact_recorded_join_state_on_intent
     let JsonValue::Array(rows) = oplog::parse_json(array).unwrap() else { panic!("records must be an array") };
     let selected: Vec<_> = rows.iter().filter(|row| member(row, "op_id") == &JsonValue::String(s.target.record.op_id.clone())).collect();
     assert_eq!(selected.len(), 2);
-    let expected = [
-        JsonValue::Object(vec![("name".into(), JsonValue::String("folder_tree".into())), ("value".into(), JsonValue::String(s.folder_tree.to_string()))]),
-        JsonValue::Object(vec![("name".into(), JsonValue::String("join_state".into())), ("value".into(), JsonValue::String(std::str::from_utf8(&s.paused).unwrap().strip_suffix('\n').unwrap().into()))]),
-    ];
+    let pair = |(name, value): (String, String)| JsonValue::Object(vec![("name".into(), JsonValue::String(name)), ("value".into(), JsonValue::String(value))]);
+    let [base_before, base_after] = bases(&s.w, &s.zone);
+    let expected = JsonValue::Array([("folder_tree".into(), s.folder_tree.to_string()),
+        ("join_state".into(), std::str::from_utf8(&s.paused).unwrap().strip_suffix('\n').unwrap().into()), base_before, base_after].map(pair).into());
     for (row, phase) in selected.iter().zip(["intent", "done"]) {
-        // Also accepts the base_before/base_after that WO-join-base-in-ops (totppouw) appends;
-        // G10 (WO-cli-g10-join-boundary) tightens this to the four-value form only.
-        assert_eq!(member(row, "phase"), &JsonValue::String(phase.into())); assert_json_values_then_bases(member(row, "values"), &expected);
+        // Exactly the four name/value objects, in the same order as the valued log.
+        assert_eq!(member(row, "phase"), &JsonValue::String(phase.into())); assert_eq!(member(row, "values"), &expected);
     }
     assert_eq!(observe(&s.w), before); assert!(!state(&s.w).exists());
 }

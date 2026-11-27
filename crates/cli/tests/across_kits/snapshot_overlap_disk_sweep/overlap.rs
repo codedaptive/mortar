@@ -80,10 +80,10 @@ fn a_real_rebase_excludes_zone_only_paths_instead_of_using_the_original_folder_c
     assert_eq!(w.s.f.git.commit_info(&w.s.f.head()).unwrap().parents, vec![zone.clone()]);
     run(&w, &w.s.f.request, &["snapshot"], 0, "snapshotted");
     let task_tip = ref_at(&w, SNAP).unwrap();
-    assert_eq!(w.s.f.git.commit_info(&w.s.f.head()).unwrap().parents, vec![zone]);
+    assert_eq!(w.s.f.git.commit_info(&w.s.f.head()).unwrap().parents, vec![zone.clone()]);
     assert_eq!(w.s.f.blob(&task_tip, "src/upstream"), b"upstream work\n");
     let dir = w.s.f.git.git_dir(&w.s.f.request).unwrap();
-    assert_eq!(folders::make::read_folder_record(&dir).unwrap().unwrap().base, w.s.f.base);
+    assert_eq!(folders::make::read_folder_record(&dir).unwrap().unwrap().base, zone, "a rebase moves the record's base to the zone tip it replayed onto (S-239)");
     let before = observe(&w); let r = app(&w, &["overlap", "core"], 0, "no-overlap");
     assert!(r.strings("pairs").is_empty()); assert_eq!(observe(&w), before);
 }

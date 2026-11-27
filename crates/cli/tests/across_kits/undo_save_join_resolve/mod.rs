@@ -2,6 +2,7 @@
 //! Own attempt refs and repeat safety; pending moves and refusal-before-finish ordering.
 //! Every case owns its disposable repository/worktrees/remote through the reused support::Fixture.
 mod fixture;
+mod base_undo;
 mod resolve_undo;
 mod saves;
 mod rebases;

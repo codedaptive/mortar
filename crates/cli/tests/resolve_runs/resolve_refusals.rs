@@ -118,11 +118,12 @@ fn resolve_move_refusal_names_zone_changed_path_and_snapshot_that_keeps_local_wo
     assert_eq!(f.observe(), before_read, "reading the valued log must not write or move anything");
     let valued = oplog::read_valued_log(&f.common).unwrap();
     let folder_value = ("folder_tree".to_string(), expected_tree.as_str().to_string());
-    // Pin both complete values in order on the intent and done records, then accept the base_before/base_after
-    // that WO-join-base-in-ops (totppouw) appends; G10 (WO-cli-g10-join-boundary) tightens this to the four-value form only.
-    for record in valued.records.iter().filter(|v| v.record.kind == "join-rebase") {
-        assert_values_then_bases(&record.values, &[folder_value.clone(), ("join_state".to_string(), state_before.clone())]);
-    }
+    // Pin all four values in order on the intent and done records: the bases are the cut tip the paused join
+    // started from and the zone tip it was replayed onto, each a plain request's base.
+    let base = |oid: &gitio::Oid| format!("{{\"base\":\"{oid}\",\"partners\":[]}}");
+    let expected = vec![folder_value, ("join_state".to_string(), state_before),
+        ("base_before".to_string(), base(&f.base)), ("base_after".to_string(), base(&r.zone))];
+    for record in valued.records.iter().filter(|v| v.record.kind == "join-rebase") { assert_eq!(record.values, expected); }
 
     // Follow the refusal's actual next step, leaving the chosen resolution intact.
     f.write("sub/keep", b"keep\n");

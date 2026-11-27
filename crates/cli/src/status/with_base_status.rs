@@ -2,8 +2,8 @@
 //! whether a partner moved since.
 
 use super::BaseStatus;
-use crate::folder::{partners_json, partners_line};
 use crate::report::{OutValue, Report};
+use crate::request_base::{partners_json, partners_line};
 
 /// `report` with ("base", its hex), ("partners", partners_json) and ("partner_moved", true when any partner moved)
 /// after its own fields, for every request folder. Its lines gain "base <base>", partners_line and, when a partner
