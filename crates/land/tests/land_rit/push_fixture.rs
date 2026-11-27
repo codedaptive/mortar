@@ -26,6 +26,17 @@ impl Prepared {
         let remote = Git { repo: remote_path, ..f.git.clone() };
         Self { f, base, new, squash, remote }
     }
+    pub fn batch() -> Self {
+        let mut p = Self::new(); let tree = p.f.git.commit_info(&p.new).unwrap().tree;
+        let commit = p.f.git.commit_tree(&tree, std::slice::from_ref(&p.new),
+            "second squash\n\nMortar-Change-Id: llllllllllllllllllllllllllllllll\nMortar-Zone: second\n", None, None).unwrap();
+        let squash = Squash { commit: commit.clone(), change_id: oplog::ChangeId::parse(crate::batch_fixture::IDS[1]).unwrap(),
+            source: p.f.source.clone(), requests: vec![] };
+        raw(&p.f, &["update-ref", "refs/mortar/squash/second", commit.as_str()]);
+        assert_eq!(locked(&p.f, || land::land_batch(&p.f.git, &refs(), &squash, ACTOR)),
+            land::BatchLandAnswer::Landed { integration: commit.clone() });
+        p.new = commit; p
+    }
     pub fn publish(&self, git: &Git) -> PublishAnswer {
         with_lock(self, || { oplog::recover(git, &self.f.common).unwrap(); land::publish(git, &refs(), ACTOR) })
     }
