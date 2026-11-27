@@ -34,6 +34,7 @@ path = "crates/snapshot/src/kill_process_group.rs"
 what = "`kill_process_group`"
 reason = "calls kill(2), one of the file's two externs, the crate's only unsafe code; the file's header says why"
 approved = "orchestrator, 2026-11-13, keep the unsafe code in one file"
+expires = "2027-05-13"
 
 [[exception]]
 rule = "one-public-symbol-per-file"
@@ -41,3 +42,4 @@ path = "crates/snapshot/src/kill_process_group.rs"
 what = "`peek_leader_exit`"
 reason = "calls waitid(2), the file's second extern; the file's header says why"
 approved = "orchestrator, 2026-11-13, keep the unsafe code in one file"
+expires = "2027-05-13"
