@@ -1,5 +1,5 @@
 # Lets `ast-grep test -c rules/sgconfig.yml` run each rule in rust/ against its cases in cases/. tm check does not
-# read this file: it runs each rule file named in temperare.toml on its own.
+# read this file: it runs each rule file named in tao.toml on its own.
 ruleDirs:
   - rust
 testConfigs:
