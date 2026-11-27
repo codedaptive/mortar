@@ -116,6 +116,30 @@ fn base_answer_part_cases() {
             )),
         ),
         (
+            "zone joined with no own commits and an unmoved zone says the zone stays",
+            BaseJoinAnswer::ZoneJoined {
+                zone_ref: ZONE.to_string(),
+                request_ref: REQUEST.to_string(),
+                from: oid(THREE),
+                request_from: oid(TWO),
+                to: oid(THREE),
+            },
+            None,
+            Some(AnswerPart {
+                lines: vec![
+                    "joined: refs/heads/zone/core stays at 3333333333333333333333333333333333333333: the request has \
+                     no commits of its own; refs/heads/req/core/fix-1 moved from \
+                     2222222222222222222222222222222222222222 to 3333333333333333333333333333333333333333 and the \
+                     folder moved with it"
+                        .to_string(),
+                ],
+                fields: vec![text("zone_ref", ZONE), text("from", THREE), text("to", THREE), text("request_from", TWO)],
+                exit: ExitCode::Done,
+                outcome: "joined",
+                next: "wait for the zone's tests",
+            }),
+        ),
+        (
             "rebased onto a new merge stops for the unit tests",
             rebased(),
             None,

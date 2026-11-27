@@ -10,8 +10,8 @@ use crate::report::{ExitCode, OutValue, Report};
 /// cone (the work order's paths, then the needed paths). Fields: path, kind ("zone", "request" or "attempt"), zone,
 /// request (null for a zone folder), base, paths. Next for `sub` "zone": make request folders with mr folder
 /// request in that zone; for any other sub: start the request's agent in `path`. `mr folder request` adds to this
-/// report: with --with, partners_line's line after these and a field partners after paths; then build_output_lines'
-/// lines, and a last field build_output (see run_folder_request).
+/// report: with --with, request_base's partners_line line after these and a field partners after paths; then
+/// build_output_lines' lines, and a last field build_output (see run_folder_request).
 pub fn folder_made_report(sub: &str, path: &Path, record: &FolderRecord) -> Report {
     let (zone, request) = (&record.zone, record.request.as_deref());
     let (kind, what) = match (record.kind, request) {

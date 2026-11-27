@@ -94,8 +94,8 @@ pub fn run_undo(context: &ShellContext) -> Report {
 
 /// The pending move finished, then the folder step made again: SetIndex re-sets the index to the branch's tree;
 /// MoveFolder needs nothing more; RestoreJoin reads the reversed op's Done record and runs folder_step, which puts
-/// the paused join back and then sets the index (a record missing from the log is failure_report). The report is
-/// already_undone_report, with_restored when a restore ran.
+/// the folder record and the paused join back and then sets the index (a record missing from the log is
+/// failure_report). The report is already_undone_report, with_restored when a restore ran.
 fn already_undone(
     run: &RequestRun,
     records: &[ValuedRecord],

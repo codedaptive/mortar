@@ -2,17 +2,19 @@
 //! Shell API: join_report calls it.
 
 use ::join::{BaseJoinAnswer, JoinAnswer};
+use gitio::Oid;
 
 use super::{answer_part, AnswerPart};
-use crate::folder::partners_json;
 use crate::report::{ExitCode, OutValue};
-use crate::request_base::recorded_base_of;
+use crate::request_base::{partners_json, recorded_base_of};
 
 /// Plain is answer_part's. ZoneJoined is exit 0 "joined", next "wait for the zone's tests": one line naming both
 /// moves, as zone and partners stood where the request's base had them and the merge's tree already ran its tests
-/// in the folder (S-231). Rebased with partners is exit 0 "rebased", next "run the unit tests, then mr join": the
-/// request now stands on a new merge of the zone with its partners, whose tree no test has run on. Rebased with no
-/// partners (every partner already in the zone, so the base is the zone tip) is answer_part's plain Rebased.
+/// in the folder (S-231); when the request had no commits of its own and the zone had not moved (`from == to`), the
+/// line says the zone stays at `to` instead of naming a zone move. Rebased with partners is exit 0 "rebased", next
+/// "run the unit tests, then mr join": the request now stands on a new merge of the zone with its partners, whose tree
+/// no test has run on. Rebased with no partners (every partner already in the zone, so the base is the zone tip) is
+/// answer_part's plain Rebased.
 /// `moved` (moved_before's line) ends the first line of ZoneJoined and Rebased. PartnersConflicted
 /// (partners_conflicted_report's) and Plain(FilesWritten), which only resolve gives, are None.
 pub(crate) fn base_answer_part(answer: &BaseJoinAnswer, request_ref: &str, moved: Option<&str>) -> Option<AnswerPart> {
@@ -30,8 +32,8 @@ pub(crate) fn base_answer_part(answer: &BaseJoinAnswer, request_ref: &str, moved
         }
         BaseJoinAnswer::ZoneJoined { zone_ref, from, request_from, to, .. } => AnswerPart {
             lines: vec![format!(
-                "joined: {zone_ref} moved from {from} to {to}, taking only the request's own commits; {request_ref} \
-                 moved from {request_from} to {to} and the folder moved with it{then_moved}"
+                "joined: {}; {request_ref} moved from {request_from} to {to} and the folder moved with it{then_moved}",
+                zone_move(zone_ref, from, to)
             )],
             fields: vec![
                 text("zone_ref", zone_ref),
@@ -64,6 +66,15 @@ pub(crate) fn base_answer_part(answer: &BaseJoinAnswer, request_ref: &str, moved
         },
         BaseJoinAnswer::PartnersConflicted { .. } => return None,
     })
+}
+
+/// The zone half of ZoneJoined's line. `from == to` only when the request had no commits of its own and the zone had
+/// not moved, so join left the zone where it was: "moved from X to X" would claim a move that did not happen.
+fn zone_move(zone_ref: &str, from: &Oid, to: &Oid) -> String {
+    if from == to {
+        return format!("{zone_ref} stays at {to}: the request has no commits of its own");
+    }
+    format!("{zone_ref} moved from {from} to {to}, taking only the request's own commits")
 }
 
 fn text(name: &str, value: impl ToString) -> (String, OutValue) {

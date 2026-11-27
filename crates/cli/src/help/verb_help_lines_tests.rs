@@ -102,9 +102,10 @@ fn commit_files_is_its_usage_its_line_then_its_two_notes() {
             "mr commit-files <path>... [--message <text>] --actor <name> [--key <operation key>] [--json]",
             "commit named files onto the zone, or onto integration inside a landing",
             "in a zone folder at its zone's tip: one commit of the named paths on zone/<zone>, under join-<zone>, \
-             refused while the folder's index holds staged changes (unstaged edits are left alone); in the \
-             integration folder after mr land: one commit on integration inside the landing, under land; refused in \
-             a request or attempt folder (mr save)",
+             refused while the folder's index holds staged changes, except a stopped run's own paths, which answer \
+             same with next git restore --staged (unstaged edits are left alone); in the integration folder after \
+             mr land: one commit on integration inside the landing, under land; refused in a request or attempt \
+             folder (mr save)",
             "--message <text>: the commit's message; without it, the message names the paths; the folder's other \
              changes are left as they are",
         ]
