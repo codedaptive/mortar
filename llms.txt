@@ -87,7 +87,12 @@ Program verbs:
 - 0: done, or already done (a repeat of a finished command)
 - 1: conflict; the files are listed
 - 2: usage or configuration; the command line could not be read, the command ran outside a git repository, or the config or guard.json it needs is missing or cannot be read
-- 3: refused; the text says why, who owns the thing in the way, and what to do
+- 3: refused; the text says why, who owns the thing in the way, and what to do.
+  From a commit hook (mr save, mr join's first save, mr commit-files in a
+  zone folder, mr squash run pre-commit and commit-msg): --json adds hook
+  ("pre-commit" or "commit-msg"), code (number or null), stdout and stderr;
+  next 'fix what the <hook> hook reports, then mr <verb> again'. mr squash can
+  also refuse when the hooked message does not read back, naming the part.
 - 4: busy; a lock is held, or a branch or snapshot ref moved while mr save
   or mr snapshot ran (repeat later); or a landing is in flight that this squash cannot
   join (integration neither at origin nor at the batch's tip): finish it
