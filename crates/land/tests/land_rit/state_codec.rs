@@ -1,16 +1,16 @@
-//! Thirteen owed Land -> Oplog JSON/Gitio ID codec cases, through PUBLIC land/back_out/publish and real files.
+//! Thirteen owed Land -> Oplog JSON/Gitio ID codec cases, through PUBLIC land_batch/back_out_batch/publish and real files.
 //! The two writer fixtures are narrowed to reachable quote/backslash zones (unicode also retained).
 //! Newline/control-character zones cannot reach today's public writer and are NOT owed; no codec API is exposed.
 //! Decoder refusals still use hand-written malformed files. No private production source is copied or included.
 use crate::{owed_ops::{locked, raw, refs}, support::Fixture};
 use gitio::{Oid, RunOpts};
-use land::{BackOutAnswer, LandAnswer, LandError, LandingStateError, PublishAnswer, Squash};
+use land::{BatchBackOutAnswer, BatchLandAnswer, LandError, LandingStateError, PublishAnswer, Squash};
 use oplog::ChangeId;
 use std::{fs, path::PathBuf};
 
 const CID: &str = "klmnopqrstuvwxyzklmnopqrstuvwxyz";
 const INTEGRATION: &str = "refs/heads/integration";
-struct State { f: Fixture, squash: Squash, origin: Oid, integration: Oid, path: PathBuf }
+struct State { f: Fixture, squash: Squash, origin: Oid, integration: Oid, path: PathBuf, zone: String }
 impl State {
     fn new(zone: &str) -> Self {
         let f = Fixture::new(); let base = f.git.read_ref("refs/heads/main").unwrap().unwrap();
@@ -25,7 +25,7 @@ impl State {
             &format!("land {CID} ({zone})\n"), None, None).unwrap();
         assert_ne!(squash.commit, origin); assert_ne!(integration, origin); assert_ne!(integration, squash.commit);
         raw(&f, &["update-ref", "refs/heads/main", origin.as_str()]); raw(&f, &["update-ref", INTEGRATION, origin.as_str()]);
-        let path = f.common.join("mortar/landing.json"); Self { f, squash, origin, integration, path }
+        let path = f.common.join("mortar/landing.json"); Self { f, squash, origin, integration, path, zone: zone.into() }
     }
     // Literal JSON layout + controlled input values; deliberately no call to either kit's string encoder.
     fn text(&self, literal_json_zone: &str) -> String {
@@ -40,8 +40,8 @@ impl State {
             fs::read(oplog::oplog_path(&self.f.common)).ok())
     }
     fn write_via_land(&self) {
-        match locked(&self.f, || land::land(&self.f.git, &refs(), &self.squash, "state-rit")) {
-            LandAnswer::Landed { integration } => assert_eq!(integration, self.integration),
+        match locked(&self.f, || land::land_batch(&self.f.git, &refs(), &self.squash, "state-rit")) {
+            BatchLandAnswer::Landed { integration } => assert_eq!(integration, self.integration),
             other => panic!("expected real merge landing: {other:?}"),
         }
         assert_eq!(self.f.git.read_ref(INTEGRATION).unwrap(), Some(self.integration.clone()));
@@ -51,21 +51,21 @@ impl State {
     }
     fn assert_public_read(&self, text: &str, zone_ref: Option<&str>) {
         assert_eq!(fs::read(&self.path).unwrap(), text.as_bytes()); let before = self.observe();
-        match locked(&self.f, || land::land(&self.f.git, &refs(), &self.squash, "state-rit")) {
-            LandAnswer::Landed { integration } => assert_eq!(integration, self.integration),
+        match locked(&self.f, || land::land_batch(&self.f.git, &refs(), &self.squash, "state-rit")) {
+            BatchLandAnswer::Landed { integration } => assert_eq!(integration, self.integration),
             other => panic!("decoded squash/integration must select repeat: {other:?}"),
         }
-        let another = Squash { commit: self.f.source.clone(), ..self.squash.clone() };
-        assert_ne!(another.commit, self.squash.commit);
-        match locked(&self.f, || land::land(&self.f.git, &refs(), &another, "state-rit")) {
-            LandAnswer::Busy { change_id } => assert_eq!(change_id.as_str(), CID),
-            other => panic!("decoded change ID must be reported busy: {other:?}"),
-        }
+        let tree = self.f.git.commit_info(&self.f.source).unwrap().tree;
+        let commit = self.f.git.commit_tree(&tree, std::slice::from_ref(&self.squash.commit),
+            &format!("another squash\n\nMortar-Change-Id: {CID}\nMortar-Zone: {}\n", self.zone), None, None).unwrap();
+        let another = Squash { commit, ..self.squash.clone() }; assert_ne!(another.commit, self.squash.commit);
+        assert_eq!(locked(&self.f, || land::land_batch(&self.f.git, &refs(), &another, "state-rit")),
+            BatchLandAnswer::ZoneInBatch { zone: self.zone.clone(), change_id: ChangeId::parse(CID).unwrap() });
         assert_eq!(self.observe(), before); assert_eq!(fs::read(&self.path).unwrap(), text.as_bytes());
-        match locked(&self.f, || land::back_out(&self.f.git, &refs(), "state-rit")) {
-            BackOutAnswer::BackedOut { change_id } => assert_eq!(change_id.as_str(), CID),
-            other => panic!("expected decoded origin and change ID in back-out: {other:?}"),
-        }
+        assert_eq!(locked(&self.f, || land::back_out_batch(&self.f.git, &refs(), "state-rit")),
+            BatchBackOutAnswer::BackedOut {
+                change_id: ChangeId::parse(CID).unwrap(), change_ids: vec![ChangeId::parse(CID).unwrap()],
+            });
         assert_eq!(self.f.git.read_ref(INTEGRATION).unwrap(), Some(self.origin.clone())); assert!(!self.path.exists());
         if let Some(zone_ref) = zone_ref {
             // A second real read observes decoded zone/squash via the cleanup ref. Local origin already new:
@@ -84,7 +84,7 @@ impl State {
     }
     fn refusal(&self, text: &str) -> String {
         self.seed(text); let before = self.observe();
-        let outcome = locked(&self.f, || Ok::<_, LandError>(land::land(&self.f.git, &refs(), &self.squash, "state-rit")));
+        let outcome = locked(&self.f, || Ok::<_, LandError>(land::land_batch(&self.f.git, &refs(), &self.squash, "state-rit")));
         assert_eq!(self.observe(), before); assert_eq!(fs::read(&self.path).unwrap(), text.as_bytes());
         assert!(!self.path.with_file_name("landing.json.tmp").exists());
         match outcome {

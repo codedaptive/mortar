@@ -1,6 +1,6 @@
 //! Public Land batch APIs -> real Gitio object IDs and Oplog JSON, with independent literal state layouts.
 use crate::{batch_fixture::{Batch, ACTOR, IDS, INTEGRATION}, owed_ops::{locked, refs}};
-use land::{BatchBackOutAnswer, BatchLandAnswer, LandAnswer, LandError, LandingStateError};
+use land::{BatchBackOutAnswer, BatchLandAnswer, LandError, LandingStateError};
 use oplog::ChangeId;
 use std::fs;
 
@@ -28,9 +28,7 @@ fn rit_handwritten_batch_decodes_member_identity_and_back_out_order_with_or_with
         let before = b.observe();
         assert_eq!(land::read_landing_batch(&b.f.git).unwrap(), Some(b.members(2)));
         b.land(0); // A repeat of the first member must not answer the newest one's integration.
-        assert_eq!(locked(&b.f, || land::land(&b.f.git, &refs(), &b.squashes[2], ACTOR)),
-            LandAnswer::Busy { change_id: ChangeId::parse(IDS[1]).unwrap() });
-        assert_eq!(b.observe(), before, "read/repeat/Busy must not write: pending={pending}");
+        assert_eq!(b.observe(), before, "read/repeat must not write: pending={pending}");
         back_out(&b, 2);
     }
 }
@@ -69,11 +67,9 @@ fn rit_corrupt_batch_files_are_refused_without_ref_log_or_state_writes() {
 }
 
 #[test]
-fn rit_legacy_state_keeps_land_busy_but_land_batch_rewrites_it_as_a_batch() {
+fn rit_land_batch_repeats_legacy_state_without_writes_then_appends_in_batch_form() {
     let b = Batch::new("second", "second"); b.seed(&b.legacy(None), &b.landed[0]); let before = b.observe();
-    assert_eq!(locked(&b.f, || land::land(&b.f.git, &refs(), &b.squashes[1], ACTOR)),
-        LandAnswer::Busy { change_id: ChangeId::parse(IDS[0]).unwrap() });
-    assert_eq!(b.observe(), before); b.land(1);
+    b.land(0); assert_eq!(b.observe(), before); b.land(1);
     assert_eq!(fs::read(&b.path).unwrap(), b.text(2, None).as_bytes());
 }
 

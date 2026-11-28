@@ -24,16 +24,25 @@ fn assert_pair(pair: &[OpRecord], kind: &str, refname: &str, old: &Oid, new: &Oi
 }
 
 #[test]
-fn rit_appending_and_backing_out_a_batch_log_the_tip_and_newest_change_id() {
-    let b = Batch::new("second", "second"); b.land(0); b.land(1);
-    let lands = records(&b, "land"); assert_eq!(lands.len(), 4);
-    assert_pair(&lands[..2], "land", INTEGRATION, &b.origin, &b.landed[0], IDS[0]);
-    assert_pair(&lands[2..], "land", INTEGRATION, &b.landed[0], &b.landed[1], IDS[1]);
-    assert_eq!(locked(&b.f, || land::back_out_batch(&b.f.git, &refs(), ACTOR)), BatchBackOutAnswer::BackedOut {
-        change_id: ChangeId::parse(IDS[1]).unwrap(), change_ids: IDS[..2].iter().map(|id| ChangeId::parse(id).unwrap()).collect(),
-    });
-    assert_pair(&records(&b, "land-back-out"), "land-back-out", INTEGRATION, &b.landed[1], &b.origin, IDS[1]);
-    assert_eq!(b.f.git.read_ref(INTEGRATION).unwrap(), Some(b.origin.clone())); assert!(!b.path.exists());
+fn rit_landing_and_backing_out_one_or_two_members_log_the_tip_and_newest_change_id() {
+    for count in [1, 2] {
+        let b = Batch::new("second", "second"); for i in 0..count { b.land(i); }
+        let lands = records(&b, "land"); assert_eq!(lands.len(), count * 2);
+        for i in 0..count {
+            let from = if i == 0 { &b.origin } else { &b.landed[i - 1] };
+            assert_pair(&lands[i * 2..i * 2 + 2], "land", INTEGRATION, from, &b.landed[i], IDS[i]);
+        }
+        let before = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        assert_eq!(locked(&b.f, || land::back_out_batch(&b.f.git, &refs(), ACTOR)), BatchBackOutAnswer::BackedOut {
+            change_id: ChangeId::parse(IDS[count - 1]).unwrap(),
+            change_ids: IDS[..count].iter().map(|id| ChangeId::parse(id).unwrap()).collect(),
+        });
+        let after = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let back_out = records(&b, "land-back-out");
+        assert_pair(&back_out, "land-back-out", INTEGRATION, &b.landed[count - 1], &b.origin, IDS[count - 1]);
+        assert!(back_out.iter().all(|record| (before..=after).contains(&record.at)));
+        assert_eq!(b.f.git.read_ref(INTEGRATION).unwrap(), Some(b.origin.clone())); assert!(!b.path.exists());
+    }
 }
 
 #[test]
