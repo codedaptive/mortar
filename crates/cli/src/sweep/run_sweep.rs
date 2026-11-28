@@ -11,7 +11,7 @@
 //! extra ref deletes it in one folder-sweep-refs op with the actor; sweep keeps a configured zone's refs/mortar/replayed/
 //! record and deletes a removed zone's; sweep --idle-days 0 clears build dirs, without it none; a refused extra ref
 //! (refs/heads/...) deletes nothing, exit 3; sweep with a config of no zones refused, exit 3, nothing deleted; the
-//! folders lock held by a live pid, exit 4; without a config, exit 3.
+//! folders lock held by a live pid, exit 4; without a config, exit 2.
 
 use std::path::Path;
 

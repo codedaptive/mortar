@@ -3,14 +3,15 @@
 //! matching_records_tests, log_lines_tests and log_report_tests cover its decisions, run_log_tests its usage refusals
 //! before any read, and the integration test crates/cli/tests/log_restore_runs/run_log_tests.rs, for one op in a
 //! real log, the plain listing with no "records" lines and the --json "records" line, for a line with no values or
-//! remote mark and for one carrying both. Integration tests to write (not written here), with the mortar binary as a
+//! remote mark and for one carrying both. The integration test crates/cli/tests/log_restore_runs/run_git_floor_tests.rs,
+//! mr_log_outside_a_repository_is_usage_not_a_repository, covers it run outside any git repository: a usage error,
+//! exit 2, outcome "not-a-repository". Integration tests to write (not written here), with the mortar binary as a
 //! child process in a throwaway repository with ops in its log (tests running real git set
 //! GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1):
 //! - a real log read with each filter (--ref, --actor, --key) lists the matching ops, and with two filters their AND;
 //! - with no filter it lists every op; a filter nothing matches is exit 0, outcome empty;
 //! - with several ops in the log, --json "records" are the log's own lines for those ops, byte for byte;
-//! - log writes nothing: refs, the op log and the lock folder are unchanged after it;
-//! - run outside any git repository it is refused, exit 3, outcome not-a-repository.
+//! - log writes nothing: refs, the op log and the lock folder are unchanged after it.
 
 use std::path::Path;
 

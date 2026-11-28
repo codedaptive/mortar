@@ -7,8 +7,8 @@
 //! the binary: usage errors (no --paths, n = 0, refresh with no path) exit 2 with folder's usage line; a zone not in
 //! the config exit 3, nothing made, next naming `mr init --replace` with `--zone <zone>=`. partner_cut_tests.rs
 //! covers a --with partner not in the config: exit 3, nothing made.
-//! Integration tests to write (not written here): run outside any git repository it is refused exit 3
-//! (the shell's repository_report); without a config, exit 3, next mr init.
+//! Integration tests to write (not written here): run outside any git repository it is exit 2
+//! outcome "not-a-repository" (the shell's repository_report); without a config, exit 2, next mr init.
 
 use std::iter::once;
 use std::path::Path;

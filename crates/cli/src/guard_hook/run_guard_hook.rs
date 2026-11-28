@@ -16,8 +16,8 @@
 //! - unguarded refs move freely;
 //! - a push by the guarded remote's URL is refused like a push by its name, a push to another remote is allowed,
 //!   and with the remote's URLs unreadable a push under another name is refused;
-//! - with the hooks present and guard.json missing, a move is refused;
-//! - a guard.json that is not a guard config is refused, naming the file.
+//! - with the hooks present and guard.json missing, a move fails closed with exit 2, outcome "no-guard-config";
+//! - a guard.json that is not a guard config fails closed with exit 2, outcome "bad-config", naming the file.
 
 use std::io::Read;
 use std::path::Path;
@@ -28,7 +28,7 @@ use oplog::{open_intent, RefMove, MORTAR_OP_ENV};
 
 use super::{decide_with_intent, guard_hook_from_args, guard_hook_report};
 use crate::args::{usage_report, UsageError};
-use crate::report::{failure_report, Report};
+use crate::report::{failure_report, ExitCode, Report};
 use crate::shell::ShellContext;
 
 const VERB: &str = "guard-hook";
@@ -39,9 +39,10 @@ const INSTALLER: &str = "the harness that installs the guard";
 /// land::guard_decide reads this hook's input (decide_with_intent), the moves of the open intent MORTAR_OP names
 /// (None when it is unset or not unicode); and reports guard_decide's verdict (an allow's report is exit Done with
 /// nothing in it, and the binary prints none of it).
-/// A guard.json that is missing or is not a guard config, and input that cannot be read, are refused (exit 3): the
-/// guard cannot check the move, so it fails closed. Words it cannot read are usage (exit 2); git failing, or the op
-/// log failing when it is read, is failure_report (exit 5). Takes no lock and moves nothing.
+/// A guard.json that is missing or is not a guard config is usage or configuration (exit 2), and input that cannot be
+/// read is refused (exit 3): either way the guard cannot check the move, so it fails closed. Words it cannot read are
+/// usage (exit 2); git failing, or the op log failing when it is read, is failure_report (exit 5). Takes no lock and
+/// moves nothing.
 pub fn run_guard_hook(context: &ShellContext, cwd: &Path) -> Report {
     decide(context, cwd).unwrap_or_else(|report| report)
 }
@@ -87,13 +88,14 @@ fn read_input() -> Result<String, Report> {
         })
 }
 
-/// The branches guard.json protects. Missing while its hooks run, or not a guard config: refused, with next
-/// `mr guard install --actor <name>` (after mending or removing guard.json by hand when it is not a guard
-/// config). Any other failure to read it: failure_report.
+/// The branches guard.json protects. Missing while its hooks run ("no-guard-config"), or not a guard config
+/// ("bad-config"): exit 2 with the installer as owner and next `mr guard install --actor <name>` (after mending or
+/// removing guard.json by hand when it is not a guard config). Any other failure to read it: failure_report.
 fn read_refs(git: &Git, common: &Path) -> Result<LandRefs, Report> {
     match read_guard_config(git) {
         Ok(Some(refs)) => Ok(refs),
-        Ok(None) => Err(refuse(
+        Ok(None) => Err(misconfigured(
+            "no-guard-config",
             format!(
                 "the guard's hooks ran but its config guard.json is missing from {}, so no move can be checked and \
                  the guard fails closed",
@@ -101,7 +103,8 @@ fn read_refs(git: &Git, common: &Path) -> Result<LandRefs, Report> {
             ),
             "mr guard install --actor <name>",
         )),
-        Err(error @ GuardError::BadConfig { .. }) => Err(refuse(
+        Err(error @ GuardError::BadConfig { .. }) => Err(misconfigured(
+            "bad-config",
             error.to_string(),
             "mend or remove guard.json by hand, then mr guard install --actor <name>",
         )),
@@ -112,4 +115,10 @@ fn read_refs(git: &Git, common: &Path) -> Result<LandRefs, Report> {
 /// A refusal the cli gives before guard_decide runs, rendered as guard_hook_report renders the guard's own.
 fn refuse(why: String, next: &str) -> Report {
     guard_hook_report(&GuardVerdict::Refuse { why, owner: INSTALLER.to_string(), next: next.to_string() })
+}
+
+/// guard.json missing or not a guard config: a refusal's lines, owner and next, but exit Usage (configuration) under
+/// its own outcome.
+fn misconfigured(outcome: &str, why: String, next: &str) -> Report {
+    Report { exit: ExitCode::Usage, outcome: outcome.into(), ..refuse(why, next) }
 }

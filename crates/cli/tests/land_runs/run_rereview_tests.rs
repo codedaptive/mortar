@@ -6,7 +6,7 @@
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! The squashes are made in setup through land::squash under the land lock.
 //! Tests to write (not written here):
-//! - without a config: exit 3, next mortar init (the shell's load_config);
+//! - without a config: exit 2, next mortar init (the shell's load_config);
 //! - RereviewError::Git and RereviewError::Trailers texts (git or the trailers must fail);
 //! - RereviewError::NoParent: a root commit;
 //! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones.

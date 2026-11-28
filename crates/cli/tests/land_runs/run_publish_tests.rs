@@ -8,7 +8,7 @@
 //! setup through land::squash and land::land_batch under the land lock.
 //! Tests to write (not written here; the land lock held by a live pid is land_flow/landing.rs', an open push intent
 //! run_publish_no_push_tests', and acceptance step 1's checks 7, 9, 11 and 12 are tests/accept's):
-//! - without a config: exit 3, next mortar init (the shell's load_config);
+//! - without a config: exit 2, next mortar init (the shell's load_config);
 //! - each land error variant's text that needs git or the op log to fail: PublishError PushRefused, RemoteMissing
 //!   and a PushIntent already done, and LandError's;
 //! - publish with --key: the key names the lock holder only.

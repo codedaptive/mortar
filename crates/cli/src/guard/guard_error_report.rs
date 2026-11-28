@@ -15,9 +15,9 @@ const IO_REPEAT: &str = "what was already written is the guard's own and harmles
 /// - ForeignHook { path }: exit 3 Refused, outcome "foreign-hook", lines "<path> is a hook Mortar did not write;
 ///   Mortar never overwrites one" and "nothing was written", owner "the repository's own hooks", next moving `path`
 ///   aside, then `mr guard install --actor <name>` (foreign_hook_report). Fields: none.
-/// - BadConfig { path, why }: exit 3 Refused, outcome "refused", line "<path> is not a Mortar guard config: <why>",
-///   owner "the Mortar guard", next `mr guard install --actor <name>` (install rewrites a guard.json whose bytes
-///   differ from the config's). Fields: none.
+/// - BadConfig { path, why }: exit 2 Usage (a configuration problem), outcome "bad-config", line "<path> is not a
+///   Mortar guard config: <why>", owner "the Mortar guard", next `mr guard install --actor <name>` (install
+///   rewrites a guard.json whose bytes differ from the config's). Fields: none.
 /// - Io { path, error }: failure_report (exit 5, "failed", next "repeat the same command"), lines "reading or writing
 ///   <path> failed: <error>" and then that what was written is harmless and a repeat writes only what is missing
 ///   or different (install can fail after writing guard.json).
@@ -31,8 +31,8 @@ pub fn guard_error_report(error: &GuardError) -> Report {
         }
         GuardError::BadConfig { path, why } => Report {
             verb: VERB.to_string(),
-            exit: ExitCode::Refused,
-            outcome: "refused".to_string(),
+            exit: ExitCode::Usage,
+            outcome: "bad-config".to_string(),
             lines: vec![format!("{} is not a Mortar guard config: {why}", path.display())],
             owner: Some("the Mortar guard".to_string()),
             next: "mr guard install --actor <name>".to_string(),

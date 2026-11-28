@@ -20,11 +20,11 @@ fn a_live_land_lock_refuses_before_after_publish_and_names_the_exact_holder() {
 }
 
 #[test]
-fn missing_config_refuses_without_any_work_and_names_init_as_next() {
+fn missing_config_stops_without_any_work_and_names_init_as_next() {
     let w = World::new(); w.core(&[("src/file", b"published\n")]); w.publish();
     let config = w.s.f.common.join("mortar/config.json"); fs::rename(&config, config.with_extension("held")).unwrap();
     let before = w.store(); let folders = (w.folder_state(&w.s.f.zone), w.folder_state(&w.b));
-    let r = w.after(3, "no-config");
+    let r = w.after(2, "no-config");
     assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
     assert_eq!(r.text("next"), "mr init"); assert_eq!(w.store(), before);
     assert_eq!((w.folder_state(&w.s.f.zone), w.folder_state(&w.b)), folders);

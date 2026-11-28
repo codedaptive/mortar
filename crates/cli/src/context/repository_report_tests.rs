@@ -1,5 +1,5 @@
-//! repository_report: outside a repository a harness verb is refused "not-a-repository", naming the directory;
-//! git failing is a failure.
+//! repository_report: outside a repository a harness verb is a usage error "not-a-repository", naming the
+//! directory; git failing is a failure.
 
 use std::path::PathBuf;
 
@@ -17,7 +17,7 @@ fn git_error(code: Option<i32>, stderr: &str) -> GitError {
 }
 
 #[test]
-fn init_outside_a_repository_is_refused_naming_the_directory() {
+fn init_outside_a_repository_is_a_usage_error_naming_the_directory() {
     let error = ContextError::NotARepository {
         dir: PathBuf::from("/tmp/elsewhere"),
         error: git_error(Some(128), "fatal: not a git repository\n"),
@@ -26,7 +26,7 @@ fn init_outside_a_repository_is_refused_naming_the_directory() {
         repository_report("init", &error),
         Report {
             verb: "init".to_string(),
-            exit: ExitCode::Refused,
+            exit: ExitCode::Usage,
             outcome: "not-a-repository".to_string(),
             lines: vec![
                 "/tmp/elsewhere is in no git repository".to_string(),

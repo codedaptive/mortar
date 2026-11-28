@@ -5,8 +5,8 @@
 //! and it decodes to the values given; a repeat with the same values is exit 0 "already-done" and the file is
 //! byte-identical; a repeat with different values is exit 3 naming the differing keys, the file unchanged; the same with
 //! --replace is exit 0 "replaced" and the file holds the new values; init from a linked worktree writes the main
-//! repository's common dir; init outside any git repository is refused, exit 3, outcome "not-a-repository", naming the
-//! directory; a bad init argument is exit 2 with init's usage as next.
+//! repository's common dir; init outside any git repository is a usage error, exit 2, outcome "not-a-repository",
+//! naming the directory; a bad init argument is exit 2 with init's usage as next.
 
 use std::path::Path;
 
@@ -22,7 +22,8 @@ use crate::shell::config_refusal;
 const VERB: &str = "init";
 
 /// Reads the options from `args.rest`, finds the common dir from `cwd`, decides against the config already
-/// there and writes on Write or Replace. A config that cannot be read or decoded is refused, nothing written.
+/// there and writes on Write or Replace. A config that cannot be read or decoded is a configuration error, exit 2,
+/// outcome "bad-config", nothing written.
 pub fn run_init(args: &ParsedArgs, cwd: &Path) -> Report {
     let options = match parse_init_args(&args.rest) {
         Ok(options) => options,

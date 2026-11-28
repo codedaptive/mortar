@@ -14,7 +14,7 @@
 //! (disk_holds_zone_counts_without_a_joined_answer); a request folder whose branch is gone shows joined unknown with
 //! the missing branch as its reason beside a healthy folder's answer, exit 0, writing nothing
 //! (disk_answers_every_folder_when_one_joined_read_fails); disk with a config of no zones refused, exit 3, nothing
-//! read; any argument, exit 2; without a config, exit 3. The acceptance run's disk step checks disk's per-folder bytes
+//! read; any argument, exit 2; without a config, exit 2. The acceptance run's disk step checks disk's per-folder bytes
 //! and its store-once figure, reached through this verb.
 
 use std::path::Path;

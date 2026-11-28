@@ -4,7 +4,7 @@
 //! guard_error_report_tests cover its decisions. The integration test crates/cli/tests/guard_runs/run_guard_status_tests.rs covers it through
 //! the binary: an untouched repository is exit 0 "not-installed" with nothing written; after `mr guard install`
 //! exit 0 "installed" naming the three branches; a foreign reference-transaction exit 3 "foreign-hook" naming its
-//! path; a guard.json that is not a guard config exit 3 "refused" naming the file; a guard.json for other branches
+//! path; a guard.json that is not a guard config exit 2 "bad-config" naming the file; a guard.json for other branches
 //! than the config exit 0 "not-installed" naming both.
 //! Integration tests to write (not written here): the land lock held by a live pid, exit
 //! 4 (oplog's locks); GuardError::Git in the cli's own words.

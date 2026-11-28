@@ -1,5 +1,5 @@
 //! program_help_lines: the usage line, the four groups' headings in order, one row per term padded to the longest
-//! term, the eleven lines about exit codes, then the eight lines about tokens saved.
+//! term, the thirteen lines about exit codes, then the eight lines about tokens saved.
 //! Unit test: the help groups are pure data.
 //! The longest term is bisect's, "bisect <last pass> <failed> --timeout <s> -- <command>..." (57 characters), so
 //! every term is padded to 57: "status" (6) with 51 spaces, "install, uninstall" (18) with 39.
@@ -62,18 +62,18 @@ fn backup_and_restore_backup_share_one_row() {
 #[test]
 fn there_are_thirty_six_rows_and_no_trailing_spaces() {
     // 6 agent rows, 8 folder, 13 landing (backup shares one), 3 setup (install shares one): 30. With the usage line
-    // and an empty line and a heading per group, 39 lines; then the 11 lines about exit codes, 6 of them rows: 50;
-    // then the 8 lines about tokens saved: 58.
+    // and an empty line and a heading per group, 39 lines; then the 13 lines about exit codes, 6 of them rows: 52;
+    // then the 8 lines about tokens saved: 60.
     let lines = program_help_lines();
     assert_eq!(lines.iter().filter(|line| line.starts_with("  ")).count(), 36);
-    assert_eq!(lines.len(), 58);
+    assert_eq!(lines.len(), 60);
     assert!(lines.iter().all(|line| !line.ends_with(' ')), "{lines:#?}");
 }
 
 #[test]
 fn the_tokens_saved_lines_follow_the_exit_codes() {
     assert_eq!(
-        program_help_lines()[50..],
+        program_help_lines()[52..],
         [
             "",
             "Tokens saved: an answer that replaces reading git output opens with a \"[mr] tokens saved\" line,",

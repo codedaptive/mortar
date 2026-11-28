@@ -53,13 +53,34 @@ fn blank_or_two_line_save_sentence_refuses_without_lock_snapshot_commit_or_log_c
 }
 
 #[test]
-fn zone_save_and_missing_config_refuse_before_any_work() {
+fn zone_save_refuses_and_missing_config_is_usage_before_any_work() {
     let f = Fixture::new(); let before = f.observe();
     let zone = check(f.command(&f.zone, &["--json", "save", "Do not save zone"]).output().unwrap(), "save", 3, "refused");
     assert!(zone.lines().contains("zone folder")); assert_eq!(f.observe(), before);
     fs::remove_file(f.common.join("mortar/config.json")).unwrap();
-    let missing = f.report(&["--json", "save", "Needs config"], "save", 3, "no-config");
-    assert_eq!(missing.text("next"), "mr init"); assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
+    let missing = f.report(&["--json", "save", "Needs config"], "save", 2, "no-config");
+    assert_eq!(missing.text("next"), "mr init");
+    let plain = f.app(&["save", "Needs config"]);
+    assert_eq!(plain.status.code(), Some(2), "{plain:?}");
+    assert!(String::from_utf8(plain.stdout).unwrap().contains("mr init"));
+    assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
+}
+
+#[test]
+fn save_with_bad_config_is_usage_and_changes_nothing() {
+    let f = Fixture::new(); f.write("src/file", b"unsaved work\n");
+    let path = f.common.join("mortar/config.json"); fs::write(&path, "{").unwrap();
+    let before = f.observe();
+    let report = f.report(&["--json", "save", "Needs config"], "save", 2, "bad-config");
+    assert!(report.lines().contains(path.to_str().unwrap()));
+    assert!(report.lines().contains("nothing changed"));
+    assert_eq!(report.text("next"), format!("fix or remove {}, then repeat the same command", path.display()));
+    let plain = f.app(&["save", "Needs config"]);
+    assert_eq!(plain.status.code(), Some(2), "{plain:?}");
+    let stdout = String::from_utf8(plain.stdout).unwrap();
+    assert!(stdout.contains(path.to_str().unwrap())); assert!(stdout.contains("nothing changed"));
+    assert!(stdout.contains(&format!("fix or remove {}, then repeat the same command", path.display())));
+    assert_eq!(f.observe(), before); assert!(!f.lock_path().exists());
 }
 
 #[test]

@@ -6,7 +6,7 @@
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
 //! - the land lock held by a live pid: exit 4 (cli with oplog's locks);
-//! - without a config: exit 3, next mortar init (the shell's load_config);
+//! - without a config: exit 2, next mortar init (the shell's load_config);
 //! - each land error variant's text that needs git or the op log to fail: SquashError Git, Oplog, ChangeId,
 //!   Trailers, OpFailed and OpRepeated;
 //! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones.

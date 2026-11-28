@@ -1,6 +1,6 @@
 //! context_report: a worktree without a record is refused "not-a-folder" naming it; a bad record is refused naming
-//! the file; outside a repository is refused "not-a-folder" with git's line; an unreadable record, any other folder
-//! error and git failing are failures.
+//! the file; outside a repository is a usage error "not-a-repository" naming the directory, with git's line; an
+//! unreadable record, any other folder error and git failing are failures.
 //! Unit test: the error values are built as data; the lines that carry gitio's or folders' own text come
 //! from their exported, pure Display impls, and report::failure_report is used directly.
 
@@ -48,7 +48,7 @@ fn a_record_mortar_did_not_write_is_refused_naming_the_file() {
 }
 
 #[test]
-fn outside_a_repository_is_not_a_folder() {
+fn outside_a_repository_is_a_usage_error_not_a_repository() {
     let error = ContextError::NotARepository {
         dir: PathBuf::from("/tmp/elsewhere"),
         error: git_error(Some(128), "fatal: not a git repository\n"),
@@ -57,14 +57,14 @@ fn outside_a_repository_is_not_a_folder() {
         context_report("save", &error),
         Report {
             verb: "save".to_string(),
-            exit: ExitCode::Refused,
-            outcome: "not-a-folder".to_string(),
+            exit: ExitCode::Usage,
+            outcome: "not-a-repository".to_string(),
             lines: vec![
-                "this directory is not in a Mortar folder: /tmp/elsewhere is in no git repository".to_string(),
+                "/tmp/elsewhere is in no git repository".to_string(),
                 "git rev-parse --show-toplevel: exit code 128: fatal: not a git repository".to_string(),
             ],
             owner: Some("the harness that makes Mortar folders".to_string()),
-            next: "run mr save inside a folder Mortar made".to_string(),
+            next: "run mr save inside the git repository".to_string(),
             fields: Vec::new(),
         }
     );

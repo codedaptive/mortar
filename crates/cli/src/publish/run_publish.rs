@@ -18,7 +18,7 @@
 //! plain repeat moves the folder from the op's old value to the tip and the report's first line says so) and
 //! land_flow/stopped.rs a staged edit in the integration folder (no move, the verb goes on); land_flow/batch.rs the
 //! next naming `mr after-publish` for each zone of a batch, in landing order.
-//! Integration tests to write (not written here): without a config, exit 3, next mr init (land_flow/landing.rs
+//! Integration tests to write (not written here): without a config, exit 2, next mr init (land_flow/landing.rs
 //! covers it for land and would-merge only); the PublishError texts through a real remote (PushRefused by a
 //! remote hook, RemoteMissing, a PushIntent already done).
 

@@ -1,11 +1,11 @@
 //! `mortar guard status`: an untouched repository is not-installed and nothing is written; after `mortar guard
 //! install` it is installed with the three branches in its fields; a foreign reference-transaction exits 3 naming
-//! its path; a guard.json that is not a guard config exits 3 refused naming the file; a guard.json for other branches
+//! its path; a guard.json that is not a guard config exits 2 bad-config naming the file; a guard.json for other branches
 //! than the config is not-installed naming both.
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
 //! - the land lock held by a live pid: exit 4 (cli with oplog's locks);
-//! - without a config: exit 3, next mortar init (the shell's load_config);
+//! - without a config: exit 2, next mortar init (the shell's load_config);
 //! - GuardError::Git: the cli's own words, never gitio's Display text;
 //! - after `mortar guard install`, git update-ref, commit and push against integration and origin are refused
 //!   through the installed hook and Mortar's own moves pass (acceptance step 2's checks 1-9; land's guard_decide);
@@ -117,11 +117,18 @@ fn guard_status_of_a_foreign_reference_transaction_is_refused_naming_its_path() 
 }
 
 #[test]
-fn guard_status_of_a_guard_json_that_is_not_a_guard_config_is_refused_naming_the_file() {
+fn guard_status_of_a_bad_guard_config_is_usage_naming_the_file() {
     let (_repo, root) = repo();
     let config = root.join(".git/mortar/guard.json");
     fs::write(&config, "{").unwrap();
-    let report = check(guard(&root, "status"), "guard", 3, "refused");
+    let report = check(guard(&root, "status"), "guard", 2, "bad-config");
+    let plain = Command::new(env!("CARGO_BIN_EXE_mortar")).current_dir(&root).env_clear().envs(GIT_ENV)
+        .env("PATH", std::env::var_os("PATH").unwrap()).env("HOME", &root).env("TMPDIR", &root)
+        .env("CODETEAM_SESSION", "guard-status-test").stdin(Stdio::null())
+        .args(["--actor", "harness", "guard", "status"]).output().unwrap();
+    assert_eq!(plain.status.code(), Some(2), "{plain:?}");
+    let text = String::from_utf8(plain.stdout).unwrap();
+    assert!(text.contains(config.to_str().unwrap())); assert!(text.contains(INSTALL_NEXT));
     let named = format!("{} is not a Mortar guard config: ", shown(&config));
     assert!(report.strings("lines").iter().any(|line| line.starts_with(&named)), "{}", report.lines());
     assert_eq!(report.text("owner"), "the Mortar guard");

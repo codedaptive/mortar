@@ -13,7 +13,7 @@
 //! fast-forward and by merge commit, with and without an integration folder (the folder moved from integration's tip
 //! before the landing to the one after it), conflicted (exit 1 with the files and integration unmoved), another
 //! zone's squash landing in the batch, a repeat after Landed answering landed with no further op, a change ID
-//! word (exit 2), the land lock held by a live pid (exit 4) and without a config (exit 3, next mr init); batch.rs two
+//! word (exit 2), the land lock held by a live pid (exit 4) and without a config (exit 2, next mr init); batch.rs two
 //! zones landing as one batch in order, the second member's edit merged into the integration folder beside the
 //! first's, a repeat of the first member reporting the batch's tip and the folder line naming the folder at the tip
 //! with no further op, a batch of one's repeat keeping its two text lines with no further op, a second squash of a
