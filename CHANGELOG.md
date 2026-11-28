@@ -9,6 +9,10 @@ All notable changes to Mortar are recorded here, in terms of what the program do
 - **Exit codes follow CLI-SPEC v0.2:** 0 done, 1 conflict (the files are listed), 2 usage, 3 refused, 4 busy, 5 failure. They were 1 refused, 2 conflict, 3 busy, 4 usage. Every answer keeps its meaning; only the number moved. `mr help` and `mr --help` list the codes. `mortar guard-hook` refuses with exit 3, and git still stops the move. `mr join` on a zone that moved sideways is now refused (exit 3) with the zone's coordinator as owner, where it used to fail (exit 5) and ask for a repeat.
 - **Configuration answers exit 2:** a command run outside a git repository (outcome `not-a-repository`), a missing Mortar config (`no-config`), a config or guard.json that cannot be read (`bad-config`), and `mortar guard-hook` with no guard.json (`no-guard-config`). They were refused (exit 3). `mr guard install` over a bad guard.json still rewrites it and exits 0.
 
+### Commit hooks
+
+- **Git's pre-commit and commit-msg hooks run** on `mr save`, `mr join`'s first save, `mr commit-files` in a zone folder and `mr squash`, as `git commit` would run them. A refusing hook is exit 3 (refused): nothing is committed or moved, and the report names the hook, its exit code, and its stdout and stderr in full (`--json`: hook, code, stdout, stderr). A commit-msg rewrite becomes the committed message. `mr squash` also refuses when the hooked message no longer reads back, naming the part. `mr snapshot` runs no hooks; `mr commit-files` in the integration folder does not run them yet.
+
 ### Landing
 
 - **`mr would-merge <squash> --with <squash>...`** tries the squashes in order, each merged onto the one before, without merging anything. Exit 0 when every step merges; exit 1 names the step that conflicts and its files, and `--json` adds that step. Plain `mr would-merge` answers as before.
