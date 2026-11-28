@@ -1,10 +1,11 @@
 //! landing: land a squash on integration (land, or land_batch for the batch answer: further squashes append as the
-//! batch's next members), commit named paths of the integration folder onto it (commit_files), back it out (back_out,
-//! or back_out_batch for the batch answer: the whole batch goes) and publish it (one push for the batch), with the landing
-//! state `<common>/mortar/landing.json` that land and commit_files write before their ops and back_out and publish
-//! read, and would_merge_with (a squash and further squashes merged in order
-//! onto integration, as successive lands would), read_landing_status (the landing in flight and whether its
-//! publish push intent is open, for status) and read_landing_batch (the batch's members in landing order).
+//! batch's next members), commit named paths of the integration folder onto it (commit_files, or
+//! commit_files_with_hooks with the pre-commit and commit-msg hooks run), back it out (back_out, or back_out_batch
+//! for the batch answer: the whole batch goes) and publish it (one push for the batch), with the landing state
+//! `<common>/mortar/landing.json` that land, commit_files and commit_files_with_hooks write before their ops and
+//! back_out and publish read, and would_merge_with (a squash and further squashes merged in order onto integration,
+//! as successive lands would), read_landing_status (the landing in flight and whether its publish push intent is
+//! open, for status) and read_landing_batch (the batch's members in landing order).
 //! Past 150 lines: this is the folder's bridge, one line per file it declares or exports.
 
 mod advance_origin;
@@ -22,6 +23,8 @@ mod commit_files_answer;
 mod commit_files_error;
 mod commit_files_error_display;
 mod commit_files_error_source;
+mod commit_files_steps;
+mod commit_files_with_hooks;
 mod decide_back_out;
 mod decide_commit_files;
 mod decide_landing;
@@ -31,6 +34,9 @@ mod decode_landing_state;
 mod encode_landing_state;
 mod fetch_origin;
 mod finish_publish;
+mod hooked_commit_files_error;
+mod hooked_commit_files_error_from;
+mod hooked_commit_files_error_from_hooks;
 mod integration_op;
 mod is_fast_forward;
 mod land;
@@ -108,6 +114,10 @@ mod decode_landing_state_tests;
 #[cfg(test)]
 mod encode_landing_state_tests;
 #[cfg(test)]
+mod hooked_commit_files_error_from_hooks_tests;
+#[cfg(test)]
+mod hooked_commit_files_error_from_tests;
+#[cfg(test)]
 mod is_fast_forward_tests;
 #[cfg(test)]
 mod land_error_display_tests;
@@ -151,6 +161,8 @@ pub use batch_member::BatchMember;
 pub use commit_files::commit_files;
 pub use commit_files_answer::CommitFilesAnswer;
 pub use commit_files_error::CommitFilesError;
+pub use commit_files_with_hooks::commit_files_with_hooks;
+pub use hooked_commit_files_error::HookedCommitFilesError;
 pub use land::land;
 pub use land_answer::LandAnswer;
 pub use land_batch::land_batch;
@@ -172,6 +184,7 @@ pub(crate) use advance_origin::advance_origin;
 pub(crate) use back_out_onto::back_out_onto;
 pub(crate) use batch_members::batch_members;
 pub(crate) use back_out_step::BackOutStep;
+pub(crate) use commit_files_steps::commit_files_steps;
 pub(crate) use decide_back_out::decide_back_out;
 pub(crate) use decide_commit_files::decide_commit_files;
 pub(crate) use decide_landing::decide_landing;
