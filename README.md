@@ -211,7 +211,7 @@ Add `--json` to any verb for one JSON object on one line: `verb`, `ok`, `outcome
 
 `mr help` and `mr --help` list these codes. Each run answers one code, from the first check that stops it.
 
-`mr save`, `mr join` (its first save), `mr commit-files` in a zone folder and `mr squash` run the repository's pre-commit and commit-msg hooks as `git commit` would. A refusing hook is exit 3 (refused); nothing is committed or moved. The report names the hook and its exit code and shows its stdout and stderr in full. Fix what the hook reports, then repeat the verb. A commit-msg rewrite becomes the committed message. `mr snapshot` runs no hooks; `mr commit-files` in the integration folder does not run them yet.
+`mr save`, `mr join` (its first save), `mr commit-files` in a zone folder and `mr squash` run the repository's pre-commit and commit-msg hooks as `git commit` would. A refusing hook is exit 3 (refused); nothing is committed and the verb's branch or squash ref does not move; the snapshot a save takes first still stands. The report names the hook and its exit code and shows its stdout and stderr in full. Fix what the hook reports, then repeat the verb. A commit-msg rewrite becomes the committed message. `mr snapshot` runs no hooks; `mr commit-files` in the integration folder does not run them yet.
 
 A repeat of a finished command exits 0, except `mr folder remove`: the folder is gone, so the repeat is refused. `--key <operation key>` labels a run; without it Mortar derives a label from the verb and the folder. A busy report for a held lock names the label, process and machine of the run that holds it.
 

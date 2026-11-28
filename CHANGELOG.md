@@ -11,7 +11,7 @@ All notable changes to Mortar are recorded here, in terms of what the program do
 
 ### Commit hooks
 
-- **Git's pre-commit and commit-msg hooks run** on `mr save`, `mr join`'s first save, `mr commit-files` in a zone folder and `mr squash`, as `git commit` would run them. A refusing hook is exit 3 (refused): nothing is committed or moved, and the report names the hook, its exit code, and its stdout and stderr in full (`--json`: hook, code, stdout, stderr). A commit-msg rewrite becomes the committed message. `mr squash` also refuses when the hooked message no longer reads back, naming the part. `mr snapshot` runs no hooks; `mr commit-files` in the integration folder does not run them yet.
+- **Git's pre-commit and commit-msg hooks run** on `mr save`, `mr join`'s first save, `mr commit-files` in a zone folder and `mr squash`, as `git commit` would run them. A refusing hook is exit 3 (refused): nothing is committed and the verb's branch or squash ref does not move; the snapshot a save takes first still stands, and the report names the hook, its exit code, and its stdout and stderr in full (`--json`: hook, code, stdout, stderr). A commit-msg rewrite becomes the committed message. `mr squash` also refuses when the hooked message no longer reads back, naming the part. `mr snapshot` runs no hooks; `mr commit-files` in the integration folder does not run them yet.
 
 ### Landing
 
