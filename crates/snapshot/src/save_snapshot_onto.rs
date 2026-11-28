@@ -1,10 +1,12 @@
-//! save_snapshot_onto: everything a save does after its snapshot is in hand: commit the snapshot's tree onto the
-//! commit it was built on, move the branch through the op log and set the folder's index. save_with_snapshot and
-//! save_from_snapshot both end here.
+//! save_snapshot_onto: everything a save does after its snapshot is in hand: build the message, run the caller's hook
+//! step on it, commit the snapshot's tree onto the commit it was built on, move the branch through the op log and set
+//! the folder's index. save_through and save_from_snapshot_through both end here; the hookless saves pass a step that
+//! keeps the message, and the hooked twins pass run_save_hooks.
 //! No unit test: it runs git and appends to the op log, and holds no decision of its own; save_unchanged,
 //! save_change_id, save_trailers, save_op, save_from_apply, saved_with_snapshot_from and real_index_git are its
-//! decisions and have their tests. The integration cases are listed in save_with_snapshot.rs (through save) and
-//! save_from_snapshot.rs (tests/snapshot/save_from_snapshot_cases.rs).
+//! decisions and have their tests. The integration cases are listed in save_with_snapshot.rs (through save),
+//! save_from_snapshot.rs (tests/snapshot/save_from_snapshot_cases.rs), and, for the hooked twins, save_with_hooks.rs
+//! and save_from_snapshot_with_hooks.rs.
 
 use crate::real_index_git::real_index_git;
 use crate::save_change_id::save_change_id;
@@ -22,16 +24,22 @@ use oplog::{apply, new_change_id, new_op_id, read_mortar_trailers, unix_now};
 /// on, and is the commit's parent, the source of the change ID and the op's old value. A tree equal to `built_on`'s
 /// with HEAD still at `built_on` writes no commit and sets the folder's index to that tree; otherwise the commit is
 /// written and the branch moves from `built_on` through one op log entry, which refuses with BranchMoved when the
-/// branch is not at `built_on`, and the index is set to the saved tree. `snapshot_written` is `snap.written`. Errors are
-/// save_with_snapshot's from after its snapshot step.
-pub(crate) fn save_snapshot_onto(
+/// branch is not at `built_on`, and the index is set to the saved tree. `snapshot_written` is `snap.written`.
+///
+/// `hooks` runs on the written shape only, after the message (`subject` with the Mortar trailers) is built and
+/// before the commit is written: it gets the snapshot's tree, that message and the trailer pairs, and answers the
+/// message to commit. Its error is returned as it is, with no commit written, no branch moved, no save op logged
+/// and the index as it was. The unchanged shape calls it not at all. Errors are save_with_snapshot's from after its
+/// snapshot step, then `hooks`' own.
+pub(crate) fn save_snapshot_onto<E: From<SnapshotError>>(
     git: &Git,
     target: &SnapshotTarget,
     subject: &str,
     head: (String, Oid),
     built_on: Oid,
     snap: SnapshotOutcome,
-) -> Result<SavedWithSnapshot, SnapshotError> {
+    hooks: impl FnOnce(&Git, &Oid, String, &[(String, String)]) -> Result<String, E>,
+) -> Result<SavedWithSnapshot, E> {
     let folder = &git.repo;
     let (branch, head_now) = head;
     let info = git.commit_info(&built_on).map_err(SnapshotError::Git)?;
@@ -46,9 +54,9 @@ pub(crate) fn save_snapshot_onto(
         Some(id) => id,
         None => new_change_id().map_err(SnapshotError::ChangeId)?,
     };
-    let message = git
-        .with_trailers(subject, &save_trailers(&change_id, target))
-        .map_err(SnapshotError::Git)?;
+    let pairs = save_trailers(&change_id, target);
+    let message = git.with_trailers(subject, &pairs).map_err(SnapshotError::Git)?;
+    let message = hooks(git, &snap.tree, message, &pairs)?;
     let commit = git
         .commit_tree(&snap.tree, std::slice::from_ref(&built_on), &message, None, None)
         .map_err(SnapshotError::Git)?;

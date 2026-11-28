@@ -13,7 +13,11 @@ mod child_exit;
 mod commit_paths;
 mod commit_paths_error;
 mod commit_paths_error_display;
+mod commit_paths_hooks_error;
+mod commit_paths_hooks_error_display;
 mod commit_paths_outcome;
+mod commit_paths_through;
+mod commit_paths_with_hooks;
 mod decide_formatter_end;
 mod decide_formatter_result;
 mod decide_formatter_wait;
@@ -34,6 +38,8 @@ mod formatter_stderr_cap;
 mod formatter_wait;
 mod group_kill_target;
 mod group_run_end;
+mod hook_refusal_text;
+mod keeps_save_trailers;
 mod kept_bytes;
 mod kill_process_group;
 mod leader_state;
@@ -48,17 +54,24 @@ mod refused_file;
 mod run_formatter;
 mod run_formatter_child;
 mod run_in_group;
+mod run_save_hooks;
 mod save;
 mod save_change_id;
 mod save_from_apply;
 mod save_from_snapshot;
+mod save_from_snapshot_through;
+mod save_from_snapshot_with_hooks;
 mod save_head;
+mod save_hooks_error;
+mod save_hooks_error_display;
 mod save_message;
 mod save_op;
 mod save_outcome;
 mod save_snapshot_onto;
+mod save_through;
 mod save_trailers;
 mod save_unchanged;
+mod save_with_hooks;
 mod save_with_snapshot;
 mod saved_state;
 mod saved_state_type;
@@ -84,7 +97,9 @@ mod waitid_args;
 
 pub use commit_paths::commit_paths;
 pub use commit_paths_error::CommitPathsError;
+pub use commit_paths_hooks_error::CommitPathsHooksError;
 pub use commit_paths_outcome::CommitPathsOutcome;
+pub use commit_paths_with_hooks::commit_paths_with_hooks;
 pub use default_size_cap::DEFAULT_SIZE_CAP;
 pub use formatter::Formatter;
 pub use formatter_result::FormatterResult;
@@ -94,7 +109,10 @@ pub use refused_file::RefusedFile;
 pub use run_in_group::run_in_group;
 pub use save::save;
 pub use save_from_snapshot::save_from_snapshot;
+pub use save_from_snapshot_with_hooks::save_from_snapshot_with_hooks;
+pub use save_hooks_error::SaveHooksError;
 pub use save_outcome::SaveOutcome;
+pub use save_with_hooks::save_with_hooks;
 pub use save_with_snapshot::save_with_snapshot;
 pub use saved_state::saved_state;
 pub use saved_state_type::SavedState;
@@ -120,6 +138,8 @@ mod capped_excludes_tests;
 #[cfg(test)]
 mod commit_paths_error_display_tests;
 #[cfg(test)]
+mod commit_paths_hooks_error_display_tests;
+#[cfg(test)]
 mod decide_formatter_end_tests;
 #[cfg(test)]
 mod decide_formatter_result_tests;
@@ -140,6 +160,10 @@ mod formatter_paths_tests;
 #[cfg(test)]
 mod group_kill_target_tests;
 #[cfg(test)]
+mod hook_refusal_text_tests;
+#[cfg(test)]
+mod keeps_save_trailers_tests;
+#[cfg(test)]
 mod kept_bytes_tests;
 #[cfg(test)]
 mod literal_exclude_tests;
@@ -157,6 +181,8 @@ mod save_change_id_tests;
 mod save_from_apply_tests;
 #[cfg(test)]
 mod save_head_tests;
+#[cfg(test)]
+mod save_hooks_error_display_tests;
 #[cfg(test)]
 mod save_message_tests;
 #[cfg(test)]
