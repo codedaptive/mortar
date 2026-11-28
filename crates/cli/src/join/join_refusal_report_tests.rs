@@ -1,5 +1,5 @@
 //! join_refusal_report: each refusal the caller can act on is exit 3 with its owner and next step; the rest are
-//! failures. The expected lines are join's own refusal texts.
+//! failures. The expected lines are join's own refusal texts; the Protected line wraps oplog's text, pinned by prefix.
 //! Unit tests: the errors are built as data; their lines come from join's exported, pure Display impls,
 //! and report::failure_report is used directly.
 
@@ -42,16 +42,24 @@ fn a_protected_zone_move_is_the_zone_coordinators() {
         new: Oid::parse("2222222222222222222222222222222222222222").unwrap(),
         by: "join".to_string(),
     });
-    assert_eq!(
-        join_refusal_report(&error, None),
-        refused(
+    let report = join_refusal_report(&error, None);
+    assert_eq!(report.verb, "join");
+    assert_eq!(report.exit, ExitCode::Refused);
+    assert_eq!(report.outcome, "refused");
+    assert_eq!(report.owner.as_deref(), Some("the zone's coordinator"));
+    assert_eq!(report.next, "ask the zone's coordinator why refs/heads/zone/core moved, then mr join");
+    assert!(report.fields.is_empty());
+    assert_eq!(report.lines.len(), 1);
+    // Pins the line up to the ancestor clause; the tail after it is oplog's wording and is not pinned.
+    assert!(
+        report.lines[0].starts_with(
             "join op log: ref refs/heads/zone/core is protected by join: moving it from \
              1111111111111111111111111111111111111111 to 2222222222222222222222222222222222222222 is not a \
              fast-forward; nothing was changed; move it only to a commit that has \
-             1111111111111111111111111111111111111111 as an ancestor, or ask join",
-            "the zone's coordinator",
-            "ask the zone's coordinator why refs/heads/zone/core moved, then mr join",
-        )
+             1111111111111111111111111111111111111111 as an ancestor"
+        ),
+        "{}",
+        report.lines[0]
     );
 }
 
