@@ -110,9 +110,9 @@ Run inside a request folder Mortar made. They take no folder, zone or request ar
 
 When a join conflicts:
 
-1. `mr join` exits 2, lists the conflicted files and says that `mr resolve` writes both sides into them with markers. No branch has moved, apart from the save of any unsaved work that `mr join` makes first, and the folder is as it was.
-2. `mr resolve` writes each conflicted file into the folder with conflict markers and exits 2. A path it cannot write that way, such as a submodule, is listed instead.
-3. Fix the files and remove every marker, then run `mr resolve` again. While markers remain it exits 2 and names the files and lines. Once they are gone it goes on rebasing the request and ends with `next: mr join`; if a later commit of the request conflicts, it stops again with `next: mr resolve`.
+1. `mr join` exits 1, lists the conflicted files and says that `mr resolve` writes both sides into them with markers. No branch has moved, apart from the save of any unsaved work that `mr join` makes first, and the folder is as it was.
+2. `mr resolve` writes each conflicted file into the folder with conflict markers and exits 1. A path it cannot write that way, such as a submodule, is listed instead.
+3. Fix the files and remove every marker, then run `mr resolve` again. While markers remain it exits 1 and names the files and lines. Once they are gone it goes on rebasing the request and ends with `next: mr join`; if a later commit of the request conflicts, it stops again with `next: mr resolve`.
 4. `mr join`.
 
 ## Setting up a repository
@@ -168,7 +168,7 @@ One landing at a time. The origin branch only ever moves forward, and a reviewed
 | `mr would-merge <commit or change ID> [--with <commit or change ID>]...` | Whether a squash would merge onto integration, without merging; with --with, whether it and each further squash merge in order, each onto the one before (a conflict names its step) |
 | `mr commit-files <path>... [--message <text>] --actor <name>` | Commit the named files, as the folder has them, as one commit: in a zone folder at its tip onto `zone/<zone>`; in the integration folder after `mr land` onto integration, inside the landing (`mr publish` pushes it, `mr back-out` drops it). Unchanged files: `same`, nothing moved; if a stopped run left the paths staged, `same` names them and gives next `git restore --staged -- <paths>`. Refused in a request or attempt folder (`mr save`), and while a zone folder's index holds staged changes other than its own stopped run's. `--json`: outcome, commit, ref, moved, paths, and staged when the paths are still staged |
 | `mr rereview <reviewed commit> <new commit>` | Only what changed since a reviewed squash; says when the new squash carries the same patch |
-| `mr land <commit>` | Moves integration to the squash, or, when integration has moved on since the squash was made, to a merge commit of integration and the squash. Each further `mr land` before `mr publish` joins the batch, merged onto its tip, and says which member it is (`landed 2 of the batch`; `--json`: `batch`, the change IDs in landing order). Exit 1 when the zone is already in the batch (publish or back out first); 2 on a conflict, integration and the batch unchanged; 3 when integration is neither at origin nor at the batch's tip |
+| `mr land <commit>` | Moves integration to the squash, or, when integration has moved on since the squash was made, to a merge commit of integration and the squash. Each further `mr land` before `mr publish` joins the batch, merged onto its tip, and says which member it is (`landed 2 of the batch`; `--json`: `batch`, the change IDs in landing order). Exit 3 when the zone is already in the batch (publish or back out first); 1 on a conflict, integration and the batch unchanged; 4 when integration is neither at origin nor at the batch's tip |
 | `mr back-out` | Puts integration back where the batch found it, after a failed test, and names every member backed out in landing order (`--json`: `backed_out`; `change_id` is the newest member's). Next: land the squashes that stand again, in the same order |
 | `mr publish [--no-push]` | Pushes integration to the remote's origin, then moves the local origin: one push for the whole batch, and the next step names `mr after-publish <zone> --actor <name>` for each zone in it. If someone else moved the remote's origin meanwhile and it does not hold this landing, it fetches that, puts integration back on it and reports it; the squash then lands again. With `--no-push` it moves the local origin only: no push, and nothing is fetched. `--json` says `pushed`, true only when this publish's push is confirmed |
 | `mr after-publish <zone> [--move <zone>]...` | Brings the published zone, and each zone named with `--move`, onto the new origin |
@@ -203,11 +203,13 @@ Add `--json` to any verb for one JSON object on one line: `verb`, `ok`, `outcome
 | Exit code | Meaning |
 |---|---|
 | 0 | Done, or already done (a repeat of a finished command) |
-| 1 | Refused |
-| 2 | Conflict: the files are listed |
-| 3 | Busy: a lock is held, or a branch or snapshot ref moved while `mr save` or `mr snapshot` ran, so repeat later; or a landing is in flight that this squash cannot join (integration is neither at origin nor at the batch's tip), so finish it first (`mr publish` or `mr back-out`), then `mr land` |
-| 4 | Usage: the command line could not be read |
+| 1 | Conflict: the files are listed |
+| 2 | Usage: the command line could not be read |
+| 3 | Refused: the report says why, who owns the thing in the way, and what to do |
+| 4 | Busy: a lock is held, or a branch or snapshot ref moved while `mr save` or `mr snapshot` ran, so repeat later; or a landing is in flight that this squash cannot join (integration is neither at origin nor at the batch's tip), so finish it first (`mr publish` or `mr back-out`), then `mr land` |
 | 5 | Failure: git or the disk failed. The report says what happened, and the `next:` line says what to do: usually the same command again, sometimes a path to remove by hand first |
+
+`mr help` and `mr --help` list these codes. Each run answers one code, from the first check that stops it.
 
 A repeat of a finished command exits 0, except `mr folder remove`: the folder is gone, so the repeat is refused. `--key <operation key>` labels a run; without it Mortar derives a label from the verb and the folder. A busy report for a held lock names the label, process and machine of the run that holds it.
 
