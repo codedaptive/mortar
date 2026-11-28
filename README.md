@@ -204,7 +204,7 @@ Add `--json` to any verb for one JSON object on one line: `verb`, `ok`, `outcome
 |---|---|
 | 0 | Done, or already done (a repeat of a finished command) |
 | 1 | Conflict: the files are listed |
-| 2 | Usage: the command line could not be read |
+| 2 | Usage or configuration: the command line could not be read, the command ran outside a git repository, or the Mortar config or guard.json it needs is missing or cannot be read |
 | 3 | Refused: the report says why, who owns the thing in the way, and what to do |
 | 4 | Busy: a lock is held, or a branch or snapshot ref moved while `mr save` or `mr snapshot` ran, so repeat later; or a landing is in flight that this squash cannot join (integration is neither at origin nor at the batch's tip), so finish it first (`mr publish` or `mr back-out`), then `mr land` |
 | 5 | Failure: git or the disk failed. The report says what happened, and the `next:` line says what to do: usually the same command again, sometimes a path to remove by hand first |

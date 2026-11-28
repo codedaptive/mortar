@@ -7,6 +7,7 @@ All notable changes to Mortar are recorded here, in terms of what the program do
 ### Exit codes
 
 - **Exit codes follow CLI-SPEC v0.2:** 0 done, 1 conflict (the files are listed), 2 usage, 3 refused, 4 busy, 5 failure. They were 1 refused, 2 conflict, 3 busy, 4 usage. Every answer keeps its meaning; only the number moved. `mr help` and `mr --help` list the codes. `mortar guard-hook` refuses with exit 3, and git still stops the move. `mr join` on a zone that moved sideways is now refused (exit 3) with the zone's coordinator as owner, where it used to fail (exit 5) and ask for a repeat.
+- **Configuration answers exit 2:** a command run outside a git repository (outcome `not-a-repository`), a missing Mortar config (`no-config`), a config or guard.json that cannot be read (`bad-config`), and `mortar guard-hook` with no guard.json (`no-guard-config`). They were refused (exit 3). `mr guard install` over a bad guard.json still rewrites it and exits 0.
 
 ### Landing
 

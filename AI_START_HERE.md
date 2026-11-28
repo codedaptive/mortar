@@ -124,7 +124,7 @@ Safety rules:
 | What you see | What it means | What to do |
 |---|---|---|
 | `mr` runs another program, or is not found | Another tool owns `mr`, or the link was not made | Type `mortar` instead |
-| `there is no Mortar config at ...` (exit 3) | `mr init` has not run in this repository | The harness or person who sets up the repository runs `mr init` |
+| `there is no Mortar config at ...` (exit 2) | `mr init` has not run in this repository | The harness or person who sets up the repository runs `mr init` |
 | `this directory is not in a Mortar folder` (exit 3) | An agent verb was run outside a request folder | Run it inside the request folder |
 | `this is a zone folder` (exit 3) | An agent verb was run in a zone's folder | Run it in a request folder |
 | `the lock ... is held by pid ...` (exit 4) | Another Mortar command is running | Repeat the same command later |

@@ -86,7 +86,7 @@ Program verbs:
 
 - 0: done, or already done (a repeat of a finished command)
 - 1: conflict; the files are listed
-- 2: usage
+- 2: usage or configuration; the command line could not be read, the command ran outside a git repository, or the config or guard.json it needs is missing or cannot be read
 - 3: refused; the text says why, who owns the thing in the way, and what to do
 - 4: busy; a lock is held, or a branch or snapshot ref moved while mr save
   or mr snapshot ran (repeat later); or a landing is in flight that this squash cannot
