@@ -11,7 +11,7 @@
 //! - requests touching different files give no pair, exit 0, outcome no-overlap;
 //! - a request rebased onto a zone that moved shows no overlap on paths only the zone changed (its base is
 //!   its fork point from the zone);
-//! - overlap of a zone not in the config, no zone, or a second word, exit 2; without a config, exit 3;
+//! - overlap of a zone not in the config, no zone, or a second word, exit 2; without a config, exit 2;
 //! - a request whose zone branch is missing, exit 5 under the verb overlap, naming the ref;
 //! - overlap moves no ref and writes nothing in the repository;
 //! - overlap_savings_counts_each_open_request_range: the "[mr] tokens saved" line first in the plain answer, its

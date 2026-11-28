@@ -15,7 +15,7 @@
 //! each refuse that folder, the others still moved, exit 3, and clearing it as the next says then repeating
 //! finishes; the staged-edit loss run (a staged edit at a path the tip changes: that folder refused, "matches no
 //! commit", the edit kept, exit 3); open requests listed to rebase; SquashOfNotInZone refused naming the zone and the source;
-//! no branch op written for a folder move; the land lock held by a live pid, exit 4; without a config, exit 3.
+//! no branch op written for a folder move; the land lock held by a live pid, exit 4; without a config, exit 2.
 
 use std::path::Path;
 

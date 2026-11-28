@@ -84,14 +84,14 @@ fn live_land_lock_prevents_all_five_verbs_and_identifies_its_real_holder() {
 }
 
 #[test]
-fn without_config_the_new_verbs_refuse_and_point_to_init_without_mutating_the_repository() {
+fn without_config_the_new_verbs_point_to_init_without_mutating_the_repository() {
     let s = Landing::without_remote(true);
     // Move this fixture's config aside; no production or team's configuration is touched.
     let config = s.f.common.join("mortar/config.json");
     std::fs::rename(&config, config.with_extension("saved")).unwrap();
     let before = s.observe();
     for verb in ["land", "would-merge"] {
-        let r = s.run(verb, Some(s.squash.commit.as_str()), 3, "no-config");
+        let r = s.run(verb, Some(s.squash.commit.as_str()), 2, "no-config");
         assert!(r.text("next").contains("mr init")); assert_eq!(s.observe(), before);
     }
 }

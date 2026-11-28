@@ -1,12 +1,13 @@
 //! Reads the Mortar folder holding a directory: its worktree, git dirs and record.
-//! No unit test: it runs git and reads a real file; context_report_tests covers what each refusal says.
+//! No unit test: it runs git and reads a real file; context_report_tests covers what each error answers.
 //! With the mortar binary as a child process and the first agent verb (mr join): run outside any git repository it is
-//! refused, exit 3, outcome "not-a-folder" (the integration test crates/cli/tests/log_restore_runs/run_git_floor_tests.rs,
-//! mr_join_with_git_2_46_is_refused_as_not_a_folder). Integration tests to write (not written here), in a throwaway
-//! repository: run in a worktree with no Mortar record (the main checkout) it is refused, exit 3, naming the
-//! worktree's top; run in a subfolder of a request folder it finds that folder (toplevel, its own git dir, the
-//! shared common dir) and its record; a record file holding text that is not a record is refused, exit 3, naming
-//! the file.
+//! a usage error, exit 2, outcome "not-a-repository" (the integration test
+//! crates/cli/tests/log_restore_runs/run_git_floor_tests.rs,
+//! mr_join_with_git_2_46_outside_a_repository_is_usage_not_a_repository). Integration tests to write (not written
+//! here), in a throwaway repository: run in a worktree with no Mortar record (the main checkout) it is refused,
+//! exit 3, outcome "not-a-folder", naming the worktree's top; run in a subfolder of a request folder it finds that
+//! folder (toplevel, its own git dir, the shared common dir) and its record; a record file holding text that is not
+//! a record is refused, exit 3, naming the file.
 
 use std::path::Path;
 

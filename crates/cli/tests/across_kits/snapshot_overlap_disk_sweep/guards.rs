@@ -28,13 +28,13 @@ fn snapshot_and_sweep_respect_the_actual_join_and_folders_locks_with_exact_holde
 }
 
 #[test]
-fn all_four_verbs_without_config_refuse_before_any_work_and_name_init() {
+fn all_four_verbs_without_config_stop_before_any_work_and_name_init() {
     let w = World::new(); w.s.f.write("src/file", b"not snapshotted\n");
     raw(&w.s.f.git, &["update-ref", "refs/t3/eligible", w.s.f.base.as_str()]);
     let config = w.s.f.common.join("mortar/config.json"); fs::rename(&config, config.with_extension("held")).unwrap();
     let before = observe(&w);
     for words in [vec!["snapshot"], vec!["overlap", "core"], vec!["disk"], vec!["sweep", "--ref", "refs/t3/eligible"]] {
-        let r = run(&w, &w.s.f.request, &words, 3, "no-config");
+        let r = run(&w, &w.s.f.request, &words, 2, "no-config");
         assert_eq!(r.strings("lines"), &[format!("there is no Mortar config at {}", config.display()), "nothing ran".into()]);
         assert_eq!(r.text("next"), "mr init"); assert_eq!(observe(&w), before);
     }

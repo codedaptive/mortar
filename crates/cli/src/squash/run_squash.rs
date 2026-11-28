@@ -5,7 +5,7 @@
 //! squash_report_tests and landing's squash_error_report_tests cover its decisions. The integration tests
 //! crates/cli/tests/land_runs/run_squash_tests.rs and run_squash_message_tests.rs cover it through the binary.
 //! Integration tests to write (not written here): the land lock held by a live pid,
-//! exit 4; without a config, exit 3, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
+//! exit 4; without a config, exit 2, next mr init; the SquashError Git, Oplog, ChangeId, Trailers, OpFailed and
 //! OpRepeated texts when git or the op log fails for real; the acceptance checks of squash.
 
 use std::path::Path;

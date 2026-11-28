@@ -10,7 +10,7 @@
 //! timed-out probe counted as a fail and shown "timed out"; a last passing commit off the failed one's first-parent
 //! line refused naming both; a failed commit off origin refused; a command that cannot start stops the search naming
 //! the commit; `--actor` after `--` reaches the command as one of its words; no worktree or bisect state left after
-//! a run; guards.rs the land lock held by a live pid, exit 4, and without a config, exit 3, next mr init.
+//! a run; guards.rs the land lock held by a live pid, exit 4, and without a config, exit 2, next mr init.
 
 use std::path::Path;
 

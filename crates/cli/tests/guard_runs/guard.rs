@@ -89,6 +89,23 @@ fn guard_missing_or_broken_config_fails_closed_naming_the_installer() {
         let reason = String::from_utf8_lossy(&output.stderr);
         assert!(reason.contains("guard.json")); assert!(reason.contains("the harness that installs the guard"));
         assert!(reason.contains("mr guard install --actor")); assert_eq!(g.branches(), before);
+        let input = format!("{} {} refs/heads/main\n", g.f.base, g.new);
+        for json in [true, false] {
+            let args = if json { vec!["--json", "guard-hook", "reference-transaction", "prepared"] }
+                else { vec!["guard-hook", "reference-transaction", "prepared"] };
+            let output = g.hook(&args, input.as_bytes());
+            if json {
+                let report = check(output, "guard-hook", 2, if broken { "bad-config" } else { "no-guard-config" });
+                assert_eq!(report.text("owner"), "the harness that installs the guard");
+                assert!(report.lines().contains("guard.json")); assert!(report.text("next").contains("mr guard install --actor"));
+            } else {
+                assert_eq!(output.status.code(), Some(2), "{output:?}");
+                let text = String::from_utf8(output.stdout).unwrap();
+                assert!(text.contains("guard.json")); assert!(text.contains("the harness that installs the guard"));
+                assert!(text.contains("mr guard install --actor"));
+            }
+            assert_eq!(g.branches(), before);
+        }
     }
 }
 

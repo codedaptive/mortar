@@ -4,11 +4,11 @@ use std::path::Path;
 
 use crate::report::{ExitCode, Report};
 
-/// Refused (exit 3), outcome "no-config", naming the missing file; the next step is `mr init`.
+/// Usage (exit 2: a configuration problem), outcome "no-config", naming the missing file; the next step is `mr init`.
 pub fn missing_config_report(verb: &str, path: &Path) -> Report {
     Report {
         verb: verb.to_string(),
-        exit: ExitCode::Refused,
+        exit: ExitCode::Usage,
         outcome: "no-config".to_string(),
         lines: vec![format!("there is no Mortar config at {}", path.display()), "nothing ran".to_string()],
         owner: Some("whoever sets up Mortar in this repository".to_string()),

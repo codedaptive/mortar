@@ -6,7 +6,7 @@
 //! Drives the mortar binary against real git and the crates below cli; the cli lane owns it.
 //! Tests to write (not written here):
 //! - the land lock held by a live pid: exit 4 (cli with oplog's locks);
-//! - without a config: exit 3, next mortar init (the shell's load_config);
+//! - without a config: exit 2, next mortar init (the shell's load_config);
 //! - GuardError::Git: the cli's own words, never gitio's Display text;
 //! - after `mortar guard install`, git update-ref, commit and push against integration and origin are refused
 //!   through the installed hook and Mortar's own moves pass (acceptance step 2's checks 1-9; land's guard_decide);
@@ -107,6 +107,16 @@ fn guard_install_fresh_writes_guard_json_and_both_hooks() {
     assert_eq!(report.text("origin_branch"), "main");
     assert_eq!(report.text("integration_branch"), "integration");
     assert_eq!(report.text("remote"), "origin");
+}
+
+#[test]
+fn guard_install_replaces_bad_guard_config_and_status_reads_it() {
+    let (_repo, root) = repo();
+    let config = root.join(".git/mortar/guard.json");
+    fs::write(&config, "{").unwrap();
+    check(install(&root, &root), "guard", 0, "installed");
+    assert_ne!(fs::read_to_string(&config).unwrap(), "{");
+    check(mortar(&root, &root, &["--actor", "harness", "--json", "guard", "status"]), "guard", 0, "installed");
 }
 
 #[test]

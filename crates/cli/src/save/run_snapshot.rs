@@ -10,7 +10,7 @@
 //! - snapshot with nothing changed since the last one is exit 0, outcome unchanged, and moves no ref;
 //! - snapshot in a zone folder is refused, exit 3, naming the folder, and moves no ref;
 //! - snapshot in an attempt folder moves its trysnap ref, not the request's snap ref;
-//! - any argument is exit 2; without a config, exit 3; run outside a Mortar folder, exit 3;
+//! - any argument is exit 2; without a config, exit 2; run in a git worktree Mortar did not make, exit 3;
 //! - a join-<zone> lock held by a live pid is exit 4.
 //!   the disk acceptance case: snapshot's run in a request folder after a small edit, reached through this verb.
 

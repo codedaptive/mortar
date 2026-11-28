@@ -20,7 +20,7 @@
 //! - a formatter past its timeout is listed and the save goes ahead;
 //! - a held join-<zone> lock is exit 4 naming the holder;
 //! - run in a zone folder it is refused, exit 3;
-//! - without a config it is refused, exit 3, next mr init;
+//! - without a config it is a configuration error, exit 2, next mr init;
 //! - --json gives one object with finished_move_from, finished_move_to, commit, change_id, written, refused and cap;
 //! - a kill after a join's rebase op and before its folder move, then mr save: the save finishes the move (the
 //!   folder at the rebased tip, its work kept in the request's snapshot ref), then saves, naming the finished move;

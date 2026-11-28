@@ -31,7 +31,7 @@ fn a_foreign_hook_is_refused_with_nothing_written() {
 }
 
 #[test]
-fn a_guard_json_that_is_not_a_guard_config_is_refused_naming_it() {
+fn a_guard_json_that_is_not_a_guard_config_is_usage_naming_it() {
     let error = GuardError::BadConfig {
         path: PathBuf::from("/r/.git/mortar/guard.json"),
         why: "it is not a JSON object".to_string(),
@@ -40,8 +40,8 @@ fn a_guard_json_that_is_not_a_guard_config_is_refused_naming_it() {
         guard_error_report(&error),
         Report {
             verb: "guard".to_string(),
-            exit: ExitCode::Refused,
-            outcome: "refused".to_string(),
+            exit: ExitCode::Usage,
+            outcome: "bad-config".to_string(),
             lines: vec!["/r/.git/mortar/guard.json is not a Mortar guard config: it is not a JSON object".to_string()],
             owner: Some("the Mortar guard".to_string()),
             next: "mr guard install --actor <name>".to_string(),

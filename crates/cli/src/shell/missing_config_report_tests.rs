@@ -1,4 +1,4 @@
-//! missing_config_report: refused "no-config", naming the file, with `mr init` as next.
+//! missing_config_report: usage (exit 2) "no-config", naming the file, with `mr init` as next.
 
 use std::path::Path;
 
@@ -6,12 +6,12 @@ use super::missing_config_report;
 use crate::report::{ExitCode, Report};
 
 #[test]
-fn a_missing_config_is_refused_with_init_as_next() {
+fn a_missing_config_is_usage_with_init_as_next() {
     assert_eq!(
         missing_config_report("join", Path::new("/r/.git/mortar/config.json")),
         Report {
             verb: "join".to_string(),
-            exit: ExitCode::Refused,
+            exit: ExitCode::Usage,
             outcome: "no-config".to_string(),
             lines: vec![
                 "there is no Mortar config at /r/.git/mortar/config.json".to_string(),
@@ -25,6 +25,6 @@ fn a_missing_config_is_refused_with_init_as_next() {
 }
 
 #[test]
-fn the_refusal_code_is_3() {
-    assert_eq!(missing_config_report("land", Path::new("/c")).exit as i32, 3);
+fn the_exit_code_is_2() {
+    assert_eq!(missing_config_report("land", Path::new("/c")).exit as i32, 2);
 }

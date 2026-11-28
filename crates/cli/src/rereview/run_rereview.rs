@@ -12,7 +12,7 @@
 //! crates/cli/tests/land_runs/run_rereview_savings_tests.rs covers its savings: the baseline equal to git diff of
 //! the two commits, in the plain answer, --json and savings.jsonl.
 //! Integration tests to write (not written here): the land lock held by a live pid, exit
-//! 4 (oplog's locks); without a config, exit 3, next mr init (the shell's load_config); RereviewError Git,
+//! 4 (oplog's locks); without a config, exit 2, next mr init (the shell's load_config); RereviewError Git,
 //! Trailers and NoParent (a root commit) through the binary; the acceptance check of rereview.
 
 use std::path::Path;

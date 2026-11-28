@@ -12,7 +12,7 @@
 //! to git log -p of the squash over the integration branch, and none on a conflict; would_merge_with.rs ordered
 //! squashes merging cleanly, a second squash conflicting with the first's result naming step 2, a change ID to
 //! --with answered like its commit, a --with change ID no squash ref carries refused like the plain form, each with
-//! the refs unchanged; landing.rs the land lock held by a live pid, exit 4, and without a config, exit 3, next mr
+//! the refs unchanged; landing.rs the land lock held by a live pid, exit 4, and without a config, exit 2, next mr
 //! init.
 
 use std::path::Path;

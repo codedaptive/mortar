@@ -13,10 +13,11 @@
 //! config, exit 0, stdout ending "next: mr folder zone <zone> <path>"; the same again is exit 0
 //! "already-done" with the file byte-identical; other values are exit 3 naming the keys; --replace rewrites,
 //! exit 0; init without --actor is exit 2; an unknown verb is exit 2 listing the verbs; --json prints one JSON
-//! object on one line and nothing else; run outside a git repository init is refused, exit 3; a non-UTF-8
+//! object on one line and nothing else; run outside a git repository init is exit 2, outcome "not-a-repository"; a non-UTF-8
 //! argument is exit 2; a held lock is exit 4 naming the holder and since, and recover runs before the act (with
-//! mr join, the first ref-moving verb); an agent verb outside a Mortar folder is refused, exit 3 (with
-//! mr join, the first agent verb); `mortar guard-hook` allowing a move prints nothing on stdout or stderr,
+//! mr join, the first ref-moving verb); an agent verb in a git worktree with no Mortar record is refused, exit 3,
+//! outcome "not-a-folder", and outside any git repository exit 2, outcome "not-a-repository" (with mr join, the first
+//! agent verb); `mortar guard-hook` allowing a move prints nothing on stdout or stderr,
 //! exit 0, also with --json; `mr --version` and `mortar --version` print one line "mortar <crate version>
 //! <12 hex or unknown>" and nothing else, exit 0, and with --json (either order) one object {verb: "version", ok,
 //! version, commit} on one line, exit 0; `mr help`, `mr --help` and `mr resolve --help` outside any repository are

@@ -16,7 +16,7 @@
 //! repeat moves the folder and the report's first line says so) and land_flow/stopped.rs an owner's edit to a path
 //! the move changes refusing back-out's own folder move (folder-not-moved, the index left as it is), and a staged
 //! edit left alone while land and publish go on.
-//! Integration tests to write (not written here): without a config, exit 3, next mr init (land_flow/landing.rs
+//! Integration tests to write (not written here): without a config, exit 2, next mr init (land_flow/landing.rs
 //! covers it for land and would-merge only); the LandError texts that need git, the op log or the landing
 //! state to fail for real; a back-out after a failed integration test of a landed squash.
 

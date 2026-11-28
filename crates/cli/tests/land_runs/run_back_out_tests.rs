@@ -5,7 +5,7 @@
 //! The squash and the landing are made in setup through land::squash and land::land_batch under the land lock.
 //! Tests to write (not written here):
 //! - the land lock held by a live pid: exit 4 (cli with oplog's locks);
-//! - without a config: exit 3, next mortar init (the shell's load_config);
+//! - without a config: exit 2, next mortar init (the shell's load_config);
 //! - each LandError variant's text that needs git or the op log to fail;
 //! - acceptance step 1's checks 7, 9, 11 and 12 through these verbs on two zones;
 //! - back-out with --key: the key names the lock holder only.

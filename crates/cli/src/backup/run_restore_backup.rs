@@ -6,7 +6,7 @@
 //! The integration tests in crates/cli/tests/across_kits/bisect_backup/ cover it through the binary: backup.rs backup
 //! then restore-backup round trip into a fresh clone; restore-backup with a local ref at another commit (Differs,
 //! left as it is); restore-backup of a host with no backup; guards.rs the land lock held by a live pid, exit 4, and
-//! without a config, exit 3.
+//! without a config, exit 2.
 
 use std::path::Path;
 
