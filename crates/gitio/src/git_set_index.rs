@@ -19,8 +19,9 @@ impl Git {
     /// on an exit other than 0 or 1, the reapply on any non-zero exit; a config answer that is not a bool is a refusal
     /// with no exit. If the reapply fails, the index is already the tree, with the out-of-cone bits as read-tree left
     /// them (dropped), files and HEAD untouched, and calling set_index again finishes it. All the runs take this Git
-    /// value's env after gitio removes GIT_INDEX_FILE, so a GIT_INDEX_FILE set there reaches each of them and
-    /// read-tree sets that index instead of the folder's own; what reapply does with it is not tested.
+    /// value's env after gitio removes GIT_INDEX_FILE, so a GIT_INDEX_FILE set there reaches every run: read-tree and
+    /// reapply set that index instead of the folder's own, and reapply, right after the read-tree with no stat info,
+    /// writes no working file. Git::commit_hooks relies on it in a worktree; tests/typed/commit_hooks.rs covers it.
     pub fn set_index(&self, folder: &Path, tree: &Oid) -> Result<(), GitError> {
         let [flag, reapply] = sparse_reapply_requests(folder)?;
         let (args, opts) = set_index_request(folder, tree)?;

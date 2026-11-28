@@ -1,7 +1,7 @@
 use crate::fixture::{commit, repo, set_ref, tree};
 use crate::support::GitRepo;
 use gitio::{CommitHooksOutcome, Git, HookRefusal, Oid, RunOpts};
-use std::{fs, path::PathBuf};
+use std::{collections::BTreeMap, fs, path::{Path, PathBuf}};
 use testkit::write_git_shim;
 
 fn hook(r: &GitRepo, name: &str, script: &[u8]) {
@@ -12,6 +12,74 @@ fn refused(hook: &'static str, stdout: &[u8], stderr: &[u8]) -> CommitHooksOutco
     CommitHooksOutcome::Refused(HookRefusal {
         hook, code: Some(1), stdout: stdout.to_vec(), stderr: stderr.to_vec(),
     })
+}
+
+fn working_files(root: &Path) -> BTreeMap<PathBuf, Vec<u8>> {
+    fn visit(root: &Path, dir: &Path, files: &mut BTreeMap<PathBuf, Vec<u8>>) {
+        for entry in fs::read_dir(dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path == root.join(".git") { continue; }
+            if path.is_dir() {
+                visit(root, &path, files);
+            } else {
+                files.insert(path.strip_prefix(root).unwrap().to_path_buf(), fs::read(&path).unwrap());
+            }
+        }
+    }
+    let mut files = BTreeMap::new();
+    visit(root, root, &mut files);
+    files
+}
+
+fn commit_hooks_in_a_cone_sparse_folder_preserves_worktree_and_shows_staged_addition(sparse_index: bool) {
+    let r = repo();
+    let base_files: &[(&str, &[u8])] = &[
+        ("keep/file", b"keep\n"), ("outside/file", b"outside\n"), ("outside/clean present", b"clean\n"),
+        ("outside/dirty", b"dirty\n"), ("hidden/file", b"hidden\n"),
+    ];
+    let base_tree = tree(&r.git, base_files);
+    let base = commit(&r.git, &base_tree, &[], "base\n");
+    set_ref(&r.git, "refs/heads/main", &base);
+    r.git.run(&["checkout", "--force", "main"], &RunOpts::default()).unwrap();
+    if sparse_index {
+        r.git.run(&["config", "index.sparse", "true"], &RunOpts::default()).unwrap();
+    }
+    r.git.sparse_set(&r.path, &["keep".into()]).unwrap();
+    fs::create_dir(r.path.join("outside")).unwrap();
+    fs::write(r.path.join("outside/clean present"), b"clean\n").unwrap();
+    assert_eq!(r.git.run(&["status", "--porcelain"], &RunOpts::default()).unwrap().stdout, b"");
+    fs::write(r.path.join("outside/dirty"), b"edited\n").unwrap();
+    assert_eq!(r.git.run(&["status", "--porcelain"], &RunOpts::default()).unwrap().stdout, b" M outside/dirty\n");
+    if sparse_index {
+        let paths = r.git.run(&["ls-files", "--sparse", "-z"], &RunOpts::default()).unwrap().stdout;
+        assert!(paths.split(|b| *b == 0).any(|path| path == b"hidden/"), "index is sparse: {paths:?}");
+    }
+    let contents = tree(&r.git, &[
+        ("keep/file", b"keep\n"), ("outside/file", b"outside\n"), ("hidden/file", b"hidden\n"),
+        ("outside/clean present", b"clean\n"), ("outside/dirty", b"dirty\n"), ("outside/new", b"new\n"),
+    ]);
+    hook(&r, "pre-commit", b"#!/bin/sh\ngit status --porcelain > .git/hook-status || exit $?\ncat .git/hook-status\nif grep -Eq '^(D.|.D)' .git/hook-status; then exit 1; fi\n");
+    let index = fs::read(r.path.join(".git/index")).unwrap();
+    let files = working_files(&r.path);
+    assert_eq!(files, BTreeMap::from([
+        (PathBuf::from("keep/file"), b"keep\n".to_vec()),
+        (PathBuf::from("outside/clean present"), b"clean\n".to_vec()),
+        (PathBuf::from("outside/dirty"), b"edited\n".to_vec()),
+    ]));
+    let outcome = r.git.commit_hooks(&contents, "original\n").unwrap();
+    assert_eq!(fs::read(r.path.join(".git/index")).unwrap(), index);
+    assert_eq!(working_files(&r.path), files);
+    assert_eq!(outcome, CommitHooksOutcome::Message("original\n".into()));
+    assert_eq!(fs::read(r.path.join(".git/hook-status")).unwrap(), b" M outside/dirty\nA  outside/new\n");
+}
+
+#[test]
+fn commit_hooks_in_a_cone_sparse_folder() {
+    commit_hooks_in_a_cone_sparse_folder_preserves_worktree_and_shows_staged_addition(false);
+}
+#[test]
+fn commit_hooks_in_a_cone_sparse_folder_with_sparse_index() {
+    commit_hooks_in_a_cone_sparse_folder_preserves_worktree_and_shows_staged_addition(true);
 }
 
 #[test]
@@ -103,11 +171,12 @@ fn bare_repository_hooks_run_in_the_git_dir() {
     let bare = r.path.join("bare.git");
     r.git.run(&["init", "--quiet", "--bare", bare.to_str().unwrap()], &RunOpts::default()).unwrap();
     let git = Git { repo: bare.clone(), ..r.git.clone() };
+    git.run(&["config", "core.sparseCheckout", "true"], &RunOpts::default()).unwrap();
     let output = git.run(&["mktree"], &RunOpts { stdin: Some(Vec::new()), ..RunOpts::default() }).unwrap();
     let contents = Oid::parse(String::from_utf8(output.stdout).unwrap().trim_end()).unwrap();
     write_git_shim(&bare.join("hooks/pre-commit"), b"#!/bin/sh\npwd -P > hook-cwd\nprintf 'bare out\n'\nexit 1\n").unwrap();
-    assert_eq!(git.commit_hooks(&contents, "original\n").unwrap(),
-        refused("pre-commit", b"bare out\n", b""));
+    assert_eq!(git.commit_hooks(&contents, "original\n").map_err(|err| format!("{err:?}")),
+        Ok(refused("pre-commit", b"bare out\n", b"")));
     assert_eq!(fs::read_to_string(bare.join("hook-cwd")).unwrap().trim_end(),
         bare.canonicalize().unwrap().to_str().unwrap());
 }

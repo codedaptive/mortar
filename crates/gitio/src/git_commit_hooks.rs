@@ -16,21 +16,31 @@ impl Git {
     /// missing, not a regular file or not executable is skipped, as git skips it. Each hook runs in the top of the
     /// worktree `repo` is in (a bare repository: its git dir), with a null stdin and, after gitio removes the
     /// variables git sets for its own hooks, GIT_TERMINAL_PROMPT=0, this Git value's env, GIT_EDITOR=":" and
-    /// GIT_INDEX_FILE naming a temporary index read from `tree`; the folder's own index is never touched. pre-commit takes no argument.
-    /// commit-msg takes one: a temporary file holding `message`, and the answer is that file's text after the hook.
+    /// GIT_INDEX_FILE naming a temporary index that holds `tree` as Git::set_index sets it in a worktree: read-tree,
+    /// then in a sparse folder (core.sparseCheckout true) sparse-checkout reapply, so out-of-cone paths absent from
+    /// disk are skip-worktree, as in the folder's own index, and a hook's `git status` shows none of them deleted. A
+    /// bare repository gets the read-tree only, whatever core.sparseCheckout says: it has no work tree to be sparse.
+    /// Neither the folder's index nor any working file is written. pre-commit takes no argument. commit-msg takes
+    /// one: a temporary file holding `message`, and the answer is that file's text after the hook.
     ///
     /// A hook that exits non-zero or is killed refuses the commit: the answer is Refused with the hook's name, exit
     /// code (None for a signal), stdout and stderr, and a pre-commit refusal runs no commit-msg. There is no way to
     /// skip the hooks. Nothing is written but the temporary index and message file, and both are removed on every
-    /// return. Errors: a failing git run is its GitError; a hook that cannot be started, or a message file that
-    /// cannot be written or read back as UTF-8, is a refusal naming it.
+    /// return. Errors: a failing git run (the read-tree, and in a worktree the config read and reapply) is its
+    /// GitError; a hook that cannot be started, or a message file that cannot be written or read back as UTF-8, is a
+    /// refusal naming it.
     pub fn commit_hooks(&self, tree: &Oid, message: &str) -> Result<CommitHooksOutcome, GitError> {
         let hooks = self.hooks_path()?;
-        let folder = self.hook_folder()?;
+        let (folder, bare) = self.hook_folder()?;
         let index = next_temp_index();
-        let (args, mut opts) = set_index_request(&folder, tree)?;
-        opts.env.push(("GIT_INDEX_FILE".into(), index.0.clone().into()));
-        self.run(&args, &opts)?;
+        let mut temp = self.clone();
+        temp.env.push(("GIT_INDEX_FILE".into(), index.0.clone().into()));
+        if bare {
+            let (args, opts) = set_index_request(&folder, tree)?;
+            temp.run(&args, &opts)?;
+        } else {
+            temp.set_index(&folder, tree)?;
+        }
         if let Some(refusal) = run_hook(self, &hooks, "pre-commit", &[], &folder, &index.0)? {
             return Ok(CommitHooksOutcome::Refused(refusal));
         }
