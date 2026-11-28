@@ -3,7 +3,7 @@
 use crate::{owed_ops::{locked, raw, refs}, push_fixture::{with_lock, Prepared, ACTOR, MAIN, SQUASH},
     push_kill::{interrupt, recover_leaves_open}, support::CHANGE_ID};
 use gitio::Oid;
-use land::{LandAnswer, PublishAnswer, PublishError};
+use land::{BatchLandAnswer, PublishAnswer, PublishError};
 use oplog::{MarkedRecord, OpPhase, OpRecord, OpResult, RefMove};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -78,7 +78,7 @@ fn rit_remote_intent_remote_elsewhere_is_failed_then_the_same_squash_can_reland(
     for branch in [MAIN, "refs/heads/integration"] { assert_eq!(p.f.git.read_ref(branch).unwrap(), Some(elsewhere.clone())); }
     assert!(!p.state().exists()); assert_eq!(p.f.git.read_ref(SQUASH).unwrap(), Some(p.squash.commit.clone()));
     p.assert_inert_repeat(&git);
-    let LandAnswer::Landed { integration } = locked(&p.f, || land::land(&p.f.git, &refs(), &p.squash, ACTOR)) else {
+    let BatchLandAnswer::Landed { integration } = locked(&p.f, || land::land_batch(&p.f.git, &refs(), &p.squash, ACTOR)) else {
         panic!("the same approved squash must land again");
     };
     assert_eq!(p.f.git.commit_info(&integration).unwrap().parents, vec![elsewhere, p.squash.commit.clone()]);

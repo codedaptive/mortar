@@ -4,7 +4,7 @@
 //! Existing support owns/removes the disposable repository and its nested bare remote; no private Land API is used.
 use crate::{owed_ops::{locked, raw, refs}, support::Fixture};
 use gitio::{Git, Oid, RunOpts};
-use land::{LandAnswer, PublishAnswer, Squash, SquashAnswer, ZoneMove, ZoneRequests};
+use land::{BatchLandAnswer, PublishAnswer, Squash, SquashAnswer, ZoneMove, ZoneRequests};
 use oplog::{ApplyOutcome, OpCaller, OpPhase, OpRecord, RefMove};
 
 const ACTOR: &str = "land-rit-4";
@@ -33,8 +33,8 @@ fn made(f: &Fixture, zone: &str) -> Squash {
 }
 
 fn published(f: &Fixture, squash: &Squash) -> Oid {
-    let answer = locked(f, || land::land(&f.git, &refs(), squash, ACTOR));
-    let LandAnswer::Landed { integration } = answer else { panic!("fixture must land: {answer:?}") };
+    let answer = locked(f, || land::land_batch(&f.git, &refs(), squash, ACTOR));
+    let BatchLandAnswer::Landed { integration } = answer else { panic!("fixture must land: {answer:?}") };
     assert_eq!(locked(f, || land::publish(&f.git, &refs(), ACTOR)), PublishAnswer::Published { origin: integration.clone() });
     integration
 }

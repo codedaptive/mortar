@@ -1,8 +1,9 @@
-//! Owed op/message seams through PUBLIC squash/land/back_out/publish, real Git objects and Oplog records.
+//! Owed op/message seams through PUBLIC squash/land_batch/publish, real Git objects and Oplog records.
+//! Single-member and multi-member back-out metadata are checked together in batch_ops.rs.
 //! Normal completed push only: interrupted remote-push outcomes are tested in remote_intents.rs.
 use crate::support::{Fixture, CHANGE_ID};
 use gitio::{Oid, RunOpts};
-use land::{BackOutAnswer, LandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer};
+use land::{BatchLandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName, OpPhase, OpRecord, OpResult, RefMove};
 use std::{fmt::Debug, time::{SystemTime, UNIX_EPOCH}};
 
@@ -26,8 +27,8 @@ fn made(f: &Fixture) -> Squash {
     squash
 }
 fn landed(f: &Fixture, squash: &Squash) -> Oid {
-    let answer = locked(f, || land::land(&f.git, &refs(), squash, ACTOR));
-    let LandAnswer::Landed { integration } = answer else { panic!("fixture must land: {answer:?}") };
+    let answer = locked(f, || land::land_batch(&f.git, &refs(), squash, ACTOR));
+    let BatchLandAnswer::Landed { integration } = answer else { panic!("fixture must land: {answer:?}") };
     integration
 }
 
@@ -92,19 +93,6 @@ fn rit_a_landing_moves_integration_from_origin_to_the_landed_commit() {
         &format!("land kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk moves refs/heads/integration from {base} to {new}"),
         RefMove { refname: INTEGRATION.into(), old: Some(base), new: new.clone() }, before, after);
     assert_eq!(f.git.read_ref(INTEGRATION).unwrap(), Some(new));
-}
-
-#[test]
-fn rit_a_back_out_moves_integration_from_the_landed_commit_to_origin() {
-    let f = Fixture::new(); let base = f.git.read_ref("refs/heads/main").unwrap().unwrap(); let squash = made(&f);
-    let new = landed(&f, &squash); let before = now();
-    let answer = locked(&f, || land::back_out(&f.git, &refs(), ACTOR)); let after = now();
-    let BackOutAnswer::BackedOut { change_id } = answer else { panic!("expected back-out: {answer:?}") };
-    assert_eq!(change_id.as_str(), CHANGE_ID);
-    assert_op(&f, "land-back-out", &format!("land-back-out:refs/heads/integration:{new}:{base}"),
-        &format!("land-back-out kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk moves refs/heads/integration from {new} to {base}"),
-        RefMove { refname: INTEGRATION.into(), old: Some(new), new: base.clone() }, before, after);
-    assert_eq!(f.git.read_ref(INTEGRATION).unwrap(), Some(base));
 }
 
 #[test]

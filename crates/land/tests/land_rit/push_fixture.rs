@@ -2,7 +2,7 @@
 //! Existing support owns/removes the whole repository, including this fixture's nested remote and shims.
 use crate::{owed_ops::{locked, raw, refs}, support::Fixture};
 use gitio::{Git, Oid};
-use land::{LandAnswer, PublishAnswer, Squash, SquashAnswer};
+use land::{BatchLandAnswer, PublishAnswer, Squash, SquashAnswer};
 use oplog::{KillPidProbe, LockName, MarkedRecord};
 use std::{fmt::Debug, path::PathBuf};
 
@@ -22,7 +22,7 @@ impl Prepared {
             panic!("fresh fixture must squash");
         };
         let new = squash.commit.clone();
-        assert_eq!(locked(&f, || land::land(&f.git, &refs(), &squash, ACTOR)), LandAnswer::Landed { integration: new.clone() });
+        assert_eq!(locked(&f, || land::land_batch(&f.git, &refs(), &squash, ACTOR)), BatchLandAnswer::Landed { integration: new.clone() });
         let remote = Git { repo: remote_path, ..f.git.clone() };
         Self { f, base, new, squash, remote }
     }
