@@ -1,9 +1,9 @@
-//! After land's own squash, land and publish of zone `land`, another zone is replayed onto the new origin with its open
-//! requests listed to rebase; the publishing zone with no join since its squash is put on origin, and one with a later
-//! join has only that join replayed onto origin; the replayed zone's op also writes the replay record of each commit it
-//! replayed; a zone whose commit conflicts with the published squash is left in place and listed with its file while
-//! another zone in the same call still moves; a repeat answers Current for every zone and writes no op. Every case
-//! checks that origin, local and remote, is where publish left it.
+//! After land's own squash, land_batch and publish of zone `land`, another zone is replayed onto the new origin with
+//! its open requests listed to rebase; the publishing zone with no join since its squash is put on origin, and one
+//! with a later join has only that join replayed onto origin; the replayed zone's op also writes the replay record of
+//! each commit it replayed; a zone whose commit conflicts with the published squash is left in place and listed with
+//! its file while another zone in the same call still moves; a repeat answers Current for every zone and writes no
+//! op. Every case checks that origin, local and remote, is where publish left it.
 
 use crate::fixture::{
     done_moves, record_ref, refs, request, zone, zone_move, Fixture, ACTOR, B_FILES, C_FILES, PUBLISHED,

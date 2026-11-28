@@ -1,10 +1,13 @@
-//! squash: a zone's changes squashed onto origin as one commit at `refs/mortar/squash/<zone>`, with its
-//! message, trailers, change-ID choice and repeat decision, whether that squash merges into integration, and a
-//! squash commit read back as a Squash.
+//! squash: a zone's changes squashed onto origin as one commit at `refs/mortar/squash/<zone>`, with or without the
+//! commit hooks, with its message, trailers, change-ID choice and repeat decision, whether that squash merges into
+//! integration, and a squash commit read back as a Squash.
 
 mod check_attr_source;
 mod choose_change_id;
 mod commit_subject;
+mod hooked_message_reads_back;
+mod hooked_squash_error;
+mod hooked_squash_error_from;
 mod land_refs;
 mod last_trailer_value;
 mod prior_squash;
@@ -29,9 +32,11 @@ mod squash_op;
 mod squash_ref;
 mod squash_request;
 mod squash_requests;
+mod squash_steps;
 mod squash_trailer_pairs;
 mod squash_type;
 mod squash_with_message;
+mod squash_with_hooks;
 mod would_merge;
 mod would_merge_answer;
 mod would_merge_from;
@@ -40,6 +45,10 @@ mod would_merge_from;
 mod choose_change_id_tests;
 #[cfg(test)]
 mod commit_subject_tests;
+#[cfg(test)]
+mod hooked_message_reads_back_tests;
+#[cfg(test)]
+mod hooked_squash_error_from_tests;
 #[cfg(test)]
 mod last_trailer_value_tests;
 #[cfg(test)]
@@ -63,12 +72,14 @@ mod squash_requests_tests;
 #[cfg(test)]
 mod would_merge_from_tests;
 
+pub use hooked_squash_error::HookedSquashError;
 pub use land_refs::LandRefs;
 pub use read_squash::read_squash;
 pub use squash::squash;
 pub use squash_answer::SquashAnswer;
 pub use squash_error::SquashError;
 pub use squash_type::Squash;
+pub use squash_with_hooks::squash_with_hooks;
 pub use squash_with_message::squash_with_message;
 pub use would_merge::would_merge;
 pub use would_merge_answer::WouldMerge;
@@ -76,6 +87,7 @@ pub use would_merge_answer::WouldMerge;
 pub(crate) use check_attr_source::check_attr_source;
 pub(crate) use choose_change_id::choose_change_id;
 pub(crate) use commit_subject::commit_subject;
+pub(crate) use hooked_message_reads_back::hooked_message_reads_back;
 pub(crate) use last_trailer_value::last_trailer_value;
 pub(crate) use prior_squash::PriorSquash;
 pub(crate) use read_prior_squash::read_prior_squash;
@@ -91,5 +103,6 @@ pub(crate) use squash_op::squash_op;
 pub(crate) use squash_ref::squash_ref;
 pub(crate) use squash_request::SquashRequest;
 pub(crate) use squash_requests::squash_requests;
+pub(crate) use squash_steps::squash_steps;
 pub(crate) use squash_trailer_pairs::squash_trailer_pairs;
 pub(crate) use would_merge_from::would_merge_from;

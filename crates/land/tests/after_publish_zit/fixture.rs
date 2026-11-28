@@ -1,6 +1,6 @@
 //! The after_publish ZITs' throwaway repositories: a local repository with a base commit on `main` and
 //! `integration`, and a bare remote `origin` (inside a second TestRepo's directory, removed with it) whose `main` is
-//! the base. Zone commits are made with plain git; the publish itself is land's own squash, land and publish, so
+//! the base. Zone commits are made with plain git; the publish itself is land's own squash, land_batch and publish, so
 //! after_publish reads the trailers squash wrote. made, land_and_publish and origin_untouched are the cases' shared
 //! steps for a kept squash published later; replayed, replayed_chain and superseded are the shared arrangements
 //! (zone `land` replayed onto b's origin at A1, or at A2 on A1, and an older squash landed after a newer one
@@ -9,8 +9,8 @@
 use gitio::{Git, Oid, RunOpts};
 use join::OpenRequest;
 use land::{
-    after_publish, land, publish, squash, LandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer, ZoneMove,
-    ZoneRequests,
+    after_publish, land_batch, publish, squash, BatchLandAnswer, LandRefs, PublishAnswer, Squash, SquashAnswer,
+    ZoneMove, ZoneRequests,
 };
 use oplog::{read_op_log, OpPhase, OpRecord, RefMove};
 use std::ffi::OsString;
@@ -93,9 +93,9 @@ pub fn made(fx: &Fixture, zone: &str) -> Squash {
     made
 }
 
-/// The squash landed and published with land's own code; the origin publish answers.
+/// The squash landed as a batch of one and published with land's own code; the origin publish answers.
 pub fn land_and_publish(fx: &Fixture, made: &Squash) -> Oid {
-    let LandAnswer::Landed { integration } = land(&fx.git, &refs(), made, ACTOR).unwrap() else {
+    let BatchLandAnswer::Landed { integration } = land_batch(&fx.git, &refs(), made, ACTOR).unwrap() else {
         panic!("the squash must land");
     };
     assert_eq!(publish(&fx.git, &refs(), ACTOR).unwrap(), PublishAnswer::Published { origin: integration.clone() });
@@ -280,8 +280,8 @@ impl Fixture {
         let SquashAnswer::Made(made) = squash(&self.git, &refs(), PUBLISHED, ACTOR).unwrap() else {
             panic!("the published zone must squash");
         };
-        let landed = land(&self.git, &refs(), &made, ACTOR).unwrap();
-        assert_eq!(landed, LandAnswer::Landed { integration: made.commit.clone() });
+        let landed = land_batch(&self.git, &refs(), &made, ACTOR).unwrap();
+        assert_eq!(landed, BatchLandAnswer::Landed { integration: made.commit.clone() });
         let published = publish(&self.git, &refs(), ACTOR).unwrap();
         assert_eq!(published, PublishAnswer::Published { origin: made.commit.clone() });
         made.commit
