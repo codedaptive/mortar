@@ -2,11 +2,15 @@
 
 All notable changes to Mortar are recorded here, in terms of what the program does for the people and agents who use it. Versions are the workspace's version in `Cargo.toml`.
 
-## 0.4.0
+## Unreleased
+
+### Exit codes
+
+- **Exit codes follow CLI-SPEC v0.2:** 0 done, 1 conflict (the files are listed), 2 usage, 3 refused, 4 busy, 5 failure. They were 1 refused, 2 conflict, 3 busy, 4 usage. Every answer keeps its meaning; only the number moved. `mr help` and `mr --help` list the codes. `mortar guard-hook` refuses with exit 3, and git still stops the move. `mr join` on a zone that moved sideways is now refused (exit 3) with the zone's coordinator as owner, where it used to fail (exit 5) and ask for a repeat.
 
 ### Landing
 
-- **`mr would-merge <squash> --with <squash>...`** tries the squashes in order, each merged onto the one before, without merging anything. Exit 0 when every step merges; exit 2 names the step that conflicts and its files, and `--json` adds that step. Plain `mr would-merge` answers as before.
+- **`mr would-merge <squash> --with <squash>...`** tries the squashes in order, each merged onto the one before, without merging anything. Exit 0 when every step merges; exit 1 names the step that conflicts and its files, and `--json` adds that step. Plain `mr would-merge` answers as before.
 - **`mr commit-files <path>... [--message <text>] --actor <name>`** commits the named files, as the folder has them, as one commit. In a zone folder at its tip it moves `zone/<zone>` onto that commit; in the integration folder after `mr land` it moves integration, inside the landing, so `mr publish` pushes it and `mr back-out` drops it. Files that have not changed answer `same` and move nothing; if a stopped run left them staged, `same` names them with next `git restore --staged -- <paths>`. It is refused in a request or attempt folder (step: `mr save`), in a zone folder off its tip (step: `mr folder refresh`), and while a zone folder's index holds other staged changes. A repeat after a stop is safe. `--json`: outcome, commit, ref, moved, paths, and staged when the paths are still staged.
 
 ### Folders

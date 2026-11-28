@@ -91,9 +91,9 @@ A request, start to finish:
 3. `mr join`.
    - **Joined** (exit 0, `next: wait for the zone's tests`): your part is done.
    - **Rebased** (exit 0, `next: mr join`): the zone had moved and your work now sits on top of it. Run your tests again, then `mr join` again.
-   - **Conflicted** (exit 2, `next: mr resolve`): the files are listed and your folder is as it was. Run `mr resolve`; it writes each conflicted file into your folder with markers (`<<<<<<<`, `=======`, `>>>>>>>`), and lists any path it cannot write that way, such as a submodule. Fix each file, remove every marker, and run `mr resolve` again. It goes on rebasing your work and says `next: mr join`, or stops again with `next: mr resolve` if a later commit conflicts.
+   - **Conflicted** (exit 1, `next: mr resolve`): the files are listed and your folder is as it was. Run `mr resolve`; it writes each conflicted file into your folder with markers (`<<<<<<<`, `=======`, `>>>>>>>`), and lists any path it cannot write that way, such as a submodule. Fix each file, remove every marker, and run `mr resolve` again. It goes on rebasing your work and says `next: mr join`, or stops again with `next: mr resolve` if a later commit conflicts.
 
-Exit codes: 0 done (or already done), 1 refused, 2 conflict, 3 busy (a held lock, or a ref that moved while `mr save` or `mr snapshot` ran: repeat later; a landing in flight: finish it first), 4 usage, 5 git or the disk failed (the report says what happened; follow `next:`). Add `--json` to any verb for one JSON object with `outcome`, `exit` and `next` (`--version --json` prints its own object, and `mortar --json guard-hook` prints nothing when it allows a move).
+Exit codes: 0 done (or already done), 1 conflict, 2 usage, 3 refused, 4 busy (a held lock, or a ref that moved while `mr save` or `mr snapshot` ran: repeat later; a landing in flight: finish it first), 5 git or the disk failed (the report says what happened; follow `next:`). Add `--json` to any verb for one JSON object with `outcome`, `exit` and `next` (`--version --json` prints its own object, and `mortar --json guard-hook` prints nothing when it allows a move).
 
 Three folder kinds exist. In a **request folder** all six verbs work. In a **zone folder** the agent verbs are refused. In an **attempt folder** (one of several tries at the same request) `status`, `save` and `undo` work, and `join`, `resolve` and `need` are refused.
 
@@ -124,10 +124,10 @@ Safety rules:
 | What you see | What it means | What to do |
 |---|---|---|
 | `mr` runs another program, or is not found | Another tool owns `mr`, or the link was not made | Type `mortar` instead |
-| `there is no Mortar config at ...` (exit 1) | `mr init` has not run in this repository | The harness or person who sets up the repository runs `mr init` |
-| `this directory is not in a Mortar folder` (exit 1) | An agent verb was run outside a request folder | Run it inside the request folder |
-| `this is a zone folder` (exit 1) | An agent verb was run in a zone's folder | Run it in a request folder |
-| `the lock ... is held by pid ...` (exit 3) | Another Mortar command is running | Repeat the same command later |
+| `there is no Mortar config at ...` (exit 3) | `mr init` has not run in this repository | The harness or person who sets up the repository runs `mr init` |
+| `this directory is not in a Mortar folder` (exit 3) | An agent verb was run outside a request folder | Run it inside the request folder |
+| `this is a zone folder` (exit 3) | An agent verb was run in a zone's folder | Run it in a request folder |
+| `the lock ... is held by pid ...` (exit 4) | Another Mortar command is running | Repeat the same command later |
 | git says `only Mortar moves refs/heads/<branch>` | The guard refused a direct move of a protected branch | Bring work in with `mr join`, or ask for a landing |
 | A document and the program disagree | The document is stale | Trust `mr help` and the command's own output, and say which you used |
 
