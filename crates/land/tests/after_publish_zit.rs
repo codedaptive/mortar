@@ -12,7 +12,7 @@
 //! record read without reading the source (source_not_read); the records at or behind the published source deleted
 //! in the zone's op, and by a records-only op when the zone is Current (records_deleted); an older squash behind the
 //! published one left Current, and one not behind it refused (older_squash). Each case in its own throwaway local
-//! repository with a throwaway bare remote, the published state reached with land's own squash, land and publish;
+//! repository with a throwaway bare remote, the published state reached with land's own squash, land_batch and publish;
 //! fixture holds the shared arrangements and shims the git shims.
 
 #[path = "after_publish_zit/fixture.rs"]

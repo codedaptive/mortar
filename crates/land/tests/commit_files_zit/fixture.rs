@@ -1,5 +1,5 @@
 use gitio::{Git, Oid, RunOpts};
-use land::{land, LandAnswer, LandRefs, Squash};
+use land::{land_batch, BatchLandAnswer, LandRefs, Squash};
 use oplog::{oplog_path, read_op_log, ChangeId, OpPhase};
 use std::ffi::OsString;
 use std::path::PathBuf;
@@ -90,7 +90,7 @@ impl Fixture {
             change_id: ChangeId::parse(ID).unwrap(), source: fx.base.clone(), requests: vec!["r1".into()],
         };
         run(&fx.git, &["update-ref", "refs/mortar/squash/land", squash.commit.as_str()]);
-        assert_eq!(land(&fx.git, &refs(), &squash, ACTOR).unwrap(), LandAnswer::Landed { integration: squash.commit.clone() });
+        assert_eq!(land_batch(&fx.git, &refs(), &squash, ACTOR).unwrap(), BatchLandAnswer::Landed { integration: squash.commit.clone() });
         let folder_git = fx.add_folder();
         (fx, squash, folder_git)
     }

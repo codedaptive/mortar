@@ -1,9 +1,10 @@
 //! The squash ZITs' throwaway repository: base B (files `base` and `f`) on `main` and `integration`, and helpers
-//! that build commits and read refs and messages with plain git, never with land's own code.
+//! that build commits and read refs and messages with plain git, and install hooks, never using land's own code.
 
 use gitio::{Git, Oid};
 use land::{LandRefs, Squash, SquashAnswer};
 use std::ffi::OsString;
+use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::process::Command;
 use testkit::TestRepo;
@@ -85,6 +86,13 @@ impl Fixture {
     /// The gitio value handed to land: config isolated and the fixed identity, for squash's commit_tree.
     pub fn land_git(&self) -> Git {
         Git { program: "git".into(), repo: self.path().to_path_buf(), env: git_env() }
+    }
+
+    /// Installs an executable hook in this repository.
+    pub fn install_hook(&self, name: &str, script: &str) {
+        let path = self.path().join(".git/hooks").join(name);
+        std::fs::write(&path, script).unwrap();
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755)).unwrap();
     }
 
     /// Runs git in the repository with the fixture's environment; its stdout as given.
