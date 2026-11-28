@@ -6,7 +6,9 @@ use std::fs;
 use std::io::{self, ErrorKind};
 use std::path::Path;
 
-use super::{ancestor_refusal, build_dir_outcome, walk_ancestors, AncestorWalk, BuildDirClone, DirFd, Entry};
+use super::{
+    ancestor_link_why, ancestor_refusal, build_dir_outcome, walk_ancestors, AncestorWalk, BuildDirClone, DirFd, Entry,
+};
 
 /// Clones each of `build_dirs` from `parent` into `folder` with clonefile(2), in order, and answers one
 /// outcome per dir. `parent` is the folder whose build output is shared (for a request folder, its zone
@@ -53,35 +55,37 @@ fn clone_build_dir(
         }
         _ => false,
     };
-    let (in_parent, parent_is_symlink, source) = parent_facts(found, dir);
-    build_dir_outcome(dir, in_parent, parent_is_symlink, in_folder, || {
-        if let Some(why) = DirFd::NO_CLONE {
-            return Err(why.to_string());
+    let (parent_is_symlink, source) = parent_facts(found);
+    let clone = source.map(|source| {
+        move || {
+            if let Some(why) = DirFd::NO_CLONE {
+                return Err(why.to_string());
+            }
+            let target = clone_target(folder_root, folder, dir)?;
+            let (source, name) = source?;
+            source.clone_into(&target, name)
         }
-        let target = clone_target(folder_root, folder, dir)?;
-        let (source, name) = source?;
-        source.clone_into(&target, name)
-    })
+    });
+    build_dir_outcome(dir, parent_is_symlink, in_folder, clone)
 }
 
-/// What the parent holds at `dir`'s last name: whether it is there, whether it is a symlink, and what a clone would
-/// be made from (the file the look opened, or the directory it opened reopened for reading, with its name), or why
-/// there is nothing to clone. A directory or file that is there but cannot be opened is present, and its clone is
-/// refused with the open's error, as clonefile met it.
-fn parent_facts<'a>(found: Option<(Entry, &'a OsStr)>, dir: &str) -> (bool, bool, Result<(DirFd, &'a OsStr), String>) {
+/// What a clone is made from, with its name, or why it is refused.
+type CloneSource<'a> = Result<(DirFd, &'a OsStr), String>;
+
+/// What the parent holds at `dir`'s last name: whether it is a symlink, and what a clone would be made from (the file
+/// the look opened, or the directory it opened reopened for reading, with its name); None when there is nothing to
+/// clone from (nothing there, or a symlink). A directory or file that is there but cannot be opened has a source whose
+/// clone is refused with the open's error, as clonefile met it.
+fn parent_facts(found: Option<(Entry, &OsStr)>) -> (bool, Option<CloneSource<'_>>) {
     let refused = |why: String| format!("clonefile refused: {why}");
     match found {
         Some((Entry::Dir(searched), name)) => {
-            (true, false, searched.readable().map(|source| (source, name)).map_err(refused))
+            (false, Some(searched.readable().map(|source| (source, name)).map_err(refused)))
         }
-        Some((Entry::File(source), name)) => (true, false, Ok((source, name))),
-        Some((Entry::Other(why) | Entry::Unreadable(why), _)) => (true, false, Err(refused(why))),
-        Some((Entry::Symlink, _)) => {
-            (true, true, Err(format!("the parent's build dir \"{dir}\" is a symlink; nothing copied")))
-        }
-        Some((Entry::Missing | Entry::Unseen(_), _)) | None => {
-            (false, false, Err(format!("the parent has no build dir \"{dir}\"; nothing copied")))
-        }
+        Some((Entry::File(source), name)) => (false, Some(Ok((source, name)))),
+        Some((Entry::Other(why) | Entry::Unreadable(why), _)) => (false, Some(Err(refused(why)))),
+        Some((Entry::Symlink, _)) => (true, None),
+        Some((Entry::Missing | Entry::Unseen(_), _)) | None => (false, None),
     }
 }
 
@@ -89,8 +93,9 @@ fn parent_facts<'a>(found: Option<(Entry, &'a OsStr)>, dir: &str) -> (bool, bool
 /// made, each opened without following a symlink. A root that is missing is first made by path with create_dir_all
 /// (it is trusted, as its open is); one that cannot be opened is reported against itself. A holder (the dir's last
 /// ancestor) that is a directory there but cannot be opened refuses the clone as clonefile would ("clonefile refused:
-/// <os error>"); any other make or walk that fails, an unopenable ancestor further up or a holder that is a file
-/// included, is reported against the dir's holder in the folder, whatever ancestor failed.
+/// <os error>"); a symlinked ancestor is refused in ancestor_link_why's words; any other make or walk that fails, an
+/// unopenable ancestor further up or a holder that is a file included, is reported against the dir's holder in the
+/// folder, whatever ancestor failed.
 fn clone_target(folder_root: &io::Result<DirFd>, folder: &Path, dir: &str) -> Result<DirFd, String> {
     let target = folder.join(dir);
     let holder = target.parent().unwrap_or(folder);
@@ -108,7 +113,7 @@ fn clone_target(folder_root: &io::Result<DirFd>, folder: &Path, dir: &str) -> Re
     };
     match walk_ancestors(root, dir, true) {
         AncestorWalk::Reached(holder) => Ok(holder),
-        AncestorWalk::Symlink(link) => Err(folder_link_why(dir, &link)),
+        AncestorWalk::Symlink(link) => Err(ancestor_link_why(dir, "folder's", &link)),
         AncestorWalk::Missing => Err(could_not_make("a component is not a plain name".to_string())),
         AncestorWalk::Failed(why) => Err(could_not_make(why)),
         AncestorWalk::Unopened(why) => Err(format!("clonefile refused: {why}")),
@@ -118,14 +123,6 @@ fn clone_target(folder_root: &io::Result<DirFd>, folder: &Path, dir: &str) -> Re
 /// The walk on one side, or Missing when that side's root could not be opened.
 fn look(root: &io::Result<DirFd>, dir: &str) -> AncestorWalk {
     root.as_ref().map_or(AncestorWalk::Missing, |root| walk_ancestors(root, dir, false))
-}
-
-/// ancestor_refusal's words for a folder ancestor the clone walk finds to be a symlink.
-fn folder_link_why(dir: &str, link: &Path) -> String {
-    match ancestor_refusal(dir, None, Some(link)) {
-        Some(BuildDirClone::Refused { why, .. }) => why,
-        _ => format!("the folder's \"{}\" is a symlink; nothing copied", link.display()),
-    }
 }
 
 /// The symlinked ancestor a walk stopped at, if it stopped at one.

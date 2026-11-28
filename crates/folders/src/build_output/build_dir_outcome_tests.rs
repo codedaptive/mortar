@@ -85,7 +85,7 @@ fn build_dir_outcome_follows_its_checks_in_order() {
         Row {
             name: "a parent dir that is a symlink is refused",
             dir: "target",
-            in_parent: true,
+            in_parent: false,
             parent_is_symlink: true,
             in_folder: false,
             clone_gives: Ok(()),
@@ -125,10 +125,11 @@ fn build_dir_outcome_follows_its_checks_in_order() {
     ];
     for row in rows {
         let cloned = Cell::new(false);
-        let got = build_dir_outcome(row.dir, row.in_parent, row.parent_is_symlink, row.in_folder, || {
+        let clone = row.in_parent.then_some(|| {
             cloned.set(true);
             row.clone_gives.map_err(str::to_string)
         });
+        let got = build_dir_outcome(row.dir, row.parent_is_symlink, row.in_folder, clone);
         assert_eq!(got, row.want, "{}", row.name);
         assert_eq!(cloned.get(), row.want_cloned, "{}: clone called", row.name);
     }

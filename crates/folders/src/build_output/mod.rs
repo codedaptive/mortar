@@ -1,5 +1,6 @@
 //! Sharing a parent folder's build output with a newly made folder through copy-on-write clones.
 
+mod ancestor_link_why;
 mod ancestor_refusal;
 mod ancestor_walk;
 mod build_dir_clone;
@@ -13,10 +14,13 @@ mod entry;
 mod walk_ancestors;
 
 #[cfg(test)]
+mod ancestor_link_why_tests;
+#[cfg(test)]
 mod ancestor_refusal_tests;
 #[cfg(test)]
 mod build_dir_outcome_tests;
 
+pub(crate) use ancestor_link_why::ancestor_link_why;
 pub(crate) use ancestor_refusal::ancestor_refusal;
 pub(crate) use ancestor_walk::AncestorWalk;
 pub use build_dir_clone::BuildDirClone;
