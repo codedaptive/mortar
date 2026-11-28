@@ -2,7 +2,7 @@
 
 use std::path::Path;
 
-use super::BuildDirClone;
+use super::{ancestor_link_why, BuildDirClone};
 
 /// Refused when either side has a symlinked ancestor of `dir`, naming it (the parent's is named when both do);
 /// None when neither does. A symlinked ancestor would let the clone read from or write to a place outside the
@@ -15,9 +15,5 @@ pub(crate) fn ancestor_refusal(
     let (side, link) = parent_link
         .map(|link| ("parent's", link))
         .or(folder_link.map(|link| ("folder's", link)))?;
-    let why = format!(
-        "the {side} \"{}\", an ancestor of build dir \"{dir}\", is a symlink; nothing copied",
-        link.display()
-    );
-    Some(BuildDirClone::Refused { dir: dir.to_string(), why })
+    Some(BuildDirClone::Refused { dir: dir.to_string(), why: ancestor_link_why(dir, side, link) })
 }

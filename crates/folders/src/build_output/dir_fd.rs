@@ -1,8 +1,9 @@
 //! DirFd on macOS: a directory held open by its descriptor, and every call into libSystem the build-output clone makes.
 //! It holds the crate's only `unsafe`: std opens nothing relative to a directory descriptor and has no mkdirat or
 //! fclonefileat, and libc would be a new dependency, so this file declares openat(2), faccessat(2), mkdirat(2) and
-//! fclonefileat(2) itself. The order puts all the FFI in one file, so DirFd's methods share one impl here (Orc #5144),
-//! and that is why the file runs past 150 lines counting comments.
+//! fclonefileat(2) itself. DirFd's methods share one impl in this one file, an exception to one impl block per file, so
+//! that every `unsafe` call and its declaration sit together, where one reading checks them all; that is why the file
+//! runs past 150 lines counting comments (under it in code lines alone).
 //! Directories are opened search-only (O_SEARCH), so one with execute but no read permission is walked; the one
 //! descriptor that must be readable is a clone's source, since fclonefileat answers EBADF from a search-only one.
 //! No unit test (no sibling _tests.rs): it only opens, makes and clones on the filesystem;
