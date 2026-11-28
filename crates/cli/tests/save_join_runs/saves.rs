@@ -2,6 +2,64 @@ use crate::{json::check, support::*};
 use std::fs;
 
 #[test]
+fn save_hook_refusals_with_and_without_formatter() {
+    let mut failed = Vec::new();
+    for (formatter, hook) in [(false, "pre-commit"), (false, "commit-msg"), (true, "pre-commit"), (true, "commit-msg")] {
+        let result = std::panic::catch_unwind(|| {
+            let f = Fixture::new();
+            if formatter {
+                let program = f.common.join("formatter.sh");
+                script(&program, b"#!/bin/sh\nexit 0\n");
+                let mut config = f.init_args.clone();
+                config.formatter = Some(FormatterConfig { command: vec![program.to_str().unwrap().into()], timeout_seconds: 60 });
+                f.configure(&config);
+            }
+            f.write("src/file", b"save hook work\n");
+            let before = f.head();
+            assert!(raw(&f.local(), &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: initial index");
+            write_hook(&f.common, hook, b"#!/bin/sh\necho hook-out-token\necho hook-err-token >&2\nexit 7\n");
+            let plain = f.app(&["save", "Save hook work"]);
+            assert_eq!(plain.status.code(), Some(3), "formatter={formatter} hook={hook} plain: {plain:?}");
+            let text = format!("{}{}", String::from_utf8_lossy(&plain.stdout), String::from_utf8_lossy(&plain.stderr));
+            assert!(text.contains("hook-out-token") && text.contains("hook-err-token"), "{hook}: {text}");
+            assert_eq!(f.head(), before); assert!(!f.lock_path().exists());
+            assert!(raw(&f.local(), &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: refused index");
+            let report = f.report(&["--json", "save", "Save hook work"], "save", 3, "refused");
+            assert_eq!(report.text("hook"), hook); assert_eq!(report.number("code"), 7);
+            assert!(report.text("stdout").contains("hook-out-token")); assert!(report.text("stderr").contains("hook-err-token"));
+            assert!(report.text("next").contains(&format!("fix what the {hook} hook reports, then mr save again")));
+            assert_eq!(f.head(), before); assert!(!f.lock_path().exists());
+            assert!(raw(&f.local(), &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: refused index");
+        });
+        if result.is_err() { failed.push((formatter, hook)); }
+    }
+    assert!(failed.is_empty(), "failed rows: {failed:?}");
+}
+
+#[test]
+fn save_hook_commit_message_edit_is_kept() {
+    let f = Fixture::new(); f.write("src/file", b"edited message work\n");
+    write_hook(&f.common, "commit-msg", b"#!/bin/sh\nsed '1s/.*/Hook subject/' \"$1\" > \"$1.tmp\"\ncat \"$1.tmp\" > \"$1\"\n");
+    f.report(&["--json", "save", "Original subject"], "save", 0, "saved");
+    let message = f.git.commit_info(&f.head()).unwrap().message;
+    assert_eq!(message.lines().next(), Some("Hook subject"));
+    assert!(!f.lock_path().exists());
+}
+
+#[test]
+fn snapshot_ignores_refusing_hooks() {
+    let f = Fixture::new(); f.write("src/file", b"snapshot ignores hooks\n");
+    for hook in ["pre-commit", "commit-msg"] {
+        write_hook(&f.common, hook, b"#!/bin/sh\necho hook-out-token\necho hook-err-token >&2\nexit 7\n");
+    }
+    let before = f.head();
+    f.report(&["--json", "--actor", "core/task", "snapshot"], "snapshot", 0, "snapshotted");
+    assert_eq!(f.head(), before);
+    assert_eq!(f.blob(&f.git.read_ref(SNAP).unwrap().unwrap(), "src/file"), b"snapshot ignores hooks\n");
+    assert!(!f.lock_path().exists());
+}
+
+#[test]
 fn save_child_json_has_real_commit_id_trailers_and_inert_repeat() {
     let f = Fixture::new(); f.write("src/file", b"saved binary output\n");
     // Running within the folder still addresses the request's top and shared config/lock.

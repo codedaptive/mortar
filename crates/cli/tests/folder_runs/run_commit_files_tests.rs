@@ -1,7 +1,54 @@
 //! commit-files in zone and request folders, through the binary and real throwaway repositories.
 use std::{fs, path::Path};
-use crate::{json::{check, Report}, support::{raw, write, Fixture, ZONE}};
+use crate::{json::{check, Report}, support::{raw, write, write_hook, Fixture, ZONE}};
 use gitio::Git;
+
+#[test]
+fn commit_files_hook_refusals_leave_zone_unmoved() {
+    let mut failed = Vec::new();
+    for hook in ["pre-commit", "commit-msg"] {
+        let result = std::panic::catch_unwind(|| {
+            let f = Fixture::new(); write(&f.zone, "src/added", b"new\n"); write(&f.zone, "src/file", b"edited\n");
+            let before = f.git.read_ref(ZONE).unwrap();
+            let zone_git = Git { repo: f.zone.clone(), ..f.git.clone() };
+            assert!(raw(&zone_git, &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: initial index");
+            write_hook(&f.common, hook, b"#!/bin/sh\necho hook-out-token\necho hook-err-token >&2\nexit 7\n");
+            let plain = f.command(&f.zone, &["--actor", "zone-owner", "commit-files", "src/added", "src/file"]).output().unwrap();
+            assert_eq!(plain.status.code(), Some(3), "{hook} plain: {plain:?}");
+            let text = format!("{}{}", String::from_utf8_lossy(&plain.stdout), String::from_utf8_lossy(&plain.stderr));
+            assert!(text.contains("hook-out-token") && text.contains("hook-err-token"), "{hook}: {text}");
+            assert_eq!(f.git.read_ref(ZONE).unwrap(), before); assert!(!f.lock_path().exists());
+            assert!(raw(&zone_git, &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: refused index");
+            let report = commit_files(&f, &f.zone, 3, "refused");
+            assert_eq!(report.text("hook"), hook); assert_eq!(report.number("code"), 7);
+            assert!(report.text("stdout").contains("hook-out-token")); assert!(report.text("stderr").contains("hook-err-token"));
+            assert!(report.text("next").contains(&format!("fix what the {hook} hook reports, then mr commit-files again")));
+            assert_eq!(f.git.read_ref(ZONE).unwrap(), before); assert!(!f.lock_path().exists());
+            assert!(raw(&zone_git, &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: refused index");
+        });
+        if result.is_err() { failed.push(hook); }
+    }
+    assert!(failed.is_empty(), "failed rows: {failed:?}");
+}
+
+#[test]
+fn commit_files_hook_fixed_after_refusal_commits_named_paths() {
+    let f = Fixture::new(); write(&f.zone, "src/added", b"new\n"); write(&f.zone, "src/file", b"edited\n");
+    let before = f.git.read_ref(ZONE).unwrap().unwrap();
+    let zone_git = Git { repo: f.zone.clone(), ..f.git.clone() };
+    assert!(raw(&zone_git, &["diff", "--cached", "--name-only"]).is_empty(), "initial index");
+    write_hook(&f.common, "pre-commit", b"#!/bin/sh\necho hook-out-token\necho hook-err-token >&2\nexit 7\n");
+    commit_files(&f, &f.zone, 3, "refused");
+    assert_eq!(f.git.read_ref(ZONE).unwrap(), Some(before.clone())); assert!(!f.lock_path().exists());
+    assert!(raw(&zone_git, &["diff", "--cached", "--name-only"]).is_empty(), "refused index");
+    write_hook(&f.common, "pre-commit", b"#!/bin/sh\nexit 0\n");
+    commit_files(&f, &f.zone, 0, "committed");
+    let after = f.git.read_ref(ZONE).unwrap().unwrap();
+    assert_ne!(after, before);
+    assert_eq!(raw(&f.git, &["diff", "--name-status", before.as_str(), after.as_str()]), b"A\tsrc/added\nM\tsrc/file\n");
+    assert_eq!(f.blob(&after, "src/added"), b"new\n"); assert_eq!(f.blob(&after, "src/file"), b"edited\n");
+    assert!(!f.lock_path().exists());
+}
 
 fn commit_files(f: &Fixture, folder: &Path, exit: i32, outcome: &str) -> Report {
     check(f.command(folder, &["--json", "--actor", "zone-owner", "commit-files", "src/added", "src/file"])

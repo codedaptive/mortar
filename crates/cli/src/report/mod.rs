@@ -3,12 +3,14 @@
 //! moved_before's line first in a report's lines, which all three share; and the refusal of a verb whose folder's
 //! HEAD is unborn or detached (head_refusal), with the next the verbs take (repeat_head_refusal): save and an attempt
 //! folder's snapshot in mr folder keep and drop name their own next, and status, undo and mr folder remove in an
-//! attempt folder whose HEAD is unborn name the try branch (attempt_head_next).
+//! attempt folder whose HEAD is unborn name the try branch (attempt_head_next); and the refusal of a verb whose commit
+//! a pre-commit or commit-msg hook refused (hook_refusal_report).
 
 mod attempt_head_next;
 mod exit_code;
 mod failure_report;
 mod head_refusal;
+mod hook_refusal_report;
 mod is_zero_oid;
 mod out_value;
 mod prints_nothing;
@@ -26,6 +28,8 @@ mod attempt_head_next_tests;
 mod failure_report_tests;
 #[cfg(test)]
 mod head_refusal_tests;
+#[cfg(test)]
+mod hook_refusal_report_tests;
 #[cfg(test)]
 mod is_zero_oid_tests;
 #[cfg(test)]
@@ -47,6 +51,7 @@ pub(crate) use attempt_head_next::attempt_head_next;
 pub(crate) use exit_code::ExitCode;
 pub(crate) use failure_report::failure_report;
 pub(crate) use head_refusal::head_refusal;
+pub(crate) use hook_refusal_report::hook_refusal_report;
 pub(crate) use is_zero_oid::is_zero_oid;
 pub(crate) use out_value::OutValue;
 pub(crate) use prints_nothing::prints_nothing;

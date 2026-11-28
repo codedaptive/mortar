@@ -1,5 +1,7 @@
-//! The report of snapshot's commit_paths refusing or failing, in the cli's own words: snapshot's and gitio's Display
-//! texts are never printed, only the paths and commit an error carries. commit_paths_error_report_tests covers it.
+//! The report of a CommitPathsError, from snapshot's commit_paths_with_hooks (a zone folder) or from land's plain
+//! commit_files (the integration folder), in the cli's own words: snapshot's and gitio's Display texts are never
+//! printed, only the paths and commit an error carries.
+//! commit_paths_error_report_tests covers it.
 
 use gitio::TreeWithPathsRefusal;
 use snapshot::CommitPathsError;

@@ -1,9 +1,10 @@
 //! The cli's words for land's refusals and failures, shared by the landing verbs: squash's, would-merge's, land's,
-//! the landing state file's, back-out's, publish's and withdraw's; the squash those verbs read, named by its commit
-//! or by the change ID its squash ref carries; the landing batch land and publish read; and the check that a zone
-//! word is a zone the config names.
+//! the landing state file's, back-out's, publish's and withdraw's, and mr squash's when a commit hook refused or
+//! left an unreadable message; the squash those verbs read, named by its commit or by the change ID its squash ref
+//! carries; the landing batch land and publish read; and the check that a zone word is a zone the config names.
 
 mod change_conflict_next;
+mod hooked_squash_error_report;
 mod known_zone;
 mod land_error_report;
 mod landing_refusal;
@@ -20,6 +21,8 @@ mod withdraw_error_report;
 
 #[cfg(test)]
 mod change_conflict_next_tests;
+#[cfg(test)]
+mod hooked_squash_error_report_tests;
 #[cfg(test)]
 mod known_zone_tests;
 #[cfg(test)]
@@ -40,6 +43,7 @@ mod squash_pick_report_tests;
 mod withdraw_error_report_tests;
 
 pub(crate) use change_conflict_next::CHANGE_CONFLICT_NEXT;
+pub(crate) use hooked_squash_error_report::hooked_squash_error_report;
 pub(crate) use known_zone::known_zone;
 pub(crate) use land_error_report::land_error_report;
 pub(crate) use landing_state_error_report::landing_state_error_report;

@@ -17,6 +17,11 @@
 //! - a detached HEAD with a formatter is refused naming the moved snapshot ref, which holds the edit, and the
 //!   request branch does not move
 //!   (saves.rs::detached_head_save_with_formatter_preserves_edit_in_snapshot_without_moving_request_branch);
+//! - a refusing pre-commit or commit-msg hook, with and without a formatter, is exit 3 refused in text and --json
+//!   with the hook's name, exit code, stdout and stderr, and the branch does not move
+//!   (saves.rs::save_hook_refusals_with_and_without_formatter);
+//! - a commit-msg hook's rewrite of the subject is the saved commit's message
+//!   (saves.rs::save_hook_commit_message_edit_is_kept);
 //! - a formatter past its timeout is listed and the save goes ahead;
 //! - a held join-<zone> lock is exit 4 naming the holder;
 //! - run in a zone folder it is refused, exit 3;
@@ -29,26 +34,28 @@
 //! - a pending move refused again (the edit still in the way) is exit 3 listing the paths, and nothing is saved.
 
 use oplog::KillPidProbe;
-use snapshot::save_with_snapshot;
+use snapshot::{save_with_hooks, SaveHooksError};
 
 use super::{save_report, save_run_for, save_sentence, save_step_failure};
 use crate::join::{finish_pending_move, moved_before, save_from_formatted, snapshot_moved};
 use crate::lock::locked_act;
-use crate::report::Report;
+use crate::report::{hook_refusal_report, with_moved_first, Report};
 use crate::shell::ShellContext;
 
 /// Checks the sentence before any lock, formatter or git; then reads the run (save_run_for: the folder's own
 /// branch, its snapshot target, the config's settings, the lock from the verb table's LockNeed and the key). Under
 /// `join-<zone>` with recover run first, it first finishes the folder's pending move, a join rebase's, a
 /// joined partner request's or an undo's (finish_pending_move, as join does; a refused move is that report and nothing
-/// is saved), then saves with the config's excludes and cap. With a formatter configured it runs snapshot_formatted then
-/// save_from_snapshot through join's save_from_formatted, so the folder is snapshotted once; without one it commits
-/// with snapshot::save_with_snapshot, which takes its own snapshot. Every error of the pending move's snapshot and of
-/// the save's steps goes through save_step_failure, with moved_before's line for the snapshot ref when a step before
-/// the failed one moved it (none for the pending move's snapshot, the first step). It reports the finished move with
-/// the save, and moved_before's line when the pending move's snapshot, the formatter's or save_with_snapshot's own
-/// snapshot step moved the snapshot ref (snapshot_moved). The key (--key, else the verb and the folder with no
-/// moves) names the lock's holder only and is not passed to oplog's apply; a plain repeat
+/// is saved), then saves with the config's excludes and cap, running the folder's pre-commit and commit-msg hooks on
+/// the save's commit. With a formatter configured it runs snapshot_formatted then save_from_snapshot_with_hooks through
+/// join's save_from_formatted, so the folder is snapshotted once; without one it commits with snapshot::save_with_hooks,
+/// which takes its own snapshot. Every error of the pending move's snapshot and of the save's steps goes through
+/// save_step_failure, and a hook's refusal through hook_refusal_report (exit 3 refused), each with moved_before's line
+/// for the snapshot ref first when a step before the failed one moved it (none for the pending move's snapshot, the
+/// first step). It reports the finished move with the save, and moved_before's line when the pending move's snapshot
+/// or the formatter's moved the snapshot ref (snapshot_moved). Without a formatter the line names the pending move's
+/// snapshot only: save_with_hooks does not say whether its own snapshot step wrote. The key (--key, else the verb and
+/// the folder with no moves) names the lock's holder only and is not passed to oplog's apply; a plain repeat
 /// is safe because save writes no commit and moves no branch when the folder equals HEAD, and a
 /// finished move is a no-op when repeated. The shell gives an agent verb its folder (actor_for refuses a zone
 /// folder, so the record names a request) and a verb that needs the config its config; a missing one is a failure.
@@ -65,7 +72,7 @@ pub fn run_save(context: &ShellContext) -> Report {
     let moved_line = |snapshot_written: bool| moved_before(false, snapshot_written, &run.request_ref);
     locked_act(git, &run.folder.common, &run.lock, &run.key, &KillPidProbe, "save", || {
         let (finished, finish_wrote) = finish_pending_move(&run, "save", &|error| save_step_failure(&error, None))?;
-        let (saved, formatted, earlier) = match &settings.formatter {
+        let (saved, formatted, snapshot_written) = match &settings.formatter {
             Some(formatter) => {
                 let (saved, formatted, written) = save_from_formatted(
                     git,
@@ -76,17 +83,34 @@ pub fn run_save(context: &ShellContext) -> Report {
                     settings.cap_bytes,
                     Some(formatter),
                 )
-                .map_err(|(error, written)| save_step_failure(&error, moved_line(finish_wrote || written).as_deref()))?;
-                (saved, formatted, finish_wrote || written)
+                .map_err(|(error, written)| save_hooks_failure(error, moved_line(finish_wrote || written).as_deref()))?;
+                let moved = snapshot_moved(finish_wrote || written, &saved);
+                (saved.outcome, formatted, moved)
             }
             None => {
-                let saved = save_with_snapshot(git, toplevel, target, sentence, &settings.excludes, settings.cap_bytes)
-                    .map_err(|error| save_step_failure(&error, moved_line(finish_wrote).as_deref()))?;
+                let saved = save_with_hooks(git, toplevel, target, sentence, &settings.excludes, settings.cap_bytes)
+                    .map_err(|error| save_hooks_failure(error, moved_line(finish_wrote).as_deref()))?;
                 (saved, None, finish_wrote)
             }
         };
-        let moved = moved_line(snapshot_moved(earlier, &saved));
-        Ok(save_report(&saved.outcome, formatted.as_ref(), finished.as_ref(), moved.as_deref()))
+        let moved = moved_line(snapshot_written);
+        Ok(save_report(&saved, formatted.as_ref(), finished.as_ref(), moved.as_deref()))
     })
     .unwrap_or_else(|report| report)
+}
+
+/// What a hook's refusal of save's commit left: no save commit, no branch move, while the snapshot steps before it
+/// may have written.
+const SAVE_LINE: &str = "no save commit was written and the branch did not move; the snapshot ref may have moved";
+
+/// A save step's error with `moved` (moved_before's line, None when nothing before the failed step moved): Snapshot
+/// through save_step_failure, HookRefused through hook_refusal_report with `moved` first.
+fn save_hooks_failure(error: SaveHooksError, moved: Option<&str>) -> Report {
+    match error {
+        SaveHooksError::Snapshot(error) => save_step_failure(&error, moved),
+        SaveHooksError::HookRefused(refusal) => {
+            let report = hook_refusal_report("save", &refusal, SAVE_LINE);
+            Report { lines: with_moved_first(moved, report.lines), ..report }
+        }
+    }
 }

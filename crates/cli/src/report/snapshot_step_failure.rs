@@ -20,15 +20,16 @@ use super::{failure_report, repeat_head_refusal, snapshot_error_detail, with_mov
 /// Every other error gets `moved` when given and its detail; with no `moved`, a variant whose detail is snapshot's
 /// Display (BadTarget, say) gives the text crate::join::snapshot_failure prints.
 ///
-/// Each "left" line follows the order of crates/snapshot/src/save_with_snapshot.rs. Its snapshot step (snapshot,
+/// Each "left" line follows the order of crates/snapshot/src/save_through.rs. Its snapshot step (snapshot,
 /// which is snapshot_formatted with no formatter; a caller with a formatter runs snapshot_formatted before it) is the
 /// first that writes (the snapshot_formatted of join's save_from_formatted, which join and save with a formatter
-/// run, is that step; its save_from_snapshot takes none after it): it moves
+/// run, is that step; its save_from_snapshot_with_hooks takes none after it): it moves
 /// the snapshot ref before commit_info, the trailers read, the change ID, the commit and apply.
 /// So any of these errors may follow that move. Trailers, ChangeIdMissing and ChangeId come before the save
 /// commit is written. A Git error never follows the branch's move: apply's own git errors come back as Oplog, and
 /// set_index's after it as IndexNotSet. BranchMoved is the branch's apply refusing, so the branch did not move.
-/// Save sends IndexNotSet to save_error_report; join gets it here.
+/// Save sends IndexNotSet to save_error_report; join gets it here. A hook's refusal (SaveHooksError::HookRefused)
+/// never reaches this report: save and join send it to hook_refusal_report.
 ///
 /// An Oplog error comes from an apply. On the snapshot paths that is the snapshot ref's apply; in save it is the
 /// snapshot ref's or the branch's. It can come before the intent append (reading the log, or a refused ref name:
@@ -44,10 +45,10 @@ use super::{failure_report, repeat_head_refusal, snapshot_error_detail, with_mov
 /// save's unchanged path, so the repeat writes no second commit.
 ///
 /// Per verb:
-/// - save (save/run_save.rs) with a formatter runs snapshot_formatted, then snapshot::save_from_snapshot, through
-///   join's save_from_formatted as join does (join/run_join.rs, save_work); that save writes no snapshot of its own, so
-///   the lines hold with the formatter's snapshot as the one that may have moved the ref. Save without a formatter runs
-///   snapshot::save_with_snapshot alone, so every line can hold as written. Save sends ChangeIdMissing and
+/// - save (save/run_save.rs) with a formatter runs snapshot_formatted, then snapshot::save_from_snapshot_with_hooks,
+///   through join's save_from_formatted as join does (join/run_join.rs, save_work); that save writes no snapshot of its
+///   own, so the lines hold with the formatter's snapshot as the one that may have moved the ref. Save without a
+///   formatter runs snapshot::save_with_hooks alone, so every line can hold as written. Save sends ChangeIdMissing and
 ///   BranchMoved to save_error_report instead (save/save_step_failure.rs says why); join gets them here.
 /// - The pending move's snapshot (join/finish_pending_move.rs), which save, join and resolve run first, and resolve's
 ///   own snapshot (resolve/run_resolve.rs) are snapshot::snapshot only: snapshot_formatted with no formatter, which
