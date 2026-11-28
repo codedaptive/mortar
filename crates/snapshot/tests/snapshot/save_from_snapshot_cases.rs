@@ -1,6 +1,6 @@
 //! Saving a previously captured snapshot under the caller's lock.
-use crate::support::{run, tree_names, write, Fixture};
-use snapshot::{save_from_snapshot, snapshot, SnapshotError, DEFAULT_SIZE_CAP};
+use crate::support::{hook_script, run, tree_names, write, Fixture};
+use snapshot::{save_from_snapshot, save_from_snapshot_with_hooks, snapshot, SaveHooksError, SnapshotError, DEFAULT_SIZE_CAP};
 use std::fs;
 
 #[test]
@@ -85,4 +85,20 @@ fn moved_branch_refuses_unchanged_snapshot_without_resetting_index() {
     assert_eq!(run(&f.git, &["write-tree"]), index_before);
     assert_eq!(fs::read(f.repo.path.join("root.txt")).unwrap(), b"base\n");
     assert!(!f.repo.path.join("foreign.txt").exists());
+}
+
+#[test]
+fn hooks_refusing_pre_commit_stops_save_from_snapshot_and_leaves_the_branch() {
+    // Case 7.
+    let f = Fixture::new(&[]);
+    write(&f.repo.path, "root.txt", b"captured then refused\n");
+    let built_on = f.git.head(&f.repo.path).unwrap().1.unwrap();
+    let snap = snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap();
+    hook_script(&f, "pre-commit", b"exit 1\n");
+    match save_from_snapshot_with_hooks(&f.git, &f.repo.path, &f.target, "Refused captured work", &built_on, snap) {
+        Err(SaveHooksError::HookRefused(refusal)) => assert_eq!((refusal.hook, refusal.code), ("pre-commit", Some(1))),
+        other => panic!("expected HookRefused, got {other:?}"),
+    }
+    assert_eq!(f.git.read_ref("refs/heads/main").unwrap(), Some(built_on.clone()));
+    assert_eq!(f.git.rev_parse("HEAD").unwrap(), Some(built_on));
 }

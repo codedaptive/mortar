@@ -1,6 +1,7 @@
-use crate::support::{blob, run, tree_names, write, Fixture};
+use crate::support::{blob, hook_script, run, tree_names, write, Fixture};
+use gitio::HookRefusal;
 use oplog::oplog_path;
-use snapshot::{commit_paths, CommitPathsError, CommitPathsOutcome};
+use snapshot::{commit_paths, commit_paths_with_hooks, CommitPathsError, CommitPathsHooksError, CommitPathsOutcome};
 use std::fs;
 use std::os::unix::fs::symlink;
 use std::path::PathBuf;
@@ -158,4 +159,52 @@ fn commit_paths_refuses_ignored_named_file_without_a_commit() {
         Ok(_) => panic!("ignored path was accepted"),
     }
     assert_eq!(commits(&f), before);
+}
+
+#[test]
+fn hooks_refusing_pre_commit_stops_commit_paths_with_its_output_and_leaves_index_and_commits() {
+    // Case 2.
+    let f = Fixture::new(&[]);
+    write(&f.repo.path, "root.txt", b"refused path\n");
+    hook_script(&f, "pre-commit", b"printf 'out-text\\n'\nprintf 'err-text\\n' >&2\nexit 3\n");
+    let before_index = fs::read(f.common.join("index")).unwrap();
+    let before_commits = commits(&f);
+    let before_refs = refs(&f);
+    match commit_paths_with_hooks(&f.git, &f.repo.path, &f.head, &["root.txt".into()], "Refused\n") {
+        Err(CommitPathsHooksError::HookRefused(refusal)) => assert_eq!(refusal,
+            HookRefusal { hook: "pre-commit", code: Some(3), stdout: b"out-text\n".to_vec(), stderr: b"err-text\n".to_vec() }),
+        other => panic!("expected HookRefused, got {other:?}"),
+    }
+    assert_eq!(commits(&f), before_commits);
+    assert_eq!(fs::read(f.common.join("index")).unwrap(), before_index);
+    assert_eq!(refs(&f), before_refs);
+}
+
+#[test]
+fn hooks_refusing_commit_msg_stops_commit_paths_without_a_commit() {
+    // Case 3 (commit_paths).
+    let f = Fixture::new(&[]);
+    write(&f.repo.path, "root.txt", b"refused message\n");
+    hook_script(&f, "commit-msg", b"exit 1\n");
+    let before_index = fs::read(f.common.join("index")).unwrap();
+    let before_commits = commits(&f);
+    match commit_paths_with_hooks(&f.git, &f.repo.path, &f.head, &["root.txt".into()], "Refused message\n") {
+        Err(CommitPathsHooksError::HookRefused(refusal)) => assert_eq!((refusal.hook, refusal.code), ("commit-msg", Some(1))),
+        other => panic!("expected HookRefused, got {other:?}"),
+    }
+    assert_eq!(commits(&f), before_commits);
+    assert_eq!(fs::read(f.common.join("index")).unwrap(), before_index);
+}
+
+#[test]
+fn hooks_commit_msg_rewrite_is_commit_paths_commit_message() {
+    // Case 4 (commit_paths).
+    let f = Fixture::new(&[]);
+    write(&f.repo.path, "root.txt", b"rewritten path\n");
+    hook_script(&f, "commit-msg", b"printf 'rewritten by hook\\n' > \"$1\"\n");
+    let commit = match commit_paths_with_hooks(&f.git, &f.repo.path, &f.head, &["root.txt".into()], "Built message\n").unwrap() {
+        CommitPathsOutcome::Committed { commit, .. } => commit,
+        CommitPathsOutcome::Same => panic!("a changed path must produce a commit"),
+    };
+    assert_eq!(f.git.commit_info(&commit).unwrap().message, "rewritten by hook\n");
 }

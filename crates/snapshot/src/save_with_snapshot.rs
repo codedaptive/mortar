@@ -1,8 +1,9 @@
 //! save_with_snapshot: commit a folder's files on its branch, with the request's change ID, set its index to them,
 //! and say whether the snapshot step moved the snapshot ref. save is this without that fact. The index step runs
 //! with no GIT_INDEX_FILE from the caller's env (real_index_git), so it sets the folder's own index.
-//! It reads the sentence and HEAD (save_message, save_head), takes the snapshot, and hands the rest to
-//! save_snapshot_onto with HEAD as the commit the snapshot was built on.
+//! It runs no commit hooks; save_with_hooks is its twin that does. Its body is save_through with a hook step that
+//! keeps the message: it reads the sentence and HEAD (save_message, save_head), takes the snapshot, and hands the
+//! rest to save_snapshot_onto with HEAD as the commit the snapshot was built on.
 //! No unit test: it runs git and holds no decision of its own; save_message and save_head are its decisions, and
 //! save_snapshot_onto's (save_unchanged, save_change_id, save_trailers, save_op, save_from_apply,
 //! saved_with_snapshot_from and real_index_git) are its decisions through it; all have their tests.
@@ -27,16 +28,17 @@
 //!   save_cases.rs::real_index_lock_produces_index_not_set_after_logged_branch_move_without_touching_files_or_old_index;
 //! - the index step leaves a caller's GIT_INDEX_FILE untouched, after a written save in
 //!   save_cases.rs::save_on_zone_tip_draws_a_new_id_leaves_status_clean_and_next_save_reuses_the_requests_id and after
-//!   an unchanged one in save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement.
+//!   an unchanged one in save_repair.rs::save_after_real_index_not_set_repairs_stale_real_index_with_no_commit_ref_or_log_movement;
+//! - a save with a refusing pre-commit installed still writes its commit and moves the branch:
+//!   save_cases.rs::hooks_hookless_save_writes_its_commit_with_a_refusing_pre_commit_installed.
+//!
+//! The other hooks_ cases in save_cases.rs run save_with_hooks and are listed in save_with_hooks.rs.
 //!
 //! Not yet covered by an integration test: IndexNotSet from an unchanged save, OpRepeated or ChangeId through save,
 //! and snapshot_written from save_with_snapshot (save_from_snapshot's false is covered in
 //! tests/snapshot/save_from_snapshot_cases.rs).
 
-use crate::save_head::save_head;
-use crate::save_message::save_message;
-use crate::save_snapshot_onto::save_snapshot_onto;
-use crate::snapshot::snapshot;
+use crate::save_through::save_through;
 use crate::{SavedWithSnapshot, SnapshotError, SnapshotTarget};
 use gitio::Git;
 use std::path::Path;
@@ -53,7 +55,7 @@ use std::path::Path;
 /// change_id None, and the folder's index set to HEAD's tree, so a save after IndexNotSet repairs the index.
 /// Otherwise the branch moves through one op log entry and the folder's index is set to the saved tree. Either
 /// index step runs with every GIT_INDEX_FILE entry removed from `git`'s env, so it sets the folder's own index. The
-/// folder's files are never touched.
+/// folder's files are never touched. No commit hooks run.
 ///
 /// Errors: BadSentence before anything is read or written; UnbornHead and DetachedHead before the snapshot runs;
 /// snapshot's own errors; then, after the snapshot step, with no commit written and no branch moved: Trailers when
@@ -70,9 +72,5 @@ pub fn save_with_snapshot(
     extra_excludes: &[String],
     size_cap: u64,
 ) -> Result<SavedWithSnapshot, SnapshotError> {
-    let git = Git { repo: folder.to_path_buf(), ..git.clone() };
-    let subject = save_message(sentence)?;
-    let (branch, head) = save_head(folder, git.head(folder).map_err(SnapshotError::Git)?)?;
-    let snap = snapshot(&git, folder, target, extra_excludes, size_cap)?;
-    save_snapshot_onto(&git, target, &subject, (branch, head.clone()), head, snap)
+    save_through(git, folder, target, sentence, extra_excludes, size_cap, |_, _, message, _| Ok(message))
 }

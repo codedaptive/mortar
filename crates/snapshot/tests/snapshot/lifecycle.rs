@@ -1,4 +1,4 @@
-use crate::support::{blob, run, tree_names, write, Fixture};
+use crate::support::{assert_snapshot_written, blob, hook_script, run, tree_names, write, Fixture};
 use gitio::Git;
 use oplog::{oplog_path, read_op_log, OpPhase, OpResult, RefMove};
 use snapshot::{saved_state, snapshot, DEFAULT_SIZE_CAP};
@@ -76,6 +76,17 @@ fn unchanged_writes_nothing_then_changed_snapshot_chains_head_and_previous() {
     assert_eq!(records[3].result, Some(OpResult::Moved));
     assert_eq!(records[3].moves, vec![RefMove { refname: f.refname.clone(), old: Some(first.commit), new: second.commit }]);
     assert!(saved_state(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap().saved);
+}
+
+#[test]
+fn hooks_snapshot_writes_its_snapshot_with_a_refusing_pre_commit_installed() {
+    // Case 5: snapshot runs no hooks.
+    let f = Fixture::new(&[]);
+    hook_script(&f, "pre-commit", b"exit 1\n");
+    write(&f.repo.path, "root.txt", b"snapshot past the hook\n");
+    let saved = snapshot(&f.git, &f.repo.path, &f.target, &[], DEFAULT_SIZE_CAP).unwrap();
+    assert_snapshot_written(&f, &saved, &f.head);
+    assert_eq!(blob(&f.git, &saved.tree, "root.txt"), b"snapshot past the hook\n");
 }
 
 fn object_ids(git: &Git) -> Vec<String> {
