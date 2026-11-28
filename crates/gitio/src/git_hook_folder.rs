@@ -8,14 +8,14 @@ use crate::{Git, GitError};
 use std::path::PathBuf;
 
 impl Git {
-    /// The folder git runs commit hooks in (githooks(5)): the top of the worktree `repo` is in, or for a bare
-    /// repository its git dir.
-    pub(crate) fn hook_folder(&self) -> Result<PathBuf, GitError> {
+    /// The folder git runs commit hooks in (githooks(5)) and whether the repository is bare: the top of the worktree
+    /// `repo` is in with false, or for a bare repository its git dir with true.
+    pub(crate) fn hook_folder(&self) -> Result<(PathBuf, bool), GitError> {
         let (args, opts) = hook_folder_request();
         if read_bare_flag(&self.run(&args, &opts)?.stdout)? {
-            self.git_dir(&self.repo)
+            Ok((self.git_dir(&self.repo)?, true))
         } else {
-            self.toplevel()
+            Ok((self.toplevel()?, false))
         }
     }
 }
