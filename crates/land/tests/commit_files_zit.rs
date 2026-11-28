@@ -6,3 +6,5 @@ mod committing;
 mod refusals;
 #[path = "commit_files_zit/kills.rs"]
 mod kills;
+#[path = "commit_files_zit/hooks.rs"]
+mod hooks;
