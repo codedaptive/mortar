@@ -13,13 +13,15 @@
 //! join" on the request branch and joined; a zone moved under the request rebases it, exit 0 "rebased", the folder's
 //! files and HEAD at the new tip, next "mr join"; a conflicting zone change is exit 1 listing the files, the join
 //! itself moving no ref (the save and snapshot before it may have moved the request branch and the snapshot ref, and
-//! the line names them), next "mr resolve"; a local edit in the way of the folder move is exit 3 listing the paths,
-//! and once moved aside the next join finishes the move; a missing zone branch is exit 3 owned by the zone's
+//! the line names them), next "mr resolve"; a pre-commit or commit-msg hook refusing the save is exit 3 refused with
+//! the hook's output, nothing saved or joined and neither the request nor the zone moved
+//! (joins.rs::join_hook_refusals_leave_request_and_zone_unmoved); a local edit in the way of the folder move is exit 3
+//! listing the paths, and once moved aside the next join finishes the move; a missing zone branch is exit 3 owned by the zone's
 //! coordinator; any argument is exit 2 with join's usage; an attempt folder is exit 3 naming its number with nothing
 //! run; a held join lock is exit 4; a configured formatter runs over the changed files before the save.
 
 use oplog::KillPidProbe;
-use snapshot::SaveOutcome;
+use snapshot::{SaveHooksError, SaveOutcome};
 
 use super::follow_answer::follow_answer;
 use super::{
@@ -27,11 +29,16 @@ use super::{
     save_from_formatted, snapshot_moved, JoinOutcome, RequestRun,
 };
 use crate::lock::locked_act;
-use crate::report::{failure_report, snapshot_step_failure, with_moved_first, Report};
+use crate::report::{failure_report, hook_refusal_report, snapshot_step_failure, with_moved_first, Report};
 use crate::request_base::{read_request_base, request_base_of};
 use crate::shell::ShellContext;
 
 const VERB: &str = "join";
+
+/// What a hook's refusal of join's save left: the refused commit is the save's, before any join step, while the
+/// snapshot steps before it may have written.
+const JOIN_NOTHING_MOVED: &str =
+    "no save commit was written, the branch did not move and nothing was joined; the snapshot ref may have moved";
 
 /// Takes no arguments. The op key is the verb and the folder with no moves, unless --key gives one.
 pub fn run_join(context: &ShellContext) -> Report {
@@ -47,8 +54,9 @@ pub fn run_join(context: &ShellContext) -> Report {
 /// Finish a pending folder move, then read the record's base and partners (read_request_base), which finishing that
 /// move may have rewritten to the base its join op recorded, save, join on that base, and follow the answer. The
 /// snapshot ref moved if the finished move's snapshot or the formatter's snapshot before the save moved it; the save
-/// saves from the formatter's snapshot and takes none of its own. A refused join and every report after it name what
-/// the save and those snapshots moved (moved_before's line). A failed snapshot of the pending move names nothing moved,
+/// saves from the formatter's snapshot and takes none of its own, and runs the folder's commit hooks. A refused join,
+/// a hook's refusal of the save and every report after the save name what the save and those snapshots moved
+/// (moved_before's line). A failed snapshot of the pending move names nothing moved,
 /// as nothing ran before it; a failed read of the record names what the finished move's snapshot moved.
 fn act(run: &RequestRun) -> Result<Report, Report> {
     let (finished_move, finish_written) =
@@ -69,8 +77,9 @@ fn act(run: &RequestRun) -> Result<Report, Report> {
 
 /// Saves the folder through save_from_formatted (the formatter's one snapshot, then the save from it), returning the
 /// save and whether the snapshot ref moved by its end (`finish_written`: the finished move's snapshot moved it; or
-/// the formatter's snapshot). A failure of any step names what the steps before it moved. Always run: save writes no
-/// commit when the folder's tree equals HEAD's.
+/// the formatter's snapshot). A failure of any step names what the steps before it moved: a snapshot or save error
+/// through snapshot_step_failure, a hook's refusal through hook_refusal_report with that line first. Always run: save
+/// writes no commit when the folder's tree equals HEAD's.
 fn save_work(run: &RequestRun, finish_written: bool) -> Result<(SaveOutcome, bool), Report> {
     let (folder, excludes, cap) = (&run.folder.toplevel, &run.settings.excludes, run.settings.cap_bytes);
     let subject = join_save_subject(&run.target.request);
@@ -78,7 +87,13 @@ fn save_work(run: &RequestRun, finish_written: bool) -> Result<(SaveOutcome, boo
         save_from_formatted(&run.git, folder, &run.target, &subject, excludes, cap, run.settings.formatter.as_ref())
             .map_err(|(error, written)| {
                 let moved = moved_before(false, finish_written || written, &run.request_ref);
-                snapshot_step_failure(VERB, &error, moved.as_deref())
+                match error {
+                    SaveHooksError::Snapshot(error) => snapshot_step_failure(VERB, &error, moved.as_deref()),
+                    SaveHooksError::HookRefused(refusal) => {
+                        let report = hook_refusal_report(VERB, &refusal, JOIN_NOTHING_MOVED);
+                        Report { lines: with_moved_first(moved.as_deref(), report.lines), ..report }
+                    }
+                }
             })?;
     let moved = snapshot_moved(finish_written || written, &saved);
     Ok((saved.outcome, moved))

@@ -16,7 +16,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
-use crate::support::{Config, ZoneConfig, write_fixture_config};
+use crate::support::{Config, ZoneConfig, write_fixture_config, write_hook};
 use crate::json::check;
 use testkit::TestRepo;
 
@@ -109,6 +109,34 @@ fn squash(root: &Path, zone: &str) -> Output {
 
 fn squash_refs(root: &Path) -> String {
     git(root, &["for-each-ref", "refs/mortar/squash"])
+}
+
+#[test]
+fn squash_hook_refusals_leave_squash_ref_unmoved() {
+    let (_repo, root) = repo();
+    zone_a_ahead(&root);
+    let common = root.join(".git");
+    let mut failed = Vec::new();
+    for hook in ["pre-commit", "commit-msg"] {
+        let before = tip(&root, SQUASH_A);
+        write_hook(&common, hook, b"#!/bin/sh\necho hook-out-token\necho hook-err-token >&2\nexit 7\n");
+        let result = std::panic::catch_unwind(|| {
+            let plain = mortar(&root, &["--actor", "accept", "squash", "a"]);
+            assert_eq!(plain.status.code(), Some(3), "{hook} plain: {plain:?}");
+            let text = format!("{}{}", String::from_utf8_lossy(&plain.stdout), String::from_utf8_lossy(&plain.stderr));
+            assert!(text.contains("hook-out-token") && text.contains("hook-err-token"), "{hook}: {text}");
+            assert_eq!(tip(&root, SQUASH_A), before); assert!(!common.join("mortar/locks/land.lock").exists());
+            let report = check(squash(&root, "a"), "squash", 3, "refused");
+            assert_eq!(report.text("hook"), hook); assert_eq!(report.number("code"), 7);
+            assert!(report.text("stdout").contains("hook-out-token")); assert!(report.text("stderr").contains("hook-err-token"));
+            assert!(report.text("next").contains(&format!("fix what the {hook} hook reports, then mr squash again")));
+            assert_eq!(tip(&root, SQUASH_A), before); assert!(!common.join("mortar/locks/land.lock").exists());
+        });
+        if result.is_err() { failed.push(hook); }
+        write_hook(&common, hook, b"#!/bin/sh\nexit 0\n");
+        if before.is_none() && tip(&root, SQUASH_A).is_some() { git(&root, &["update-ref", "-d", SQUASH_A]); }
+    }
+    assert!(failed.is_empty(), "failed rows: {failed:?}");
 }
 
 #[test]

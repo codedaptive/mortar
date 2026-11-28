@@ -1,4 +1,5 @@
-//! write_pending_commit: the pending marker of an `mr commit-files` run in a zone folder written before commit_paths.
+//! write_pending_commit: the pending marker of an `mr commit-files` run in a zone folder written
+//! before commit_paths_with_hooks.
 //! No sibling test: it writes a file; pending_commit_text_tests covers the marker's text. The integration test
 //! commit_files_zone_repeat_after_a_stopped_run_commits_once in crates/cli/tests/folder_runs/run_commit_files_tests.rs
 //! covers the marker through the binary, and the other zone folder cases there run through this write.

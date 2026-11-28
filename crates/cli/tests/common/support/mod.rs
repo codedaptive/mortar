@@ -1,4 +1,9 @@
 use crate::json::{check, Report};
+mod hook_script;
+// Only the hook tests' targets call it (folder_runs, land_runs, save_join_runs); the other targets that share this
+// module (guard_runs, across_kits, log_restore_runs, resolve_runs, status_need_runs) do not.
+#[allow(unused_imports)]
+pub use hook_script::write_hook;
 mod fixture_config;
 pub mod fixture_partners;
 mod fixture_formatter;

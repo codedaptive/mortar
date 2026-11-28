@@ -3,6 +3,33 @@ use crate::support::FormatterConfig;
 use std::fs;
 
 #[test]
+fn join_hook_refusals_leave_request_and_zone_unmoved() {
+    let mut failed = Vec::new();
+    for hook in ["pre-commit", "commit-msg"] {
+        let result = std::panic::catch_unwind(|| {
+            let f = Fixture::new(); f.write("src/file", b"unsaved join hook work\n");
+            let request = f.head(); let zone = f.git.read_ref(ZONE).unwrap();
+            assert!(raw(&f.local(), &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: initial index");
+            write_hook(&f.common, hook, b"#!/bin/sh\necho hook-out-token\necho hook-err-token >&2\nexit 7\n");
+            let plain = f.app(&["join"]);
+            assert_eq!(plain.status.code(), Some(3), "{hook} plain: {plain:?}");
+            let text = format!("{}{}", String::from_utf8_lossy(&plain.stdout), String::from_utf8_lossy(&plain.stderr));
+            assert!(text.contains("hook-out-token") && text.contains("hook-err-token"), "{hook}: {text}");
+            assert_eq!(f.head(), request); assert_eq!(f.git.read_ref(ZONE).unwrap(), zone); assert!(!f.lock_path().exists());
+            assert!(raw(&f.local(), &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: refused index");
+            let report = f.report(&["--json", "join"], "join", 3, "refused");
+            assert_eq!(report.text("hook"), hook); assert_eq!(report.number("code"), 7);
+            assert!(report.text("stdout").contains("hook-out-token")); assert!(report.text("stderr").contains("hook-err-token"));
+            assert!(report.text("next").contains(&format!("fix what the {hook} hook reports, then mr join again")));
+            assert_eq!(f.head(), request); assert_eq!(f.git.read_ref(ZONE).unwrap(), zone); assert!(!f.lock_path().exists());
+            assert!(raw(&f.local(), &["diff", "--cached", "--name-only"]).is_empty(), "{hook}: refused index");
+        });
+        if result.is_err() { failed.push(hook); }
+    }
+    assert!(failed.is_empty(), "failed rows: {failed:?}");
+}
+
+#[test]
 fn join_saves_unsaved_work_then_fast_forwards_zone_and_repeat_is_inert() {
     let f = Fixture::new(); f.write("src/file", b"unsaved join work\n"); let start = f.records().len();
     let report = f.report(&["--json", "join"], "join", 0, "joined");

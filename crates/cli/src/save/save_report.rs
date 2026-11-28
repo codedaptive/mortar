@@ -1,5 +1,5 @@
 //! save_report: the report of a save that ran (exit 0, written or not), with the pending folder move it
-//! finished first, if any, and what run_save's snapshots, save's own snapshot step included, moved.
+//! finished first, if any, and what run_save's snapshots moved, as far as run_save can tell.
 
 use snapshot::{FormatterResult, FormatterRun, SaveOutcome};
 
@@ -8,7 +8,8 @@ use crate::report::{ExitCode, OutValue, Report};
 
 /// Done, next `mr join`. Lines: first finished_move_part's for `finished` (the move's line, none without a
 /// move); then `moved` when given: the caller's line for whether the snapshot ref moved (the pending move's
-/// snapshot, the formatter's or save's own snapshot step), on a saved and an unchanged report alike, ahead of the
+/// snapshot or the formatter's; save without a formatter cannot count its own snapshot step, which
+/// snapshot::save_with_hooks does not report), on a saved and an unchanged report alike, ahead of the
 /// line that says whether a save commit was written; then, written: "saved", naming the commit and its change ID;
 /// not written: "unchanged", naming HEAD. Then one line per file the size cap refused, then, when the formatter did
 /// not end Formatted, how it ended (the files were saved as they are).

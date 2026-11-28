@@ -1,7 +1,9 @@
 //! save_step_failure: the report of mr save failing in a snapshot or save step: an error from the pending move's
-//! snapshot (finish_pending_move), snapshot_formatted, snapshot::save_from_snapshot (save with a formatter) or
-//! snapshot::save_with_snapshot (save without one). Its Git, Trailers, ChangeId and
-//! Oplog errors are snapshot_step_failure's; every other error is save_error_report's, which mr status shares.
+//! snapshot (finish_pending_move), or the SnapshotError inside SaveHooksError::Snapshot from join's
+//! save_from_formatted (snapshot_formatted, then snapshot::save_from_snapshot_with_hooks: save with a formatter) or
+//! snapshot::save_with_hooks (save without one); a hook's refusal goes to hook_refusal_report instead, in run_save.
+//! Its Git, Trailers, ChangeId and Oplog errors are snapshot_step_failure's; every other error is save_error_report's,
+//! which mr status shares.
 
 use snapshot::SnapshotError;
 
