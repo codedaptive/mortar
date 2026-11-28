@@ -36,10 +36,11 @@ exec "$REAL_GIT" "$@"
     let r = json::check(out, "join", 3, "refused");
     assert!(marker.exists());
     let proposed = fs::read_to_string(target).unwrap();
-    assert_eq!(r.strings("lines"), &[
-        "the snapshot ref moved as the work was saved first".to_string(),
-        format!("join op log: ref refs/heads/zone/core is protected by join: moving it from {sideways} to {proposed} is not a fast-forward; nothing was changed; move it only to a commit that has {sideways} as an ancestor, or ask join"),
-    ]);
+    let lines = r.strings("lines");
+    assert_eq!(lines.len(), 2);
+    assert_eq!(lines[0], "the snapshot ref moved as the work was saved first");
+    // Pins the line up to the ancestor clause; the tail after it is oplog's wording and is not pinned.
+    assert!(lines[1].starts_with(&format!("join op log: ref refs/heads/zone/core is protected by join: moving it from {sideways} to {proposed} is not a fast-forward; nothing was changed; move it only to a commit that has {sideways} as an ancestor")), "{}", lines[1]);
     assert_eq!(r.text("owner"), "the zone's coordinator");
     assert_eq!(r.text("next"), "ask the zone's coordinator why refs/heads/zone/core moved, then mr join");
     assert_eq!(f.tip(ZONE), sideways);
