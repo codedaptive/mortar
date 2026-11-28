@@ -1,4 +1,5 @@
-//! Refusal texts: each variant names its line, path, op or refs, and says what to do.
+//! Refusal texts: each variant says what to do (a Protected delete does not) and names its line,
+//! path, op or refs where it has one.
 
 use std::path::PathBuf;
 
@@ -131,7 +132,7 @@ fn protected_delete_names_the_ref_its_value_and_the_protector() {
     assert_eq!(
         err.to_string(),
         "ref refs/heads/main is protected by land: deleting it is refused (it holds \
-         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa); nothing was changed; ask land before removing it"
+         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa); nothing was changed"
     );
 }
 
@@ -147,7 +148,7 @@ fn protected_move_names_both_values_and_says_fast_forward_only() {
         err.to_string(),
         "ref refs/heads/main is protected by land: moving it from aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa to \
          bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb is not a fast-forward; nothing was changed; move it only to a \
-         commit that has aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa as an ancestor, or ask land"
+         commit that has aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa as an ancestor"
     );
 }
 

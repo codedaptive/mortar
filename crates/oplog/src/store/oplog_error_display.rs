@@ -1,5 +1,6 @@
-//! How an op log refusal reads: each names its line, path, op or refs, and says what to do.
-//! A Protected refusal of a delete is told by an all-zero new value (oid_is_zero).
+//! How an op log refusal reads: each says what to do (a Protected delete does not) and names its
+//! line, path, op or refs where it has one. A Protected refusal of a delete is told by an
+//! all-zero new value (oid_is_zero).
 
 use std::fmt;
 
@@ -7,6 +8,8 @@ use gitio::Oid;
 
 use super::{oid_is_zero, OplogError};
 
+/// A Protected refusal of a delete gives no next step on purpose: this text reaches a person only inside the
+/// caller's report, which gives the next step (cli's join_refusal_report does).
 impl fmt::Display for OplogError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -65,13 +68,13 @@ impl fmt::Display for OplogError {
                     write!(
                         f,
                         "ref {refname} is protected by {by}: deleting it is refused (it holds {cur}); nothing was \
-                         changed; ask {by} before removing it"
+                         changed"
                     )
                 } else {
                     write!(
                         f,
                         "ref {refname} is protected by {by}: moving it from {cur} to {} is not a fast-forward; \
-                         nothing was changed; move it only to a commit that has {cur} as an ancestor, or ask {by}",
+                         nothing was changed; move it only to a commit that has {cur} as an ancestor",
                         new.as_str()
                     )
                 }
